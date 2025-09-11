@@ -1,0 +1,267 @@
+@extends('layouts.container-report')
+
+@section('title', 'Travel Claim')
+@section('page_css')
+    <style>
+
+
+        table {
+            border: 1px solid;
+        }
+
+        .table thead th {
+            font-size: 0.94375rem;
+
+        }
+
+        tbody,
+        td,
+        tfoot,
+        th,
+        thead,
+        tr {
+            width: 10%;
+        }
+
+
+        tbody,
+        td,
+        tfoot,
+        th,
+        thead,
+        tr {
+            border-width: 0.1px;
+        }
+
+        .table tr th,
+        .table tr td {
+            padding: 0.25rem 0.75rem;
+        }
+
+        @media print {
+            .pagebreak {
+                page-break-after: always;
+            }
+        }
+    </style>
+@endsection
+@section('page_js')
+
+@endsection
+
+@section('page-content')
+        <script type="text/javascript">
+            window.print();
+        </script>
+
+    <section class="print-info bg-white p-3" id="print-info">
+        <div class="travel-claim">
+            <div class="print-header">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="print-code fs-6 fw-bold mb-3"> Travel Claim Form</div>
+                        <div class="print-code fs-6 fw-bold mb-3"> Travel Number: {{ $travelClaim->travelRequest->getTravelRequestNumber() }}</div>
+                        <div
+                            class="print-code fs-6 fw-bold mb-3"> {{ $travelClaim->travelRequest->office->getOfficeName() }} </div>
+                        <div class="print-header-info mb-3">
+                            <ul class="list-unstyled m-0 p-0 fs-7">
+                                <li><span class="fw-bold me-2"> All Claims must be Accompanied by original TA</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex flex-column justify-content-end">
+                            <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
+                                <div class="d-flex flex-column justify-content-end float-right">
+                                    <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="print-body mb-5">
+                <table class="table border">
+                    <thead>
+                    <tr>
+                        <th>Name:</th>
+                        <td>{{ $travelClaim->getRequesterName() }}</td>
+                        <th>Date:</th>
+                        <td>{{ $travelClaim->getApprovedDate() }}</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Date</td>
+                        <td style="width: 50%">Description of Expenses (Other than DSA)</td>
+                        <td>Amount</td>
+                        <td>Charging Office</td>
+                        <td>Acvt. Code</td>
+                        <td>Donor</td>
+                    </tr>
+                    @foreach($travelClaim->expenses as $expense)
+                        <tr>
+                            <td>{{ $expense->getExpenseDate() }}</td>
+                            <td>{{ $expense->expense_description }}</td>
+                            <td>{{ $expense->expense_amount }}</td>
+                            <td>{{ $expense->office->office_name }}</td>
+                            <td>{{ $expense->activityCode->getActivityCode() }}</td>
+                            <td>{{ $expense->donorCode->description }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-end">Sub-Total (A)</td>
+                        <td colspan="4">{{ $travelClaim->total_expense_amount }}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+
+                <table class="table border">
+                    <thead>
+                    <tr>
+                        <th colspan="2">TRAVEL ITINERARY</th>
+                        <th class="text-center">Date</th>
+                        <th>No. of overnights</th>
+                        <th>DSA rate</th>
+                        <th>% of DSA charged</th>
+                        <th>Total DSA</th>
+                        <th>Charging Office</th>
+                        <th>Activity Code</th>
+                        <th>Donor</th>
+                        <th>Remarks</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($travelClaim->itineraries as $itinerary)
+                        <tr>
+                            <td>DEP:</td>
+                            <td>{{ $itinerary->travelRequestItinerary->departure_place }}</td>
+                            <td>{{ $itinerary->travelRequestItinerary->getDepartureDate() }}</td>
+                            <td rowspan="2">{{ $itinerary->travelRequestItinerary->getOvernights() }}</td>
+                            <td rowspan="2">{{ $itinerary->travelRequestItinerary->dsa_unit_price }}</td>
+                            <td rowspan="2">{{ $itinerary->percentage_charged }}</td>
+                            <td rowspan="2">{{ $itinerary->total_amount }}</td>
+                            <td rowspan="2">{{ $itinerary->office->office_name }}</td>
+                            <td rowspan="2">{{ $itinerary->travelRequestItinerary->activityCode->getActivityCode() }}</td>
+                            <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td>
+                            <td rowspan="2">{{ $itinerary->description ?: $itinerary->travelRequestItinerary->description }}</td>
+                        </tr>
+                        <tr>
+                            <td>ARR:</td>
+                            <td>{{ $itinerary->travelRequestItinerary->arrival_place }}</td>
+                            <td>{{ $itinerary->travelRequestItinerary->getArrivalDate() }}</td>
+                        </tr>
+                    @endforeach
+                    <tr>
+                        <td colspan="5" class="text-end">Sub-Total (B)</td>
+                        <td></td>
+                        <td>{{ $travelClaim->total_itinerary_amount }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-end">Grand Total A+B</td>
+                        <td></td>
+                        <td>{{ $travelClaim->total_expense_amount+$travelClaim->total_itinerary_amount }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-end">Advance Taken</td>
+                        <td></td>
+                        <td>{{ $travelClaim->advance_amount }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="text-end">Amount refundable/(reimbursable)</td>
+                        <td></td>
+                        <td>{{ $travelClaim->refundable_amount }}</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="8">
+                            I certify that the following information is correct and per the approved
+                            Travel authorization. I authorize OHW to treat this as the final claim and I will repay any
+                            travel allowances to which I am not entitled. If office provides breakfast, lunch, dinner or
+                            accommodation, this must be duducted from claim, i.e. % charge should be 100%-deducted %
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="table border">
+                        <thead>
+                            <tr><th colspan="5">Summary of Travel Claim</th></tr>
+                            <tr>
+                                <th scope="col">{{ __('label.activity') }}</th>
+                                <th scope="col">Subledger</th>
+                                <th scope="col">{{ __('label.donor') }}</th>
+                                <th scope="col">Charging Office</th>
+                                <th scope="col">{{ __('label.amount') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             @foreach ($summaries as $summary)
+                             <tr>
+                                 <td>{{ $summary->getActivityTitle() }}</td>
+                                 <td>{{ $summary->subledger }}</td>
+                                 <td>{{ $summary->getDonorDescription() }}</td>
+                                 <td>{{ $summary->office->office_name }}</td>
+                                 <td>{{ $summary->getAmount() }}</td>
+                             </tr>
+                             @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">{{ __('label.total-amount') }}</td>
+                                <td>
+                                    {{ $travelClaim->total_expense_amount + $travelClaim->total_itinerary_amount }}</td>
+                            </tr>
+                        </tfoot>
+                </table>
+
+                @if (!empty($travelClaim->reviewedLog))
+                    <div class="mb-3">
+                        <div><strong>Finance Comment:</strong></div>
+                        <div class="ms-height">
+                            <p>{{ $travelClaim->reviewedLog->log_remarks }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="row mt-4">
+                    <div class="col-lg-6 mb-4">
+                        <div><strong>Claimed By:</strong></div>
+                        <div><strong>Name:</strong>{{ $travelClaim->getRequesterName() }}</div>
+                        <div><strong>Title:</strong>{{ $travelClaim->requester->employee->getDesignationName() }}</div>
+                        <div><strong>Date:</strong>{{ $travelClaim->submittedLog ? $travelClaim->submittedLog->created_at : '' }}</div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div><strong>Checked By:</strong></div>
+                        <div><strong>Name:</strong> {{ $travelClaim->reviewedLog ? $travelClaim->getReviewerName() : '' }}</div>
+                        <div><strong>Title:</strong> {{ $travelClaim->reviewedLog ? $travelClaim->reviewer->employee->getDesignationName() : '' }}</div>
+                        <div><strong>Date:</strong> {{ $travelClaim->reviewedLog ? $travelClaim->reviewedLog->created_at : '' }}</div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div><strong>Certified By:</strong></div>
+                        <div><strong>Name:</strong> {{ $travelClaim->recommendedLog ? $travelClaim->getRecommenderName() : '' }}</div>
+                        <div><strong>Title:</strong> {{ $travelClaim->recommendedLog ? $travelClaim->recommender->employee->getDesignationName() : '' }}</div>
+                        <div><strong>Date:</strong> {{ $travelClaim->recommendedLog ? $travelClaim->reviewedLog->created_at : '' }}</div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
+                        <div><strong>Approved By:</strong></div>
+                        <div><strong>Name:</strong> {{ $travelClaim->approvedLog ? $travelClaim->getApproverName() : '' }}</div>
+                        <div><strong>Title:</strong> {{ $travelClaim->approvedLog ? $travelClaim->approver->employee->getDesignationName() : '' }}</div>
+                        <div><strong>Date:</strong>{!! $travelClaim->approvedLog ? $travelClaim->approvedLog->created_at : '' !!}</div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </section>
+
+@endsection

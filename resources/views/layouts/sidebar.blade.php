@@ -501,12 +501,12 @@
                                 <a href="{{ route('approve.good.requests.direct.assign.index') }}" class="nav-link"
                                    id="approve-direct-assign-menu">Approve Direct Assign</a>
                                 {{-- @endif --}}
-                                @if ($authUser->can('review-good-request'))
+{{--                                @if ($authUser->can('review-good-request'))--}}
                                     <a class="nav-link" href="{{ route('review.good.requests.index') }}"
                                        id="review-good-requests-menu">Review Good Request
                                         ({{ $reviewGoodRequestCount }}
                                         )</a>
-                                @endif
+{{--                                @endif--}}
                                 @if ($authUser->can('approve-good-request'))
                                     <a class="nav-link" href="{{ route('approve.good.requests.index') }}"
                                        id="approve-good-requests-menu">Approve Good Request

@@ -64,11 +64,11 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     });
 
-    Route::middleware('can:review-good-request')->group(function () {
+//    Route::middleware('can:review-good-request')->group(function () {
         Route::get('review/good/requests', [ReviewController::class, 'index'])->name('review.good.requests.index');
         Route::get('review/good/requests/{goodRequest}/create', [ReviewController::class, 'create'])->name('review.good.requests.create');
         Route::post('review/good/requests/{goodRequest}', [ReviewController::class, 'store'])->name('review.good.requests.store');
-    });
+//    });
 
     Route::middleware('can:approve-good-request')->group(function () {
         Route::get('approve/good/requests', [ApproveController::class, 'index'])->name('approve.good.requests.index');

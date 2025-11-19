@@ -74,10 +74,15 @@ class TravelRequestPolicy
      */
     public function createClaim(User $user, TravelRequest $travelRequest)
     {
-        return now() >= $travelRequest->return_date &&
+        return
             $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
             $travelRequest->travelReport && ! $travelRequest->travelClaim;
+
+//        return now() >= $travelRequest->return_date &&
+//            $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
+//            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
+//            $travelRequest->travelReport && ! $travelRequest->travelClaim;
     }
 
     /**

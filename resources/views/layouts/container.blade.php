@@ -14,7 +14,6 @@
         .boolean_display {
             display: none;
         }
-
         .span-mimic-text-input {
             border: .0625rem solid rgba(231, 234, 243, .7);
             border-radius: 0.25rem;

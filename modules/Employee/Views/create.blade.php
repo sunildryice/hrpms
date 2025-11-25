@@ -4,6 +4,12 @@
 
 @section('page_js')
     <script>
+        var queryTab = @json(request()->query('tab'));
+        var $selectedTab = queryTab ?? localStorage.getItem('create-tab') ?? 'generalInformation';
+        if ($("[data-tag='" + $selectedTab + "']").length == 0 || $('#' + $selectedTab).length == 0) {
+            $selectedTab = 'generalInformation';
+        }
+
         document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('employeeAddForm');
             const panAttachmentField = $(form.querySelector('[name="pan_attachment"]'));
@@ -94,9 +100,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -121,9 +127,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -187,313 +193,146 @@
                     fv.revalidateField('date_of_birth');
                 },
             });
+
+
+            $('.step-item').click(function() {
+                $selectedTab = $(this).data('tag');
+                localStorage.setItem('create-tab', $selectedTab);
+                $('.step-item').removeClass('active');
+                $(this).addClass('active');
+                var tagid = $(this).data('tag');
+                $('.c-tabs-content').removeClass('active').addClass('hide');
+                $('#' + tagid).addClass('active').removeClass('hide');
+            }).ready(function() {
+                $('[data-tag="' + $selectedTab + '"]').addClass('active');
+                $('.c-tabs-content').removeClass('active').addClass('hide');
+                $('#' + $selectedTab).addClass('active').removeClass('hide');
+            });
         });
     </script>
 @endsection
 @section('page-content')
 
-            <div class="page-header pb-3 mb-3 border-bottom">
-                <div class="d-flex align-items-center">
-                    <div class="brd-crms flex-grow-1">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item"><a href="{!! route('dashboard.index') !!}"
-                                        class="text-decoration-none text-dark">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{!! route('employees.index') !!}"
-                                        class="text-decoration-none text-dark">Employees</a></li>
-                                <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
-                            </ol>
-                        </nav>
-                        <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
-                    </div>
+    <div class="page-header pb-3 mb-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="brd-crms flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{!! route('dashboard.index') !!}"
+                                class="text-decoration-none text-dark">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{!! route('employees.index') !!}"
+                                class="text-decoration-none text-dark">Employees</a></li>
+                        <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+            </div>
+        </div>
+    </div>
+
+    <section class="registration">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="rounded shadow-sm vertical-navigation sm-menu-vr pt-3 pb-3 bg-white">
+                    <ul class="m-0 list-unstyled">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="generalInformation">
+                                <i class="nav-icon bi-info-circle"></i> General Information
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="address">
+                                <i class="nav-icon bi-pin-map"></i> Address
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="family-details">
+                                <i class="nav-icon bi-people"></i>Family Details
+                            </a>
+                        </li>
+                        @if ($authUser->can('manage-tenure'))
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="tenure-details">
+                                    <i class="nav-icon bi bi-person-workspace"></i> Tenure
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="hour-details">
+                                    <i class="nav-icon bi bi-clock"></i>Working Hours
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none"
+                                    data-tag="finance-details">
+                                    <i class="nav-icon bi bi-bank"></i> Finance
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none"
+                                    data-tag="insurance-details">
+                                    <i class="nav-icon bi bi-bank"></i> Insurance
+                                </a>
+                            </li>
+                        @endif
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="medicalInformation">
+                                <i class="nav-icon bi-calendar-heart"></i> Medical
+                                Information
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="education-details">
+                                <i class="nav-icon bi bi-journal-text"></i> Education
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="experience-details">
+                                <i class="nav-icon bi bi-explicit"></i> Experience
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="training-details">
+                                <i class="nav-icon bi bi-calendar4-range"></i> Training
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none"
+                                data-tag="document-upload-details">
+                                <i class="nav-icon bi bi-explicit"></i> Document Upload
+                            </a>
+                        </li>
+                        @if ($authUser->can('update-user-role'))
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="login-details">
+                                    <i class="nav-icon bi bi-lock"></i> Login Credentials
+                                </a>
+                            </li>
+                        @endif
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none"
+                                data-tag="social-media-details">
+                                <i class="nav-icon bi bi-globe"></i> Social Media
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-
-            <section class="registration">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="rounded shadow-sm vertical-navigation sm-menu-vr pt-3 pb-3 bg-white">
-                            <ul class="m-0 list-unstyled">
-                                <li class="nav-item"><a href="#" class="nav-link active text-decoration-none"><i
-                                            class="nav-icon bi-info-circle"></i> General Information</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi-pin-map"></i> Address</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi-people"></i> Family Details</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-person-workspace"></i> Tenure</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-clock"></i> Working Hours</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi-calendar-heart"></i> Medical information</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-journal-text"></i> Education</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-explicit"></i> Experience</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-calendar4-range"></i> Training</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link step-item text-decoration-none">
-                                        <i class="nav-icon bi bi-explicit"></i> Document Upload</a></li>
-                                <li class="nav-item"><a href="#" class="nav-link text-decoration-none"><i
-                                            class="nav-icon bi bi-lock"></i> Login Credentials</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        <div class="card">
-                            <div class="card-header fw-bold">General Information</div>
-                            <form action="{{ route('employees.store') }}" id="employeeAddForm" method="post"
-                                enctype="multipart/form-data" autocomplete="off">
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label class="form-label required-label">{{ __('label.staff-code') }}</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <input type="number" min="1"
-                                                class="form-control @if ($errors->has('employee_code')) is-invalid @endif"
-                                                name="employee_code" value="{!! old('employee_code') !!}" autofocus />
-                                            @if ($errors->has('employee_code'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="employee_code">{!! $errors->first('employee_code') !!}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationfullname" class="form-label required-label">Full Name </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <input type="text"
-                                                class="form-control @if ($errors->has('full_name')) is-invalid @endif"
-                                                name="full_name" value="{{ old('full_name') }}" placeholder="Full name" />
-                                            @if ($errors->has('full_name'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="full_name">{!! $errors->first('full_name') !!}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label class="form-label required-label">Official Email  </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <input type="email"
-                                                class="form-control @if ($errors->has('official_email_address')) is-invalid @endif"
-                                                name="official_email_address" value="{{ old('official_email_address') }}"
-                                                placeholder="example@example.com">
-                                            @if ($errors->has('official_email_address'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="official_email_address">{!! $errors->first('official_email_address') !!}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label class="form-label">Personal Email </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <input type="email"
-                                                class="form-control @if ($errors->has('personal_email_address')) is-invalid @endif"
-                                                name="personal_email_address" value="{{ old('personal_email_address') }}"
-                                                placeholder="example@example.com">
-                                            @if ($errors->has('personal_email_address'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="personal_email_address">{!! $errors->first('personal_email_address') !!}</div>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationphone" class="form-label">Contact Number
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    <div class="input-group">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text required-label" id="basic-addon2">Mobile</span>
-                                                        </div>
-                                                        <input type="text"
-                                                            class="form-control  @if ($errors->has('mobile_number')) is-invalid @endif"
-                                                            name="mobile_number" placeholder="Mobile Number"
-                                                            value="{{ old('mobile_number') }}"
-                                                            aria-label="Recipient's username"
-                                                            aria-describedby="basic-addon2" />
-
-                                                        @if ($errors->has('mobile_number'))
-                                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                                <div data-field="mobile_number">{!! $errors->first('mobile_number') !!}
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
-                                                    <div class="input-group">
-                                                        <div class="input-group-append">
-                                                            <span class="input-group-text"
-                                                                id="basic-addon2">Telephone</span>
-                                                        </div>
-                                                        <input type="text" class="form-control" name="telephone_number"
-                                                            placeholder="Telephone Number"
-                                                            value="{{ old('telephone_number') }}"
-                                                            aria-label="Recipient's username"
-                                                            aria-describedby="basic-addon2" />
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationdob" class="form-label">Date of Birth
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <input type="text" class="form-control" readonly name="date_of_birth"
-                                                value="{{ old('date_of_birth') }}" />
-                                            <input type="hidden" value="{{ date('Y-m-d') }}" name="today"
-                                                class="form-control" />
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationcitizenship" class="form-label">Citizenship
-                                                    No.</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <div class="row">
-                                                <div class="col-lg-4">
-                                                    <input type="text"
-                                                        class="form-control @if ($errors->has('citizenship_number')) is-invalid @endif"
-                                                        name="citizenship_number" value="{{ old('citizenship_number') }}"
-                                                        placeholder="Citizenship No">
-                                                    @if ($errors->has('citizenship_number'))
-                                                        <div class="fv-plugins-message-container invalid-feedback">
-                                                            <div data-field="citizenship_number">{!! $errors->first('citizenship_number') !!}
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="col-lg-8">
-                                                    <input type="file" class="form-control"
-                                                        name="citizenship_attachment" />
-                                                    <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
-                                                    @if ($errors->has('citizenship_attachment'))
-                                                    <div class="fv-plugins-message-container invalid-feedback">
-                                                        <div data-field="citizenship_attachment">{!! $errors->first('citizenship_attachment') !!}
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationpan" class="form-label">Pan No.
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <div class="row">
-                                                <div class="col-lg-4">
-                                                    <input type="number"
-                                                        class="form-control @if ($errors->has('pan_number')) is-invalid @endif"
-                                                        name="pan_number" value="{{ old('pan_number') }}"
-                                                        placeholder="Pan No">
-                                                    @if ($errors->has('pan_number'))
-                                                        <div class="fv-plugins-message-container invalid-feedback">
-                                                            <div data-field="pan_number">{!! $errors->first('pan_number') !!}
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                                <div class="col-lg-8">
-                                                    <input type="file" class="form-control" name="pan_attachment" />
-                                                    <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
-                                                    @if ($errors->has('pan_attachment'))
-                                                    <div class="fv-plugins-message-container invalid-feedback">
-                                                        <div data-field="pan_attachment">{!! $errors->first('pan_attachment') !!}
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationGender" class="form-label">Gender
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <select name="gender" class="select2 form-control" data-width="100%">
-                                                <option value="">Select a Gender</option>
-                                                @foreach ($genders as $gender)
-                                                    <option value="{{ $gender->id }}" @if($gender->id == old('gender')) selected @endif>{{ $gender->title }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationMaritalstaatus" class="form-label">Marital Status
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <select name="marital_status" class="select2 form-control" data-width="100%">
-                                                <option value="">Select a Marital Status</option>
-                                                @foreach ($maritalStatus as $status)
-                                                    <option value="{{ $status->id }}" @if($status->id == old('marital_status')) selected @endif>{{ $status->title }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    {!! csrf_field() !!}
-
-                                </div>
-                                <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                    {{-- <button class="btn btn-success btn-sm">Update</button> --}}
-                                    <a href="{!! route('employees.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                                </div>
-                            </form>
-                        </div>
-
+            <div class="col-lg-9">
+                <div class="c-tabs-content" id="generalInformation">
+                    <div class="card">
+                        @include('Employee::General.create')
                     </div>
                 </div>
-            </section>
+
+                <div class="c-tabs-content" id="generalInformation">
+                    <div class="card">
+                        @include('Employee::SocialMedia.create')
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
 @stop

@@ -4,18 +4,18 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#employees-menu').addClass('active');
         });
         var $selectedTab = '{!! request()->query('tab') ?: 'generalInformation' !!}';
-        document.addEventListener('DOMContentLoaded', function (e) {
-            $('.step-item').click(function () {
+        document.addEventListener('DOMContentLoaded', function(e) {
+            $('.step-item').click(function() {
                 $('.step-item').removeClass('active');
                 $(this).addClass('active');
                 var tagid = $(this).data('tag');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + tagid).addClass('active').removeClass('hide');
-            }).ready(function () {
+            }).ready(function() {
                 $('[data-tag="' + $selectedTab + '"]').addClass('active');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + $selectedTab).addClass('active').removeClass('hide');
@@ -24,21 +24,22 @@
 
         function displayEducationEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addEducationBlock').hide();
                 $('#editEducationBlock').show();
                 $('#editEducationBlock').find('[name="education_level_id"]').val(response.education.education_level_id)
                     .select2('destroy').select2();
                 $('#editEducationBlock').find('[name="degree"]').val(response.education.degree);
                 $('#editEducationBlock').find('[name="institution"]').val(response.education.institution);
-                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2('destroy').select2();
+                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2(
+                    'destroy').select2();
                 if (response.attachment != '') {
                     $('#editEducationBlock').find('[name="attachment_exist"]').attr('href', response.attachment);
                     $('.media').show();
                 }
                 $('#editEducationBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -46,7 +47,7 @@
 
         function displayExperienceEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addExperienceBlock').hide();
                 $('#editExperienceBlock').show();
                 $('#editExperienceBlock').find('[name="institution"]').val(response.experience.institution);
@@ -60,7 +61,7 @@
                 }
                 $('#editExperienceBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -68,7 +69,7 @@
 
         function displayFamilyEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addFamilyMemberBlock').hide();
                 $('#editFamilyMemberBlock').show();
                 var fields = ['full_name', 'remarks', 'contact_number', 'province_id', 'district_id', 'local_level_id',
@@ -105,7 +106,7 @@
                         'change');
                 }
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -113,7 +114,7 @@
 
         function displayTrainingEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addTrainingBlock').hide();
                 $('#editTrainingBlock').show();
                 $('#editTrainingBlock').find('[name="institution"]').val(response.training.institution);
@@ -127,7 +128,7 @@
                 }
                 $('#editTrainingBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -154,6 +155,8 @@
         }
     </script>
 @endsection
+
+
 @section('page-content')
 
     <div class="m-content p-3">
@@ -168,8 +171,7 @@
                                     <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
                                 </li>
                                 <li class="breadcrumb-item">
-                                    <a href="{!! route('employees.index') !!}"
-                                       class="text-decoration-none">Employees</a>
+                                    <a href="{!! route('employees.index') !!}" class="text-decoration-none">Employees</a>
                                 </li>
                                 <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                             </ol>
@@ -186,7 +188,7 @@
                             <ul class="m-0 list-unstyled">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="generalInformation">
+                                        data-tag="generalInformation">
                                         <i class="nav-icon bi-info-circle"></i> General Information
                                     </a>
                                 </li>
@@ -197,44 +199,44 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="family-details">
+                                        data-tag="family-details">
                                         <i class="nav-icon bi-people"></i>Family Details
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="tenure-details">
+                                        data-tag="tenure-details">
                                         <i class="nav-icon bi bi-person-workspace"></i> Tenure
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="medicalInformation">
+                                        data-tag="medicalInformation">
                                         <i class="nav-icon bi-calendar-heart"></i> Medical
                                         Information
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="education-details">
+                                        data-tag="education-details">
                                         <i class="nav-icon bi bi-journal-text"></i> Education
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="experience-details">
+                                        data-tag="experience-details">
                                         <i class="nav-icon bi bi-explicit"></i> Experience
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="training-details">
+                                        data-tag="training-details">
                                         <i class="nav-icon bi bi-calendar4-range"></i> Training
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="document-upload-details">
+                                        data-tag="document-upload-details">
                                         <i class="nav-icon bi bi-explicit"></i> Document Upload
                                     </a>
                                 </li>
@@ -257,7 +259,7 @@
                                 @include('Employee::FamilyDetail.create')
                             </div>
                             <div class="card shadow-sm border rounded mb-5" id="editFamilyMemberBlock"
-                                 style="display: none;">
+                                style="display: none;">
                                 @include('Employee::FamilyDetail.edit')
                             </div>
                             @if ($employee->familyDetails->count())
@@ -283,8 +285,7 @@
                             <div class="card shadow-sm border rounded mb-5" id="addEducationBlock">
                                 @include('Employee::Education.create')
                             </div>
-                            <div class="card shadow-sm border rounded mb-5" id="editEducationBlock"
-                                 style="display: none;">
+                            <div class="card shadow-sm border rounded mb-5" id="editEducationBlock" style="display: none;">
                                 @include('Employee::Education.edit')
                             </div>
                             @if ($employee->education->count())
@@ -299,7 +300,7 @@
                                 @include('Employee::Experience.create')
                             </div>
                             <div class="card shadow-sm border rounded mb-5" id="editExperienceBlock"
-                                 style="display: none;">
+                                style="display: none;">
                                 @include('Employee::Experience.edit')
                             </div>
                             @if ($employee->experiences->count())
@@ -314,7 +315,7 @@
                                 @include('Employee::Training.create')
                             </div>
                             <div class="card shadow-sm border rounded mb-5" id="editTrainingBlock"
-                                 style="display: none;">
+                                style="display: none;">
                                 @include('Employee::Training.edit')
                             </div>
                             @if ($employee->trainings->count())

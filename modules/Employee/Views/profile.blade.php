@@ -413,6 +413,13 @@
                                 <i class="nav-icon bi bi-calendar4-range"></i>Training
                             </a>
                         </li>
+
+                        <li class="nav-item parent-tab-s">
+                            <a href="javascript:void(0);" data-tag="social_media"
+                                class="nav-link step-item text-decoration-none">
+                                <i class="nav-icon bi bi-globe"></i>Social Media
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -944,6 +951,31 @@
                                 </div>
                             </div>
                         @endif
+                    </div>
+                </div>
+
+
+                <div class="c-tabs-content" id="social_media">
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            Social Media
+                        </div>
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="trainingTable">
+                                    <tbody>
+                                        <div>
+                                            <tr>
+                                                <th scope="row" width="10%">Facebook</th>
+
+                                            </tr>
+
+                                        </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

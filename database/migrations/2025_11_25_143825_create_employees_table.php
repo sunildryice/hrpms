@@ -34,6 +34,7 @@ return new class extends Migration {
             $table->string('pan_attachment')->nullable();
             $table->string('signature')->nullable();
             $table->string('profile_picture')->nullable();
+            $table->string('cv')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->date('joined_date')->nullable();
             $table->date('probation_complete_date')->nullable();

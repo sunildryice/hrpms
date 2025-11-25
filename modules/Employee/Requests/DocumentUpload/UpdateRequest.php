@@ -37,6 +37,7 @@ class UpdateRequest extends FormRequest
         return [
             'signature'=>'required_without:profile_picture|mimes:jpg,png|max:2048',
             'profile_picture'=>'required_without:signature|mimes:jpg,png|max:2048',
+            'cv'=>'required_without:cv|mimes:jpg,png|max:2048',
         ];
     }
 }

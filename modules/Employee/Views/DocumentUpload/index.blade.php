@@ -34,11 +34,11 @@
                         @endif
                     </td>
                     <td style="width: 50%">
-                        @if (file_exists('storage/' . $employee->cv) && $employee->cv != '')
-                            <a href="{!! asset('storage/' . $employee->cv) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
+                        @if (file_exists('storage/' . $employee->cv_attachment) && $employee->cv_attachment != '')
+                            <a href="{!! asset('storage/' . $employee->cv_attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
                                 title="View CV">
                                 <div class="media">
-                                    <img src="{{ url('storage/' . $employee->cv) }}" style="width: 80px;">
+                                    <img src="{{ url('storage/' . $employee->cv_attachment) }}" style="width: 80px;">
                                 </div>
                             </a>
                         @endif

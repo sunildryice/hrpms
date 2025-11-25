@@ -52,13 +52,13 @@
 
             </div>
             <div class="col-lg-9">
-                <input type="file" class="form-control js-document-upload @if($errors->has('cv')) is-invalid @endif"
-                id="validationprofilepicture" value="{{ old('cv') }}"
-                    placeholder="" name="cv">
+                <input type="file" class="form-control js-document-upload @if($errors->has('cv_attachment')) is-invalid @endif"
+                id="validationprofilepicture" value="{{ old('cv_attachment') }}"
+                    placeholder="" name="cv_attachment">
                 <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
-                @if($errors->has('cv'))
+                @if($errors->has('cv_attachment'))
                     <div class="fv-plugins-message-container invalid-feedback">
-                        <div data-field="cv">{!! $errors->first('cv') !!}</div>
+                        <div data-field="cv_attachment">{!! $errors->first('cv_attachment') !!}</div>
                     </div>
                 @endif
             </div>

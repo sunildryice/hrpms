@@ -29,7 +29,7 @@ return new class extends Migration {
             $table->string('passport_number')->nullable();
             $table->string('passport_attachment')->nullable(); 
             $table->string('vehicle_license_number')->nullable();
-            $table->string('vehicle_license_category')->nullable(); 
+            $table->json('vehicle_license_category')->nullable(); 
             $table->string('citizenship_attachment')->nullable();
             $table->string('pan_attachment')->nullable();
             $table->string('signature')->nullable();

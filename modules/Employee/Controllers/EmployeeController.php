@@ -2,31 +2,31 @@
 
 namespace Modules\Employee\Controllers;
 
-use DB;
-use DataTables;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use DataTables;
+use DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Modules\Employee\Repositories\EducationRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Employee\Repositories\LeaveRepository;
 use Modules\Employee\Requests\StoreRequest;
 use Modules\Employee\Requests\UpdateRequest;
-use Modules\Master\Models\VehicleLicenseCategory;
-use Modules\Master\Repositories\GenderRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Employee\Repositories\LeaveRepository;
-use Modules\Privilege\Repositories\RoleRepository;
-use Modules\Master\Repositories\DistrictRepository;
-use Modules\Master\Repositories\ProvinceRepository;
-use Modules\Master\Repositories\LeaveTypeRepository;
-use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\BloodGroupRepository;
 use Modules\Master\Repositories\DepartmentRepository;
-use Modules\Master\Repositories\LocalLevelRepository;
-use Modules\Employee\Repositories\EducationRepository;
 use Modules\Master\Repositories\DesignationRepository;
-use Modules\Master\Repositories\MaritalStatusRepository;
+use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
+use Modules\Master\Repositories\GenderRepository;
+use Modules\Master\Repositories\LeaveTypeRepository;
+use Modules\Master\Repositories\LocalLevelRepository;
+use Modules\Master\Repositories\MaritalStatusRepository;
+use Modules\Master\Repositories\OfficeRepository;
+use Modules\Master\Repositories\ProvinceRepository;
+use Modules\Master\Repositories\SocialMediaAccountRepository;
 use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
+use Modules\Privilege\Repositories\RoleRepository;
 
 class EmployeeController extends Controller
 {
@@ -52,7 +52,8 @@ class EmployeeController extends Controller
         protected OfficeRepository $offices,
         protected PayrollFiscalYearRepository $payrollFiscalYears,
         protected ProvinceRepository $provinces,
-        protected RoleRepository $roles
+        protected RoleRepository $roles,
+        protected SocialMediaAccountRepository $socialMediaAccounts,
     ) {
         $this->destinationPath = 'employees';
     }
@@ -124,12 +125,13 @@ class EmployeeController extends Controller
     {
 
         $authUser = auth()->user();
+        $socialMediaAccounts = $this->socialMediaAccounts->get();
         return view('Employee::create', [
             'authUser' => $authUser,
+            'socialMediaAccounts' => $socialMediaAccounts,
         ])
             ->withGenders($this->genders->get())
-            ->withMaritalStatus($this->maritalStatus->get())
-            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
+            ->withMaritalStatus($this->maritalStatus->get());
     }
 
     /**
@@ -157,13 +159,6 @@ class EmployeeController extends Controller
                     ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
                 $inputs['pan_attachment'] = $filename;
             }
-
-            if ($request->file('passport_attachment')) {
-                $filename = $request->file(key: 'passport_attachment')
-                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
-                $inputs['passport_attachment'] = $filename;
-            }
-            
             $this->employees->update($employee->id, $inputs);
 
             return redirect()->route('employees.edit', $employee->id)->withInput()
@@ -270,13 +265,6 @@ class EmployeeController extends Controller
                 ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
         }
-
-        if ($request->file('passport_attachment')) {
-            $filename = $request->file('passport_attachment')
-                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
-            $inputs['passport_attachment'] = $filename;
-        }
-
         $employee = $this->employees->update($id, $inputs);
         if ($employee) {
             return redirect()->back()->withInput()

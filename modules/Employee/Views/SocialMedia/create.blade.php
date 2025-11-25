@@ -1,5 +1,5 @@
 <div class="card-header fw-bold">Add New Social Media</div>
-<form class="needs-validation" method="post" id="trainingAddForm" enctype="multipart/form-data" autocomplete="off">
+<form class="needs-validation" method="post" id="socialAccountAddForm" enctype="multipart/form-data" autocomplete="off">
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -43,52 +43,14 @@
     <script type="text/javascript">
         var end_date = "{!! date('Y-m-d') !!}";
         document.addEventListener('DOMContentLoaded', function(e) {
-            const form = document.getElementById('trainingAddForm');
+            const form = document.getElementById('socialAccountAddForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
-                    institution: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Institution is required',
-                            },
-                        },
-                    },
+
                     linkedin: {
                         validators: {
                             notEmpty: {
                                 message: 'Training topic is required',
-                            },
-                        },
-                    },
-                    period_from: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Training from date is required',
-                            },
-                            date: {
-                                format: 'YYYY-MM-DD',
-                                message: 'The value is not a valid date',
-                            },
-                        },
-                    },
-                    period_to: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Training to date is required',
-                            },
-                            date: {
-                                format: 'YYYY-MM-DD',
-                                message: 'The value is not a valid date',
-                            },
-                        },
-                    },
-                    attachment: {
-                        validators: {
-                            file: {
-                                extension: 'jpeg,jpg,png,pdf',
-                                type: 'image/jpeg,image/png,application/pdf',
-                                maxSize: 2097152, // 2048 * 1024
-                                message: 'The selected file is not valid image or pdf or must not be greater than 2 MB.',
                             },
                         },
                     },

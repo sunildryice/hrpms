@@ -43,6 +43,26 @@
                 @endif
             </div>
         </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="validationdocument" class="form-label">CV</label>
+                </div>
+
+            </div>
+            <div class="col-lg-9">
+                <input type="file" class="form-control js-document-upload @if($errors->has('cv')) is-invalid @endif"
+                id="validationprofilepicture" value="{{ old('cv') }}"
+                    placeholder="" name="cv">
+                <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
+                @if($errors->has('cv'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="cv">{!! $errors->first('cv') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">
         <button class="btn btn-primary btn-sm"  type="submit">

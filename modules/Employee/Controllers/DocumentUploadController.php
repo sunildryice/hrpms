@@ -46,6 +46,11 @@ class DocumentUploadController extends Controller
                 ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_profile_picture.' . $request->file('profile_picture')->getClientOriginalExtension());
             $inputs['profile_picture'] = $filename;
         }
+        if ($request->file('cv')) {
+            $filename = $request->file('cv')
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_cv.' . $request->file('cv')->getClientOriginalExtension());
+            $inputs['cv'] = $filename;
+        }
 
         $inputs['updated_by'] = auth()->id();
         $employeeDocument = $this->employees->update($employee->id, $inputs);

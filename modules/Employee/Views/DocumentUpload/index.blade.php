@@ -8,6 +8,7 @@
                 <tr>
                     <th style="width: 50%">{{ __('label.signature') }}</th>
                     <th style="width: 50%">{{ __('label.profile-picture') }}</th>
+                    <th style="width: 50%">{{ __('label.cv') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,6 +29,16 @@
                                 title="View Profile Picture">
                                 <div class="media">
                                     <img src="{{ url('storage/' . $employee->profile_picture) }}" style="width: 80px;">
+                                </div>
+                            </a>
+                        @endif
+                    </td>
+                    <td style="width: 50%">
+                        @if (file_exists('storage/' . $employee->cv) && $employee->cv != '')
+                            <a href="{!! asset('storage/' . $employee->cv) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
+                                title="View CV">
+                                <div class="media">
+                                    <img src="{{ url('storage/' . $employee->cv) }}" style="width: 80px;">
                                 </div>
                             </a>
                         @endif

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Modules\Employee\Repositories\EducationRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Employee\Models\VehicleLicenseCategory;
 use Modules\Employee\Repositories\LeaveRepository;
 use Modules\Employee\Requests\StoreRequest;
 use Modules\Employee\Requests\UpdateRequest;
@@ -131,7 +132,8 @@ class EmployeeController extends Controller
             'socialMediaAccounts' => $socialMediaAccounts,
         ])
             ->withGenders($this->genders->get())
-            ->withMaritalStatus($this->maritalStatus->get());
+            ->withMaritalStatus($this->maritalStatus->get())
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**
@@ -233,7 +235,8 @@ class EmployeeController extends Controller
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)
             ->withHour($employee->latestHour)
-            ->withTenure($employee->latestTenure);
+            ->withTenure($employee->latestTenure)
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**

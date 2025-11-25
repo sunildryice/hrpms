@@ -163,7 +163,7 @@ class EmployeeController extends Controller
                     ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
                 $inputs['passport_attachment'] = $filename;
             }
-            
+
             $this->employees->update($employee->id, $inputs);
 
             return redirect()->route('employees.edit', $employee->id)->withInput()
@@ -238,7 +238,8 @@ class EmployeeController extends Controller
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)
             ->withHour($employee->latestHour)
-            ->withTenure($employee->latestTenure);
+            ->withTenure($employee->latestTenure)
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**

@@ -157,6 +157,128 @@
                         </div>
                     @endif
 
+                    @if (
+                       $authUser->can('exit-staff-clearance') ||
+                           $authUser->can('endorse-staff-clearance') ||
+                           $authUser->can('approve-staff-clearance') ||
+                           $authUser->can('hr-staff-clearance') ||
+                           $authUser->can('logistic-staff-clearance') ||
+                           $authUser->can('finance-staff-clearance') ||
+                           $authUser->can('verify-staff-clearance') ||
+                           $authUser->isHandoverNoteExists())
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarClearance" role="button"
+                               data-bs-toggle="collapse" data-bs-target="#navbarClearance"
+                               aria-expanded="false" aria-controls="navbarClearance"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
+                                <i class="bi bi-clipboard-check nav-icon"></i>
+                                <span class="nav-link-title">Exit Staff Clearance</span> </a>
+
+                            <div id="navbarClearance" class="collapse">
+
+                                @if ($authUser->can('exit-staff-clearance'))
+                                    <a class="nav-link" id="staff-clearance-menu"
+                                       href="{{ route('staff.clearance.index') }}">Staff Clearance</a>
+                                @endif
+                                @if ($authUser->can('endorse-staff-clearance'))
+                                    <a class="nav-link" id="staff-clearance-endorse-menu"
+                                       href="{{ route('staff.clearance.endorse.index') }}">Endorse Staff Clearance</a>
+                                @endif
+                                @if ($authUser->can('approve-staff-clearance'))
+                                    <a class="nav-link" id="staff-clearance-approve-menu"
+                                       href="{{ route('staff.clearance.approve.index') }}">Approve Staff Clearance</a>
+                                @endif
+                                @if ($authUser->isHandoverNoteExists())
+                                    @if (in_array($authUser->employee->exitHandOverNote->status_id, [1, 2]))
+                                        <a class="nav-link" id="update-employees-exit-menu"
+                                           href="{{ route('exit.employee.handover.note.edit') }}">Edit Employees
+                                            Exit</a>
+                                    @else
+                                        <a class="nav-link" id="update-employees-exit-menu"
+                                           href="{{ route('exit.employee.handover.note.show') }}">Show Employees
+                                            Exit</a>
+                                    @endif
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (
+                        $authUser->can('manage-employee-exit') ||
+                            $authUser->isHandoverNoteExists() ||
+                            $authUser->can('approve-exit-handover-note') ||
+                            $authUser->can('approve-exit-interview') ||
+                            $authUser->can('create-exit-payable') ||
+                            $authUser->can('approve-exit-payable') ||
+                            $authUser->can('view-approved-exit-handover-note') ||
+                            $authUser->can('view-approved-exit-interview') ||
+                            $authUser->can('view-approved-exit-payable'))
+
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarEmployeeExit" role="button"
+                               data-bs-toggle="collapse" data-bs-target="#navbarEmployeeExit" aria-expanded="false"
+                               aria-controls="navbarEmployeeExit" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Employees Exit">
+                                <i class="bi bi-person-dash nav-icon"></i>
+                                <span class="nav-link-title">Employees Exit</span> </a>
+
+                            <div id="navbarEmployeeExit" class="nav-collapse collapse"
+                                 data-bs-parent="#navbarEmployeeExitMenuName"
+                                 hs-parent-area="#navbarEmployeeExitMenuName" style="">
+                                @if ($authUser->can('manage-employee-exit'))
+                                    <a class="nav-link" id="employees-exit-menu"
+                                       href="{{ route('employee.exits.index') }}">Employees Exit</a>
+                                    <a class="nav-link" id="pending-employees-exit-menu"
+                                       href="{{ route('employee.exit.pending.index') }}">Pending Employees Exit</a>
+                                @endif
+                                @if ($authUser->can('approve-exit-handover-note'))
+                                    <a class="nav-link" id="approve-exit-handover-note"
+                                       href="{{ route('approve.exit.handover.note.index') }}">Approve Exit Handover
+                                        Note ({{$approveExitHandoverNoteCount}})</a>
+                                @endif
+                                @if ($authUser->can('view-approved-exit-handover-note'))
+                                    <a class="nav-link" id="approved-exit-handover-note"
+                                       href="{{ route('approved.exit.handover.note.index') }}">Approved Handover
+                                        Note</a>
+                                @endif
+                                @if ($authUser->can('approve-exit-asset-handover'))
+                                    <a class="nav-link" id="approve-exit-asset"
+                                       href="{{ route('approve.exit.handover.asset.index') }}">Approve Asset
+                                        Handover</a>
+                                @endif
+                                @if ($authUser->can('view-approved-exit-asset-handover'))
+                                    <a class="nav-link" id="approved-asset-handover"
+                                       href="{{ route('approved.exit.handover.asset.index') }}">Approved
+                                        Asset Handover</a>
+                                @endif
+                                @if ($authUser->can('approve-exit-interview'))
+                                    <a class="nav-link" id="approve-exit-interview"
+                                       href="{{ route('approve.exit.interview.index') }}">Approve Exit Interview
+                                        ({{$approveExitInterviewCount}})</a>
+                                @endif
+                                @if ($authUser->can('view-approved-exit-interview'))
+                                    <a class="nav-link" id="approved-exit-interview"
+                                       href="{{ route('approved.exit.interview.index') }}">Approved Exit
+                                        Interview</a>
+                                @endif
+                                @if ($authUser->can('create-exit-payable'))
+                                    <a class="nav-link" id="create-employee-exit-payable"
+                                       href="{{ route('exit.payable.index') }}">Employee Exit Payable</a>
+                                @endif
+                                @if ($authUser->can('approve-exit-payable'))
+                                    <a class="nav-link" id="update-employees-exit-payable"
+                                       href="{{ route('exit.approve.payable.index') }}">Approve Employee Exit Payable
+                                        ({{ $reviewEmployeeExitPayableCount + $approveEmployeeExitPayableCount }})</a>
+                                @endif
+
+                                @if ($authUser->can('approved-exit-payable'))
+                                    <a class="nav-link" id="approved-employees-exit-payable"
+                                       href="{{ route('exit.approved.payable.index') }}">Approved Payable</a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
                     @if ($authUser->can('local-travel') ||
                         $authUser->can('approve-local-travel') ||
                         $authUser->can('pay-local-travel') ||
@@ -501,12 +623,12 @@
                                 <a href="{{ route('approve.good.requests.direct.assign.index') }}" class="nav-link"
                                    id="approve-direct-assign-menu">Approve Direct Assign</a>
                                 {{-- @endif --}}
-{{--                                @if ($authUser->can('review-good-request'))--}}
-                                    <a class="nav-link" href="{{ route('review.good.requests.index') }}"
-                                       id="review-good-requests-menu">Review Good Request
-                                        ({{ $reviewGoodRequestCount }}
-                                        )</a>
-{{--                                @endif--}}
+                                {{--                                @if ($authUser->can('review-good-request'))--}}
+                                <a class="nav-link" href="{{ route('review.good.requests.index') }}"
+                                   id="review-good-requests-menu">Review Good Request
+                                    ({{ $reviewGoodRequestCount }}
+                                    )</a>
+                                {{--                                @endif--}}
                                 @if ($authUser->can('approve-good-request'))
                                     <a class="nav-link" href="{{ route('approve.good.requests.index') }}"
                                        id="approve-good-requests-menu">Approve Good Request
@@ -519,7 +641,8 @@
                                 @endif
                                 @if ($authUser->can('approve-asset-handover'))
                                     <a class="nav-link" href="{{ route('approve.asset.handovers.index') }}"
-                                       id="approve-asset-handover-menu">Approve Asset Handover ({{ $approveAssetHandoverCount }})</a>
+                                       id="approve-asset-handover-menu">Approve Asset Handover
+                                        ({{ $approveAssetHandoverCount }})</a>
                                 @endif
                                 @if ($authUser->can('view-approved-good-request'))
                                     <a class="nav-link" href="{{ route('approved.good.requests.index') }}"

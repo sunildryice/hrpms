@@ -158,52 +158,6 @@
                     @endif
 
                     @if (
-                       $authUser->can('exit-staff-clearance') ||
-                           $authUser->can('endorse-staff-clearance') ||
-                           $authUser->can('approve-staff-clearance') ||
-                           $authUser->can('hr-staff-clearance') ||
-                           $authUser->can('logistic-staff-clearance') ||
-                           $authUser->can('finance-staff-clearance') ||
-                           $authUser->can('verify-staff-clearance') ||
-                           $authUser->isHandoverNoteExists())
-                        <div class="nav-item">
-                            <a class="nav-link dropdown-toggle" href="#navbarClearance" role="button"
-                               data-bs-toggle="collapse" data-bs-target="#navbarClearance"
-                               aria-expanded="false" aria-controls="navbarClearance"
-                               data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
-                                <i class="bi bi-clipboard-check nav-icon"></i>
-                                <span class="nav-link-title">Exit Staff Clearance</span> </a>
-
-                            <div id="navbarClearance" class="collapse">
-
-                                @if ($authUser->can('exit-staff-clearance'))
-                                    <a class="nav-link" id="staff-clearance-menu"
-                                       href="{{ route('staff.clearance.index') }}">Staff Clearance</a>
-                                @endif
-                                @if ($authUser->can('endorse-staff-clearance'))
-                                    <a class="nav-link" id="staff-clearance-endorse-menu"
-                                       href="{{ route('staff.clearance.endorse.index') }}">Endorse Staff Clearance</a>
-                                @endif
-                                @if ($authUser->can('approve-staff-clearance'))
-                                    <a class="nav-link" id="staff-clearance-approve-menu"
-                                       href="{{ route('staff.clearance.approve.index') }}">Approve Staff Clearance</a>
-                                @endif
-                                @if ($authUser->isHandoverNoteExists())
-                                    @if (in_array($authUser->employee->exitHandOverNote->status_id, [1, 2]))
-                                        <a class="nav-link" id="update-employees-exit-menu"
-                                           href="{{ route('exit.employee.handover.note.edit') }}">Edit Employees
-                                            Exit</a>
-                                    @else
-                                        <a class="nav-link" id="update-employees-exit-menu"
-                                           href="{{ route('exit.employee.handover.note.show') }}">Show Employees
-                                            Exit</a>
-                                    @endif
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (
                         $authUser->can('manage-employee-exit') ||
                             $authUser->isHandoverNoteExists() ||
                             $authUser->can('approve-exit-handover-note') ||
@@ -274,6 +228,61 @@
                                 @if ($authUser->can('approved-exit-payable'))
                                     <a class="nav-link" id="approved-employees-exit-payable"
                                        href="{{ route('exit.approved.payable.index') }}">Approved Payable</a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (
+                       $authUser->can('performance-review') ||
+                           $authUser->can('review-performance-review') ||
+                           $authUser->can('recommend-performance-review') ||
+                           $authUser->can('approve-performance-review') ||
+                           $authUser->performanceReviewExists())
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarPerformanceReview" role="button"
+                               data-bs-toggle="collapse" data-bs-target="#navbarPerformanceReview"
+                               aria-expanded="false" aria-controls="navbarPerformanceReview"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Performance Review">
+                                <i class="bi bi-graph-up-arrow nav-icon"></i>
+                                <span class="nav-link-title">Performance Review</span> </a>
+
+                            <div id="navbarPerformanceReview" class="nav-collapse collapse"
+                                 data-bs-parent="#navbarPerformanceReviewMenuName"
+                                 hs-parent-area="#navbarPerformanceReviewMenuName" style="">
+
+                                @if ($authUser->performanceReviewExists())
+                                    <a class="nav-link" id="performance-employee-index"
+                                       href="{{ route('performance.employee.index') }}">My Performance Review</a>
+                                @endif
+
+                                @if ($authUser->isSupervisor())
+                                    <a class="nav-link" id="performance-reviews-assistant"
+                                       href="{!! route('performance.reviews.assistant.index') !!}">Performance
+                                        Reviews</a>
+                                @endif
+
+                                @if ($authUser->can('manage-performance-review'))
+                                    <a class="nav-link" id="performance-index"
+                                       href="{{ route('performance.index') }}">Manage Performance Review</a>
+                                @endif
+
+                                @if ($authUser->can('review-performance-review'))
+                                    <a class="nav-link" id="performance-review-index"
+                                       href="{{ route('performance.review.index') }}">Review Performance
+                                        ({{ $reviewPerCount }})</a>
+                                @endif
+
+                                @if ($authUser->can('recommend-performance-review'))
+                                    <a class="nav-link" id="performance-recommend-index"
+                                       href="{{ route('performance.recommend.index') }}">Recommend Performance
+                                        ({{ $recommendPerCount }})</a>
+                                @endif
+
+                                @if ($authUser->can('approve-performance-review'))
+                                    <a class="nav-link" id="performance-approve-index"
+                                       href="{{ route('performance.approve.index') }}">Approve Performance
+                                        ({{ $approvePerCount }})</a>
                                 @endif
                             </div>
                         </div>

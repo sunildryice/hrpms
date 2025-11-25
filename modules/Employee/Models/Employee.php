@@ -60,7 +60,7 @@ class Employee extends Model
         'pan_attachment',
         'signature',
         'profile_picture',
-        'cv',
+        'cv_attachment',
         'date_of_birth',
         'joined_date',
         'probation_complete_date',

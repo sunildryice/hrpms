@@ -90,6 +90,10 @@ class Employee extends Model
         'activated_at',
     ];
 
+    protected $casts = [
+        'vehicle_license_category' => 'array', 
+    ];
+
     /**
      * Get the address of the employee.
      */
@@ -413,7 +417,7 @@ class Employee extends Model
 
     public function getFullNameWithCode()
     {
-        return ucfirst($this->full_name).'('.$this->employee_code.')';
+        return ucfirst($this->full_name) . '(' . $this->employee_code . ')';
     }
 
     public function getFirstJoinedDate()
@@ -486,7 +490,7 @@ class Employee extends Model
     {
         $leave = $this->leaves()->where('fiscal_year_id', $yearId)->where('leave_type_id', $leaveTypeId)->latest()->first();
 
-        return $leave ? $leave->balance.' '.$leave->leaveType->getLeaveBasis() : '';
+        return $leave ? $leave->balance . ' ' . $leave->leaveType->getLeaveBasis() : '';
     }
 
     public function leave()
@@ -509,7 +513,7 @@ class Employee extends Model
         $finance = $this->finance;
         if ($finance) {
             if ($finance->account_number && $finance->bank_name) {
-                return $finance->account_number.' / '.$finance->bank_name;
+                return $finance->account_number . ' / ' . $finance->bank_name;
             }
         }
 
@@ -530,10 +534,12 @@ class Employee extends Model
 
     public function getAssetHandoverStatus(): ?string
     {
-        if (GoodRequestAsset::query()
-            ->where('assigned_user_id', $this->getUserId())
-            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-            ->count()) {
+        if (
+            GoodRequestAsset::query()
+                ->where('assigned_user_id', $this->getUserId())
+                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+                ->count()
+        ) {
             return null;
         }
 

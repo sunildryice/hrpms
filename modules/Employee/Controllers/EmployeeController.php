@@ -2,30 +2,31 @@
 
 namespace Modules\Employee\Controllers;
 
-use App\Http\Controllers\Controller;
-use DataTables;
 use DB;
+use DataTables;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Modules\Employee\Repositories\EducationRepository;
-use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Employee\Repositories\LeaveRepository;
 use Modules\Employee\Requests\StoreRequest;
 use Modules\Employee\Requests\UpdateRequest;
+use Modules\Master\Models\VehicleLicenseCategory;
+use Modules\Master\Repositories\GenderRepository;
+use Modules\Master\Repositories\OfficeRepository;
+use Modules\Employee\Repositories\LeaveRepository;
+use Modules\Privilege\Repositories\RoleRepository;
+use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\ProvinceRepository;
+use Modules\Master\Repositories\LeaveTypeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\BloodGroupRepository;
 use Modules\Master\Repositories\DepartmentRepository;
+use Modules\Master\Repositories\LocalLevelRepository;
+use Modules\Employee\Repositories\EducationRepository;
 use Modules\Master\Repositories\DesignationRepository;
-use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
-use Modules\Master\Repositories\GenderRepository;
-use Modules\Master\Repositories\LeaveTypeRepository;
-use Modules\Master\Repositories\LocalLevelRepository;
-use Modules\Master\Repositories\MaritalStatusRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\ProvinceRepository;
 use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
-use Modules\Privilege\Repositories\RoleRepository;
 
 class EmployeeController extends Controller
 {
@@ -93,14 +94,14 @@ class EmployeeController extends Controller
                     return $employee->getActiveStatus();
                 })->addColumn('action', function ($employee) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('employees.profile', [$employee->id]).'" rel="tooltip" title="View Employee Detail"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('employees.profile', [$employee->id]) . '" rel="tooltip" title="View Employee Detail"><i class="bi bi-eye"></i></a>';
                     //                    if($authUser->can('update', $employee)) {
                     $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('employees.edit', $employee->id).'" rel="tooltip" title="Edit Employee"><i class="bi-pencil-square"></i></a>';
+                    $btn .= route('employees.edit', $employee->id) . '" rel="tooltip" title="Edit Employee"><i class="bi-pencil-square"></i></a>';
                     //                    }
                     if ($authUser->can('payroll')) {
                         $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
-                        $btn .= route('employees.payments.masters.index', $employee->id).'" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
+                        $btn .= route('employees.payments.masters.index', $employee->id) . '" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
                     }
 
                     return $btn;
@@ -123,7 +124,8 @@ class EmployeeController extends Controller
     {
         return view('Employee::create')
             ->withGenders($this->genders->get())
-            ->withMaritalStatus($this->maritalStatus->get());
+            ->withMaritalStatus($this->maritalStatus->get())
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**
@@ -142,18 +144,25 @@ class EmployeeController extends Controller
         if ($employee) {
             if ($request->file('citizenship_attachment')) {
                 $filename = $request->file('citizenship_attachment')
-                    ->storeAs($this->destinationPath.'/'.$employee->id, time().'_citizenship.'.$request->file('citizenship_attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_citizenship.' . $request->file('citizenship_attachment')->getClientOriginalExtension());
                 $inputs['citizenship_attachment'] = $filename;
             }
 
             if ($request->file('pan_attachment')) {
                 $filename = $request->file('pan_attachment')
-                    ->storeAs($this->destinationPath.'/'.$employee->id, time().'_pan.'.$request->file('pan_attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
                 $inputs['pan_attachment'] = $filename;
             }
+
+            if ($request->file('passport_attachment')) {
+                $filename = $request->file(key: 'passport_attachment')
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
+                $inputs['passport_attachment'] = $filename;
+            }
+            
             $this->employees->update($employee->id, $inputs);
 
-        return redirect()->route('employees.edit', $employee->id)->withInput()
+            return redirect()->route('employees.edit', $employee->id)->withInput()
                 ->withSuccessMessage('Employee successfully added.');
         }
 
@@ -186,13 +195,20 @@ class EmployeeController extends Controller
     public function edit($id)
     {
         $employee = $this->employees->with([
-            'medicalCondition', 'tenures.designation', 'tenures.department', 'tenures.supervisor',
-            'tenures.crossSupervisor', 'tenures.nextLineManager', 'tenures.dutyStation',
-            'trainings', 'address', 'experiences',
+            'medicalCondition',
+            'tenures.designation',
+            'tenures.department',
+            'tenures.supervisor',
+            'tenures.crossSupervisor',
+            'tenures.nextLineManager',
+            'tenures.dutyStation',
+            'trainings',
+            'address',
+            'experiences',
         ])->find($id);
         $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
             ->where('id', '<>', $employee->id)
-        // ->whereNotNull('activated_at')
+            // ->whereNotNull('activated_at')
             ->orderBy('full_name', 'asc')
             ->get();
 
@@ -241,15 +257,22 @@ class EmployeeController extends Controller
 
         if ($request->file('citizenship_attachment')) {
             $filename = $request->file('citizenship_attachment')
-                ->storeAs($this->destinationPath.'/'.$employee->id, time().'_citizenship.'.$request->file('citizenship_attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_citizenship.' . $request->file('citizenship_attachment')->getClientOriginalExtension());
             $inputs['citizenship_attachment'] = $filename;
         }
 
         if ($request->file('pan_attachment')) {
             $filename = $request->file('pan_attachment')
-                ->storeAs($this->destinationPath.'/'.$employee->id, time().'_pan.'.$request->file('pan_attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
         }
+
+        if ($request->file('passport_attachment')) {
+            $filename = $request->file('passport_attachment')
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
+            $inputs['passport_attachment'] = $filename;
+        }
+
         $employee = $this->employees->update($id, $inputs);
         if ($employee) {
             return redirect()->back()->withInput()

@@ -14,7 +14,7 @@ class UpdateRequest extends FormRequest
      */
     protected function getRedirectUrl()
     {
-        return route('employees.edit', [$this->employee, 'tab'=>'document-upload-details']);
+        return route('employees.edit', [$this->employee, 'tab' => 'document-upload-details']);
     }
 
     /**
@@ -35,9 +35,18 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'signature'=>'required_without:profile_picture|mimes:jpg,png|max:2048',
-            'profile_picture'=>'required_without:signature|mimes:jpg,png|max:2048',
-            'cv_attachment'=>'required_without:cv_attachment|mimes:jpg,png|max:2048',
+            'signature' => 'required_without:profile_picture|mimes:jpeg,jpg,png|max:2048',
+            'profile_picture' => 'required_without:signature|mimes:jpeg,jpg,png|max:2048',
+            'cv_attachment' => 'nullable|mimes:pdf|max:2048',
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'signature.mimes' => 'Signature must be a JPEG, JPG, or PNG file.',
+            'profile_picture.mimes' => 'Profile picture must be a JPEG, JPG, or PNG file.',
+            'cv_attachment.mimes' => 'CV must be a PDF file.',
+            'cv_attachment.max' => 'CV must not be larger than 2MB.',
         ];
     }
 }

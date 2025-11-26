@@ -153,9 +153,10 @@ class TravelRequestController extends Controller
     public function create()
     {
         $authUser = auth()->user();
+        $employee = $authUser->employee;
         $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $accompanyingStaffs = $this->employees->getActiveEmployees();
-        $substitutes = $accompanyingStaffs->reject(function ($staff, $key) use ($authUser) {
+        $substitutes = $accompanyingStaffs->reject(function ($staff) use ($authUser) {
             return $staff->id == $authUser->employee_id;
         });
         $consultants = $this->employees->getActiveConsultants();
@@ -164,7 +165,10 @@ class TravelRequestController extends Controller
             ->withProjects($projectCodes)
             ->withSubstitutes($substitutes)
             ->with('consultants', $consultants)
-            ->withTravelTypes($this->travelTypes->get());
+            ->withTravelTypes($this->travelTypes->get())
+            ->with('employee', $employee)
+            ->with('employeePassportNumber', $employee->passport_number)
+            ->with('employeePassportAttachment', $employee->passport_attachment);
     }
 
     /**

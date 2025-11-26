@@ -90,47 +90,47 @@ class TravelRequestController extends Controller
                         $advanceStatus = '<br><span class="badge bg-warning">Advance Requested</span>';
                     }
 
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>'.$advanceStatus;
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>' . $advanceStatus;
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('travel.requests.view', $row->id).'" rel="tooltip" title="View Travel Request"><i class="bi-eye"></i></a>';
+                    $btn .= route('travel.requests.view', $row->id) . '" rel="tooltip" title="View Travel Request"><i class="bi-eye"></i></a>';
                     if ($authUser->can('update', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('travel.requests.edit', $row->id).'" rel="tooltip" title="Edit Travel Request"><i class="bi-pencil-square"></i></a>';
+                        $btn .= route('travel.requests.edit', $row->id) . '" rel="tooltip" title="Edit Travel Request"><i class="bi-pencil-square"></i></a>';
                     } else {
                         if ($authUser->can('print', $row)) {
                             $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
-                            $btn .= route('travel.request.print', $row->id).'" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
+                            $btn .= route('travel.request.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
                         }
                         if ($authUser->can('cancel', $row)) {
                             $btn .= '&emsp;<button class="btn btn-danger btn-sm cancel-travel-request" href="';
-                            $btn .= route('travel.requests.cancel.create', $row->id).'" rel="tooltip" title="Cancel"><i class="bi bi-x-circle"></i></button>';
+                            $btn .= route('travel.requests.cancel.create', $row->id) . '" rel="tooltip" title="Cancel"><i class="bi bi-x-circle"></i></button>';
                         }
                     }
 
                     if ($authUser->can('createReport', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('travel.reports.create', $row->id).'" rel="tooltip" title="Create Travel Report"><i class="bi-list-columns-reverse"></i></a>';
+                        $btn .= route('travel.reports.create', $row->id) . '" rel="tooltip" title="Create Travel Report"><i class="bi-list-columns-reverse"></i></a>';
                     }
 
                     if ($authUser->can('createClaim', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm create-settlement" data-href="';
-                        $btn .= route('travel.claims.store', $row->id).'" rel="tooltip" title="Create Travel Settlement"><i class="bi-bank2"></i></a>';
+                        $btn .= route('travel.claims.store', $row->id) . '" rel="tooltip" title="Create Travel Settlement"><i class="bi-bank2"></i></a>';
                     }
 
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="'.route('travel.requests.destroy', $row->id).'"  rel="tooltip" title="Delete Travel Request">';
+                        $btn .= 'data-href="' . route('travel.requests.destroy', $row->id) . '"  rel="tooltip" title="Delete Travel Request">';
                         $btn .= '<i class="bi-trash3"></i></a>';
                     } elseif ($authUser->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm amend-travel-request"';
-                        $btn .= 'data-href = "'.route('travel.requests.amend.store', $row->id).'" title="Amend Travel Request">';
+                        $btn .= 'data-href = "' . route('travel.requests.amend.store', $row->id) . '" title="Amend Travel Request">';
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
                     }
 
                     if ($authUser->can('askAdvance', $row)) {
-                        $btn .= '&emsp;<a href = "javascript:;" class="btn btn-outline-warning btn-sm travel-advance-request" data-travel-request-id="'.$row->id.'"';
-                        $btn .= 'data-href = "'.route('travel.requests.advance.store', $row->id).'" data-travel-number="'.$row->getTravelRequestNumber().'" title="Travel Request Advance">';
+                        $btn .= '&emsp;<a href = "javascript:;" class="btn btn-outline-warning btn-sm travel-advance-request" data-travel-request-id="' . $row->id . '"';
+                        $btn .= 'data-href = "' . route('travel.requests.advance.store', $row->id) . '" data-travel-number="' . $row->getTravelRequestNumber() . '" title="Travel Request Advance">';
                         $btn .= '<i class="bi bi-cash" ></i></a>';
                     }
 
@@ -216,6 +216,12 @@ class TravelRequestController extends Controller
         $inputs['request_date'] = date('Y-m-d');
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         $inputs['status_id'] = 1;
+        $externalTravelers = $request->input('external_travelers', []);
+
+        $inputs['external_travelers'] = is_array($externalTravelers) ? $externalTravelers : [];
+        $inputs['external_traveler_count'] = count(
+            array_filter($inputs['external_travelers'], fn($t) => !empty($t['name'] ?? null))
+        );
         $travelRequest = $this->travelRequests->create($inputs);
         if ($travelRequest) {
             return redirect()->route('travel.requests.edit', $travelRequest->id)
@@ -239,6 +245,7 @@ class TravelRequestController extends Controller
         $travelRequest = $this->travelRequests->find($id);
         $this->authorize('update', $travelRequest);
         $authUser = auth()->user();
+        $employee = $authUser->employee;
         $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $accompanyingStaffs = $this->employees->getActiveEmployees();
         $substitutes = $accompanyingStaffs->reject(function ($staff, $key) use ($authUser) {
@@ -254,7 +261,10 @@ class TravelRequestController extends Controller
             ->withTravelRequest($travelRequest)
             ->withTravelRequest($travelRequest)
             ->with('consultants', $this->employees->getActiveConsultants())
-            ->withTravelTypes($this->travelTypes->get());
+            ->withTravelTypes($this->travelTypes->get())
+            ->with('employee', $employee)
+            ->with('employeePassportNumber', $employee->passport_number)
+            ->with('employeePassportAttachment', $employee->passport_attachment);
     }
 
     /**
@@ -302,6 +312,12 @@ class TravelRequestController extends Controller
         $inputs['status_id'] = $travelRequest->status_id;
         $inputs['updated_by'] = auth()->id();
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
+        $externalTravelers = $request->input('external_travelers', []);
+
+        $inputs['external_travelers'] = is_array($externalTravelers) ? $externalTravelers : [];
+        $inputs['external_traveler_count'] = count(
+            array_filter($inputs['external_travelers'], fn($t) => !empty($t['name'] ?? null))
+        );
         $travelRequest = $this->travelRequests->update($id, $inputs);
         if ($travelRequest) {
             $message = 'Travel request is successfully updated.';
@@ -413,7 +429,7 @@ class TravelRequestController extends Controller
         $travelRequest = $this->travelRequests->find($id);
         $this->authorize('cancel', $travelRequest);
 
-        if (! isset($travelRequest->approver_id)) {
+        if (!isset($travelRequest->approver_id)) {
             return response()->json([
                 'type' => 'error',
                 'message' => 'Travel Request approver not set.',

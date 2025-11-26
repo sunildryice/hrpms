@@ -125,10 +125,54 @@
                     passportSection.style.display = 'none';
                 }
             }
-
             togglePassportSection();
             travelTypeSelect.addEventListener('change', togglePassportSection);
             $(travelTypeSelect).on('change', togglePassportSection);
+
+
+            const countInput = document.getElementById('external_traveler_count');
+            const container = document.getElementById('external-travelers-container');
+
+            function generateRows() {
+                const count = parseInt(countInput.value) || 0;
+                if (count < 0) countInput.value = 0;
+
+                container.innerHTML = '';
+
+                for (let i = 0; i < count; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'row mb-2 align-items-end external-traveler-row';
+                    row.innerHTML = `
+                <div class="col-lg-3">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="external_travelers[${i}][name]" class="form-control" placeholder="Full Name *" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="email" name="external_travelers[${i}][email]" class="form-control" placeholder="Email (optional)">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn-sm remove-row">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `;
+                    container.appendChild(row);
+                }
+
+                document.querySelectorAll('.remove-row').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        this.closest('.external-traveler-row').remove();
+                        countInput.value = container.children.length;
+                    });
+                });
+            }
+
+            countInput.addEventListener('input', generateRows);
+
+            if (countInput.value > 0) {
+                generateRows();
+            }
         });
     </script>
 
@@ -435,7 +479,7 @@
                         </div>
                     </div>
 
-                    <div class="row mb-2">
+                    {{-- <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationRemarks" class="form-label">Remarks </label>
@@ -443,16 +487,67 @@
                         </div>
                         <div class="col-lg-9">
                             <textarea type="text" class="form-control @if ($errors->has('remarks')) is-invalid @endif" name="remarks">
-@if (old('remarks'))
-{{ old('remarks') }}
-@endif
-</textarea>
+                            {!! old('remarks') !!}</textarea>
                             @if ($errors->has('remarks'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="remarks">{!! $errors->first('remarks') !!}</div>
                                 </div>
                             @endif
                         </div>
+                    </div> --}}
+
+                    <div class="row mb-3">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label class="form-label">Number of external travelers</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <div class="input-group" style="max-width: 200px;">
+                                <button class="btn btn-outline-secondary" type="button" id="decrementTraveler">
+                                    <i class="bi bi-dash-lg"></i>
+                                </button>
+                                <input type="number" min="0" id="external_traveler_count"
+                                    name="external_traveler_count" class="form-control text-center" readonly
+                                    value="{{ old('external_traveler_count', $travelRequest->external_traveler_count ?? 0) }}"
+                                    style="background: white;">
+                                <button class="btn btn-outline-secondary" type="button" id="incrementTraveler">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-1">How many people outside the organization are traveling
+                                with you?</small>
+                        </div>
+                    </div>
+
+                    <div id="external-travelers-container">
+                        @if (old('external_traveler_count') || (isset($travelRequest) && $travelRequest->external_traveler_count > 0))
+                            @php
+                                $count = old('external_traveler_count', $travelRequest->external_traveler_count ?? 0);
+                                $travelers = old('external_travelers', $travelRequest->external_travelers ?? []);
+                            @endphp
+                            @for ($i = 0; $i < $count; $i++)
+                                <div class="row mb-2 align-items-end external-traveler-row">
+                                    <div class="col-lg-3">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" name="external_travelers[{{ $i }}][name]"
+                                            class="form-control" placeholder="Full Name *"
+                                            value="{{ $travelers[$i]['name'] ?? '' }}" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="email" name="external_travelers[{{ $i }}][email]"
+                                            class="form-control" placeholder="Email (optional)"
+                                            value="{{ $travelers[$i]['email'] ?? '' }}">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-danger btn-sm remove-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endfor
+                        @endif
                     </div>
                     {!! csrf_field() !!}
                 </div>

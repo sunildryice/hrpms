@@ -50,6 +50,8 @@ class TravelRequest extends Model
         'final_destination',
         'purpose_of_travel',
         'remarks',
+        'external_travelers',
+        'external_traveler_count',
 
         //advance
         'requested_advance_amount',
@@ -68,6 +70,7 @@ class TravelRequest extends Model
         'updated_by',
     ];
 
+
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -77,6 +80,9 @@ class TravelRequest extends Model
 
     protected $dates = ['departure_date', 'return_date', 'request_date', 'advance_requested_at', 'advance_received_at'];
 
+    protected $casts = [
+        'external_travelers' => 'array',
+    ];
     /**
      * Get the accompanying staff for travel request.
      */
@@ -305,19 +311,23 @@ class TravelRequest extends Model
         })->toArray()) : '';
     }
 
-    public function formattedReceivedAmount(){
+    public function formattedReceivedAmount()
+    {
         return number_format($this->received_advance_amount);
     }
 
-    public function formattedRequestedAmount(){
+    public function formattedRequestedAmount()
+    {
         return number_format($this->requested_advance_amount);
     }
 
-    public function getAdvanceRequestDate(){
+    public function getAdvanceRequestDate()
+    {
         return $this->advance_requested_at?->format('d M, Y');
     }
 
-    public function getAdvanceReceivedDate(){
+    public function getAdvanceReceivedDate()
+    {
         return $this->advance_received_at?->format('d M, Y');
     }
 
@@ -389,11 +399,11 @@ class TravelRequest extends Model
 
     public function getTravelRequestNumber()
     {
-        $travelNumber = $this->prefix.'-'.$this->travel_number;
-        $travelNumber .= $this->modification_number ? '-'.$this->modification_number : '';
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2) : '';
+        $travelNumber = $this->prefix . '-' . $this->travel_number;
+        $travelNumber .= $this->modification_number ? '-' . $this->modification_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
-        return $travelNumber.$fiscalYear;
+        return $travelNumber . $fiscalYear;
     }
 
     public function getTravelType()
@@ -407,7 +417,7 @@ class TravelRequest extends Model
         $records = $this->travelRequestItineraries;
         foreach ($records as $record) {
             if ($record->getTravelModes() != '') {
-                $mode_of_travel .= $mode_of_travel == '' ? $record->getTravelModes() : ','.$record->getTravelModes();
+                $mode_of_travel .= $mode_of_travel == '' ? $record->getTravelModes() : ',' . $record->getTravelModes();
             }
         }
 
@@ -427,5 +437,53 @@ class TravelRequest extends Model
     public function isConsultantTravel()
     {
         return $this->requester->employee_id != $this->employee_id && isset($this->employee_id);
+    }
+
+    public function getExternalTravelersAttribute($value)
+    {
+        if (empty($value) || $value === 'null') {
+            return [];
+        }
+        $current = $value;
+        while (
+            is_string($current) &&
+            str_starts_with($current, '"') &&
+            str_ends_with($current, '"') &&
+            substr_count($current, '"') >= 2
+        ) {
+            $current = json_decode($current, true);
+        }
+
+        if (is_string($current)) {
+            $decoded = json_decode($current, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        if (is_array($current)) {
+            return $current;
+        }
+
+        return [];
+    }
+
+    public function setExternalTravelersAttribute($value)
+    {
+        if (empty($value) || (is_array($value) && empty(array_filter($value, fn($i) => !empty($i['name'] ?? null))))) {
+            $this->attributes['external_travelers'] = null;
+            return;
+        }
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $value = $decoded;
+            }
+        }
+        $clean = array_values(
+            array_filter((array) $value, fn($item) => !empty($item['name'] ?? null))
+        );
+
+        $this->attributes['external_travelers'] = $clean ? json_encode($clean) : null;
     }
 }

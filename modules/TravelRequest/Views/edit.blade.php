@@ -92,6 +92,60 @@
                 },
             });
 
+            const travelTypeSelect = document.querySelector('select[name="travel_type_id"]');
+            const passportSection = document.getElementById('passportSection');
+
+            function togglePassportSection() {
+                if (travelTypeSelect.value == '2') {
+                    passportSection.style.display = 'block';
+                } else {
+                    passportSection.style.display = 'none';
+                }
+            }
+            togglePassportSection();
+            travelTypeSelect.addEventListener('change', togglePassportSection);
+            $(travelTypeSelect).on('change', togglePassportSection);
+
+
+            const countInput = document.getElementById('external_traveler_count');
+            const container = document.getElementById('external-travelers-container');
+
+            countInput.addEventListener('input', function() {
+                const count = parseInt(this.value) || 0;
+                if (count < 0) this.value = 0;
+
+                container.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'row mb-2 align-items-end external-traveler-row';
+                    row.innerHTML = `
+                <div class="col-lg-3">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="external_travelers[${i}][name]" class="form-control" placeholder="Full Name *" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="email" name="external_travelers[${i}][email]" class="form-control" placeholder="Email (optional)">
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row"> <i class="bi bi-trash"></i></button>
+                </div>
+            `;
+                    container.appendChild(row);
+                }
+                attachRemove();
+            });
+
+            function attachRemove() {
+                document.querySelectorAll('.remove-traveler-row').forEach(btn => {
+                    btn.onclick = function() {
+                        this.closest('.external-traveler-row').remove();
+                        countInput.value = container.children.length;
+                    };
+                });
+            }
+            attachRemove();
+
             $(form).find('[name="departure_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
@@ -662,6 +716,58 @@
                             @endif
                         </div>
                     </div>
+                    <div id="passportSection" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <label class="form-label">Passport Number</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-control bg-light border-0">
+                                    @if ($employeePassportNumber)
+                                        <strong class="text-dark">{{ $employeePassportNumber }}</strong>
+                                    @else
+                                        <span class="text-danger">
+                                            <i class="bi bi-x-circle"></i> Not provided
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label class="form-label">Passport Attachment</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <div
+                                    class="form-control bg-light border-0 d-flex align-items-center justify-content-between">
+                                    @if ($employeePassportAttachment && \Storage::disk('public')->exists($employeePassportAttachment))
+                                        <a href="{{ asset('storage/' . $employeePassportAttachment) }}" target="_blank"
+                                            class="btn btn-success btn-sm">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <small class="text-success ms-2">
+                                            <i class="bi bi-check-circle-fill"></i> Uploaded
+                                        </small>
+                                    @else
+                                        <span class="text-warning">
+                                            <i class="bi bi-exclamation-triangle"></i> Not uploaded
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!$employeePassportNumber && !$employeePassportAttachment)
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="alert alert-warning border small py-2 mb-3" role="alert">
+                                        <i class="bi bi-info-circle"></i>
+                                        <strong>Action Required:</strong> Please update your profile with passport details
+                                        for international travel.
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                     {{-- <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -853,7 +959,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="row mb-2">
+                    {{-- <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationRemarks" class="m-0">Remarks </label>
@@ -867,7 +973,48 @@
                                 </div>
                             @endif
                         </div>
+                    </div> --}}
+                    {{-- External Travelers (Outside Organization) --}}
+                    <div class="row mb-3">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label class="form-label">Number of travelers (if any outside the organization)</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="number" min="0" id="external_traveler_count"
+                                name="external_traveler_count" class="form-control"
+                                value="{{ old('external_traveler_count', $travelRequest->external_traveler_count ?? 0) }}"
+                                placeholder="e.g. 0, 1, 2, 3...">
+                            <small class="text-muted">Enter 0 if no external travelers</small>
+                        </div>
                     </div>
+
+                    <div id="external-travelers-container" class="mb-4">
+                        @foreach ($travelRequest->external_travelers as $index => $traveler)
+                            <div class="row mb-2 align-items-end external-traveler-row">
+                                <div class="col-lg-3">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" name="external_travelers[{{ $index }}][name]"
+                                        class="form-control" placeholder="Full Name *"
+                                        value="{{ old("external_travelers.$index.name", $traveler['name'] ?? '') }}"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="email" name="external_travelers[{{ $index }}][email]"
+                                        class="form-control" placeholder="Email (optional)"
+                                        value="{{ old("external_travelers.$index.email", $traveler['email'] ?? '') }}">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">

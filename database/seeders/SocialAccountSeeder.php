@@ -16,7 +16,7 @@ class SocialAccountSeeder extends Seeder
     public function run()
     {
 
-        $socialMediaAccounts = ['Facebook', 'Twitter', 'LinkedIn', 'Bio'];
+        $socialMediaAccounts = ['Facebook', 'Twitter', 'LinkedIn',];
 
         DB::table('lkup_social_accounts')->insert(
             collect($socialMediaAccounts)->map(function ($account) {

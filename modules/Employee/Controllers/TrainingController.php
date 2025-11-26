@@ -41,7 +41,7 @@ class TrainingController extends Controller
         $inputs['created_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath.'/'.$employee->id, time().'_training.'.$request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_training.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $training = $this->trainings->create($inputs);
@@ -64,7 +64,7 @@ class TrainingController extends Controller
         $training = $this->trainings->with(['employee'])->find($id);
         $attachment = '';
         if ($training->attachment != null) {
-            $attachment = asset('storage/'.$training->attachment);
+            $attachment = asset('storage/' . $training->attachment);
         }
         if ($request->wantsJson()) {
             return response()->json([
@@ -92,7 +92,7 @@ class TrainingController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath.'/'.$training->employee->id, time().'_training.'.$request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $training->employee->id, time() . '_training.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $training = $this->trainings->update($id, $inputs);

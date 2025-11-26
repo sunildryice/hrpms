@@ -966,9 +966,19 @@
                                 <table class="table table-bordered" id="trainingTable">
                                     <tbody>
                                         <div>
+                                            @foreach ($employeeSocialMediaLinks as $socialMedia)
+                                                <tr>
+                                                    <th scope="row" width="10%">
+                                                        {{ $socialMedia->title }}</th>
+                                                    <td colspan="3">
+                                                        <a target="_blank"
+                                                            href="{{ $socialMedia->link }}">{{ $socialMedia->link }}</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                             <tr>
-                                                <th scope="row" width="10%">Facebook</th>
-
+                                                <th scope="row" width="10%">Bio</th>
+                                                <td colspan="3">{{ $employee->bio }}</td>
                                             </tr>
 
                                         </div>

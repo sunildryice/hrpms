@@ -515,9 +515,9 @@
 
                 $(itineraryForm).find('.travel-mode').on('change', function() {
                     let selectedValues = $(this).val();
-                    if(selectedValues.includes('7')){
+                    if (selectedValues.includes('7')) {
                         $(itineraryForm).find('.other-travel-mode').show();
-                    }else {
+                    } else {
                         $(itineraryForm).find('.other-travel-mode').hide();
                     }
                 })
@@ -662,34 +662,35 @@
                             @endif
                         </div>
                     </div>
-                    <div class="row mb-2">
-                            <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label for="validationProject" class="form-label">Request For
-                                    </label>
-                                </div>
+                    {{-- <div class="row mb-2">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label for="validationProject" class="form-label">Request For
+                                </label>
                             </div>
-                            <div class="col-lg-9">
-                                <select name="employee_id" class="select2 form-control
-                                        @if($errors->has('employee_id')) is-invalid @endif"
-                                    data-width="100%">
-                                    <option value="">Select Consultant</option>
-                                    @foreach($consultants as $consultant)
-                                      <option value="{{ $consultant->id }}" {{$consultant->id == (old('employee_id') ?? $travelRequest->employee_id)?
-                                        "selected":""}}>
+                        </div>
+                        <div class="col-lg-9">
+                            <select name="employee_id"
+                                class="select2 form-control
+                                        @if ($errors->has('employee_id')) is-invalid @endif"
+                                data-width="100%">
+                                <option value="">Select Consultant</option>
+                                @foreach ($consultants as $consultant)
+                                    <option value="{{ $consultant->id }}"
+                                        {{ $consultant->id == (old('employee_id') ?? $travelRequest->employee_id) ? 'selected' : '' }}>
                                         {{ $consultant->getFullName() }}
                                     </option>
-                                    @endforeach
-                                </select>
-                                @if($errors->has('employee_id'))
+                                @endforeach
+                            </select>
+                            @if ($errors->has('employee_id'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="employee_id">
                                         {!! $errors->first('employee_id') !!}
                                     </div>
                                 </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
+                    </div> --}}
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">

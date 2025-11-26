@@ -1,39 +1,25 @@
 <div class="card-header fw-bold">Add New Social Media</div>
 <form class="needs-validation" method="post" id="socialAccountAddForm" enctype="multipart/form-data" autocomplete="off">
-    <div class="card-body">
-        <div class="row mb-2">
+
+    <div class="row mb-2 py-2">
+        @foreach ($socialMediaAccounts as $account)
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="Fdname" class="form-label">Bio</label>
+                    <label for="linkedin" class="form-label">{{ $account->title }}</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea name="bio" class="form-control" placeholder="Bio">{!! old('bio') !!}</textarea>
+                <input type="text" class="form-control @if ($errors->has('linkedin')) is-invalid @endif"
+                    name="linkedin" placeholder="{{ $account->title }}" value="{{ old('linkedin') }}">
+                @if ($errors->has('linkedin'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="linkedin">{!! $errors->first('linkedin') !!}</div>
+                    </div>
+                @endif
             </div>
-            @if ($errors->has('bio'))
-                <div class="fv-plugins-message-container invalid-feedback">
-                    <div data-field="bio">{!! $errors->first('bio') !!}</div>
-                </div>
-            @endif
-        </div>
+        @endforeach
     </div>
 
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label for="linkedin" class="form-label">Linkedin</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <input type="text" class="form-control @if ($errors->has('linkedin')) is-invalid @endif"
-                name="linkedin" placeholder="Linkedin URL" value="{{ old('linkedin') }}">
-            @if ($errors->has('linkedin'))
-                <div class="fv-plugins-message-container invalid-feedback">
-                    <div data-field="linkedin">{!! $errors->first('linkedin') !!}</div>
-                </div>
-            @endif
-        </div>
-    </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">
         <button type="submit" class="btn btn-primary btn-sm">Save</button>
     </div>

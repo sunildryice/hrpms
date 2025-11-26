@@ -5,10 +5,6 @@
 @section('page_js')
     <script>
         var queryTab = @json(request()->query('tab'));
-        var $selectedTab = queryTab ?? localStorage.getItem('create-tab') ?? 'generalInformation';
-        if ($("[data-tag='" + $selectedTab + "']").length == 0 || $('#' + $selectedTab).length == 0) {
-            $selectedTab = 'generalInformation';
-        }
 
         document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('employeeAddForm');
@@ -225,20 +221,6 @@
                 },
             });
 
-
-            $('.step-item').click(function() {
-                $selectedTab = $(this).data('tag');
-                localStorage.setItem('create-tab', $selectedTab);
-                $('.step-item').removeClass('active');
-                $(this).addClass('active');
-                var tagid = $(this).data('tag');
-                $('.c-tabs-content').removeClass('active').addClass('hide');
-                $('#' + tagid).addClass('active').removeClass('hide');
-            }).ready(function() {
-                $('[data-tag="' + $selectedTab + '"]').addClass('active');
-                $('.c-tabs-content').removeClass('active').addClass('hide');
-                $('#' + $selectedTab).addClass('active').removeClass('hide');
-            });
         });
     </script>
 @endsection
@@ -272,41 +254,39 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="address">
+                            <a href="#" class="nav-link step-item text-decoration-none">
                                 <i class="nav-icon bi-pin-map"></i> Address
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="family-details">
+                            <a href="#" class="nav-link step-item text-decoration-none">
                                 <i class="nav-icon bi-people"></i>Family Details
                             </a>
                         </li>
                         @if ($authUser->can('manage-tenure'))
                             <li class="nav-item">
-                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="tenure-details">
+                                <a href="#" class="nav-link step-item text-decoration-none">
                                     <i class="nav-icon bi bi-person-workspace"></i> Tenure
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="hour-details">
+                                <a href="#" class="nav-link step-item text-decoration-none">
                                     <i class="nav-icon bi bi-clock"></i>Working Hours
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link step-item text-decoration-none"
-                                    data-tag="finance-details">
+                                <a href="#" class="nav-link step-item text-decoration-none">
                                     <i class="nav-icon bi bi-bank"></i> Finance
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link step-item text-decoration-none"
-                                    data-tag="insurance-details">
+                                <a href="#" class="nav-link step-item text-decoration-none">
                                     <i class="nav-icon bi bi-bank"></i> Insurance
                                 </a>
                             </li>
                         @endif
                         <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="medicalInformation">
+                            <a href="#" class="nav-link step-item text-decoration-none">
                                 <i class="nav-icon bi-calendar-heart"></i> Medical
                                 Information
                             </a>
@@ -350,12 +330,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="c-tabs-content" id="generalInformation">
+                <div class="c-tabs-content active">
                     @include('Employee::General.create')
-                </div>
-
-                <div class="c-tabs-content" id="social-media-details">
-                    @include('Employee::SocialMedia.create')
                 </div>
 
             </div>

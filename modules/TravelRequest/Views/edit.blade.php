@@ -720,24 +720,6 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose
-                                    of Travel </label>
-                            </div>
-                        </div>
-                        <div class="col-lg-9">
-                            <input type="text" class="form-control @if ($errors->has('purpose_of_travel')) is-invalid @endif"
-                                name="purpose_of_travel" value="{{ $travelRequest->purpose_of_travel }}"
-                                placeholder="Purpose of travel">
-                            @if ($errors->has('purpose_of_travel'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="purpose_of_travel">{!! $errors->first('purpose_of_travel') !!}</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-lg-3">
-                            <div class="d-flex align-items-start h-100">
                                 <label for="validationProject" class="form-label required-label">Project
                                 </label>
                             </div>
@@ -761,6 +743,24 @@
                                     <div data-field="project_code_id">
                                         {!! $errors->first('project_code_id') !!}
                                     </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose
+                                    of Travel </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control @if ($errors->has('purpose_of_travel')) is-invalid @endif"
+                                name="purpose_of_travel" value="{{ $travelRequest->purpose_of_travel }}"
+                                placeholder="Purpose of travel">
+                            @if ($errors->has('purpose_of_travel'))
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <div data-field="purpose_of_travel">{!! $errors->first('purpose_of_travel') !!}</div>
                                 </div>
                             @endif
                         </div>

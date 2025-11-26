@@ -9,11 +9,11 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control @if ($errors->has('linkedin')) is-invalid @endif"
-                    name="linkedin" placeholder="{{ $account->title }}" value="{{ old('linkedin') }}">
-                @if ($errors->has('linkedin'))
+                <input type="text" class="form-control @if ($errors->has($account->title)) is-invalid @endif"
+                    name="linkedin" placeholder="{{ $account->title }}" value="{{ old($account->title) }}">
+                @if ($errors->has($account->title))
                     <div class="fv-plugins-message-container invalid-feedback">
-                        <div data-field="linkedin">{!! $errors->first('linkedin') !!}</div>
+                        <div>{!! $errors->first($account->title) !!}</div>
                     </div>
                 @endif
             </div>

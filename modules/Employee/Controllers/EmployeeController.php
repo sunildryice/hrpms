@@ -236,6 +236,7 @@ class EmployeeController extends Controller
             ->withSupervisors($supervisors)
             ->withHour($employee->latestHour)
             ->withTenure($employee->latestTenure)
+            ->withSocialMediaAccounts($this->socialMediaAccounts->get())
             ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 

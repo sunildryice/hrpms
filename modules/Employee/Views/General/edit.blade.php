@@ -222,7 +222,7 @@
                             data-placeholder="Select categories (optional)" style="width: 100%">
                             @foreach ($vehicleLicenseCategories as $cat)
                                 <option value="{{ $cat->code }}"
-                                    {{ in_array($cat->code, json_decode($employee->vehicle_license_category ?? '[]', true)) ? 'selected' : '' }}>
+                                    {{ in_array($cat->code, $employee->vehicle_license_category ?? []) ? 'selected' : '' }}>
                                     {{ $cat->code }} — {{ $cat->name }}
                                 </option>
                             @endforeach

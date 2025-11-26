@@ -37,7 +37,6 @@ class UpdateRequest extends FormRequest
         return [
             'full_name'=>'required|string',
             'personal_email_address'=>'required|email|different:official_email_address',
-            'telephone_number'=>'nullable|max:17',
             'mobile_number'=>'required|max:17',
             'marital_status'=>'nullable',
             'gender'=>'required',
@@ -48,6 +47,12 @@ class UpdateRequest extends FormRequest
             'date_of_birth'=>'required|date',
             'religion_id'=>'nullable',
             'caste_id'=>'nullable',
+            'nid_number' => 'nullable|string|max:50',
+            'passport_number' => 'nullable|string|max:20',
+            'passport_attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'vehicle_license_number' => 'nullable|string|max:50',
+            'vehicle_license_category' => 'nullable|array',
+            'vehicle_license_category.*' => 'string|in:A,B,C,D,E,F,G,H,K',
         ];
     }
 

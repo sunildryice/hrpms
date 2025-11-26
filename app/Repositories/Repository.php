@@ -56,6 +56,7 @@ class Repository
             DB::commit();
             return $record;
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e->getMessage());
             DB::rollback();
             return false;
         }

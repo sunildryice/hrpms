@@ -25,13 +25,12 @@ class Finance extends Model
      */
     protected $fillable = [
         'employee_id',
-        'ssf_number',
         'cit_number',
         'pf_number',
+        'account_holder_name',
         'account_number',
         'bank_name',
         'branch_name',
-        'remote_category',
         'disabled',
         'created_by',
         'updated_by',

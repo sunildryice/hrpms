@@ -4,24 +4,25 @@ namespace Modules\Profile\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Modules\Employee\Repositories\EducationRepository;
-use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Profile\Requests\UpdateRequest;
+use Modules\Master\Models\VehicleLicenseCategory;
+use Modules\Master\Repositories\GenderRepository;
+use Modules\Master\Repositories\OfficeRepository;
 use Modules\Employee\Repositories\LeaveRepository;
-use Modules\Inventory\Repositories\AssetAssignLogRepository;
+use Modules\Privilege\Repositories\RoleRepository;
+use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\ProvinceRepository;
+use Modules\Master\Repositories\LeaveTypeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\BloodGroupRepository;
 use Modules\Master\Repositories\DepartmentRepository;
+use Modules\Master\Repositories\LocalLevelRepository;
+use Modules\Employee\Repositories\EducationRepository;
 use Modules\Master\Repositories\DesignationRepository;
-use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
-use Modules\Master\Repositories\GenderRepository;
-use Modules\Master\Repositories\LeaveTypeRepository;
-use Modules\Master\Repositories\LocalLevelRepository;
-use Modules\Master\Repositories\MaritalStatusRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\ProvinceRepository;
-use Modules\Privilege\Repositories\RoleRepository;
-use Modules\Profile\Requests\UpdateRequest;
+use Modules\Inventory\Repositories\AssetAssignLogRepository;
 
 class EmployeeController extends Controller
 {
@@ -122,7 +123,8 @@ class EmployeeController extends Controller
             ->withMaritalStatus($this->maritalStatus->get())
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->orderby('role', 'asc')->get())
-            ->withSupervisors($supervisors);
+            ->withSupervisors($supervisors)
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**
@@ -151,6 +153,12 @@ class EmployeeController extends Controller
             $filename = $request->file('pan_attachment')
                 ->storeAs($this->destinationPath.'/'.$employee->id, time().'_pan.'.$request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
+        }
+        
+        if ($request->file('passport_attachment')) {
+            $filename = $request->file('passport_attachment')
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
+            $inputs['passport_attachment'] = $filename;
         }
         $employee = $this->employees->update($employee->id, $inputs);
         if ($employee) {

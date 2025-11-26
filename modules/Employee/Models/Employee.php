@@ -51,7 +51,6 @@ class Employee extends Model
         'full_name',
         'official_email_address',
         'personal_email_address',
-        'telephone_number',
         'mobile_number',
         'marital_status',
         'gender',
@@ -61,12 +60,18 @@ class Employee extends Model
         'pan_attachment',
         'signature',
         'profile_picture',
+        'cv_attachment',
         'date_of_birth',
         'joined_date',
         'probation_complete_date',
         'last_working_date',
         'religion_id',
         'caste_id',
+        'nid_number',
+        'passport_number',
+        'passport_attachment',
+        'vehicle_license_number',
+        'vehicle_license_category',
         'created_by',
         'updated_by',
         'activated_at',
@@ -84,6 +89,10 @@ class Employee extends Model
         'probation_completion_date',
         'last_working_date',
         'activated_at',
+    ];
+
+    protected $casts = [
+        'vehicle_license_category' => 'array', 
     ];
 
     /**
@@ -409,7 +418,7 @@ class Employee extends Model
 
     public function getFullNameWithCode()
     {
-        return ucfirst($this->full_name).'('.$this->employee_code.')';
+        return ucfirst($this->full_name) . '(' . $this->employee_code . ')';
     }
 
     public function getFirstJoinedDate()
@@ -482,7 +491,7 @@ class Employee extends Model
     {
         $leave = $this->leaves()->where('fiscal_year_id', $yearId)->where('leave_type_id', $leaveTypeId)->latest()->first();
 
-        return $leave ? $leave->balance.' '.$leave->leaveType->getLeaveBasis() : '';
+        return $leave ? $leave->balance . ' ' . $leave->leaveType->getLeaveBasis() : '';
     }
 
     public function leave()
@@ -505,7 +514,7 @@ class Employee extends Model
         $finance = $this->finance;
         if ($finance) {
             if ($finance->account_number && $finance->bank_name) {
-                return $finance->account_number.' / '.$finance->bank_name;
+                return $finance->account_number . ' / ' . $finance->bank_name;
             }
         }
 
@@ -526,10 +535,12 @@ class Employee extends Model
 
     public function getAssetHandoverStatus(): ?string
     {
-        if (GoodRequestAsset::query()
-            ->where('assigned_user_id', $this->getUserId())
-            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-            ->count()) {
+        if (
+            GoodRequestAsset::query()
+                ->where('assigned_user_id', $this->getUserId())
+                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+                ->count()
+        ) {
             return null;
         }
 

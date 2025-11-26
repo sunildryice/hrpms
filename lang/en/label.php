@@ -90,6 +90,7 @@ return [
     'contract-number'=>'Contract Number',
     'contract-description'=>'Contract Description',
     'created-by' => 'Created By',
+    'cv' => 'CV',
     'd'=>'D',
     'date'=>'Date',
     'datetime'=>'DateTime',

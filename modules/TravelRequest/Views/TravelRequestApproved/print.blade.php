@@ -46,7 +46,7 @@
 
     <section class="print-info bg-white p-3" id="print-info">
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $travelRequest->office->getOfficeName() }}</div>
             <div class="fs-8"> Travel Authorization</div>
         </div>
@@ -139,8 +139,8 @@
                                 <th>Date</th>
                                 <th>Itinerary</th>
                                 <th>Activity Code</th>
-                                <th>Account Code</th>
-                                <th>Donor Code</th>
+                                {{-- <th>Account Code</th>
+                                <th>Donor Code</th> --}}
                                 <th>Mode of Travel</th>
                                 <th>Description</th>
                             </tr>
@@ -151,8 +151,8 @@
                                     <td>{{ $itenrary->getDepartureDate() }} - {{ $itenrary->getArrivalDate() }}</td>
                                     <td>{{ $itenrary->departure_place }} - {{ $itenrary->arrival_place }}</td>
                                     <td>{{ $itenrary->activityCode->getActivityCode() }}</td>
-                                    <td>{{ $itenrary->accountCode->getAccountCode() }}</td>
-                                    <td>{{ $itenrary->donorCode->description }}</td>
+                                    {{-- <td>{{ $itenrary->accountCode->getAccountCode() }}</td>
+                                    <td>{{ $itenrary->donorCode->description }}</td> --}}
                                     <td>{{ $itenrary->getTravelModes() }}</td>
                                     <td>{{ $itenrary->description }}</td>
                                 </tr>
@@ -160,28 +160,27 @@
                             <tr>
                                 <th scope="row">Special Instructions
                                     </td>
-                                <td colspan="6"></td>
+                                <td colspan="4"></td>
                             </tr>
                             <tr>
                                 <th scope="row">Excess Baggage, Air Kilos:
                                     </td>
-                                <td colspan="6"></td>
+                                <td colspan="4"></td>
                             </tr>
                             <tr>
                                 <th scope="row">Estimated Cost
                                     </td>
                                 <td></td>
-                                <td></td>
-                                <td></td>
+                                {{-- <td></td>
+                                <td></td> --}}
                                 <th scope="col">Rate</th>
                                 <th scope="col">Days</th>
                                 <th scope="col">NRs</th>
                             </tr>
                             @foreach ($travelRequest->travelRequestItineraries as $dsa)
                                 <tr>
-                                    <td colspan="3">{{ $dsa->description }}
+                                    <td colspan="2">{{ $dsa->description }}
                                     </td>
-                                    <td></td>
                                     <td>{{ $dsa->dsa_unit_price }}</td>
                                     <td>{{ $dsa->getOvernights() }}</td>
                                     <td>{{ $dsa->dsa_total_price }}</td>
@@ -192,61 +191,83 @@
                                     $total = $travelRequest->travelRequestItineraries->sum('dsa_total_price') + $travelRequest->travelRequestEstimate->estimated_air_fare + $travelRequest->travelRequestEstimate->estimated_vehicle_fare + $travelRequest->travelRequestEstimate->miscellaneous_amount;
                                 @endphp
                                 <tr>
-                                    <td colspan="3">Excess Baggage</td>
-                                    <td></td>
+                                    <td colspan="2">Excess Baggage</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3">Air Fare</td>
-                                    <td></td>
+                                    <td colspan="2">Air Fare</td>
                                     <td></td>
                                     <td>{{ $travelRequest->travelRequestEstimate->estimated_air_fare }}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3">Vehicle Fare</td>
-                                    <td></td>
+                                    <td colspan="2">Vehicle Fare</td>
                                     <td></td>
                                     <td>{{ $travelRequest->travelRequestEstimate->estimated_vehicle_fare }}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3">Miscellaneous</td>
+                                    <td colspan="2">Hotel Accommodation</td>
                                     <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_hotel_accommodation }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Airport Taxi</td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_airport_taxi }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Miscellaneous</td>
                                     <td></td>
                                     <td>{{ $travelRequest->travelRequestEstimate->miscellaneous_amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Event/Activities Cost</td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_event_activities_cost }}</td>
                                 </tr>
                             @else
                                 @php
                                     $total = $travelRequest->travelRequestItineraries->sum('dsa_total_price');
                                 @endphp
                                 <tr>
-                                    <td colspan="3">Excess Baggage</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">Air Fare</td>
-                                    <td></td>
+                                    <td colspan="2">Excess Baggage</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3">Vehicle Fare</td>
-                                    <td></td>
+                                    <td colspan="2">Air Fare</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="3">Miscellaneous</td>
+                                    <td colspan="2">Vehicle Fare</td>
                                     <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Hotel Accommodation</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Airport Taxi</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Miscellaneous</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Event/Activities Cost</td>
                                     <td></td>
                                     <td></td>
                                 </tr>
                             @endif
 
                             <tr>
-                                <th scope="row" colspan="5" class="text-end">Total:</th>
+                                <th scope="row" colspan="3" class="text-end">Total:</th>
                                 <td>{{ $total }}</td>
                             </tr>
                         </tbody>

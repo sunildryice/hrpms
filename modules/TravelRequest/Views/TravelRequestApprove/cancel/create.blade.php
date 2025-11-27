@@ -47,20 +47,20 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'dsa_category',
-                    name: 'dsa_category',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
-                },
-                {
-                    data: 'dsa_total_price',
-                    name: 'dsa_total_price'
-                },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
             ]
         });
 
@@ -215,9 +215,9 @@
                                         <th scope="col">{{ __('label.mode-of-travel') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        <th scope="col">{{ __('label.dsa-category') }}</th>
+                                        {{-- <th scope="col">{{ __('label.dsa-category') }}</th>
                                         <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                        <th scope="col">{{ __('label.total-dsa') }}</th>
+                                        <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>

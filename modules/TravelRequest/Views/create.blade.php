@@ -135,66 +135,98 @@
             const countInput = document.getElementById('external_traveler_count');
             const container = document.getElementById('external-travelers-container');
 
-            function generateRows() {
+            function addNewRow() {
                 const count = parseInt(countInput.value) || 0;
-                if (count < 0) countInput.value = 0;
+                if (count < 0) {
+                    countInput.value = 0;
+                    return;
+                }
 
+                const existingRows = Array.from(container.querySelectorAll('.external-traveler-row'));
                 container.innerHTML = '';
 
                 for (let i = 0; i < count; i++) {
                     const row = document.createElement('div');
                     row.className = 'row mb-2 align-items-end external-traveler-row';
 
+                    const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
+                    const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+
                     let rowHTML = `
                     <div class="col-lg-3"></div>
                     <div class="col-md-4">
-                        <input type="text" name="external_travelers[${i}][name]" class="form-control" placeholder="Full Name required" required>
+                        <input type="text" 
+                               name="external_travelers[${i}][name]" 
+                               class="form-control" 
+                               placeholder="Full Name *" 
+                               value="${oldName}" 
+                               required>
                     </div>
                     <div class="col-md-4">
-                        <input type="email" name="external_travelers[${i}][email]" class="form-control" placeholder="Email (optional)">
+                        <input type="email" 
+                               name="external_travelers[${i}][email]" 
+                               class="form-control" 
+                               placeholder="Email (optional)" 
+                               value="${oldEmail}">
                     </div>
                     <div class="col-md-1">
                     <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-danger btn-sm remove-row" title="Remove">
+                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row" title="Remove">
                         <i class="bi bi-trash"></i>
                     </button>`;
 
-                    if (i === count - 1) {
+                    if (i === count - 1 && count > 0) {
                         rowHTML += `
-                    <button type="button" class="btn btn-success btn-sm add-row ms-1" title="Add another">
+                    <button type="button" class="btn btn-success btn-sm add-traveler-row ms-1" title="Add another traveler">
                         <i class="bi bi-plus-lg"></i>
                     </button>`;
                     }
 
-                    rowHTML += `</div></div>`;
+                    rowHTML += `
+                    </div>
+                    </div>`;
+
                     row.innerHTML = rowHTML;
                     container.appendChild(row);
                 }
 
-                document.querySelectorAll('.remove-row').forEach(btn => {
+                attachRowEvents();
+            }
+
+            function attachRowEvents() {
+                // Remove row
+                document.querySelectorAll('.remove-traveler-row').forEach(btn => {
                     btn.onclick = function() {
                         this.closest('.external-traveler-row').remove();
-                        countInput.value = container.children.length;
-                        generateRows(); 
+                        const newCount = container.children.length;
+                        countInput.value = newCount;
+                        if (newCount > 0) addNewRow();
                     };
                 });
 
-                document.querySelectorAll('.add-row').forEach(btn => {
+                // Add row
+                document.querySelectorAll('.add-traveler-row').forEach(btn => {
                     btn.onclick = function() {
                         countInput.value = parseInt(countInput.value || 0) + 1;
-                        generateRows();
+                        addNewRow();
                     };
                 });
             }
 
-            countInput.addEventListener('input', () => {
-                if (countInput.value < 0) countInput.value = 0;
-                generateRows();
-            });
-            countInput.addEventListener('change', generateRows);
+            if (countInput && container) {
+                const savedCount = {{ $travelRequest->external_traveler_count ?? 0 }};
+                if (countInput.value == 0 && savedCount > 0) {
+                    countInput.value = savedCount;
+                }
 
-            if (countInput.value > 0) {
-                generateRows();
+                addNewRow();
+
+                countInput.addEventListener('input', function() {
+                    if (this.value < 0) this.value = 0;
+                    addNewRow();
+                });
+
+                countInput.addEventListener('change', addNewRow);
             }
         });
     </script>

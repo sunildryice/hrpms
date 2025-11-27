@@ -26,8 +26,7 @@ class ReviewLeaveRequestController extends Controller
         protected LeaveModeRepository $leaveModes,
         protected LeaveRequestRepository $leaveRequests,
         protected UserRepository $users
-    ) {
-    }
+    ) {}
 
     /**
      * @return mixed
@@ -40,6 +39,7 @@ class ReviewLeaveRequestController extends Controller
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'requester.employee'])
                 ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
+                ->where('approver_id', $authUser->id)
                 ->orderBy('start_date', 'desc')
                 ->get();
 
@@ -50,7 +50,7 @@ class ReviewLeaveRequestController extends Controller
                 })->addColumn('request_date', function ($row) {
                     return $row->getRequestDate();
                 })->addColumn('request_days', function ($row) {
-                    return $row->getLeaveDuration().' '.$row->leaveType->getLeaveBasis();
+                    return $row->getLeaveDuration() . ' ' . $row->leaveType->getLeaveBasis();
                 })->addColumn('start_date', function ($row) {
                     return $row->getStartDate();
                 })->addColumn('end_date', function ($row) {
@@ -62,7 +62,7 @@ class ReviewLeaveRequestController extends Controller
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '';
                     if ($authUser->can('review', $row)) {
-                        $btn = '<a href="'.route('review.leave.requests.create', $row->id).'"'.
+                        $btn = '<a href="' . route('review.leave.requests.create', $row->id) . '"' .
                             'class="act-btns bt-primary"><i class="bi bi-box-arrow-in-up-right"></i></a>';
                     }
 

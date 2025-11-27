@@ -78,9 +78,7 @@ class SideBarComposer
         protected DispositionRequestRepository   $dispositionRequests,
         protected TravelAuthorizationRepository  $travelAuthorization,
         protected TransactionRepository          $transactions,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Bind data to the view.
@@ -473,6 +471,7 @@ class SideBarComposer
 
         $reviewLeaveCount = $this->leaveRequests->select(['id'])
             ->where('status_id', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', $authUser->id)
             ->count();
 
         $approveExitInterviewCount = $this->exitInterview->with(['employee', 'status'])->select(['*'])

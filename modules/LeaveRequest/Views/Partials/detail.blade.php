@@ -96,8 +96,10 @@
                         </div>
                     </div>
                 </li>
+
                 @if (file_exists('storage/' . $leaveRequest->attachment) && $leaveRequest->attachment != '')
-                    <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Attachment</span></li>
+                    <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Prescription</span>
+                    </li>
                     <li class="position-relative">
                         <div class="gap-2 d-flex align-items-start">
                             <div class="icon-section">
@@ -116,7 +118,8 @@
                         {{-- <span class="stretched-link" rel="tooltip" title="Attachment"></span> --}}
                     </li>
                 @endif
-                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Remarks</span></li>
+                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason for Leave</span>
+                </li>
                 <li class="position-relative">
                     <div class="gap-2 d-flex align-items-start">
                         <div class="icon-section">

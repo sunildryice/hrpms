@@ -144,16 +144,18 @@
                                                 <div class="col-lg-9">
                                                     <select name="status_id" class="select2 form-control" data-width="100%">
                                                         <option value="">Select a Status</option>
-                                                            <option value="{{config('constant.RETURNED_STATUS')}}">Return to Requester</option>
+                                                        <option value="{{ config('constant.RETURNED_STATUS') }}">Return to
+                                                            Requester</option>
                                                         @if ($leaveRequest->approver_id == auth()->id())
                                                             <option value="8">Reject</option>
-                                                            <option value="4">Recommend</option>
+                                                            {{-- <option value="4">Recommend</option> --}}
                                                             <option value="{{ config('constant.APPROVED_STATUS') }}">Approve
                                                             </option>
-                                                        @else
+                                                        @endif
+                                                        {{-- @else
                                                             <option value="{{ config('constant.VERIFIED_STATUS') }}">Send to
                                                                 Approver</option>
-                                                        @endif
+                                                        @endif --}}
                                                     </select>
                                                     @if ($errors->has('status_id'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
@@ -167,13 +169,12 @@
                                             <div class="row mb-2" id="recommendBlock" style="display: none;">
                                                 <div class="col-lg-3">
                                                     <div class="d-flex align-items-start h-100">
-                                                        <label for="validationleavetype"
-                                                               class="m-0">Recommended*</label>
+                                                        <label for="validationleavetype" class="m-0">Recommended*</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
                                                     <select name="recommended_to" class="select2 form-control"
-                                                            data-width="100%">
+                                                        data-width="100%">
                                                         <option value="">Select Recommended To</option>
 
                                                         @if ($leaveRequest->requester->employee->latestTenure->supervisor_id == auth()->user()->employee_id)
@@ -184,7 +185,8 @@
                                                             @endforeach
                                                         @else
                                                             @foreach ($recommendApprovers as $approver)
-                                                                <option value="{{ $approver->id }}">{{ $approver->getFullName() }}</option>
+                                                                <option value="{{ $approver->id }}">
+                                                                    {{ $approver->getFullName() }}</option>
                                                             @endforeach
                                                         @endif
 

@@ -12,9 +12,8 @@
                     <th>To Date</th>
                     <th>Duty Station</th>
                     <th>District</th>
-                    <th>Supervisor</th>
-                    <th>Cross Supervisor</th>
-                    <th>Next Line Manager</th>
+                    <th>Line Manager</th>
+                    <th>Reviewer</th>
                     <th class="sticky-col">Action</th>
                 </tr>
             </thead>
@@ -28,7 +27,6 @@
                         <td>{{ $tenure->duty_station }}</td>
                         <td>{{ $tenure->getDutyStation() }}</td>
                         <td>{{ $tenure->getSupervisorName() }}</td>
-                        <td>{{ $tenure->getCrossSupervisorName() }}</td>
                         <td>{{ $tenure->getNextLineManagerName() }}</td>
                         <td class="sticky-col">
                             @if ($authUser->can('update', $tenure))

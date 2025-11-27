@@ -13,7 +13,7 @@ class UpdateRequest extends FormRequest
      */
     protected function getRedirectUrl()
     {
-        return route('employees.edit', [$this->employee, 'tab'=>'finance-details']);
+        return route('employees.edit', [$this->employee, 'tab' => 'finance-details']);
     }
 
     /**
@@ -34,13 +34,12 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'ssf_number'=>'required',
-            'cit_number'=>'nullable',
-            'pf_number'=>'nullable',
-            'account_number'=>'required',
-            'bank_name'=>'required',
-            'branch_name'=>'required',
-            'remote_category'=>'nullable',
+            'cit_number' => 'nullable',
+            'pf_number' => 'nullable',
+            'account_holder_name' => 'required',
+            'account_number' => 'required',
+            'bank_name' => 'required',
+            'branch_name' => 'required',
         ];
     }
 

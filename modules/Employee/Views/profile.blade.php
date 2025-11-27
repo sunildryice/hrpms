@@ -464,12 +464,6 @@
                                             <th scope="row">PAN Number</th>
                                             <td colspan="3">{{ $employee->pan_number }}</td>
                                         </tr>
-
-                                        <tr>
-                                            <th scope="row">SSF Number</th>
-                                            <td colspan="3">{{ $employee->finance->ssf_number }}</td>
-                                        </tr>
-
                                         <tr>
                                             <th scope="row">CIT Number</th>
                                             <td colspan="3">{{ $employee->finance->cit_number }}</td>
@@ -483,6 +477,11 @@
                                         <tr>
                                             <th scope="row">Bank Name</th>
                                             <td colspan="3">{{ $employee->finance->bank_name }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row">Bank Account Holder Name</th>
+                                            <td colspan="3">{{ $employee->finance->account_holder_name }}</td>
                                         </tr>
 
                                         <tr>
@@ -966,9 +965,19 @@
                                 <table class="table table-bordered" id="trainingTable">
                                     <tbody>
                                         <div>
+                                            @foreach ($employeeSocialMediaLinks as $socialMedia)
+                                                <tr>
+                                                    <th scope="row" width="10%">
+                                                        {{ $socialMedia->title }}</th>
+                                                    <td colspan="3">
+                                                        <a target="_blank"
+                                                            href="{{ $socialMedia->link }}">{{ $socialMedia->link }}</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                             <tr>
-                                                <th scope="row" width="10%">Facebook</th>
-
+                                                <th scope="row" width="10%">Bio</th>
+                                                <td colspan="3">{{ $employee->bio }}</td>
                                             </tr>
 
                                         </div>

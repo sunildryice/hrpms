@@ -8,6 +8,7 @@
             <tr>
                 <th style="width: 50%">{{ __('label.signature') }}</th>
                 <th style="width: 50%">{{ __('label.profile-picture') }}</th>
+                <th style="width: 50%">{{ __('label.cv') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -34,6 +35,16 @@
                         </a>
                     @endif
                 </td>
+                <td style="width: 50%">
+                        @if (file_exists('storage/' . $employee->cv_attachment) && $employee->cv_attachment != '')
+                            <a href="{!! asset('storage/' . $employee->cv_attachment) !!}" target="_blank" class="btn btn-success btn-sm"
+                                title="View CV">
+                                <i class="bi bi-file-earmark-pdf-fill fs-4"></i><br>
+                                <span class="small">View CV (PDF)</span>
+                            </a>
+                            </a>
+                        @endif
+                    </td>
             </tr>
             </tbody>
         </table>

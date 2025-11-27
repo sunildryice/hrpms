@@ -34,6 +34,10 @@ return new class extends Migration {
             if (!Schema::hasColumn('employees', 'cv_attachment')) {
                 $table->string('cv_attachment')->nullable()->after('profile_picture');
             }
+
+            if (!Schema::hasColumns('employees', ['bio'])) {
+                $table->text('bio')->nullable()->after('cv_attachment');
+            }
         });
     }
 
@@ -46,7 +50,8 @@ return new class extends Migration {
                 'passport_attachment',
                 'vehicle_license_number',
                 'vehicle_license_category',
-                'cv_attachment'
+                'cv_attachment',
+                'bio',
             ]);
         });
     }

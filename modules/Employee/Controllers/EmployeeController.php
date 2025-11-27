@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Modules\Employee\Repositories\EducationRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Employee\Repositories\EmployeeSocialMediaRepository;
 use Modules\Employee\Repositories\LeaveRepository;
 use Modules\Employee\Requests\StoreRequest;
 use Modules\Employee\Requests\UpdateRequest;
@@ -55,6 +56,7 @@ class EmployeeController extends Controller
         protected ProvinceRepository $provinces,
         protected RoleRepository $roles,
         protected SocialMediaAccountRepository $socialMediaAccounts,
+        protected EmployeeSocialMediaRepository $employeeSocialMediaRepository
     ) {
         $this->destinationPath = 'employees';
     }
@@ -186,6 +188,7 @@ class EmployeeController extends Controller
     {
         $employee = $this->employees->find($id);
 
+
         return response()->json([
             'employee' => $employee,
         ], 200);
@@ -219,6 +222,10 @@ class EmployeeController extends Controller
             ->orderBy('full_name', 'asc')
             ->get();
 
+        $employeeSocialMediaLinks = $this->employeeSocialMediaRepository
+            ->getSocialMediaLinksByEmployeeId($employee->id)
+            ->pluck('link', 'title');
+
         return view('Employee::edit')
             ->withAuthUser(auth()->user())
             ->withBloodGroups($this->bloodGroups->get())
@@ -242,6 +249,8 @@ class EmployeeController extends Controller
             ->withSupervisors($supervisors)
             ->withHour($employee->latestHour)
             ->withTenure($employee->latestTenure)
+            ->withSocialMediaAccounts($this->socialMediaAccounts->get())
+            ->withEmployeeSocialMediaLinks($employeeSocialMediaLinks)
             ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
@@ -335,6 +344,9 @@ class EmployeeController extends Controller
             // ->where( DB::raw('YEAR(reported_date)'), '<>', date('Y') )
             ->get();
 
+        $employeeSocialMediaLinks = $this->employeeSocialMediaRepository
+            ->getSocialMediaLinksByEmployeeId($employee->id);
+
         $view = view('Employee::profile');
         if ($employee->user) {
             $leaveRequests = $this->employees->getLeaveRequestsOfCurrentAndPreviousFiscalYear($employee->id);
@@ -347,6 +359,7 @@ class EmployeeController extends Controller
         return $view
             ->withAuthUser(auth()->user())
             ->withEmployee($employee)
+            ->withEmployeeSocialMediaLinks($employeeSocialMediaLinks)
             ->withLeaves($leaves)
             ->withLeaveTypes($leaveTypes);
     }

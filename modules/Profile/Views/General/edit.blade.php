@@ -1,8 +1,8 @@
 <div class="card-header fw-bold">
     <h3 class="m-0 fs-6">General Information</h3>
 </div>
-<form action="{{ route('profile.update') }}" id="employeeEditForm" method="post"
-    enctype="multipart/form-data" autocomplete="off">
+<form action="{{ route('profile.update') }}" id="employeeEditForm" method="post" enctype="multipart/form-data"
+    autocomplete="off">
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -11,8 +11,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" disabled
-                    name="employee_code" value="{{ $employee->employee_code }}" />
+                <input type="text" class="form-control" disabled name="employee_code"
+                    value="{{ $employee->employee_code }}" />
             </div>
         </div>
         <div class="row mb-2">
@@ -69,30 +69,14 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="telephone_number"
-                                placeholder="Telephone Number"
-                                value="{{ old('telephone_number') ?: $employee->telephone_number }}"
-                                aria-label="Telephone" aria-describedby="basic-addon2" />
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">Telephone</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="mobile_number" placeholder="Mobile Number"
-                                value="{{ old('mobile_number') ?: $employee->mobile_number }}"
-                                aria-label="Recipient's username" aria-describedby="basic-addon2" />
-                            <div class="input-group-append">
-                                <span class="input-group-text required-label" id="basic-addon2">Mobile </span>
-                            </div>
-                        </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="mobile_number" placeholder="Mobile Number"
+                        value="{{ old('mobile_number') ?: $employee->mobile_number }}" aria-label="Recipient's username"
+                        aria-describedby="basic-addon2" />
+                    <div class="input-group-append">
+                        <span class="input-group-text required-label" id="basic-addon2">Mobile </span>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -131,16 +115,23 @@
                                 <div data-field="citizenship_attachment">{!! $errors->first('citizenship_attachment') !!}</div>
                             </div>
                         @endif
-                        @if(file_exists('storage/'.$employee->citizenship_attachment) && $employee->citizenship_attachment != '')
+                        @if (file_exists('storage/' . $employee->citizenship_attachment) && $employee->citizenship_attachment != '')
                             <div class="media">
-                                <a href="{!! asset('storage/'.$employee->citizenship_attachment) !!}" target="_blank" class="fs-5"
-                                   title="View Attachment">
+                                <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}" target="_blank" class="fs-5"
+                                    title="View Attachment">
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </a>
                             </div>
                         @endif
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3"><label class="form-label">NID Number</label></div>
+            <div class="col-lg-9">
+                <input type="text" name="nid_number" class="form-control"
+                    value="{{ old('nid_number', $employee->nid_number) }}" placeholder="Optional" />
             </div>
         </div>
         <div class="row mb-2">
@@ -164,14 +155,64 @@
                                 <div data-field="pan_attachment">{!! $errors->first('pan_attachment') !!}</div>
                             </div>
                         @endif
-                        @if(file_exists('storage/'.$employee->pan_attachment) && $employee->pan_attachment != '')
+                        @if (file_exists('storage/' . $employee->pan_attachment) && $employee->pan_attachment != '')
                             <div class="media">
-                                <a href="{!! asset('storage/'.$employee->pan_attachment) !!}" target="_blank" class="fs-5"
-                                   title="View Attachment">
+                                <a href="{!! asset('storage/' . $employee->pan_attachment) !!}" target="_blank" class="fs-5"
+                                    title="View Attachment">
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </a>
                             </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-lg-3"><label class="form-label">Passport</label></div>
+            <div class="col-lg-9">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <input type="text" name="passport_number" class="form-control"
+                            value="{{ old('passport_number', $employee->passport_number) }}" />
+                    </div>
+                    <div class="col-lg-6">
+                        <input type="file" class="form-control" name="passport_attachment" />
+                        <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
+                        @if ($errors->has('passport_attachment'))
+                            <div class="fv-plugins-message-container text-danger">
+                                <div data-field="passport_attachment">{!! $errors->first('passport_attachment') !!}</div>
+                            </div>
+                        @endif
+                        @if (file_exists('storage/' . $employee->passport_attachment) && $employee->passport_attachment != '')
+                            <div class="media">
+                                <a href="{!! asset('storage/' . $employee->passport_attachment) !!}" target="_blank" class="fs-5"
+                                    title="View Attachment">
+                                    <i class="bi bi-file-earmark-medical"></i>
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-lg-3"><label class="form-label">Driving License</label></div>
+            <div class="col-lg-9">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <input type="text" name="vehicle_license_number" class="form-control"
+                            value="{{ old('vehicle_license_number', $employee->vehicle_license_number) }}" />
+                    </div>
+                    <div class="col-lg-6">
+                        <select name="vehicle_license_category[]" class="select2 form-control" multiple="multiple"
+                            data-placeholder="Select categories (optional)" style="width: 100%">
+                            @foreach ($vehicleLicenseCategories as $cat)
+                                <option value="{{ $cat->code }}"
+                                    {{ in_array($cat->code, $employee->vehicle_license_category ?? []) ? 'selected' : '' }}>
+                                    {{ $cat->code }} — {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
             </div>

@@ -92,7 +92,7 @@ class Employee extends Model
     ];
 
     protected $casts = [
-        'vehicle_license_category' => 'array', 
+        'vehicle_license_category' => 'array',
     ];
 
     /**
@@ -537,9 +537,9 @@ class Employee extends Model
     {
         if (
             GoodRequestAsset::query()
-                ->where('assigned_user_id', $this->getUserId())
-                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-                ->count()
+            ->where('assigned_user_id', $this->getUserId())
+            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+            ->count()
         ) {
             return null;
         }

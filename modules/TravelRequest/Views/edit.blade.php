@@ -335,8 +335,20 @@
                     name: 'estimated_vehicle_fare'
                 },
                 {
+                    data: 'estimated_hotel_accommodation',
+                    name: 'estimated_hotel_accommodation'
+                },
+                {
+                    data: 'estimated_airport_taxi',
+                    name: 'estimated_airport_taxi'
+                },
+                {
                     data: 'miscellaneous_amount',
                     name: 'miscellaneous_amount'
+                },
+                {
+                    data: 'estimated_event_activities_cost',
+                    name: 'estimated_event_activities_cost'
                 },
                 {
                     data: 'miscellaneous_remarks',
@@ -345,10 +357,6 @@
                 {
                     data: 'total_amount',
                     name: 'total_amount'
-                },
-                {
-                    data: 'advance_amount',
-                    name: 'advance_amount'
                 },
                 {
                     data: 'action',
@@ -389,10 +397,10 @@
                         estimated_dsa: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Estimated DSA is required',
+                                    message: 'The Estimated DSA is required',
                                 },
                                 numeric: {
-                                    message: 'The Estimated Air Fare should be number.',
+                                    message: 'The Estimated DSA should be number.',
                                 },
                                 between: {
                                     inclusive: true,
@@ -428,10 +436,23 @@
                                 },
                             },
                         },
-                        advance_amount: {
+                        estimated_hotel_accommodation: {
                             validators: {
                                 numeric: {
-                                    message: 'The Advance Amount should be number.',
+                                    message: 'The Estimated Hotel Accommodation  should be number.',
+                                },
+                                between: {
+                                    inclusive: true,
+                                    min: 0,
+                                    max: 99999999,
+                                    message: 'The value must be between 0 to 99999999',
+                                },
+                            },
+                        },
+                        estimated_airport_taxi: {
+                            validators: {
+                                numeric: {
+                                    message: 'The Estimated Airport Taxi should be number.',
                                 },
                                 between: {
                                     inclusive: true,
@@ -453,6 +474,26 @@
                                     message: 'The value must be between 0 to 99999999',
                                 },
                             },
+                        },
+                        estimated_event_activities_cost: {
+                            validators: {
+                                numeric: {
+                                    message: 'The Estimated Event/Activities Amount should be number.',
+                                },
+                                between: {
+                                    inclusive: true,
+                                    min: 0,
+                                    max: 99999999,
+                                    message: 'The value must be between 0 to 99999999',
+                                },
+                            },
+                        },
+                        total_amount: {
+                            validators: {
+                                numeric: {
+                                    message: 'Total amount is invalid'
+                                }
+                            }
                         },
                     },
                     plugins: {
@@ -482,6 +523,39 @@
                         estimateTable.ajax.reload();
                     }
                     ajaxSubmit($url, 'POST', data, successCallback);
+                });
+                const fields = [
+                    'estimated_dsa',
+                    'estimated_air_fare',
+                    'estimated_vehicle_fare',
+                    'estimated_hotel_accommodation',
+                    'estimated_airport_taxi',
+                    'miscellaneous_amount',
+                    'estimated_event_activities_cost'
+                ];
+
+                const totalInput = document.getElementById('total_amount');
+
+                function calculateTotal() {
+                    let sum = 0;
+                    fields.forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input) {
+                            const val = parseFloat(input.value) || 0;
+                            sum += val;
+                        }
+                    });
+                    totalInput.value = sum.toFixed(2);
+                }
+
+                calculateTotal();
+
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('input', calculateTotal);
+                        el.addEventListener('change', calculateTotal);
+                    }
                 });
             });
         });
@@ -1162,10 +1236,12 @@
                                     <th scope="col">{{ __('label.estimated-dsa') }}</th>
                                     <th scope="col">{{ __('label.estimated-air-fare') }}</th>
                                     <th scope="col">{{ __('label.estimated-vehicle-fare') }}</th>
+                                    <th scope="col">{{ __('label.estimated-hotel-accommodation') }}</th>
+                                    <th scope="col">{{ __('label.estimated-airport-taxi') }}</th>
                                     <th scope="col">{{ __('label.miscellaneous-amount') }}</th>
+                                    <th scope="col">{{ __('label.estimated-event-activities-cost') }}</th>
                                     <th scope="col">{{ __('label.miscellaneous-remarks') }}</th>
                                     <th scope="col">{{ __('label.total-amount') }}</th>
-                                    <th scope="col">{{ __('label.advance-amount') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>

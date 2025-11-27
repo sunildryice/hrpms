@@ -2,22 +2,18 @@
 
 namespace Modules\TravelRequest\Controllers;
 
+use DB;
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Support\Facades\Storage;
-
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\TravelRequest\Repositories\TravelRequestEstimateRepository;
 use Modules\TravelRequest\Repositories\TravelRequestItineraryRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\Privilege\Repositories\RoleRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\TravelRequest\Requests\TravelRequestEstimate\StoreRequest;
-
-use DB;
-use DataTables;
 
 class TravelRequestEstimateController extends Controller
 {
@@ -64,10 +60,8 @@ class TravelRequestEstimateController extends Controller
                 ->whereTravelRequestId($travelRequestId);
 
             $datatable = DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('total_amount', function ($row){
-                    return $row->getTotalAmount();
-                });
+                ->addIndexColumn();
+                
             if ($authUser->can('update', $travelRequest)) {
                 $datatable->addColumn('action', function ($row) use ($authUser, $travelRequest) {
                     $btn = '<a data-toggle="modal" class="btn btn-outline-primary btn-sm open-estimation-modal-form" href="';

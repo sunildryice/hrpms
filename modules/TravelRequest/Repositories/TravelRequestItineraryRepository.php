@@ -24,8 +24,8 @@ class TravelRequestItineraryRepository extends Repository
             if(array_key_exists('travel_modes', $inputs)){
                 $travelRequestItinerary->travelModes()->sync($inputs['travel_modes']);
             }
-            $this->updateTotalDsa($travelRequestItinerary);
-            $this->updateTravelEstimateDsa($travelRequestItinerary->travelRequest);
+            // $this->updateTotalDsa($travelRequestItinerary);
+            // $this->updateTravelEstimateDsa($travelRequestItinerary->travelRequest);
             DB::commit();
             return $travelRequestItinerary;
         } catch (\Illuminate\Database\QueryException $e) {
@@ -46,8 +46,8 @@ class TravelRequestItineraryRepository extends Repository
                 $travelRequestItinerary->travelModes()->sync([]);
             }
 
-            $this->updateTotalDsa($travelRequestItinerary);
-            $this->updateTravelEstimateDsa($travelRequestItinerary->travelRequest);
+            // $this->updateTotalDsa($travelRequestItinerary);
+            // $this->updateTravelEstimateDsa($travelRequestItinerary->travelRequest);
             DB::commit();
             return $travelRequestItinerary;
         } catch (\Illuminate\Database\QueryException $e) {

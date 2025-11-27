@@ -92,7 +92,7 @@
                 },
             });
 
-             // Passport Section Toggle
+            // Passport Section Toggle
             const travelTypeSelect = document.querySelector('select[name="travel_type_id"]');
             const passportSection = document.getElementById('passportSection');
 
@@ -177,7 +177,7 @@
                         this.closest('.external-traveler-row').remove();
                         const newCount = container.children.length;
                         countInput.value = newCount;
-                        if (newCount > 0) renderExternalTravelers(); 
+                        if (newCount > 0) renderExternalTravelers();
                     };
                 });
 
@@ -271,20 +271,20 @@
                     orderable: false,
                     searchable: false
                 },
-                {
-                    data: 'dsa_category',
-                    name: 'dsa_category',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
-                },
-                {
-                    data: 'dsa_total_price',
-                    name: 'dsa_total_price'
-                },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
                 {
                     data: 'action',
                     name: 'action',
@@ -1131,9 +1131,9 @@
                                     <th scope="col">{{ __('label.to-date') }}</th>
                                     <th scope="col">{{ __('label.to-place') }}</th>
                                     <th scope="col">{{ __('label.mode-of-travel') }}</th>
-                                    <th scope="col">{{ __('label.dsa-category') }}</th>
+                                    {{-- <th scope="col">{{ __('label.dsa-category') }}</th>
                                     <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                    <th scope="col">{{ __('label.total-dsa') }}</th>
+                                    <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
@@ -1144,16 +1144,14 @@
 
                 </div>
             </div>
-            <div class="card estimateDiv">
+            <div class="card ">
                 <div class="card-header fw-bold">
-                    <div class="d-flex align-items-center add-info justify-content-end">
-                        <span> Travel Cost Estimation</span>
-                        <div class="estimateAddBlock" @if ($travelRequest->travelRequestEstimate) style="display:none;" @endif>
-                            <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
-                                href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
-                                <i class="bi-plus"></i> Add Estimation
-                            </button>
-                        </div>
+                    <div class="d-flex align-items-center add-info justify-content-between">
+                        <span> Travel Advance Request</span>
+                        <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
+                            href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
+                            <i class="bi-plus"></i> Add Estimation
+                        </button>
                     </div>
                 </div>
                 <div class="card-body estimate">

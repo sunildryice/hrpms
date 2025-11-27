@@ -1,5 +1,5 @@
 <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6">Add Travel Request Estimate</h5>
+    <h5 class="modal-title mb-0 fs-6">Add Travel Advanced Request</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form action="{!! route('travel.requests.estimate.store', $travelRequest->id) !!}" method="post"

@@ -1,11 +1,11 @@
 @extends('layouts.container')
 
-@section('title', 'Review Leave Request')
+@section('title', 'Approve Leave Request')
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#review-leave-requests-menu').addClass('active');
+            $('#navbarVerticalMenu').find('#approve-leave-requests-menu').addClass('active');
         });
 
         document.addEventListener('DOMContentLoaded', function(e) {
@@ -26,7 +26,7 @@
                             },
                         },
                     },
-                    review_remarks: {
+                    log_remarks: {
                         validators: {
                             notEmpty: {
                                 message: 'The remarks is required',
@@ -81,9 +81,10 @@
                                     <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
                                 </li>
                                 <li class="breadcrumb-item">
-                                    <a href="{{ route('review.leave.requests.index') }}" class="text-decoration-none">Leave
+                                    <a href="{{ route('approve.leave.requests.index') }}" class="text-decoration-none">Leave
                                         Requests</a>
                                 </li>
+                                <li class="breadcrumb-item" aria-current="page">HR</li>
                                 <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                             </ol>
                         </nav>
@@ -102,7 +103,7 @@
                             <div class="card-header fw-bold">
                                 Leave Process
                             </div>
-                            <form action="{{ route('review.leave.requests.store', $leaveRequest->id) }}"
+                            <form action="{{ route('hr.approve.leave.requests.store', $leaveRequest->id) }}"
                                 id="leaveRequestApproveForm" method="post" enctype="multipart/form-data"
                                 autocomplete="off">
 
@@ -124,7 +125,8 @@
                                                                 <span
                                                                     class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                                             </div>
-                                                            <small>{{ $log->created_at->diffForHumans() }}</small>
+                                                            <small
+                                                                title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                                         </div>
                                                         <p class="text-justify comment-text mb-0 mt-1">
                                                             {{ $log->log_remarks }}
@@ -144,18 +146,9 @@
                                                 <div class="col-lg-9">
                                                     <select name="status_id" class="select2 form-control" data-width="100%">
                                                         <option value="">Select a Status</option>
-                                                        <option value="{{ config('constant.RETURNED_STATUS') }}">Return to
-                                                            Requester</option>
-                                                        @if ($leaveRequest->approver_id == auth()->id())
-                                                            <option value="8">Reject</option>
-                                                            {{-- <option value="4">Recommend</option> --}}
-                                                            <option value="{{ config('constant.APPROVED_STATUS') }}">Approve
-                                                            </option>
-                                                        @endif
-                                                        {{-- @else
-                                                            <option value="{{ config('constant.VERIFIED_STATUS') }}">Send to
-                                                                Approver</option>
-                                                        @endif --}}
+
+                                                        <option value="8">Reject</option>
+                                                        <option value="6">Approve</option>
                                                     </select>
                                                     @if ($errors->has('status_id'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
@@ -166,6 +159,7 @@
                                                     @endif
                                                 </div>
                                             </div>
+
                                             <div class="row mb-2" id="recommendBlock" style="display: none;">
                                                 <div class="col-lg-3">
                                                     <div class="d-flex align-items-start h-100">
@@ -209,10 +203,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="review_remarks">{{ old('review_remarks') }}</textarea>
-                                                    @if ($errors->has('review_remarks'))
+                                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                                    @if ($errors->has('log_remarks'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
-                                                            <div data-field="review_remarks">{!! $errors->first('review_remarks') !!}</div>
+                                                            <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -225,7 +219,7 @@
                                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
                                         Submit
                                     </button>
-                                    <a href="{!! route('review.leave.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                                    <a href="{!! route('hr.approve.leave.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                                 </div>
                             </form>
                         </div>

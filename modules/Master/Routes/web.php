@@ -306,13 +306,13 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         });
 
         // Route::middleware('can:manage-partner-organization')->group(function () {
-            Route::get('organizations/partner/create', [PartnerOrganizationController::class, 'create'])->name('master.partner.org.create');
-            Route::get('organizations/partner', [PartnerOrganizationController::class, 'index'])->name('master.partner.org.index');
-            Route::post('organizations/partner', [PartnerOrganizationController::class, 'store'])->name('master.partner.org.store');
-            Route::get('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'show'])->name('master.partner.org.show');
-            Route::get('organizations/partner/{projectCode}/edit', [PartnerOrganizationController::class, 'edit'])->name('master.partner.org.edit');
-            Route::put('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'update'])->name('master.partner.org.update');
-            Route::delete('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'destroy'])->name('master.partner.org.destroy');
+        Route::get('organizations/partner/create', [PartnerOrganizationController::class, 'create'])->name('master.partner.org.create');
+        Route::get('organizations/partner', [PartnerOrganizationController::class, 'index'])->name('master.partner.org.index');
+        Route::post('organizations/partner', [PartnerOrganizationController::class, 'store'])->name('master.partner.org.store');
+        Route::get('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'show'])->name('master.partner.org.show');
+        Route::get('organizations/partner/{projectCode}/edit', [PartnerOrganizationController::class, 'edit'])->name('master.partner.org.edit');
+        Route::put('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'update'])->name('master.partner.org.update');
+        Route::delete('organizations/partner/{projectCode}', [PartnerOrganizationController::class, 'destroy'])->name('master.partner.org.destroy');
         // });
 
         Route::middleware('can:manage-training-question')->group(function () {
@@ -385,7 +385,6 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             Route::get('purchase/request/packages/{package}/items/{item}/edit', [PackageItemController::class, 'edit'])->name('master.packages.items.edit');
             Route::put('purchase/request/packages/{package}/items/{item}', [PackageItemController::class, 'update'])->name('master.packages.items.update');
             Route::delete('purchase/request/packages/{package}/items/{item}', [PackageItemController::class, 'destroy'])->name('master.packages.items.destroy');
-
         });
     });
 });

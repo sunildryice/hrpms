@@ -15,9 +15,7 @@ use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\LeaveModeRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\LeaveRequest\Requests\Approve\StoreRequest;
-use DB;
 use DataTables;
 
 
@@ -39,9 +37,7 @@ class ApproveLeaveRequestController extends Controller
         protected LeaveModeRepository    $leaveModes,
         protected LeaveRequestRepository $leaveRequests,
         protected UserRepository         $users
-    )
-    {
-    }
+    ) {}
 
     /**
      * Display a listing of the leave requests
@@ -78,7 +74,7 @@ class ApproveLeaveRequestController extends Controller
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '';
                     if ($authUser->can('approve', $row)) {
-                        $btn = '<a href="'. route('approve.leave.requests.create', $row->id) .'"'.
+                        $btn = '<a href="' . route('approve.leave.requests.create', $row->id) . '"' .
                             'class="act-btns bt-primary"><i class="bi bi-box-arrow-in-up-right"></i></a>';
                     }
                     return $btn;
@@ -100,7 +96,7 @@ class ApproveLeaveRequestController extends Controller
         $leaveDays = $leaveRequest->leaveDays->count();
         if ($leaveRequest->leaveType->leave_basis == 2) {
             $leaveDays = $leaveRequest->leaveDays->sum('leave_duration');
-            $leaveDays = $leaveDays ? $leaveDays /8 : 0;
+            $leaveDays = $leaveDays ? $leaveDays / 8 : 0;
         }
 
         $latestTenure = $leaveRequest->requester->employee->latestTenure;
@@ -133,10 +129,10 @@ class ApproveLeaveRequestController extends Controller
             if ($leaveRequest->status_id == config('constant.RETURNED_STATUS')) {
                 $message = 'Leave request is successfully returned.';
                 $leaveRequest->requester->notify(new LeaveRequestReturned($leaveRequest));
-            } else if($leaveRequest->status_id == config('constant.REJECTED_STATUS')){
+            } else if ($leaveRequest->status_id == config('constant.REJECTED_STATUS')) {
                 $message = 'Leave request is successfully rejected.';
                 $leaveRequest->requester->notify(new LeaveRequestRejected($leaveRequest));
-            } else if($leaveRequest->status_id == config('constant.RECOMMENDED_STATUS')){
+            } else if ($leaveRequest->status_id == config('constant.RECOMMENDED_STATUS')) {
                 $message = 'Leave request is successfully recommended.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmitted($leaveRequest));
             } else {

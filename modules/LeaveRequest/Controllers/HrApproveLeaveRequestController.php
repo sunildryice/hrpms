@@ -3,8 +3,6 @@
 namespace Modules\LeaveRequest\Controllers;
 
 use App\Http\Controllers\Controller;
-use DataTables;
-use Illuminate\Http\Request;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Employee\Repositories\LeaveRepository;
 use Modules\LeaveRequest\Notifications\LeaveRequestApproved;
@@ -12,36 +10,31 @@ use Modules\LeaveRequest\Notifications\LeaveRequestRejected;
 use Modules\LeaveRequest\Notifications\LeaveRequestReturned;
 use Modules\LeaveRequest\Notifications\LeaveRequestSubmitted;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
-use Modules\LeaveRequest\Requests\HrReview\StoreRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\LeaveModeRepository;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\LeaveRequest\Requests\Approve\StoreRequest;
+use DataTables;
+use Illuminate\Http\Request;
 
-class ReviewLeaveRequestController extends Controller
+class HrApproveLeaveRequestController extends Controller
 {
     public function __construct(
-        protected EmployeeRepository $employees,
-        protected FiscalYearRepository $fiscalYears,
-        protected LeaveRepository $employeeLeaves,
-        protected LeaveModeRepository $leaveModes,
+        protected EmployeeRepository     $employees,
+        protected FiscalYearRepository   $fiscalYears,
+        protected LeaveRepository        $employeeLeaves,
+        protected LeaveModeRepository    $leaveModes,
         protected LeaveRequestRepository $leaveRequests,
-        protected UserRepository $users
+        protected UserRepository         $users
     ) {}
 
-    /**
-     * @return mixed
-     *
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
     public function index(Request $request)
     {
         $authUser = auth()->user();
+
+
         if ($request->ajax()) {
-            $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'requester.employee'])
-                ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
-                ->where('approver_id', $authUser->id)
-                ->orderBy('start_date', 'desc')
-                ->get();
+            $data = $this->leaveRequests->getHrApproveLeaveRequests();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -61,18 +54,18 @@ class ReviewLeaveRequestController extends Controller
                     return $row->getRequesterName();
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '';
-                    if ($authUser->can('review', $row)) {
-                        $btn = '<a href="' . route('review.leave.requests.create', $row->id) . '"' .
-                            'class="act-btns bt-primary"><i class="bi bi-box-arrow-in-up-right"></i></a>';
-                    }
-
+                    // if ($authUser->can('approve', $row)) {
+                    $btn = '<a href="' . route('hr.approve.leave.requests.create', $row->id) . '"' .
+                        'class="act-btns bt-primary"><i class="bi bi-box-arrow-in-up-right"></i></a>';
+                    // }
                     return $btn;
                 })->rawColumns(['action', 'duration'])
                 ->make(true);
         }
 
-        return view('LeaveRequest::Review.index');
+        return view('LeaveRequest::Hr.Approve.index');
     }
+
 
     public function create($leaveRequestId)
     {
@@ -94,7 +87,7 @@ class ReviewLeaveRequestController extends Controller
             ->get();
         $recommendApprovers = $this->users->permissionBasedUsers('approve-recommended-leave-request');
 
-        return view('LeaveRequest::Review.create')
+        return view('LeaveRequest::Hr.Approve.create')
             ->withAuthUser($authUser)
             ->withExecutiveDirectorflag($executiveDirectorflag)
             ->withLeaveDays($leaveDays)
@@ -110,13 +103,9 @@ class ReviewLeaveRequestController extends Controller
         $this->authorize('review', $leaveRequest);
         $inputs['user_id'] = auth()->id();
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-        if ($leaveRequest->approver_id == auth()->id()) {
-            $inputs['log_remarks'] = $inputs['review_remarks'];
-            unset($inputs['review_remarks']);
-            $leaveRequest = $this->leaveRequests->approve($leaveRequest->id, $inputs);
-        } else {
-            $leaveRequest = $this->leaveRequests->review($leaveRequest->id, $inputs);
-        }
+
+        $leaveRequest = $this->leaveRequests->approve($leaveRequest->id, $inputs);
+
 
         if ($leaveRequest) {
             $message = '';
@@ -137,12 +126,12 @@ class ReviewLeaveRequestController extends Controller
                 $leaveRequest->requester->notify(new LeaveRequestApproved($leaveRequest));
             }
 
-            return redirect()->route('review.leave.requests.index')
+            return redirect()->route('hr.approve.leave.requests.index')
                 ->withSuccessMessage($message);
         }
 
         return redirect()->back()
             ->withInput()
-            ->withWarningMessage('Leave request can not be reviewed.');
+            ->withWarningMessage('Leave request can not be approved.');
     }
 }

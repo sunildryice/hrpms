@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Master\Repositories;
 
 use App\Repositories\Repository;

@@ -78,9 +78,7 @@ class SideBarComposer
         protected DispositionRequestRepository   $dispositionRequests,
         protected TravelAuthorizationRepository  $travelAuthorization,
         protected TransactionRepository          $transactions,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Bind data to the view.
@@ -190,6 +188,8 @@ class SideBarComposer
             ->where('approver_id', $authUser->id)
             ->whereIn('status_id', [config('constant.VERIFIED_STATUS'), config('constant.RECOMMENDED_STATUS')])
             ->count();
+
+        $hrApproveLeaveCount = $this->leaveRequests->getHrApproveLeaveRequests()->count();
 
         $reviewLeaveEncashCount = $this->leaveEncash->select(['id'])
             ->where('reviewer_id', $authUser->id)
@@ -473,6 +473,7 @@ class SideBarComposer
 
         $reviewLeaveCount = $this->leaveRequests->select(['id'])
             ->where('status_id', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', $authUser->id)
             ->count();
 
         $approveExitInterviewCount = $this->exitInterview->with(['employee', 'status'])->select(['*'])
@@ -557,6 +558,7 @@ class SideBarComposer
             ->withApproveDispositionRequestCount($approveDispositionRequestCount)
             ->withApproveTravelCancelCount($approveTravelCancelCount)
             ->withApproveTACount($approveTACount)
+            ->withHrApproveLeaveCount($hrApproveLeaveCount)
             ->withVerifySettlementCount($verifySettlementCount);
 
         return $view;

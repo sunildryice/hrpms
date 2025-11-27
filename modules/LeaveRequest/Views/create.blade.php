@@ -4,6 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
+        var formValidationInstance = null;
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#leave-requests-menu').addClass('active');
         });
@@ -155,6 +156,29 @@
             });
         });
 
+        function getLeaveDays() {
+            const form = document.getElementById('leaveRequestAddForm');
+            const start = form.querySelector('[name="start_date"]').value;
+            const end = form.querySelector('[name="end_date"]').value;
+
+            if (!start || !end) {
+                return 0;
+            }
+
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+
+            if (isNaN(startDate) || isNaN(endDate)) {
+                return 0;
+            }
+
+            let diff = Math.abs(endDate - startDate);
+            let days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+
+            return days;
+        }
+
+
         document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('leaveRequestAddForm');
             const fv = FormValidation.formValidation(form, {
@@ -189,14 +213,28 @@
                     },
                     attachment: {
                         validators: {
+                            callback: {
+                                message: 'Prescription is required',
+                                callback: function(input) {
+                                    let days = getLeaveDays();
+
+                                    if (days > 3) {
+                                        return input.value !== ''; // Required
+                                    }
+
+                                    return true; // Not required
+                                }
+                            },
+
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',
                                 maxSize: '2097152',
-                                message: 'The selected file is not valid or must not be greater than 2 MB.',
-                            },
-                        },
-                    },
+                                message: 'The selected file must be valid and under 2 MB.',
+                            }
+                        }
+                    }
+
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -224,6 +262,7 @@
             }).on('core.form.valid', function() {
                 $('.submit-btn').attr('disabled', true)
             });
+
 
             $(form).on('change', '[name="leave_type_id"]', function(e) {
                 $element = $(this);
@@ -448,7 +487,7 @@
                     <div class="mb-3 row" id="attachmentBlock" style="display: none;">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Attachment</label>
+                                <label for="validationRemarks" class="form-label required-label">Upload Prescription</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -465,7 +504,7 @@
                     <div class="mb-3 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Remarks</label>
+                                <label for="validationRemarks" class="form-label">Reason For the Leave</label>
                             </div>
                         </div>
                         <div class="col-lg-10">

@@ -115,6 +115,7 @@
                 fv.revalidateField('project_code_id');
             });
 
+            // Passport Section Toggle
             const travelTypeSelect = document.querySelector('select[name="travel_type_id"]');
             const passportSection = document.getElementById('passportSection');
 
@@ -130,6 +131,7 @@
             $(travelTypeSelect).on('change', togglePassportSection);
 
 
+            // External Travelers Dynamic Rows
             const countInput = document.getElementById('external_traveler_count');
             const container = document.getElementById('external-travelers-container');
 
@@ -142,33 +144,54 @@
                 for (let i = 0; i < count; i++) {
                     const row = document.createElement('div');
                     row.className = 'row mb-2 align-items-end external-traveler-row';
-                    row.innerHTML = `
-                <div class="col-lg-3">
-                </div>
-                <div class="col-md-4">
-                    <input type="text" name="external_travelers[${i}][name]" class="form-control" placeholder="Full Name *" required>
-                </div>
-                <div class="col-md-4">
-                    <input type="email" name="external_travelers[${i}][email]" class="form-control" placeholder="Email (optional)">
-                </div>
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-danger btn-sm remove-row">
+
+                    let rowHTML = `
+                    <div class="col-lg-3"></div>
+                    <div class="col-md-4">
+                        <input type="text" name="external_travelers[${i}][name]" class="form-control" placeholder="Full Name required" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="email" name="external_travelers[${i}][email]" class="form-control" placeholder="Email (optional)">
+                    </div>
+                    <div class="col-md-1">
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-danger btn-sm remove-row" title="Remove">
                         <i class="bi bi-trash"></i>
-                    </button>
-                </div>
-            `;
+                    </button>`;
+
+                    if (i === count - 1) {
+                        rowHTML += `
+                    <button type="button" class="btn btn-success btn-sm add-row ms-1" title="Add another">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>`;
+                    }
+
+                    rowHTML += `</div></div>`;
+                    row.innerHTML = rowHTML;
                     container.appendChild(row);
                 }
 
                 document.querySelectorAll('.remove-row').forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.onclick = function() {
                         this.closest('.external-traveler-row').remove();
                         countInput.value = container.children.length;
-                    });
+                        generateRows(); 
+                    };
+                });
+
+                document.querySelectorAll('.add-row').forEach(btn => {
+                    btn.onclick = function() {
+                        countInput.value = parseInt(countInput.value || 0) + 1;
+                        generateRows();
+                    };
                 });
             }
 
-            countInput.addEventListener('input', generateRows);
+            countInput.addEventListener('input', () => {
+                if (countInput.value < 0) countInput.value = 0;
+                generateRows();
+            });
+            countInput.addEventListener('change', generateRows);
 
             if (countInput.value > 0) {
                 generateRows();
@@ -499,24 +522,14 @@
                     <div class="row mb-3">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label class="form-label">Number of external travelers</label>
+                                <label class="form-label">Number of travelers (if any outside the organization)</label>
                             </div>
                         </div>
                         <div class="col-lg-9">
-                            <div class="input-group" style="max-width: 200px;">
-                                <button class="btn btn-outline-secondary" type="button" id="decrementTraveler">
-                                    <i class="bi bi-dash-lg"></i>
-                                </button>
-                                <input type="number" min="0" id="external_traveler_count"
-                                    name="external_traveler_count" class="form-control text-center" readonly
-                                    value="{{ old('external_traveler_count', $travelRequest->external_traveler_count ?? 0) }}"
-                                    style="background: white;">
-                                <button class="btn btn-outline-secondary" type="button" id="incrementTraveler">
-                                    <i class="bi bi-plus-lg"></i>
-                                </button>
-                            </div>
-                            <small class="text-muted d-block mt-1">How many people outside the organization are traveling
-                                with you?</small>
+                            <input type="number" min="0" id="external_traveler_count"
+                                name="external_traveler_count" class="form-control"
+                                value="{{ old('external_traveler_count') }}" placeholder="e.g. 0, 1, 2, 3...">
+                            <small class="text-muted">Enter 0 if no external travelers</small>
                         </div>
                     </div>
 

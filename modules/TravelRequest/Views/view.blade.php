@@ -47,28 +47,28 @@
                     data: 'activity',
                     name: 'activity',
                 },
-                {
-                    data: 'account',
-                    name: 'account',
-                },
-                {
-                    data: 'donor',
-                    name: 'donor',
-                },
-                {
-                    data: 'dsa_category',
-                    name: 'dsa_category',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
-                },
-                {
-                    data: 'dsa_total_price',
-                    name: 'dsa_total_price'
-                },
+                // {
+                //     data: 'account',
+                //     name: 'account',
+                // },
+                // {
+                //     data: 'donor',
+                //     name: 'donor',
+                // },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
             ]
         });
 
@@ -163,11 +163,11 @@
                                         <th scope="col">{{ __('label.mode-of-travel') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        <th scope="col">{{ __('label.account') }}</th>
+                                        {{-- <th scope="col">{{ __('label.account') }}</th>
                                         <th scope="col">{{ __('label.donor') }}</th>
                                         <th scope="col">{{ __('label.dsa-category') }}</th>
                                         <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                        <th scope="col">{{ __('label.total-dsa') }}</th>
+                                        <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -178,7 +178,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header fw-bold">
-                        Travel Cost Estimation
+                        Travel Advance Request
                     </div>
                     <div class='card-body'>
                         <div class="table-responsive">

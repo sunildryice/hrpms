@@ -94,7 +94,6 @@ class LeaveRequestRepository extends Repository
                 $query->where('leave_duration', '>', 0);
             })->with(['requester'])
             ->get();
-
     }
 
     /**
@@ -391,5 +390,15 @@ class LeaveRequestRepository extends Repository
 
             return false;
         }
+    }
+
+
+    public function getHrApproveLeaveRequests()
+    {
+        return $this->model->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'requester.employee'])
+            ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
+            ->where('updated_at', '<=', now()->subDays(7))
+            ->orderBy('start_date', 'desc')
+            ->get();
     }
 }

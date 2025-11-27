@@ -24,18 +24,18 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'leave_type_id'=>'required',
-            'start_date'=>'required|date|before_or_equal:end_date',
-            'end_date'=>'required|date|after_or_equal:end_date',
-            'substitute_id'=>'nullable|exists:employees,id',
-            'approver_id'=>'required|exists:users,id',
-            'remarks'=>'nullable',
-            'leave_days'=>'required|array',
-            'leave_mode_id'=>'required|array',
-            'leave_time'=>'nullable|array',
-            'attachment'=>'mimes:jpg,png,pdf|max:2048',
-            'substitutes'=>'nullable|array',
-            'btn'=>'required',
+            'leave_type_id' => 'required',
+            'start_date' => 'required|date|before_or_equal:end_date',
+            'end_date' => 'required|date|after_or_equal:end_date',
+            'substitute_id' => 'nullable|exists:employees,id',
+            'approver_id' => 'required|exists:users,id',
+            'remarks' => 'nullable',
+            'leave_days' => 'required|array',
+            'leave_mode_id' => 'required|array',
+            'leave_time' => 'nullable|array',
+            'attachment' => 'mimes:jpg,png,pdf|max:2048',
+            'substitutes' => 'nullable|array',
+            'btn' => 'required',
         ];
     }
 }

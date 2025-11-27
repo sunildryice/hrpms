@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="col-lg-9">
-                       {{ $leaveRequest->getLeaveType() }}
+                        {{ $leaveRequest->getLeaveType() }}
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -106,16 +106,16 @@
                     </div>
                 </div>
                 @isset($leaveRequest->review_remarks)
-                <div class="row mb-2">
-                    <div class="col-lg-3">
-                        <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">HR Remarks </label>
+                    <div class="row mb-2">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start  h-100">
+                                <label for="" class="m-0 text-end flex-grow-1 fw-bold">HR Remarks </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            {{ $leaveRequest->review_remarks }}
                         </div>
                     </div>
-                    <div class="col-lg-9">
-                        {{ $leaveRequest->review_remarks }}
-                    </div>
-                </div>
                 @endisset
                 <div class="row">
 
@@ -131,7 +131,7 @@
                         </div>
                     </div>
                     <div class="col-lg-9">
-                       {{ $leaveRequest->getSubstitutes() }}
+                        {{ $leaveRequest->getSubstitutes() }}
                     </div>
                 </div>
                 <div class="row">
@@ -145,21 +145,21 @@
                     <div class="col-9 offset-1">
                         <table class="table table-bordered  my-4">
                             <thead>
-                            <tr>
-                                <th width="10%">DAY</th>
-                                <th>DATE</th>
-                                <th>LEAVE SLOTS</th>
-                            </tr>
+                                <tr>
+                                    <th width="10%">DAY</th>
+                                    <th>DATE</th>
+                                    <th>LEAVE SLOTS</th>
+                                </tr>
 
                             </thead>
                             <tbody>
-                            @foreach ($leaveRequest->leaveDays as $leaveDay)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $leaveDay->getLeaveDate() }}</td>
-                                <td>{{ $leaveDay->getLeaveMode() }}</td>
-                            </tr>
-                            @endforeach
+                                @foreach ($leaveRequest->leaveDays as $leaveDay)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $leaveDay->getLeaveDate() }}</td>
+                                        <td>{{ $leaveDay->getLeaveMode() }}</td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -171,7 +171,8 @@
                         <ul class="list-unstyled">
                             <li><strong>Requested By:</strong></li>
                             <li><strong class="me-1">Name:</strong> {{ $leaveRequest->getRequesterName() }} </li>
-                            <li><strong class="me-1">Title:</strong> {{ $leaveRequest->requester->employee->getDesignationName() }}</li>
+                            <li><strong class="me-1">Title:</strong>
+                                {{ $leaveRequest->requester->employee->getDesignationName() }}</li>
                             <li> <strong class="me-1">Date:</strong>{{ $leaveRequest->submittedLog->created_at }}
                             </li>
                         </ul>
@@ -179,15 +180,16 @@
                     @isset($leaveRequest->verifier_id)
                         <div class="col-lg-3">
                             <ul class="list-unstyled">
-                                 <li><strong>Reviewed By:</strong></li>
+                                <li><strong>Reviewed By:</strong></li>
                                 <li><strong class="me-1">Name:</strong> {{ $leaveRequest->hrReviewer?->getFullName() }}</li>
-                                <li><strong class="me-1">Title:</strong> {{ $leaveRequest->hrReviewer?->employee->getDesignationName() }}</li>
+                                <li><strong class="me-1">Title:</strong>
+                                    {{ $leaveRequest->hrReviewer?->employee->getDesignationName() }}</li>
                                 <li><strong class="me-1">Date:</strong>{{ $leaveRequest->verifiedLog->created_at }}
                                 </li>
                             </ul>
                         </div>
                     @endisset
-                     <div class="col-lg-3">
+                    {{-- <div class="col-lg-3">
                         <ul class="list-unstyled">
                             <li><strong>Recommended By:</strong></li>
                             <li><strong class="me-1">Name:</strong> {{ $leaveRequest->reviewedLog ? $leaveRequest->reviewer->getFullName() : '' }}</li>
@@ -195,13 +197,17 @@
                             <li><strong class="me-1">Date:</strong>{{ $leaveRequest->reviewedLog ? $leaveRequest->reviewedLog->created_at : '' }}
                             </li>
                         </ul>
-                    </div>
+                    </div> --}}
                     <div class="col-lg-3">
                         <ul class="list-unstyled">
                             <li><strong>Approved By:</strong></li>
-                            <li><strong class="me-1">Name:</strong> {{ $leaveRequest->approvedLog ? $leaveRequest->getApproverName() : '' }}</li>
-                            <li><strong class="me-1">Title:</strong> {{ $leaveRequest->approvedLog ? $leaveRequest->approver->employee->getDesignationName() : '' }}</li>
-                            <li><strong class="me-1">Date:</strong>{{ $leaveRequest->approvedLog ? $leaveRequest->approvedLog->created_at : '' }}
+                            <li><strong class="me-1">Name:</strong>
+                                {{ $leaveRequest->approvedLog ? $leaveRequest->getApproverName() : '' }}</li>
+                            <li><strong class="me-1">Title:</strong>
+                                {{ $leaveRequest->approvedLog ? $leaveRequest->approver->employee->getDesignationName() : '' }}
+                            </li>
+                            <li><strong
+                                    class="me-1">Date:</strong>{{ $leaveRequest->approvedLog ? $leaveRequest->approvedLog->created_at : '' }}
                             </li>
                         </ul>
                     </div>

@@ -56,6 +56,12 @@
                                         href="{{ route('review.leave.requests.index') }}">Review Leave
                                         Requests({!! $reviewLeaveCount !!})</a>
                                 @endif
+
+                                @if ($authUser->can('hr-approve-leave-request'))
+                                    <a class="nav-link hs-rqst" id="approve-leave-requests-menu"
+                                        href="{{ route('hr.approve.leave.requests.index') }}">HR Approve Leave
+                                        Requests({!! $hrApproveLeaveCount !!})</a>
+                                @endif
                                 {{-- @if ($authUser->can('approve-leave-request'))
                                     <a class="nav-link hs-rqst" id="approve-leave-requests-menu"
                                         href="{{ route('approve.leave.requests.index') }}">Approve Leave
@@ -122,8 +128,8 @@
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarEmployeeAttendance" role="button"
                                 data-bs-toggle="collapse" data-bs-target="#navbarEmployeeAttendance"
-                                aria-expanded="false" aria-controls="navbarEmployeeAttendance" data-bs-toggle="tooltip"
-                                data-bs-placement="right" title="Attendance">
+                                aria-expanded="false" aria-controls="navbarEmployeeAttendance"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
                                 <i class="bi bi-fingerprint nav-icon"></i>
                                 <span class="nav-link-title">Attendance</span> </a>
 

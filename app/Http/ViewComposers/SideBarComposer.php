@@ -189,6 +189,8 @@ class SideBarComposer
             ->whereIn('status_id', [config('constant.VERIFIED_STATUS'), config('constant.RECOMMENDED_STATUS')])
             ->count();
 
+        $hrApproveLeaveCount = $this->leaveRequests->getHrApproveLeaveRequests()->count();
+
         $reviewLeaveEncashCount = $this->leaveEncash->select(['id'])
             ->where('reviewer_id', $authUser->id)
             ->where('status_id', config('constant.SUBMITTED_STATUS'))
@@ -556,6 +558,7 @@ class SideBarComposer
             ->withApproveDispositionRequestCount($approveDispositionRequestCount)
             ->withApproveTravelCancelCount($approveTravelCancelCount)
             ->withApproveTACount($approveTACount)
+            ->withHrApproveLeaveCount($hrApproveLeaveCount)
             ->withVerifySettlementCount($verifySettlementCount);
 
         return $view;

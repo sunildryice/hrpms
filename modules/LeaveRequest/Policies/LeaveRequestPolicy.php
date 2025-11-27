@@ -30,7 +30,7 @@ class LeaveRequestPolicy
     public function amend(User $user, LeaveRequest $leaveRequest)
     {
         return $leaveRequest->status_id == 6 && !$leaveRequest->childLeaveRequest
-        && in_array($user->id, [$leaveRequest->requester_id, $leaveRequest->created_by]);
+            && in_array($user->id, [$leaveRequest->requester_id, $leaveRequest->created_by]);
     }
 
     /**
@@ -43,14 +43,14 @@ class LeaveRequestPolicy
     public function approve(User $user, LeaveRequest $leaveRequest)
     {
         return in_array($leaveRequest->status_id, [config('constant.VERIFIED_STATUS'), config('constant.RECOMMENDED_STATUS')])
-        && $user->id == $leaveRequest->approver_id;
+            && $user->id == $leaveRequest->approver_id;
     }
 
 
     public function review(User $user, LeaveRequest $leaveRequest)
     {
         return in_array($leaveRequest->status_id, [config('constant.SUBMITTED_STATUS')])
-        && $user->can('review-leave-request');
+            && $user->can('review-leave-request');
     }
 
     /**
@@ -77,10 +77,10 @@ class LeaveRequestPolicy
         return ($leaveRequest->status_id == 6)
             &&
             (
-            in_array($user->id, [$leaveRequest->created_by, $leaveRequest->reviewer_id, $leaveRequest->approver_id])
-            ||
-            $user->hasRole('Human Resource')
-        );
+                in_array($user->id, [$leaveRequest->created_by, $leaveRequest->reviewer_id, $leaveRequest->approver_id])
+                ||
+                $user->hasRole('Human Resource')
+            );
     }
 
     /**

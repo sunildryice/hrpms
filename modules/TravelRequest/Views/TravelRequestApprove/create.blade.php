@@ -241,7 +241,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header fw-bold">
-                        Travel Cost Estimation
+                        Travel Advance Request
                     </div>
                     <div class='card-body'>
                         <div class="table-responsive">

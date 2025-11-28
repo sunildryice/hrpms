@@ -2,11 +2,10 @@
 
 namespace Modules\TravelRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Support\Facades\Storage;
-
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\TravelRequest\Notifications\TravelReportSubmitted;
 use Modules\TravelRequest\Repositories\TravelReportRepository;
@@ -17,11 +16,9 @@ use Modules\TravelRequest\Repositories\TravelRequestItineraryRepository;
 use Modules\Privilege\Repositories\RoleRepository;
 use Modules\Master\Repositories\StatusRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\TravelRequest\Requests\TravelReport\StoreRequest;
 use Modules\TravelRequest\Requests\TravelReport\UpdateRequest;
 
-use DataTables;
 
 class TravelReportController extends Controller
 {

@@ -344,8 +344,10 @@ class EmployeeController extends Controller
             // ->where( DB::raw('YEAR(reported_date)'), '<>', date('Y') )
             ->get();
 
+
         $employeeSocialMediaLinks = $this->employeeSocialMediaRepository
-            ->getSocialMediaLinksByEmployeeId($employee->id);
+            ->getSocialMediaLinksByEmployeeId($employee->id)
+            ->pluck('link', 'title');
 
         $view = view('Employee::profile');
         if ($employee->user) {
@@ -360,6 +362,7 @@ class EmployeeController extends Controller
             ->withAuthUser(auth()->user())
             ->withEmployee($employee)
             ->withEmployeeSocialMediaLinks($employeeSocialMediaLinks)
+            ->withSocialMediaAccounts($this->socialMediaAccounts->get())
             ->withLeaves($leaves)
             ->withLeaveTypes($leaveTypes);
     }

@@ -960,18 +960,19 @@
                             Social Media
                         </div>
 
+
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="trainingTable">
                                     <tbody>
                                         <div>
-                                            @foreach ($employeeSocialMediaLinks as $socialMedia)
+                                            @foreach ($socialMediaAccounts as $account)
                                                 <tr>
                                                     <th scope="row" width="10%">
-                                                        {{ $socialMedia->title }}</th>
+                                                        {{ $account->title }}</th>
                                                     <td colspan="3">
                                                         <a target="_blank"
-                                                            href="{{ $socialMedia->link }}">{{ $socialMedia->link }}</a>
+                                                            href="{{ $socialMediaLinks[$account->title] ?? '' }}">{{ $employeeSocialMediaLinks[$account->title] ?? '' }}</a>
                                                     </td>
                                                 </tr>
                                             @endforeach

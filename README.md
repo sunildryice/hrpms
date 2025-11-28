@@ -1,64 +1,124 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# HRPMS - Human Resource & Project Management System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This project is a comprehensive Human Resource and Project Management System built on the [Laravel](https://laravel.com) framework. It is designed to manage various aspects of organizational operations, including employee management, payroll, leave requests, inventory, and more.
 
-## About Laravel
+## Technology Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-   **Framework:** Laravel 9.x
+-   **Language:** PHP ^8.0.2
+-   **Database:** MySQL (Standard Laravel support)
+-   **Frontend:** Blade Templates, jQuery, Bootstrap
+-   **Key Libraries:**
+    -   `yajra/laravel-datatables`: For advanced table interactions.
+    -   `maatwebsite/excel`: For Excel imports and exports.
+    -   `barryvdh/laravel-dompdf`: For PDF generation.
+    -   `rats/zkteco`: For ZKTeco biometric device integration.
 
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Architecture
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The application follows a **Modular Architecture**. Instead of grouping code by type (Controllers, Models), the system is divided into functional modules located in the `modules/` directory.
 
-## Learning Laravel
+### Directory Structure
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   `app/`: Core application code and shared helpers.
+-   `modules/`: Contains domain-specific modules (e.g., `Employee`, `Payroll`).
+-   `config/`: Application configuration files.
+-   `database/`: Migrations, factories, and seeders.
+-   `resources/`: Views, assets (JS/CSS), and language files.
+-   `routes/`: Web and API route definitions.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Modules
 
-## Laravel Sponsors
+The system is composed of several independent modules, including but not limited to:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+-   **Employee Management:** `Employee`, `Profile`, `EmployeeExit`, `ProbationaryReview`
+-   **Attendance & Leave:** `EmployeeAttendance`, `LeaveRequest`, `WorkLog`
+-   **Payroll & Finance:** `Payroll`, `PaymentSheet`, `AdvanceRequest`, `FundRequest`
+-   **Procurement & Inventory:** `Inventory`, `PurchaseRequest`, `PurchaseOrder`, `Grn` (Goods Received Note), `Supplier`
+-   **Travel & Logistics:** `TravelRequest`, `TravelAuthorization`, `VehicleRequest`, `TransportationBill`
+-   **General Administration:** `MeetingHallBooking`, `Announcement`, `Memo`
 
-### Premium Partners
+## Installation
 
--   **[Vehikl](https://vehikl.com/)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Cubet Techno Labs](https://cubettech.com)**
--   **[Cyber-Duck](https://cyber-duck.co.uk)**
--   **[Many](https://www.many.co.uk)**
--   **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
--   **[DevSquad](https://devsquad.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
--   **[OP.GG](https://op.gg)**
--   **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
--   **[Lendio](https://lendio.com)**
+### Prerequisites
 
-## Contributing
+-   PHP >= 8.0.2
+-   Composer
+-   Node.js & NPM
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Setup Steps
 
-## Code of Conduct
+1.  **Clone the repository**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```bash
+    git clone https://gitlab.com/dryicesolutions/php-application/hrpms.git
+    cd hrpms
+    ```
 
-## Security Vulnerabilities
+2.  **Install PHP Dependencies**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    ```bash
+    composer install
+    ```
 
-## License
+3.  **Install Frontend Dependencies**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    npm install
+    npm run dev
+    ```
+
+4.  **Environment Configuration**
+    Copy the example environment file and configure your database credentials.
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+5.  **Database Migration**
+    Run migrations to set up the database schema.
+
+    ```bash
+    php artisan migrate
+    ```
+
+6.  **Serve the Application**
+    ```bash
+    php artisan serve
+    ```
+
+## Testing
+
+For testing purposes, you can access the live testing environment at:
+[https://hrpms.dryicesolutions.net/](https://hrpms.dryicesolutions.net/)
+
+## Development Workflow & Contribution
+
+To contribute to this project, please follow these steps:
+
+1.  **Create a Branch**
+
+    -   For new features: `feat/feature-name`
+    -   For bug fixes: `fix/bug-name`
+
+2.  **Push Changes**
+    Push your branch to the remote repository.
+
+3.  **Merge Request**
+    Create a Merge Request (MR) targeting the `uat` branch.
+
+## Documentation & Usage
+
+Each module within the `modules/` directory typically contains its own set of:
+
+-   **Controllers:** Handling HTTP requests.
+-   **Models:** Database interactions.
+-   **Views:** User interface templates.
+-   **Migrations:** Database schema changes specific to the module.
+
+For specific feature implementation details, refer to the code within the respective module folder.
+
+## Support
+
+For issues or feature requests, please contact the development team or check the project repository issues section.

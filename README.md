@@ -51,7 +51,7 @@ The system is composed of several independent modules, including but not limited
 1.  **Clone the repository**
 
     ```bash
-    git clone <repository-url>
+    git clone https://gitlab.com/dryicesolutions/php-application/hrpms.git
     cd hrpms
     ```
 

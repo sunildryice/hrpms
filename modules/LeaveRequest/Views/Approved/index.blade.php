@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#approved-leave-requests-menu').addClass('active');
 
             var oTable = $('#approvedLeaveRequestTable').DataTable({
@@ -12,17 +12,53 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('approved.leave.requests.index') }}",
-                columns: [
-                    {data: 'DT_RowIndex', name:'DT_RowIndex', orderable: false, searchable: false},
-                    {data: 'leave_type', name: 'leave_type'},
-                    {data: 'request_days', name: 'request_days'},
-                    {data: 'request_date', name: 'request_date'},
-                    {data: 'leave_number', name: 'leave_number'},
-                    {data: 'start_date', name: 'start_date'},
-                    {data: 'end_date', name: 'end_date'},
-                    {data: 'requester', name: 'requester'},
-                    {data: 'status', name: 'status', orderable: false, searchable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false,  className:"sticky-col"},
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'leave_type',
+                        name: 'leave_type'
+                    },
+                    {
+                        data: 'request_days',
+                        name: 'request_days'
+                    },
+                    {
+                        data: 'request_date',
+                        name: 'request_date'
+                    },
+                    {
+                        data: 'leave_number',
+                        name: 'leave_number'
+                    },
+                    {
+                        data: 'start_date',
+                        name: 'start_date'
+                    },
+                    {
+                        data: 'end_date',
+                        name: 'end_date'
+                    },
+                    {
+                        data: 'requester',
+                        name: 'requester'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: "sticky-col"
+                    },
                 ]
             });
         });
@@ -32,8 +68,8 @@
     <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
+                <div class="brd-crms flex-grow-1">
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item">
                                 <a href="{{ route('dashboard.index') }}" class="text-decoration-none text-dark">Home</a>

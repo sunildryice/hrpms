@@ -580,24 +580,24 @@
                         departure_date: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Departure Date is required',
+                                    message: 'Departure Date & Time is required'
                                 },
                                 date: {
-                                    format: 'YYYY-MM-DD',
-                                    message: 'The value is not a valid date',
-                                },
-                            },
+                                    format: 'YYYY-MM-DD HH:mm',
+                                    message: 'Please select a valid departure date & time'
+                                }
+                            }
                         },
                         arrival_date: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Arrival date is required',
+                                    message: 'Arrival Date & Time is required'
                                 },
                                 date: {
-                                    format: 'YYYY-MM-DD',
-                                    message: 'The value is not a valid date',
-                                },
-                            },
+                                    format: 'YYYY-MM-DD HH:mm',
+                                    message: 'Please select a valid arrival date & time'
+                                }
+                            }
                         },
                         departure_place: {
                             validators: {
@@ -668,7 +668,7 @@
                             validating: 'bi bi-arrow-repeat',
                         }),
                         startEndDate: new FormValidation.plugins.StartEndDate({
-                            format: 'YYYY-MM-DD',
+                            format: 'YYYY-MM-DD HH:mm',
                             startDate: {
                                 field: 'departure_date',
                                 message: 'Departure date must be a valid date and earlier than arrival date.',
@@ -710,30 +710,40 @@
                     }
                 })
 
-                $(itineraryForm).find('[name="departure_date"]').datepicker({
-                    language: 'en-GB',
-                    autoHide: true,
-                    format: 'yyyy-mm-dd',
-                    startDate: '{!! $travelRequest->departure_date !!}',
-                    endDate: '{!! $travelRequest->return_date !!}',
-                    zIndex: 2048,
-                }).on('change', function(e) {
-                    fv.revalidateField('departure_date');
-                    fv.revalidateField('arrival_date');
-                });
+                setTimeout(() => {
+                    $('.datetime-picker').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePicker24Hour: true,
+                        timePickerIncrement: 5,
+                        autoApply: true,
+                        minDate: '{!! $travelRequest->departure_date->format('Y-m-d H:i') !!}',
+                        maxDate: '{!! $travelRequest->return_date->format('Y-m-d H:i') !!}',
+                        locale: {
+                            format: 'YYYY-MM-DD HH:mm'
+                        }
+                    });
 
-                $(itineraryForm).find('[name="arrival_date"]').datepicker({
-                    language: 'en-GB',
-                    autoHide: true,
-                    format: 'yyyy-mm-dd',
-                    startDate: '{!! $travelRequest->departure_date !!}',
-                    endDate: '{!! $travelRequest->return_date !!}',
-                    zIndex: 2048,
-                }).on('change', function(e) {
-                    fv.revalidateField('departure_date');
-                    fv.revalidateField('arrival_date');
-                });
+                    @if (isset($itinerary))
+                        @if ($itinerary->departure_date)
+                            $('[name="departure_date"]').data('daterangepicker').setStartDate(
+                                '{!! $itinerary->departure_date->format('Y-m-d H:i') !!}'
+                            );
+                        @endif
+                        @if ($itinerary->arrival_date)
+                            $('[name="arrival_date"]').data('daterangepicker').setStartDate(
+                                '{!! $itinerary->arrival_date->format('Y-m-d H:i') !!}'
+                            );
+                        @endif
+                    @endif
 
+                    // Revalidate on date change
+                    $(document).on('apply.daterangepicker hide.daterangepicker', '.datetime-picker',
+                        function() {
+                            fv.revalidateField('departure_date');
+                            fv.revalidateField('arrival_date');
+                        });
+                }, 300);
 
                 $(itineraryForm).on('change', '[name="activity_code_id"]', function(e) {
                     $element = $(this);

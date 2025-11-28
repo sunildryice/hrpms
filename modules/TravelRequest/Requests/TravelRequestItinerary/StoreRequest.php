@@ -28,18 +28,18 @@ class StoreRequest extends FormRequest
 
         return [
             'activity_code_id' => 'required|exists:lkup_activity_codes,id',
-            'account_code_id' => 'required|exists:lkup_account_codes,id',
-            'donor_code_id' => 'nullable|exists:lkup_donor_codes,id',
             'travel_modes' => 'array',
             'travel_mode' => 'nullable',
-            'dsa_category_id' => 'required',
             'departure_date' => 'required|date|after_or_equal:'.$travelRequest->departure_date->format('Y-m-d').'|before_or_equal:arrival_date',//.$this->arrival_date,
             'arrival_date' => 'required|date|before_or_equal: '.$travelRequest->return_date->format('Y-m-d').'|after_or_equal:departure_date',//.$this->departure_date,
             'departure_place' => 'required',
             'arrival_place' => 'required',
-            'dsa_unit_price' => 'required|numeric',
-            'charging_office_id' => 'required|numeric',
             'description' => 'required',
+            // 'account_code_id' => 'required|exists:lkup_account_codes,id',
+            // 'donor_code_id' => 'nullable|exists:lkup_donor_codes,id',
+            // 'dsa_category_id' => 'required',
+            // 'dsa_unit_price' => 'required|numeric',
+            // 'charging_office_id' => 'required|numeric',
         ];
     }
 

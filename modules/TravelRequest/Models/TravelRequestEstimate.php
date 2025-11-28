@@ -30,9 +30,12 @@ class TravelRequestEstimate extends Model
         'estimated_dsa',
         'estimated_air_fare',
         'estimated_vehicle_fare',
-        'advance_amount',
+        'estimated_hotel_accommodation',
+        'estimated_airport_taxi',
         'miscellaneous_amount',
+        'estimated_event_activities_cost',
         'miscellaneous_remarks',
+        'total_amount',
         'created_by',
         'updated_by',
     ];
@@ -54,6 +57,6 @@ class TravelRequestEstimate extends Model
 
     public function getTotalAmount()
     {
-        return  $this->estimated_dsa + $this->estimated_air_fare + $this->estimated_vehicle_fare + $this->miscellaneous_amount;
+        return $this->estimated_dsa + $this->estimated_air_fare + $this->estimated_vehicle_fare + $this->miscellaneous_amount + $this->estimated_hotel_accommodation + $this->estimated_airport_taxi + $this->estimated_event_activities_cost;
     }
 }

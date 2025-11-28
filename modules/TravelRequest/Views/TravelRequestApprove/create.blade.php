@@ -47,24 +47,24 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
-                {
-                    data: 'dsa_category',
-                    name: 'dsa_category',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
-                },
-                {
-                    data: 'dsa_total_price',
-                    name: 'dsa_total_price'
-                },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
             ]
         });
 
@@ -88,8 +88,20 @@
                     name: 'estimated_vehicle_fare'
                 },
                 {
+                    data: 'estimated_hotel_accommodation',
+                    name: 'estimated_hotel_accommodation'
+                },
+                {
+                    data: 'estimated_airport_taxi',
+                    name: 'estimated_airport_taxi'
+                },
+                {
                     data: 'miscellaneous_amount',
                     name: 'miscellaneous_amount'
+                },
+                {
+                    data: 'estimated_event_activities_cost',
+                    name: 'estimated_event_activities_cost'
                 },
                 {
                     data: 'miscellaneous_remarks',
@@ -98,10 +110,6 @@
                 {
                     data: 'total_amount',
                     name: 'total_amount'
-                },
-                {
-                    data: 'advance_amount',
-                    name: 'advance_amount'
                 },
             ]
         });
@@ -219,10 +227,10 @@
                                         <th scope="col">{{ __('label.mode-of-travel') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        <th scope="col">{{ __('label.donor') }}</th>
+                                        {{-- <th scope="col">{{ __('label.donor') }}</th>
                                         <th scope="col">{{ __('label.dsa-category') }}</th>
                                         <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                        <th scope="col">{{ __('label.total-dsa') }}</th>
+                                        <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -233,7 +241,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header fw-bold">
-                        Travel Cost Estimation
+                        Travel Advance Request
                     </div>
                     <div class='card-body'>
                         <div class="table-responsive">
@@ -243,10 +251,12 @@
                                         <th scope="col">{{ __('label.estimated-dsa') }}</th>
                                         <th scope="col">{{ __('label.estimated-air-fare') }}</th>
                                         <th scope="col">{{ __('label.estimated-vehicle-fare') }}</th>
+                                        <th scope="col">{{ __('label.estimated-hotel-accommodation') }}</th>
+                                        <th scope="col">{{ __('label.estimated-airport-taxi') }}</th>
                                         <th scope="col">{{ __('label.miscellaneous-amount') }}</th>
+                                        <th scope="col">{{ __('label.estimated-event-activities-cost') }}</th>
                                         <th scope="col">{{ __('label.miscellaneous-remarks') }}</th>
                                         <th scope="col">{{ __('label.total-amount') }}</th>
-                                        <th scope="col">{{ __('label.advance-amount') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -273,7 +283,8 @@
                                             <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
                                             <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                         </div>
-                                        <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                        <small
+                                            title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                     </div>
                                     <p class="text-justify comment-text mb-0 mt-1">
                                         {{ $log->log_remarks }}
@@ -300,7 +311,7 @@
                                                 to Requester
                                             </option>
 
-                                            @unless($travelRequest->modification_number)
+                                            @unless ($travelRequest->modification_number)
                                                 <option value="8" @if (old('status_id') == '8') selected @endif>Reject
                                                 </option>
                                             @endunless

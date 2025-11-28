@@ -103,7 +103,7 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-2 row">
+            {{-- <div class="mb-2 row">
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
                         <label for="validationProject" class="form-label required-label">Account Code
@@ -182,7 +182,7 @@
                         @endforeach
                     </select>
                 </div>
-            </div>
+            </div> --}}
 
 
             <div class="mb-2 row">

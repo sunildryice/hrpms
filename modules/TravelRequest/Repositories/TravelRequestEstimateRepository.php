@@ -2,10 +2,10 @@
 
 namespace Modules\TravelRequest\Repositories;
 
+use DB;
 use App\Repositories\Repository;
 use Modules\TravelRequest\Models\TravelRequestEstimate;
 
-use DB;
 
 class TravelRequestEstimateRepository extends Repository
 {

@@ -27,9 +27,12 @@ class StoreRequest extends FormRequest
             'estimated_dsa'=>'required|numeric',
             'estimated_air_fare'=>'nullable|numeric',
             'estimated_vehicle_fare'=>'nullable|numeric',
-            'advance_amount'=>'nullable|numeric',
+            'estimated_hotel_accommodation'=>'nullable|numeric',
+            'estimated_airport_taxi'=>'nullable|numeric',
             'miscellaneous_amount'=>'nullable|numeric',
+            'estimated_event_activities_cost'=>'nullable|numeric',
             'miscellaneous_remarks'=>'nullable|string',
+            'total_amount'=>'nullable|numeric',
         ];
     }
 

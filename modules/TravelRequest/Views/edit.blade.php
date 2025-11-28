@@ -92,6 +92,120 @@
                 },
             });
 
+            // Passport Section Toggle
+            const travelTypeSelect = document.querySelector('select[name="travel_type_id"]');
+            const passportSection = document.getElementById('passportSection');
+
+            function togglePassportSection() {
+                if (travelTypeSelect.value == '2') {
+                    passportSection.style.display = 'block';
+                } else {
+                    passportSection.style.display = 'none';
+                }
+            }
+            togglePassportSection();
+            travelTypeSelect.addEventListener('change', togglePassportSection);
+            $(travelTypeSelect).on('change', togglePassportSection);
+
+
+            // External Travelers Dynamic Rows 
+            const countInput = document.getElementById('external_traveler_count');
+            const container = document.getElementById('external-travelers-container');
+
+            function renderExternalTravelers() {
+                const count = parseInt(countInput.value) || 0;
+                if (count < 0) {
+                    countInput.value = 0;
+                    return;
+                }
+
+                const existingRows = Array.from(container.querySelectorAll('.external-traveler-row'));
+                container.innerHTML = '';
+
+                for (let i = 0; i < count; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'row mb-2 align-items-end external-traveler-row';
+
+                    const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
+                    const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+
+                    let rowHTML = `
+                    <div class="col-lg-3"></div>
+                    <div class="col-md-4">
+                        <input type="text" 
+                               name="external_travelers[${i}][name]" 
+                               class="form-control" 
+                               placeholder="Full Name *" 
+                               value="${oldName}" 
+                               required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="email" 
+                               name="external_travelers[${i}][email]" 
+                               class="form-control" 
+                               placeholder="Email (optional)" 
+                               value="${oldEmail}">
+                    </div>
+                    <div class="col-md-1">
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row" title="Remove">
+                        <i class="bi bi-trash"></i>
+                    </button>`;
+
+                    if (i === count - 1 && count > 0) {
+                        rowHTML += `
+                    <button type="button" class="btn btn-success btn-sm add-traveler-row ms-1" title="Add another traveler">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>`;
+                    }
+
+                    rowHTML += `
+                    </div>
+                    </div>`;
+
+                    row.innerHTML = rowHTML;
+                    container.appendChild(row);
+                }
+
+                attachRowEvents();
+            }
+
+            function attachRowEvents() {
+                // Remove row
+                document.querySelectorAll('.remove-traveler-row').forEach(btn => {
+                    btn.onclick = function() {
+                        this.closest('.external-traveler-row').remove();
+                        const newCount = container.children.length;
+                        countInput.value = newCount;
+                        if (newCount > 0) renderExternalTravelers();
+                    };
+                });
+
+                // Add row
+                document.querySelectorAll('.add-traveler-row').forEach(btn => {
+                    btn.onclick = function() {
+                        countInput.value = parseInt(countInput.value || 0) + 1;
+                        renderExternalTravelers();
+                    };
+                });
+            }
+
+            if (countInput && container) {
+                const savedCount = {{ $travelRequest->external_traveler_count ?? 0 }};
+                if (countInput.value == 0 && savedCount > 0) {
+                    countInput.value = savedCount;
+                }
+
+                renderExternalTravelers();
+
+                countInput.addEventListener('input', function() {
+                    if (this.value < 0) this.value = 0;
+                    renderExternalTravelers();
+                });
+
+                countInput.addEventListener('change', renderExternalTravelers);
+            }
+
             $(form).find('[name="departure_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
@@ -157,20 +271,20 @@
                     orderable: false,
                     searchable: false
                 },
-                {
-                    data: 'dsa_category',
-                    name: 'dsa_category',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
-                },
-                {
-                    data: 'dsa_total_price',
-                    name: 'dsa_total_price'
-                },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
                 {
                     data: 'action',
                     name: 'action',
@@ -221,8 +335,20 @@
                     name: 'estimated_vehicle_fare'
                 },
                 {
+                    data: 'estimated_hotel_accommodation',
+                    name: 'estimated_hotel_accommodation'
+                },
+                {
+                    data: 'estimated_airport_taxi',
+                    name: 'estimated_airport_taxi'
+                },
+                {
                     data: 'miscellaneous_amount',
                     name: 'miscellaneous_amount'
+                },
+                {
+                    data: 'estimated_event_activities_cost',
+                    name: 'estimated_event_activities_cost'
                 },
                 {
                     data: 'miscellaneous_remarks',
@@ -231,10 +357,6 @@
                 {
                     data: 'total_amount',
                     name: 'total_amount'
-                },
-                {
-                    data: 'advance_amount',
-                    name: 'advance_amount'
                 },
                 {
                     data: 'action',
@@ -275,10 +397,10 @@
                         estimated_dsa: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Estimated DSA is required',
+                                    message: 'The Estimated DSA is required',
                                 },
                                 numeric: {
-                                    message: 'The Estimated Air Fare should be number.',
+                                    message: 'The Estimated DSA should be number.',
                                 },
                                 between: {
                                     inclusive: true,
@@ -314,10 +436,23 @@
                                 },
                             },
                         },
-                        advance_amount: {
+                        estimated_hotel_accommodation: {
                             validators: {
                                 numeric: {
-                                    message: 'The Advance Amount should be number.',
+                                    message: 'The Estimated Hotel Accommodation  should be number.',
+                                },
+                                between: {
+                                    inclusive: true,
+                                    min: 0,
+                                    max: 99999999,
+                                    message: 'The value must be between 0 to 99999999',
+                                },
+                            },
+                        },
+                        estimated_airport_taxi: {
+                            validators: {
+                                numeric: {
+                                    message: 'The Estimated Airport Taxi should be number.',
                                 },
                                 between: {
                                     inclusive: true,
@@ -339,6 +474,26 @@
                                     message: 'The value must be between 0 to 99999999',
                                 },
                             },
+                        },
+                        estimated_event_activities_cost: {
+                            validators: {
+                                numeric: {
+                                    message: 'The Estimated Event/Activities Amount should be number.',
+                                },
+                                between: {
+                                    inclusive: true,
+                                    min: 0,
+                                    max: 99999999,
+                                    message: 'The value must be between 0 to 99999999',
+                                },
+                            },
+                        },
+                        total_amount: {
+                            validators: {
+                                numeric: {
+                                    message: 'Total amount is invalid'
+                                }
+                            }
                         },
                     },
                     plugins: {
@@ -368,6 +523,39 @@
                         estimateTable.ajax.reload();
                     }
                     ajaxSubmit($url, 'POST', data, successCallback);
+                });
+                const fields = [
+                    'estimated_dsa',
+                    'estimated_air_fare',
+                    'estimated_vehicle_fare',
+                    'estimated_hotel_accommodation',
+                    'estimated_airport_taxi',
+                    'miscellaneous_amount',
+                    'estimated_event_activities_cost'
+                ];
+
+                const totalInput = document.getElementById('total_amount');
+
+                function calculateTotal() {
+                    let sum = 0;
+                    fields.forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input) {
+                            const val = parseFloat(input.value) || 0;
+                            sum += val;
+                        }
+                    });
+                    totalInput.value = sum.toFixed(2);
+                }
+
+                calculateTotal();
+
+                fields.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.addEventListener('input', calculateTotal);
+                        el.addEventListener('change', calculateTotal);
+                    }
                 });
             });
         });
@@ -515,9 +703,9 @@
 
                 $(itineraryForm).find('.travel-mode').on('change', function() {
                     let selectedValues = $(this).val();
-                    if(selectedValues.includes('7')){
+                    if (selectedValues.includes('7')) {
                         $(itineraryForm).find('.other-travel-mode').show();
-                    }else {
+                    } else {
                         $(itineraryForm).find('.other-travel-mode').hide();
                     }
                 })
@@ -662,34 +850,87 @@
                             @endif
                         </div>
                     </div>
-                    <div class="row mb-2">
+                    <div id="passportSection" style="display: none;">
+                        <div class="row mb-3">
                             <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label for="validationProject" class="form-label">Request For
-                                    </label>
+                                <label class="form-label">Passport Number</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-control bg-light border-0">
+                                    @if ($employeePassportNumber)
+                                        <strong class="text-dark">{{ $employeePassportNumber }}</strong>
+                                    @else
+                                        <span class="text-danger">
+                                            <i class="bi bi-x-circle"></i> Not provided
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="col-lg-9">
-                                <select name="employee_id" class="select2 form-control
-                                        @if($errors->has('employee_id')) is-invalid @endif"
-                                    data-width="100%">
-                                    <option value="">Select Consultant</option>
-                                    @foreach($consultants as $consultant)
-                                      <option value="{{ $consultant->id }}" {{$consultant->id == (old('employee_id') ?? $travelRequest->employee_id)?
-                                        "selected":""}}>
+
+                            <div class="col-lg-3">
+                                <label class="form-label">Passport Attachment</label>
+                            </div>
+                            <div class="col-lg-3">
+                                <div
+                                    class="form-control bg-light border-0 d-flex align-items-center justify-content-between">
+                                    @if ($employeePassportAttachment && \Storage::disk('public')->exists($employeePassportAttachment))
+                                        <a href="{{ asset('storage/' . $employeePassportAttachment) }}" target="_blank"
+                                            class="btn btn-success btn-sm">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <small class="text-success ms-2">
+                                            <i class="bi bi-check-circle-fill"></i> Uploaded
+                                        </small>
+                                    @else
+                                        <span class="text-warning">
+                                            <i class="bi bi-exclamation-triangle"></i> Not uploaded
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!$employeePassportNumber && !$employeePassportAttachment)
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="alert alert-warning border small py-2 mb-3" role="alert">
+                                        <i class="bi bi-info-circle"></i>
+                                        <strong>Action Required:</strong> Please update your profile with passport details
+                                        for international travel.
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    {{-- <div class="row mb-2">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label for="validationProject" class="form-label">Request For
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <select name="employee_id"
+                                class="select2 form-control
+                                        @if ($errors->has('employee_id')) is-invalid @endif"
+                                data-width="100%">
+                                <option value="">Select Consultant</option>
+                                @foreach ($consultants as $consultant)
+                                    <option value="{{ $consultant->id }}"
+                                        {{ $consultant->id == (old('employee_id') ?? $travelRequest->employee_id) ? 'selected' : '' }}>
                                         {{ $consultant->getFullName() }}
                                     </option>
-                                    @endforeach
-                                </select>
-                                @if($errors->has('employee_id'))
+                                @endforeach
+                            </select>
+                            @if ($errors->has('employee_id'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="employee_id">
                                         {!! $errors->first('employee_id') !!}
                                     </div>
                                 </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
+                    </div> --}}
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -712,24 +953,6 @@
                                     <div data-field="accompanying_staff">
                                         {!! $errors->first('accompanying_staff') !!}
                                     </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-lg-3">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose
-                                    of Travel </label>
-                            </div>
-                        </div>
-                        <div class="col-lg-9">
-                            <input type="text" class="form-control @if ($errors->has('purpose_of_travel')) is-invalid @endif"
-                                name="purpose_of_travel" value="{{ $travelRequest->purpose_of_travel }}"
-                                placeholder="Purpose of travel">
-                            @if ($errors->has('purpose_of_travel'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="purpose_of_travel">{!! $errors->first('purpose_of_travel') !!}</div>
                                 </div>
                             @endif
                         </div>
@@ -760,6 +983,24 @@
                                     <div data-field="project_code_id">
                                         {!! $errors->first('project_code_id') !!}
                                     </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose
+                                    of Travel </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control @if ($errors->has('purpose_of_travel')) is-invalid @endif"
+                                name="purpose_of_travel" value="{{ $travelRequest->purpose_of_travel }}"
+                                placeholder="Purpose of travel">
+                            @if ($errors->has('purpose_of_travel'))
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <div data-field="purpose_of_travel">{!! $errors->first('purpose_of_travel') !!}</div>
                                 </div>
                             @endif
                         </div>
@@ -852,7 +1093,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="row mb-2">
+                    {{-- <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationRemarks" class="m-0">Remarks </label>
@@ -866,7 +1107,48 @@
                                 </div>
                             @endif
                         </div>
+                    </div> --}}
+                    {{-- External Travelers (Outside Organization) --}}
+                    <div class="row mb-3">
+                        <div class="col-lg-3">
+                            <div class="d-flex align-items-start h-100">
+                                <label class="form-label">Number of travelers (if any outside the organization)</label>
+                            </div>
+                        </div>
+                        <div class="col-lg-9">
+                            <input type="number" min="0" id="external_traveler_count"
+                                name="external_traveler_count" class="form-control"
+                                value="{{ old('external_traveler_count', $travelRequest->external_traveler_count ?? 0) }}"
+                                placeholder="e.g. 0, 1, 2, 3...">
+                            <small class="text-muted">Enter 0 if no external travelers</small>
+                        </div>
                     </div>
+
+                    <div id="external-travelers-container" class="mb-4">
+                        @foreach ($travelRequest->external_travelers as $index => $traveler)
+                            <div class="row mb-2 align-items-end external-traveler-row">
+                                <div class="col-lg-3">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" name="external_travelers[{{ $index }}][name]"
+                                        class="form-control" placeholder="Full Name *"
+                                        value="{{ old("external_travelers.$index.name", $traveler['name'] ?? '') }}"
+                                        required>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="email" name="external_travelers[{{ $index }}][email]"
+                                        class="form-control" placeholder="Email (optional)"
+                                        value="{{ old("external_travelers.$index.email", $traveler['email'] ?? '') }}">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -923,9 +1205,9 @@
                                     <th scope="col">{{ __('label.to-date') }}</th>
                                     <th scope="col">{{ __('label.to-place') }}</th>
                                     <th scope="col">{{ __('label.mode-of-travel') }}</th>
-                                    <th scope="col">{{ __('label.dsa-category') }}</th>
+                                    {{-- <th scope="col">{{ __('label.dsa-category') }}</th>
                                     <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                    <th scope="col">{{ __('label.total-dsa') }}</th>
+                                    <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
@@ -936,16 +1218,14 @@
 
                 </div>
             </div>
-            <div class="card estimateDiv">
+            <div class="card ">
                 <div class="card-header fw-bold">
-                    <div class="d-flex align-items-center add-info justify-content-end">
-                        <span> Travel Cost Estimation</span>
-                        <div class="estimateAddBlock" @if ($travelRequest->travelRequestEstimate) style="display:none;" @endif>
-                            <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
-                                href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
-                                <i class="bi-plus"></i> Add Estimation
-                            </button>
-                        </div>
+                    <div class="d-flex align-items-center add-info justify-content-between">
+                        <span> Travel Advance Request</span>
+                        <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
+                            href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
+                            <i class="bi-plus"></i> Add Estimation
+                        </button>
                     </div>
                 </div>
                 <div class="card-body estimate">
@@ -956,10 +1236,12 @@
                                     <th scope="col">{{ __('label.estimated-dsa') }}</th>
                                     <th scope="col">{{ __('label.estimated-air-fare') }}</th>
                                     <th scope="col">{{ __('label.estimated-vehicle-fare') }}</th>
+                                    <th scope="col">{{ __('label.estimated-hotel-accommodation') }}</th>
+                                    <th scope="col">{{ __('label.estimated-airport-taxi') }}</th>
                                     <th scope="col">{{ __('label.miscellaneous-amount') }}</th>
+                                    <th scope="col">{{ __('label.estimated-event-activities-cost') }}</th>
                                     <th scope="col">{{ __('label.miscellaneous-remarks') }}</th>
                                     <th scope="col">{{ __('label.total-amount') }}</th>
-                                    <th scope="col">{{ __('label.advance-amount') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>

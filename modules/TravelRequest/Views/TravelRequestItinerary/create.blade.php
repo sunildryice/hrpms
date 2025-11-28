@@ -15,7 +15,9 @@
                 <div class="col-lg-3">
                     <div class="row">
                         <div class="input-group has-validation">
-                            <input type="text" class="form-control" name="departure_date" autofocus="">
+                            <input type="text" class="form-control datetime-picker" name="departure_date"
+                                placeholder="YYYY-MM-DD HH:mm" readonly>
+                            <div class="invalid-feedback"></div>
                         </div>
                     </div>
                 </div>
@@ -41,7 +43,9 @@
                 <div class="col-lg-3">
                     <div class="row">
                         <div class="input-group has-validation">
-                            <input type="text" class="form-control" name="arrival_date" autofocus="">
+                            <input type="text" class="form-control datetime-picker" name="arrival_date"
+                                placeholder="YYYY-MM-DD HH:mm" readonly>
+                            <div class="invalid-feedback"></div>
                         </div>
                     </div>
                 </div>

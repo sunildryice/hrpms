@@ -122,13 +122,13 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="supervisor_id" class="form-label">Supervisor</label>
+                    <label for="supervisor_id" class="form-label">Line Manager</label>
                 </div>
             </div>
             <div class="col-lg-9">
                 <select name="supervisor_id"
                     class="select2 form-control @if ($errors->has('supervisor_id')) is-invalid @endif" data-width="100%">
-                    <option value="">Select a Supervisor</option>
+                    <option value="">Select a Line Manager</option>
                     @foreach ($supervisors as $supervisor)
                         <option value="{{ $supervisor->id }}" @if ($selectedSupervisorId == $supervisor->id) selected @endif>
                             {{ $supervisor->getFullName() }}</option>
@@ -144,37 +144,14 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="cross_supervisor_id" class="form-label">Cross Supervisor</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select name="cross_supervisor_id"
-                    class="select2 form-control @if ($errors->has('cross_supervisor_id')) is-invalid @endif"
-                    data-width="100%">
-                    <option value="">Select a Cross Supervisor</option>
-                    @foreach ($supervisors as $supervisor)
-                        <option value="{{ $supervisor->id }}" @if ($selectedCrossSupervisorId == $supervisor->id) selected @endif>
-                            {{ $supervisor->getFullName() }}</option>
-                    @endforeach
-                </select>
-                @if ($errors->has('cross_supervisor_id'))
-                    <div class="fv-plugins-message-container invalid-feedback">
-                        <div data-field="cross_supervisor_id">{!! $errors->first('cross_supervisor_id') !!}</div>
-                    </div>
-                @endif
-            </div>
-        </div>
-        <div class="mb-2 row">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="next_line_manager_id" class="form-label">Next Line Manager</label>
+                    <label for="next_line_manager_id" class="form-label">Reviewer</label>
                 </div>
             </div>
             <div class="col-lg-9">
                 <select name="next_line_manager_id"
                     class="select2 form-control @if ($errors->has('next_line_manager_id')) is-invalid @endif"
                     data-width="100%">
-                    <option value="">Select a Next Line Manager</option>
+                    <option value="">Select a Reviewer</option>
                     @foreach ($supervisors as $supervisor)
                         <option value="{{ $supervisor->id }}" @if ($selectedNextLineManagerId == $supervisor->id) selected @endif>
                             {{ $supervisor->getFullName() }}</option>
@@ -290,27 +267,7 @@
                                 compare: function() {
                                     return form.querySelector('[name="next_line_manager_id"]').value;
                                 },
-                                message: 'The supervisor and next line manager cannot be the same.',
-                            },
-                        },
-                    },
-                    cross_supervisor_id: {
-                        validators: {
-                            different: {
-                                compare: function() {
-                                    return form.querySelector('[name="supervisor_id"]').value;
-                                },
-                                message: 'The supervisor and cross supervisor cannot be the same.',
-                            },
-                        },
-                    },
-                    next_line_manager_id: {
-                        validators: {
-                            different: {
-                                compare: function() {
-                                    return form.querySelector('[name="cross_supervisor_id"]').value;
-                                },
-                                message: 'The next line manager and cross supervisor cannot be the same.',
+                                message: 'The line manager and reviewer cannot be the same.',
                             },
                         },
                     },
@@ -350,15 +307,12 @@
                 fv.revalidateField('designation_id');
             }).on('change', '[name="supervisor_id"]', function(e) {
                 fv.revalidateField('supervisor_id');
-                fv.revalidateField('cross_supervisor_id');
                 fv.revalidateField('next_line_manager_id');
             }).on('change', '[name="cross_supervisor_id"]', function(e) {
                 fv.revalidateField('supervisor_id');
-                fv.revalidateField('cross_supervisor_id');
                 fv.revalidateField('next_line_manager_id');
             }).on('change', '[name="next_line_manager_id"]', function(e) {
                 fv.revalidateField('supervisor_id');
-                fv.revalidateField('cross_supervisor_id');
                 fv.revalidateField('next_line_manager_id');
             }).on('change', '[name="office_id"]', function(e) {
                 fv.revalidateField('office_id');

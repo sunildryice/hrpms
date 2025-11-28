@@ -244,11 +244,11 @@ class LeaveRequest extends Model
 
     public function getLeaveNumber()
     {
-        $leaveNumber = $this->prefix.'-'.$this->leave_number;
-        $leaveNumber .= $this->modification_number ? '-'.$this->modification_number : '';
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2) : '';
+        $leaveNumber = $this->prefix . '-' . $this->leave_number;
+        $leaveNumber .= $this->modification_number ? '-' . $this->modification_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
-        return $leaveNumber.$fiscalYear;
+        return $leaveNumber . $fiscalYear;
     }
 
     public function getLeaveType()

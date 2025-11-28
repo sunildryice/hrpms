@@ -113,7 +113,7 @@ class LeaveType extends Model
 
     public function getPaidStatus()
     {
-        return $this->paid ==1 ? 'Paid' : 'Unpaid';
+        return $this->paid == 1 ? 'Paid' : 'Unpaid';
     }
 
     public function getUpdatedAt()

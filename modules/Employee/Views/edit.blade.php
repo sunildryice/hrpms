@@ -538,6 +538,13 @@
                                 </a>
                             </li>
                         @endif
+
+
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="social-media">
+                                <i class="nav-icon bi bi-globe"></i> Social Media
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -676,6 +683,11 @@
                     </div>
                 @endif
 
+                <div class="c-tabs-content" id="social-media">
+                    <div class="mb-5 card">
+                        @include('Employee::SocialMedia.edit')
+                    </div>
+                </div>
             </div>
         </div>
     </section>

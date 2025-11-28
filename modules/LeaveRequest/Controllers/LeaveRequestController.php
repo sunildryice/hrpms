@@ -70,7 +70,7 @@ class LeaveRequestController extends Controller
                 })->addColumn('request_date', function ($row) {
                     return $row->getRequestDate();
                 })->addColumn('request_days', function ($row) {
-                    return $row->getLeaveDuration().' '.$row->leaveType->getLeaveBasis();
+                    return $row->getLeaveDuration() . ' ' . $row->leaveType->getLeaveBasis();
                 })->addColumn('start_date', function ($row) {
                     return $row->getStartDate();
                 })->addColumn('end_date', function ($row) {
@@ -80,29 +80,29 @@ class LeaveRequestController extends Controller
                 })->addColumn('requester', function ($row) {
                     return $row->getRequesterName();
                 })->addColumn('status', function ($row) {
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('leave.requests.detail', $row->id).'"  data-bs-toggle="tooltip" data-bs-placement="top"
+                    $btn .= route('leave.requests.detail', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
                     title="View Leave Request"><i class="bi bi-eye"></i></a>';
                     if ($authUser->can('update', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('leave.requests.edit', $row->id).'"  data-bs-toggle="tooltip" data-bs-placement="top"
+                        $btn .= route('leave.requests.edit', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-title="Edit Leave Request"><i class="bi-pencil-square"></i></a>';
                     } elseif ($authUser->can('print', $row)) {
                         $btn .= '&emsp;<a target="_blank" class="btn btn-outline-primary btn-sm" ';
-                        $btn .= 'href="'.route('leave.requests.print', $row->id).'">';
+                        $btn .= 'href="' . route('leave.requests.print', $row->id) . '">';
                         $btn .= '<i class="bi-printer"></i></a>';
                     }
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="'.route('leave.requests.destroy', $row->id).'">';
+                        $btn .= 'data-href="' . route('leave.requests.destroy', $row->id) . '">';
                         $btn .= '<i class="bi-trash"></i></a>';
                     }
                     if ($authUser->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" data-bs-toggle="tooltip" data-bs-placement="top"
                         title="Amend Leave Request" class="btn btn-danger btn-sm amend-leave-request"';
-                        $btn .= 'data-href = "'.route('leave.requests.amend.store', $row->id).'" >';
+                        $btn .= 'data-href = "' . route('leave.requests.amend.store', $row->id) . '" >';
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
                     }
 
@@ -130,7 +130,11 @@ class LeaveRequestController extends Controller
         $sql = 'SELECT u1.* FROM employee_leaves u1
             WHERE u1.employee_id=? AND u1.reported_date = (SELECT MAX(u2.reported_date)
                                                            FROM employee_leaves u2 WHERE u2.employee_id=? AND u2.leave_type_id = u1.leave_type_id )';
+
+
         $leaveIds = \DB::select($sql, [$authUser->employee_id, $authUser->employee_id]);
+
+
         $employee = $authUser->employee;
         $leaveTypes = $this->employeeLeaves->with(['leaveType'])
             ->whereIn('id', array_column($leaveIds, 'id'))
@@ -143,11 +147,14 @@ class LeaveRequestController extends Controller
             })
             ->get();
 
+
         $activeStaffs = $this->employees->getActiveEmployees();
         $substitutes = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
         });
-        $leaveModes = $this->leaveModes->get();
+        $leaveModes = $this->leaveModes
+            ->where('title', '!=', 'No Leave')
+            ->get();
 
         $leaveTypes = $leaveTypes->sortBy(function ($leave, $key) {
             return $this->sortOrder[$leave->leave_type_id] ?? PHP_INT_MAX;
@@ -192,7 +199,7 @@ class LeaveRequestController extends Controller
         if ($leaveRequest) {
             if ($request->file('attachment')) {
                 $filename = $request->file('attachment')
-                    ->storeAs($this->destinationPath.'/'.$leaveRequest->id, time().'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $leaveRequest->id, time() . '_attachment.' . $request->file('attachment')->getClientOriginalExtension());
                 $leaveRequest->update(['attachment' => $filename]);
             }
 
@@ -229,6 +236,8 @@ class LeaveRequestController extends Controller
     {
         $authUser = auth()->user();
         $leaveRequest = $this->leaveRequests->find($id);
+
+
         $this->authorize('update', $leaveRequest);
 
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
@@ -257,7 +266,22 @@ class LeaveRequestController extends Controller
         $substitutes = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
         });
-        $leaveModes = $this->leaveModes->get();
+
+
+        if (
+            is_null($leaveRequest->modification_number) &&
+            is_null($leaveRequest->modification_leave_request_id)
+        ) {
+            $leaveModes = $this->leaveModes
+                ->where('title', '!=', 'No Leave')
+                ->get();
+        } else {
+            $leaveModes = $this->leaveModes
+                ->get();
+        }
+
+
+
         $employeeLeave = $this->employeeLeaves->select(['*'])
             ->where('employee_id', $authUser->employee_id)
             ->where('fiscal_year_id', $fiscalYear->id)
@@ -300,7 +324,7 @@ class LeaveRequestController extends Controller
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath.'/'.$leaveRequest->id, time().'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $leaveRequest->id, time() . '_attachment.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $leaveRequest = $this->leaveRequests->update($id, $inputs);

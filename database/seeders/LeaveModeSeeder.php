@@ -17,24 +17,24 @@ class LeaveModeSeeder extends Seeder
     {
         $leaveMode = new LeaveMode();
         $leaveMode->updateOrCreate(
-            ['title'=>'Full Day'],
-            ['hours'=>8],
+            ['title' => 'Full Day'],
+            ['hours' => 8],
         );
         $leaveMode->updateOrCreate(
-            ['title'=>'First Half'],
-            ['hours'=>4],
+            ['title' => 'First Half'],
+            ['hours' => 4],
         );
         $leaveMode->updateOrCreate(
-            ['title'=>'Second Half'],
-            ['hours'=>4],
+            ['title' => 'Second Half'],
+            ['hours' => 4],
         );
+        // $leaveMode->updateOrCreate(
+        //     ['title'=>'2 Hour'],
+        //     ['hours'=>2],
+        // );
         $leaveMode->updateOrCreate(
-            ['title'=>'2 Hour'],
-            ['hours'=>2],
-        );
-        $leaveMode->updateOrCreate(
-            ['title'=>'No Leave'],
-            ['hours'=>0],
+            ['title' => 'No Leave'],
+            ['hours' => 0],
         );
     }
 }

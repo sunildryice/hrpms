@@ -18,8 +18,7 @@ class FinanceController extends Controller
     public function __construct(
         protected EmployeeRepository $employees,
         protected FinanceRepository $finances,
-    ) {
-    }
+    ) {}
 
     /**
      * Store a newly created employee finance in storage.
@@ -36,9 +35,11 @@ class FinanceController extends Controller
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
         $inputs['disabled'] = $request->disabled ? 1 : 0;
+
         $employeeFinance = $this->finances->create($inputs);
+
         if ($employeeFinance) {
-        return redirect()->back()->withInput()
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee details successfully added.');
         }
 
@@ -64,7 +65,7 @@ class FinanceController extends Controller
         $inputs['disabled'] = $request->disabled ? 1 : 0;
         $employeeFinance = $this->finances->update($id, $inputs);
         if ($employeeFinance) {
-        return redirect()->back()->withInput()
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee details successfully updated.');
         }
 

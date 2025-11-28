@@ -28,6 +28,7 @@ use Modules\Employee\Controllers\LeaveImportController;
 use Modules\Employee\Controllers\MedicalController;
 use Modules\Employee\Controllers\PaymentDetailController;
 use Modules\Employee\Controllers\PaymentMasterController;
+use Modules\Employee\Controllers\SocialMediaController;
 use Modules\Employee\Controllers\TenureController;
 use Modules\Employee\Controllers\TrainingController;
 use Modules\Employee\Controllers\UserController;
@@ -139,4 +140,9 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::get('consultant/{consultant}/profile', [ConsultantController::class, 'profile'])->name('consultant.profile');
     });
 
+
+    // Route::middleware('can:manage-employee')->group(function () {
+
+    Route::post('employees/{employee}/social-media', [SocialMediaController::class, 'update'])->name('employees.social-media.update');
+    // });
 });

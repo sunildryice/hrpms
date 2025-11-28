@@ -20,6 +20,7 @@ use Modules\LeaveRequest\Controllers\ReviewLeaveRequestController;
 use Modules\LeaveRequest\Controllers\ApprovedLeaveEncashController;
 use Modules\LeaveRequest\Controllers\ApproveLeaveRequestController;
 use Modules\LeaveRequest\Controllers\ApprovedLeaveRequestController;
+use Modules\LeaveRequest\Controllers\HrApproveLeaveRequestController;
 
 //Route::middleware(['web', 'auth', 'logger', 'can:manage-employee'])->group(function () {
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
@@ -39,17 +40,27 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('leave/requests/{leave}/print', [LeaveRequestController::class, 'printLeave'])->name('leave.requests.print');
 
     // HR review leave request
-    Route::middleware('can:review-leave-request')->group(function() {
+    Route::middleware('can:review-leave-request')->group(function () {
         Route::get('review/leave/requests', [ReviewLeaveRequestController::class, 'index'])->name('review.leave.requests.index');
         Route::get('review/leave/requests/{leave}/create', [ReviewLeaveRequestController::class, 'create'])->name('review.leave.requests.create');
         Route::post('review/leave/requests/{leave}', [ReviewLeaveRequestController::class, 'store'])->name('review.leave.requests.store');
     });
-    
+
     Route::middleware('can:approve-leave-request')->group(function () {
         Route::get('approve/leave/requests', [ApproveLeaveRequestController::class, 'index'])->name('approve.leave.requests.index');
         Route::get('approve/leave/requests/{leave}/create', [ApproveLeaveRequestController::class, 'create'])->name('approve.leave.requests.create');
         Route::post('approve/leave/requests/{leave}', [ApproveLeaveRequestController::class, 'store'])->name('approve.leave.requests.store');
     });
+    Route::prefix('hr')
+        ->middleware('can:hr-approve-leave-request')
+        ->group(function () {
+
+            Route::get('approve/leave/requests', [HrApproveLeaveRequestController::class, 'index'])->name('hr.approve.leave.requests.index');
+            Route::get('approve/leave/requests/{leave}/create', [HrApproveLeaveRequestController::class, 'create'])->name('hr.approve.leave.requests.create');
+            Route::post('approve/leave/requests/{leave}', [HrApproveLeaveRequestController::class, 'store'])->name('hr.approve.leave.requests.store');
+        });
+
+
 
     Route::middleware('can:leave-encash')->group(function () {
         Route::get('leave/encash', [LeaveEncashController::class, 'index'])->name('leave.encash.index');
@@ -66,15 +77,15 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     });
 
     Route::middleware('can:review-leave-encash')->group(function () {
-    Route::get('review/leave/encash', [ReviewLeaveEncashController::class, 'index'])->name('review.leave.encash.index');
-    Route::get('review/leave/encash/{encash}/create', [ReviewLeaveEncashController::class, 'create'])->name('review.leave.encash.create');
-    Route::post('review/leave/encash/{encash}', [ReviewLeaveEncashController::class, 'store'])->name('review.leave.encash.store');
+        Route::get('review/leave/encash', [ReviewLeaveEncashController::class, 'index'])->name('review.leave.encash.index');
+        Route::get('review/leave/encash/{encash}/create', [ReviewLeaveEncashController::class, 'create'])->name('review.leave.encash.create');
+        Route::post('review/leave/encash/{encash}', [ReviewLeaveEncashController::class, 'store'])->name('review.leave.encash.store');
     });
 
     Route::middleware('can:approve-leave-encash')->group(function () {
-    Route::get('approve/leave/encash', [ApproveLeaveEncashController::class, 'index'])->name('approve.leave.encash.index');
-    Route::get('approve/leave/encash/{encash}/create', [ApproveLeaveEncashController::class, 'create'])->name('approve.leave.encash.create');
-    Route::post('approve/leave/encash/{encash}', [ApproveLeaveEncashController::class, 'store'])->name('approve.leave.encash.store');
+        Route::get('approve/leave/encash', [ApproveLeaveEncashController::class, 'index'])->name('approve.leave.encash.index');
+        Route::get('approve/leave/encash/{encash}/create', [ApproveLeaveEncashController::class, 'create'])->name('approve.leave.encash.create');
+        Route::post('approve/leave/encash/{encash}', [ApproveLeaveEncashController::class, 'store'])->name('approve.leave.encash.store');
     });
 
     Route::middleware('can:pay-leave-encash')->group(function () {

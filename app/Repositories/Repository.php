@@ -56,6 +56,7 @@ class Repository
             DB::commit();
             return $record;
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e->getMessage());
             DB::rollback();
             return false;
         }
@@ -137,7 +138,7 @@ class Repository
         return $this->model->first();
     }
 
-    public function updateOrCreate($attributes, $inputs=[])
+    public function updateOrCreate($attributes, $inputs = [])
     {
         return $this->model->updateOrCreate($attributes, $inputs);
     }

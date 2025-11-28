@@ -18,11 +18,13 @@ use Modules\Master\Repositories\BloodGroupRepository;
 use Modules\Master\Repositories\DepartmentRepository;
 use Modules\Master\Repositories\LocalLevelRepository;
 use Modules\Employee\Repositories\EducationRepository;
+use Modules\Employee\Repositories\EmployeeSocialMediaRepository;
 use Modules\Master\Repositories\DesignationRepository;
 use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
 use Modules\Inventory\Repositories\AssetAssignLogRepository;
+use Modules\Master\Repositories\SocialMediaAccountRepository;
 
 class EmployeeController extends Controller
 {
@@ -48,7 +50,9 @@ class EmployeeController extends Controller
         protected MaritalStatusRepository $maritalStatus,
         protected OfficeRepository $offices,
         protected ProvinceRepository $provinces,
-        protected RoleRepository $roles
+        protected RoleRepository $roles,
+        protected SocialMediaAccountRepository $socialMediaAccounts,
+        protected EmployeeSocialMediaRepository $employeeSocialMediaRepository
     ) {
         $this->destinationPath = 'employees';
     }
@@ -64,7 +68,7 @@ class EmployeeController extends Controller
         $prevLeaves = $this->leaves->select('*')
             ->where('employee_id', $employee->id)
             ->whereYear('reported_date', '<>', date('Y'))
-                    // ->where( DB::raw('YEAR(reported_date)'), '<>', date('Y') )
+            // ->where( DB::raw('YEAR(reported_date)'), '<>', date('Y') )
             ->get();
 
         $leaveTypes = $this->leaveTypes->select(['*'])
@@ -77,6 +81,10 @@ class EmployeeController extends Controller
         $assignedAssets = $this->assetAssignLogs->with(['asset'])->where('assigned_user_id', $authUser->id)->get();
         $leaveEncashments = $this->employees->getLeaveEncashRequestsOfCurrentAndPreviousFiscalYear($employee->id);
 
+        $socialMediaLinks = $this->employeeSocialMediaRepository
+            ->getSocialMediaLinksByEmployeeId($employee->id)
+            ->pluck('link', 'title');
+
         return view('Profile::show')
             ->withAssignedAssets($assignedAssets)
             ->withEmployee($employee)
@@ -84,6 +92,8 @@ class EmployeeController extends Controller
             ->withLeaveRequests($leaveRequests)
             ->withPreviousLeaves($prevLeaves)
             ->withLeaveEncashments($leaveEncashments)
+            ->withSocialMediaAccounts($this->socialMediaAccounts->get())
+            ->withSocialMediaLinks($socialMediaLinks)
             ->withLeaveTypes($leaveTypes);
     }
 
@@ -99,14 +109,27 @@ class EmployeeController extends Controller
     {
         $authUser = auth()->user();
         $employee = $this->employees->with([
-            'medicalCondition', 'tenures.designation', 'tenures.department', 'tenures.supervisor',
-            'tenures.crossSupervisor', 'tenures.nextLineManager', 'tenures.dutyStation',
-            'trainings', 'address', 'experiences',
+            'medicalCondition',
+            'tenures.designation',
+            'tenures.department',
+            'tenures.supervisor',
+            'tenures.crossSupervisor',
+            'tenures.nextLineManager',
+            'tenures.dutyStation',
+            'trainings',
+            'address',
+            'experiences',
         ])->find($authUser->employee_id);
         $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
             ->where('id', '<>', $employee->id)
             ->whereNotNull('activated_at')
             ->get();
+
+
+        $socialMediaLinks = $this->employeeSocialMediaRepository
+            ->getSocialMediaLinksByEmployeeId($employee->id)
+            ->pluck('link', 'title');
+
 
         return view('Profile::edit')
             ->withAuthUser(auth()->user())
@@ -124,6 +147,8 @@ class EmployeeController extends Controller
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)
+            ->withSocialMediaAccounts($this->socialMediaAccounts->get())
+            ->withSocialMediaLinks($socialMediaLinks)
             ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
@@ -145,16 +170,16 @@ class EmployeeController extends Controller
 
         if ($request->file('citizenship_attachment')) {
             $filename = $request->file('citizenship_attachment')
-                ->storeAs($this->destinationPath.'/'.$employee->id, time().'_citizenship.'.$request->file('citizenship_attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_citizenship.' . $request->file('citizenship_attachment')->getClientOriginalExtension());
             $inputs['citizenship_attachment'] = $filename;
         }
 
         if ($request->file('pan_attachment')) {
             $filename = $request->file('pan_attachment')
-                ->storeAs($this->destinationPath.'/'.$employee->id, time().'_pan.'.$request->file('pan_attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
         }
-        
+
         if ($request->file('passport_attachment')) {
             $filename = $request->file('passport_attachment')
                 ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());

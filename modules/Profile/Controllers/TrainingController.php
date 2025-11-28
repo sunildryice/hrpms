@@ -22,8 +22,7 @@ class TrainingController extends Controller
     public function __construct(
         EmployeeRepository $employees,
         TrainingRepository $trainings
-    )
-    {
+    ) {
         $this->employees = $employees;
         $this->trainings = $trainings;
         $this->destinationPath = 'employees';
@@ -45,15 +44,15 @@ class TrainingController extends Controller
         $inputs['created_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$employee->id, time().'_training.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_training.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $training = $this->trainings->create($inputs);
-        if($training){
-            return redirect()->route('profile.edit', ['tab'=>'training-details'])
+        if ($training) {
+            return redirect()->route('profile.edit', ['tab' => 'training-details'])
                 ->withSuccessMessage('Training detail is successfully added.');
         }
-        return redirect()->route('profile.edit', ['tab'=>'training-details'])
+        return redirect()->route('profile.edit', ['tab' => 'training-details'])
             ->withInput()
             ->withWarningMessage('Training detail can not be added.');
     }
@@ -69,16 +68,16 @@ class TrainingController extends Controller
     {
         $training = $this->trainings->with(['employee'])->find($id);
         $attachment  = '';
-        if($training->attachment != NULL){
-            $attachment = asset('storage/'.$training->attachment);
+        if ($training->attachment != NULL) {
+            $attachment = asset('storage/' . $training->attachment);
         }
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json([
-                'training'=>$training,
-                'attachment'=>$attachment,
-                'period_from'=>$training->period_from ? $training->period_from->format('Y-m-d') : '',
-                'period_to'=>$training->period_to ? $training->period_to->format('Y-m-d') : '',
-                'updateAction'=>route('profile.trainings.update', [$training->id]),
+                'training' => $training,
+                'attachment' => $attachment,
+                'period_from' => $training->period_from ? $training->period_from->format('Y-m-d') : '',
+                'period_to' => $training->period_to ? $training->period_to->format('Y-m-d') : '',
+                'updateAction' => route('profile.trainings.update', [$training->id]),
             ]);
         }
 
@@ -100,16 +99,16 @@ class TrainingController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$training->employee->id, time().'_training.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $training->employee->id, time() . '_training.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $training = $this->trainings->update($id, $inputs);
 
-        if($training){
-            return redirect()->route('profile.edit', ['tab'=>'training-details'])
+        if ($training) {
+            return redirect()->route('profile.edit', ['tab' => 'training-details'])
                 ->withSuccessMessage('Training detail is successfully updated.');
         }
-        return redirect()->route('profile.edit', ['tab'=>'training-details'])
+        return redirect()->route('profile.edit', ['tab' => 'training-details'])
             ->withInput()
             ->withWarningMessage('Training can not be updated.');
     }

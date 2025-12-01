@@ -109,6 +109,7 @@ class EmployeeRepository extends Repository
                 $inputs = [
                     'full_name' => $employee->getFullName(),
                     'email_address' => $employee->official_email_address,
+                    'activated_at' => $employee->activated_at,
                 ];
                 if (is_null($employee->activated_at)) {
                     $inputs['activated_at'] = null;

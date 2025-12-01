@@ -393,6 +393,34 @@
                         </li>
 
                         <li class="nav-item parent-tab-s">
+                            <a href="javascript:void(0);" data-tag="working_hours"
+                                class="nav-link step-item text-decoration-none">
+                                <i class="nav-icon bi bi-clock-history"></i>Working Hours
+                            </a>
+                        </li>
+
+                        <li class="nav-item parent-tab-s">
+                            <a href="javascript:void(0);" data-tag="finance"
+                                class="nav-link step-item text-decoration-none">
+                                <i class="nav-icon bi bi-cash-stack"></i>Finance
+                            </a>
+                        </li>
+
+                        <li class="nav-item parent-tab-s">
+                            <a href="javascript:void(0);" data-tag="insurance"
+                                class="nav-link step-item text-decoration-none">
+                                <i class="nav-icon bi bi-shield-check"></i>Insurance
+                            </a>
+                        </li>
+
+                        <li class="nav-item parent-tab-s">
+                            <a href="javascript:void(0);" data-tag="document_uploads"
+                                class="nav-link step-item text-decoration-none">
+                                <i class="nav-icon bi bi-upload"></i>Document Uploads
+                            </a>
+                        </li>
+
+                        <li class="nav-item parent-tab-s">
                             <a href="javascript:void(0);" data-tag="education"
                                 class="nav-link step-item text-decoration-none">
                                 <i class="nav-icon bi bi-journal-text"></i>Education
@@ -524,6 +552,13 @@
                     </div>
                 </div>
 
+                <div class="c-tabs-content" id="insurance">
+                    @include('Employee::Insurance.index')
+                </div>
+
+                <div class="c-tabs-content" id="document_uploads">
+                    @include('Employee::DocumentUpload.index')
+                </div>
 
                 <div class="c-tabs-content" id="address">
                     <div class="card">
@@ -745,166 +780,272 @@
                 </div>
 
 
-                <div class="c-tabs-content" id="education">
+                <div class="c-tabs-content" id="working_hours">
                     <div class="card">
                         <div class="card-header fw-bold">
-                            Education
+                            Working Hours
                         </div>
-                        @if ($employee->education->isNotEmpty())
-                            @foreach ($employee->education as $education)
+                        <div class="card-body">
+                            @foreach ($employee->workingHours as $workingHour)
+                                <table class="table table-bordered">
+                                    <tbody class="my-2">
+                                        <tr>
+                                            <th scope="row" width="10%">Start Date</th>
+                                            <td>{{ $workingHour->start_date->format('Y-M-d') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">End Date</th>
+                                            <td>{{ $workingHour->end_date->format('Y-M-d') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Work Percentile</th>
+                                            <td>{{ $workingHour->work_percentile }}%</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">Remarks</th>
+                                            <td>{{ $workingHour->remarks }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="c-tabs-content" id="finance">
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            Finance
+                        </div>
+
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <table class="table table-bordered">
+                                    <tbody class="my-2">
+                                        <tr>
+                                            <th scope="row" width="10%">CIT Number</th>
+                                            <td>{{ $employee->finance->cit_number }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" width="10%">Bank Name</th>
+                                            <td>{{ $employee->finance->bank_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" width="10%">Branch Name</th>
+                                            <td>{{ $employee->finance->branch_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" width="10%">Account Holder Name</th>
+                                            <td>{{ $employee->finance->account_holder_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row" width="10%">Account Number</th>
+                                            <td>{{ $employee->finance->account_number }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row" width="10%">Is Disabled</th>
+                                            <td>{{ $employee->finance->disabled ? 'Yes' : 'No' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </div>
+
+
+
+                    <div class="c-tabs-content" id="education">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Education
+                            </div>
+                            @if ($employee->education->isNotEmpty())
+                                @foreach ($employee->education as $education)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="educationTable">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row" width="10%">Education Level</th>
+                                                        <td>{{ $education->getEducationLevel() }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Name of Degree</th>
+                                                        <td>{{ $education->getDegree() }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Institution</th>
+                                                        <td>{{ $education->getInstitution() }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Passed Year</th>
+                                                        <td>{{ $education->getPassedYear() }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="educationTable">
                                             <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">Education Level</th>
-                                                    <td>{{ $education->getEducationLevel() }}</td>
+                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Name of Degree</th>
-                                                    <td>{{ $education->getDegree() }}</td>
+                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Institution</th>
-                                                    <td>{{ $education->getInstitution() }}</td>
+                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Passed Year</th>
-                                                    <td>{{ $education->getPassedYear() }}</td>
+                                                    <td></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="educationTable">
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row" width="10%">Education Level</th>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Name of Degree</th>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Institution</th>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Passed Year</th>
-                                                <td></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="c-tabs-content" id="experience">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Experience
+                            @endif
                         </div>
-                        @if ($employee->experiences->isNotEmpty())
-                            @foreach ($employee->experiences as $experience)
+                    </div>
+
+                    <div class="c-tabs-content" id="experience">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Experience
+                            </div>
+                            @if ($employee->experiences->isNotEmpty())
+                                @foreach ($employee->experiences as $experience)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="experienceTable">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row" width="10%">Institution</th>
+                                                        <td colspan="3">{{ $experience->institution }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Position</th>
+                                                        <td colspan="3">{{ $experience->position }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Period From</th>
+                                                        <td>{{ $experience->getPeriodFrom() }}</td>
+
+                                                        <th scope="row">Period To</th>
+                                                        <td>{{ $experience->getPeriodTo() }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Remarks</th>
+                                                        <td colspan="3">{{ $experience->remarks }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="experienceTable">
                                             <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">Institution</th>
-                                                    <td colspan="3">{{ $experience->institution }}</td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Position</th>
-                                                    <td colspan="3">{{ $experience->position }}</td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Period From</th>
-                                                    <td>{{ $experience->getPeriodFrom() }}</td>
+                                                    <td></td>
 
                                                     <th scope="row">Period To</th>
-                                                    <td>{{ $experience->getPeriodTo() }}</td>
+                                                    <td></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Remarks</th>
-                                                    <td colspan="3">{{ $experience->remarks }}</td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="c-tabs-content" id="asset">
+                        <div class="card">
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" id="experienceTable">
+                                    <table class="table" id="assetTable">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ __('label.sn') }}</th>
+                                                <th>{{ __('label.asset-number') }}</th>
+                                                <th>{{ __('label.item-name') }}</th>
+                                                <th>{{ __('label.office') }}</th>
+                                                <th>{{ __('label.department') }}</th>
+                                                <th>{{ __('label.assigned-on') }}</th>
+                                                <th>Handover Approver</th>
+                                                <th>Handover</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
-                                            <tr>
-                                                <th scope="row" width="10%">Institution</th>
-                                                <td colspan="3"></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Position</th>
-                                                <td colspan="3"></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Period From</th>
-                                                <td></td>
-
-                                                <th scope="row">Period To</th>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">Remarks</th>
-                                                <td colspan="3"></td>
-                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        @endif
+                        </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="asset">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table" id="assetTable">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ __('label.sn') }}</th>
-                                            <th>{{ __('label.asset-number') }}</th>
-                                            <th>{{ __('label.item-name') }}</th>
-                                            <th>{{ __('label.office') }}</th>
-                                            <th>{{ __('label.department') }}</th>
-                                            <th>{{ __('label.assigned-on') }}</th>
-                                            <th>Handover Approver</th>
-                                            <th>Handover</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                    <div class="c-tabs-content" id="training">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Training
                             </div>
-                        </div>
-                    </div>
-                </div>
+                            @if ($employee->trainings->isNotEmpty())
+                                @foreach ($employee->trainings as $training)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="trainingTable">
+                                                <tbody>
+                                                    <div>
+                                                        <tr>
+                                                            <th scope="row" width="10%">Institution</th>
+                                                            <td colspan="3">{{ $training->institution }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Training Topic</th>
+                                                            <td colspan="3">{{ $training->training_topic }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Period From</th>
+                                                            <td>{{ $training->getPeriodFrom() }}</td>
 
-                <div class="c-tabs-content" id="training">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Training
-                        </div>
-                        @if ($employee->trainings->isNotEmpty())
-                            @foreach ($employee->trainings as $training)
+                                                            <th scope="row">Period To</th>
+                                                            <td>{{ $training->getPeriodTo() }}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th scope="row">Remarks</th>
+                                                            <td colspan="3">{{ $training->remarks }}</td>
+                                                        </tr>
+                                                    </div>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table table-bordered" id="trainingTable">
@@ -912,444 +1053,415 @@
                                                 <div>
                                                     <tr>
                                                         <th scope="row" width="10%">Institution</th>
-                                                        <td colspan="3">{{ $training->institution }}</td>
+                                                        <td colspan="3"></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Training Topic</th>
-                                                        <td colspan="3">{{ $training->training_topic }}</td>
+                                                        <td colspan="3"></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Period From</th>
-                                                        <td>{{ $training->getPeriodFrom() }}</td>
+                                                        <td></td>
 
                                                         <th scope="row">Period To</th>
-                                                        <td>{{ $training->getPeriodTo() }}</td>
+                                                        <td></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row">Remarks</th>
-                                                        <td colspan="3">{{ $training->remarks }}</td>
+                                                        <td colspan="3"></td>
                                                     </tr>
                                                 </div>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
+                            @endif
+                        </div>
+                    </div>
+
+
+                    <div class="c-tabs-content" id="social_media">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Social Media
+                            </div>
+
+
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered" id="trainingTable">
                                         <tbody>
                                             <div>
+                                                @foreach ($socialMediaAccounts as $account)
+                                                    <tr>
+                                                        <th scope="row" width="10%">
+                                                            {{ $account->title }}</th>
+                                                        <td colspan="3">
+                                                            <a target="_blank"
+                                                                href="{{ $socialMediaLinks[$account->title] ?? '' }}">{{ $employeeSocialMediaLinks[$account->title] ?? '' }}</a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                                 <tr>
-                                                    <th scope="row" width="10%">Institution</th>
-                                                    <td colspan="3"></td>
+                                                    <th scope="row" width="10%">Bio</th>
+                                                    <td colspan="3">{{ $employee->bio }}</td>
                                                 </tr>
-                                                <tr>
-                                                    <th scope="row">Training Topic</th>
-                                                    <td colspan="3"></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Period From</th>
-                                                    <td></td>
 
-                                                    <th scope="row">Period To</th>
-                                                    <td></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Remarks</th>
-                                                    <td colspan="3"></td>
-                                                </tr>
                                             </div>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        @endif
-                    </div>
-                </div>
-
-
-                <div class="c-tabs-content" id="social_media">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Social Media
                         </div>
+                    </div>
 
-
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="trainingTable">
-                                    <tbody>
-                                        <div>
-                                            @foreach ($socialMediaAccounts as $account)
-                                                <tr>
-                                                    <th scope="row" width="10%">
-                                                        {{ $account->title }}</th>
-                                                    <td colspan="3">
-                                                        <a target="_blank"
-                                                            href="{{ $socialMediaLinks[$account->title] ?? '' }}">{{ $employeeSocialMediaLinks[$account->title] ?? '' }}</a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                            <tr>
-                                                <th scope="row" width="10%">Bio</th>
-                                                <td colspan="3">{{ $employee->bio }}</td>
-                                            </tr>
-
-                                        </div>
-                                    </tbody>
-                                </table>
+                    <div class="c-tabs-content" id="leave">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <div>Leave Details</div>
+                                <a href="{{ route('employees.leaves.export', $employee->id) }}"
+                                    class="btn btn-sm btn-primary text-capitalize"> Export <i
+                                        class="bi bi-cloud-download"></i></a>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="c-tabs-content" id="leave">
-                    <div class="card">
-                        <div class="card-header d-flex align-items-center justify-content-between">
-                            <div>Leave Details</div>
-                            <a href="{{ route('employees.leaves.export', $employee->id) }}"
-                                class="btn btn-sm btn-primary text-capitalize"> Export <i
-                                    class="bi bi-cloud-download"></i></a>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="employeeLeaveTable">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th rowspan="2">Month</th>
-                                            @foreach ($leaveTypes as $leaveType)
-                                                @if ($leaveType->leave_frequency == 2)
-                                                    <th colspan="5" class="text-center">{{ $leaveType->title }}
-                                                        ({{ $leaveType->getLeaveBasis() }})
-                                                    </th>
-                                                @else
-                                                    <th rowspan="1" class="text-center">{{ $leaveType->title }}
-                                                        ({{ $leaveType->getLeaveBasis() }})</th>
-                                                @endif
-                                            @endforeach
-                                        </tr>
-                                        <tr>
-                                            @foreach ($leaveTypes as $leaveType)
-                                                @if ($leaveType->leave_frequency == 2)
-                                                    <th>Opening Balance</th>
-                                                    <th>Earned</th>
-                                                    <th>Taken</th>
-                                                    <th>Paid</th>
-                                                    <th>Balance</th>
-                                                @else
-                                                    <th class="text-center">Taken</th>
-                                                @endif
-                                            @endforeach
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($leaves->groupBy('reported_date') as $leaveGroups)
-                                            @if (
-                                                $employee->exitHandoverNote &&
-                                                    is_null($employee->activated_at) &&
-                                                    $leaveGroups->first()?->reported_date->gt($employee->exitHandoverNote?->last_duty_date))
-                                                @break;
-                                            @endif
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="employeeLeaveTable">
+                                        <thead class="bg-light">
                                             <tr>
-                                                <td>{{ $leaveGroups->first()->getReportedDateMonth() }}</td>
+                                                <th rowspan="2">Month</th>
                                                 @foreach ($leaveTypes as $leaveType)
-                                                    @php
-                                                        $selectedLeave = $leaveGroups
-                                                            ->filter(function ($leaveGroup) use ($leaveType) {
-                                                                return $leaveType->id == $leaveGroup->leave_type_id;
-                                                            })
-                                                            ->first();
-                                                    @endphp
                                                     @if ($leaveType->leave_frequency == 2)
-                                                        <td class="text-center">
-                                                            {{ $selectedLeave?->opening_balance }}</td>
-                                                        <td>{{ $selectedLeave?->earned }}</td>
-                                                        <td>{{ $selectedLeave?->taken }}</td>
-                                                        <td>{{ $selectedLeave?->paid }}</td>
-                                                        <td>{{ $selectedLeave?->balance }}</td>
+                                                        <th colspan="5" class="text-center">{{ $leaveType->title }}
+                                                            ({{ $leaveType->getLeaveBasis() }})
+                                                        </th>
                                                     @else
-                                                        <td class="text-center">{{ $selectedLeave?->taken }}</td>
+                                                        <th rowspan="1" class="text-center">{{ $leaveType->title }}
+                                                            ({{ $leaveType->getLeaveBasis() }})</th>
                                                     @endif
                                                 @endforeach
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot>
-                                        <th>Total</th>
-                                        @foreach ($leaveTypes as $leaveType)
-                                            @if ($leaveType->leave_frequency == 2)
-                                                @php
-                                                    $earnedTotal = $leaves
-                                                        ->where('leave_type_id', $leaveType->id)
-                                                        ->sum('earned');
-                                                    $takenTotal = $leaves
-                                                        ->where('leave_type_id', $leaveType->id)
-                                                        ->sum('taken');
-                                                    $paidTotal = $leaves
-                                                        ->where('leave_type_id', $leaveType->id)
-                                                        ->sum('paid');
-                                                @endphp
-                                                <td></td>
-                                                <td>{{ $earnedTotal }}</td>
-                                                <td>{{ $takenTotal }}</td>
-                                                <td>{{ $paidTotal }}</td>
-                                                <td></td>
-                                            @else
-                                                @php
-                                                    $takenTotal = $leaves
-                                                        ->where('leave_type_id', $leaveType->id)
-                                                        ->sum('taken');
-                                                @endphp
-                                                <td class="text-center">{{ $takenTotal }}</td>
-                                            @endif
-                                        @endforeach
-                                    </tfoot>
-                                </table>
+                                            <tr>
+                                                @foreach ($leaveTypes as $leaveType)
+                                                    @if ($leaveType->leave_frequency == 2)
+                                                        <th>Opening Balance</th>
+                                                        <th>Earned</th>
+                                                        <th>Taken</th>
+                                                        <th>Paid</th>
+                                                        <th>Balance</th>
+                                                    @else
+                                                        <th class="text-center">Taken</th>
+                                                    @endif
+                                                @endforeach
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($leaves->groupBy('reported_date') as $leaveGroups)
+                                                @if (
+                                                    $employee->exitHandoverNote &&
+                                                        is_null($employee->activated_at) &&
+                                                        $leaveGroups->first()?->reported_date->gt($employee->exitHandoverNote?->last_duty_date))
+                                                    @break;
+                                                @endif
+                                                <tr>
+                                                    <td>{{ $leaveGroups->first()->getReportedDateMonth() }}</td>
+                                                    @foreach ($leaveTypes as $leaveType)
+                                                        @php
+                                                            $selectedLeave = $leaveGroups
+                                                                ->filter(function ($leaveGroup) use ($leaveType) {
+                                                                    return $leaveType->id == $leaveGroup->leave_type_id;
+                                                                })
+                                                                ->first();
+                                                        @endphp
+                                                        @if ($leaveType->leave_frequency == 2)
+                                                            <td class="text-center">
+                                                                {{ $selectedLeave?->opening_balance }}</td>
+                                                            <td>{{ $selectedLeave?->earned }}</td>
+                                                            <td>{{ $selectedLeave?->taken }}</td>
+                                                            <td>{{ $selectedLeave?->paid }}</td>
+                                                            <td>{{ $selectedLeave?->balance }}</td>
+                                                        @else
+                                                            <td class="text-center">{{ $selectedLeave?->taken }}</td>
+                                                        @endif
+                                                    @endforeach
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <th>Total</th>
+                                            @foreach ($leaveTypes as $leaveType)
+                                                @if ($leaveType->leave_frequency == 2)
+                                                    @php
+                                                        $earnedTotal = $leaves
+                                                            ->where('leave_type_id', $leaveType->id)
+                                                            ->sum('earned');
+                                                        $takenTotal = $leaves
+                                                            ->where('leave_type_id', $leaveType->id)
+                                                            ->sum('taken');
+                                                        $paidTotal = $leaves
+                                                            ->where('leave_type_id', $leaveType->id)
+                                                            ->sum('paid');
+                                                    @endphp
+                                                    <td></td>
+                                                    <td>{{ $earnedTotal }}</td>
+                                                    <td>{{ $takenTotal }}</td>
+                                                    <td>{{ $paidTotal }}</td>
+                                                    <td></td>
+                                                @else
+                                                    @php
+                                                        $takenTotal = $leaves
+                                                            ->where('leave_type_id', $leaveType->id)
+                                                            ->sum('taken');
+                                                    @endphp
+                                                    <td class="text-center">{{ $takenTotal }}</td>
+                                                @endif
+                                            @endforeach
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    @if ($employee->user)
-                        @foreach ($previousLeaves->groupBy(function ($item) {
+                        @if ($employee->user)
+                            @foreach ($previousLeaves->groupBy(function ($item) {
                 return $item->reported_date->format('Y');
             })->sortKeysDesc() as $index => $prevLeaves)
-                            <div class="mb-3 card collapsible-card">
-                                <div class="card-header d-flex align-items-center justify-content-between">
-                                    <span role="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse-{{ $index }}" aria-expanded="false"
-                                        aria-controls="collapseCard">
-                                        Leave Details: {{ $index }}
-                                        <i class="bi bi-caret-down-fill indicator"></i>
-                                    </span>
-                                    <a href="{{ route('employees.leaves.export.year', [$employee->id, $index]) }}"
-                                        class="btn btn-sm btn-primary text-capitalize"> Export <i
-                                            class="bi bi-cloud-download"></i></a>
-                                </div>
-                                <div id="collapse-{{ $index }}" class="collapse">
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered" id="employeeLeaveTable">
-                                                <thead class="bg-light">
-                                                    <tr>
-                                                        <th rowspan="2">Month</th>
-                                                        @foreach ($leaveTypes as $leaveType)
-                                                            @if ($leaveType->leave_frequency == 2)
-                                                                <th colspan="5" class="text-center">
-                                                                    {{ $leaveType->title }}
-                                                                    ({{ $leaveType->getLeaveBasis() }})
-                                                                </th>
-                                                            @else
-                                                                <th rowspan="1" class="text-center">
-                                                                    {{ $leaveType->title }}
-                                                                    ({{ $leaveType->getLeaveBasis() }})</th>
-                                                            @endif
-                                                        @endforeach
-                                                    </tr>
-                                                    <tr>
-                                                        @foreach ($leaveTypes as $leaveType)
-                                                            @if ($leaveType->leave_frequency == 2)
-                                                                <th>Opening Balance</th>
-                                                                <th>Earned</th>
-                                                                <th>Taken</th>
-                                                                <th>Paid</th>
-                                                                <th>Balance</th>
-                                                            @else
-                                                                <th class="text-center">Taken</th>
-                                                            @endif
-                                                        @endforeach
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach ($prevLeaves->groupBy('reported_date') as $leaveGroups)
-                                                        @if (
-                                                            $employee->exitHandoverNote &&
-                                                                is_null($employee->activated_at) &&
-                                                                $leaveGroups->first()?->reported_date->gt($employee->exitHandoverNote?->last_duty_date))
-                                                            @break;
-                                                        @endif
+                                <div class="mb-3 card collapsible-card">
+                                    <div class="card-header d-flex align-items-center justify-content-between">
+                                        <span role="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse-{{ $index }}" aria-expanded="false"
+                                            aria-controls="collapseCard">
+                                            Leave Details: {{ $index }}
+                                            <i class="bi bi-caret-down-fill indicator"></i>
+                                        </span>
+                                        <a href="{{ route('employees.leaves.export.year', [$employee->id, $index]) }}"
+                                            class="btn btn-sm btn-primary text-capitalize"> Export <i
+                                                class="bi bi-cloud-download"></i></a>
+                                    </div>
+                                    <div id="collapse-{{ $index }}" class="collapse">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="employeeLeaveTable">
+                                                    <thead class="bg-light">
                                                         <tr>
-                                                            <td>{{ $leaveGroups->first()->getReportedDateMonth() }}</td>
+                                                            <th rowspan="2">Month</th>
                                                             @foreach ($leaveTypes as $leaveType)
-                                                                @php
-                                                                    $selectedLeave = $leaveGroups
-                                                                        ->filter(function ($leaveGroup) use (
-                                                                            $leaveType,
-                                                                        ) {
-                                                                            return $leaveType->id ==
-                                                                                $leaveGroup->leave_type_id;
-                                                                        })
-                                                                        ->first();
-                                                                @endphp
                                                                 @if ($leaveType->leave_frequency == 2)
-                                                                    <td class="text-center">
-                                                                        {{ $selectedLeave?->opening_balance }}</td>
-                                                                    <td>{{ $selectedLeave?->earned }}</td>
-                                                                    <td>{{ $selectedLeave?->taken }}</td>
-                                                                    <td>{{ $selectedLeave?->paid }}</td>
-                                                                    <td>{{ $selectedLeave?->balance }}</td>
+                                                                    <th colspan="5" class="text-center">
+                                                                        {{ $leaveType->title }}
+                                                                        ({{ $leaveType->getLeaveBasis() }})
+                                                                    </th>
                                                                 @else
-                                                                    <td class="text-center">{{ $selectedLeave?->taken }}
-                                                                    </td>
+                                                                    <th rowspan="1" class="text-center">
+                                                                        {{ $leaveType->title }}
+                                                                        ({{ $leaveType->getLeaveBasis() }})</th>
                                                                 @endif
                                                             @endforeach
                                                         </tr>
-                                                    @endforeach
-                                                </tbody>
-                                                <tfoot>
-                                                    <th>Total</th>
-                                                    @foreach ($leaveTypes as $leaveType)
-                                                        @if ($leaveType->leave_frequency == 2)
-                                                            @php
-                                                                $earnedTotal = $prevLeaves
-                                                                    ->where('leave_type_id', $leaveType->id)
-                                                                    ->sum('earned');
-                                                                $takenTotal = $prevLeaves
-                                                                    ->where('leave_type_id', $leaveType->id)
-                                                                    ->sum('taken');
-                                                                $paidTotal = $prevLeaves
-                                                                    ->where('leave_type_id', $leaveType->id)
-                                                                    ->sum('paid');
-                                                            @endphp
-                                                            <td></td>
-                                                            <td>{{ $earnedTotal }}</td>
-                                                            <td>{{ $takenTotal }}</td>
-                                                            <td>{{ $paidTotal }}</td>
-                                                            <td></td>
-                                                        @else
-                                                            @php
-                                                                $takenTotal = $prevLeaves
-                                                                    ->where('leave_type_id', $leaveType->id)
-                                                                    ->sum('taken');
-                                                            @endphp
-                                                            <td class="text-center">{{ $takenTotal }}</td>
-                                                        @endif
-                                                    @endforeach
-                                                </tfoot>
-                                            </table>
+                                                        <tr>
+                                                            @foreach ($leaveTypes as $leaveType)
+                                                                @if ($leaveType->leave_frequency == 2)
+                                                                    <th>Opening Balance</th>
+                                                                    <th>Earned</th>
+                                                                    <th>Taken</th>
+                                                                    <th>Paid</th>
+                                                                    <th>Balance</th>
+                                                                @else
+                                                                    <th class="text-center">Taken</th>
+                                                                @endif
+                                                            @endforeach
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($prevLeaves->groupBy('reported_date') as $leaveGroups)
+                                                            @if (
+                                                                $employee->exitHandoverNote &&
+                                                                    is_null($employee->activated_at) &&
+                                                                    $leaveGroups->first()?->reported_date->gt($employee->exitHandoverNote?->last_duty_date))
+                                                                @break;
+                                                            @endif
+                                                            <tr>
+                                                                <td>{{ $leaveGroups->first()->getReportedDateMonth() }}
+                                                                </td>
+                                                                @foreach ($leaveTypes as $leaveType)
+                                                                    @php
+                                                                        $selectedLeave = $leaveGroups
+                                                                            ->filter(function ($leaveGroup) use (
+                                                                                $leaveType,
+                                                                            ) {
+                                                                                return $leaveType->id ==
+                                                                                    $leaveGroup->leave_type_id;
+                                                                            })
+                                                                            ->first();
+                                                                    @endphp
+                                                                    @if ($leaveType->leave_frequency == 2)
+                                                                        <td class="text-center">
+                                                                            {{ $selectedLeave?->opening_balance }}</td>
+                                                                        <td>{{ $selectedLeave?->earned }}</td>
+                                                                        <td>{{ $selectedLeave?->taken }}</td>
+                                                                        <td>{{ $selectedLeave?->paid }}</td>
+                                                                        <td>{{ $selectedLeave?->balance }}</td>
+                                                                    @else
+                                                                        <td class="text-center">
+                                                                            {{ $selectedLeave?->taken }}
+                                                                        </td>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <th>Total</th>
+                                                        @foreach ($leaveTypes as $leaveType)
+                                                            @if ($leaveType->leave_frequency == 2)
+                                                                @php
+                                                                    $earnedTotal = $prevLeaves
+                                                                        ->where('leave_type_id', $leaveType->id)
+                                                                        ->sum('earned');
+                                                                    $takenTotal = $prevLeaves
+                                                                        ->where('leave_type_id', $leaveType->id)
+                                                                        ->sum('taken');
+                                                                    $paidTotal = $prevLeaves
+                                                                        ->where('leave_type_id', $leaveType->id)
+                                                                        ->sum('paid');
+                                                                @endphp
+                                                                <td></td>
+                                                                <td>{{ $earnedTotal }}</td>
+                                                                <td>{{ $takenTotal }}</td>
+                                                                <td>{{ $paidTotal }}</td>
+                                                                <td></td>
+                                                            @else
+                                                                @php
+                                                                    $takenTotal = $prevLeaves
+                                                                        ->where('leave_type_id', $leaveType->id)
+                                                                        ->sum('taken');
+                                                                @endphp
+                                                                <td class="text-center">{{ $takenTotal }}</td>
+                                                            @endif
+                                                        @endforeach
+                                                    </tfoot>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    @endif
+                            @endforeach
+                        @endif
 
 
-                    @php
-                        $authUser = auth()->user();
-                        $hr = $authUser->hasRole('Human Resource');
-                    @endphp
+                        @php
+                            $authUser = auth()->user();
+                            $hr = $authUser->hasRole('Human Resource');
+                        @endphp
 
-                    @isset($employee->user)
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Approved Leave Requests
-                            </div>
-                            <div class="card-body" style="overflow: auto;">
-                                <table class="table table-responsive table-sm" id="leaveRequestsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>SN</th>
-                                            <th>Type</th>
-                                            <th>Request Days</th>
-                                            <th>Request Date</th>
-                                            <th>Leave Request No.</th>
-                                            <th>Start Date</th>
-                                            <th>End Date</th>
-                                            <th>Status</th>
-                                            @if ($hr)
-                                                <th>Action</th>
-                                            @endif
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($leaveRequests as $key => $leaveRequest)
+                        @isset($employee->user)
+                            <div class="card">
+                                <div class="card-header fw-bold">
+                                    Approved Leave Requests
+                                </div>
+                                <div class="card-body" style="overflow: auto;">
+                                    <table class="table table-responsive table-sm" id="leaveRequestsTable">
+                                        <thead>
                                             <tr>
-                                                <td>{{ ++$key }}</td>
-                                                <td>{{ $leaveRequest->getLeaveType() }}</td>
-                                                <td>{{ $leaveRequest->getLeaveDuration() . ' ' . $leaveRequest->leaveType->getLeaveBasis() }}
-                                                </td>
-                                                <td>{{ $leaveRequest->getRequestDate() }}</td>
-                                                <td>{{ $leaveRequest->getLeaveNumber() }}</td>
-                                                <td>{{ $leaveRequest->getStartDate() }}</td>
-                                                <td>{{ $leaveRequest->getEndDate() }}</td>
-                                                <td><span
-                                                        class="{{ $leaveRequest->getStatusClass() }}">{{ $leaveRequest->getStatus() }}</span>
-                                                </td>
+                                                <th>SN</th>
+                                                <th>Type</th>
+                                                <th>Request Days</th>
+                                                <th>Request Date</th>
+                                                <th>Leave Request No.</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Status</th>
                                                 @if ($hr)
-                                                    <td>
-                                                        <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.requests.detail', $leaveRequest->id) }}"
-                                                            title="View Leave Request" target="_blank"><i
-                                                                class="bi bi-eye"></i></a>
-                                                        &emsp;
-                                                        <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.requests.print', $leaveRequest->id) }}"
-                                                            title="Print Leave Request" target="_blank"><i
-                                                                class="bi-printer"></i></a>
-                                                    </td>
+                                                    <th>Action</th>
                                                 @endif
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Approved Leave Encashment Requests
-                            </div>
-                            <div class="card-body" style="overflow: auto;">
-                                <table class="table table-responsive table-sm" id="leaveEncashTable">
-                                    <thead>
-                                        <tr>
-                                            <th>SN</th>
-                                            <th>Type</th>
-                                            <th>Encashed Balance</th>
-                                            <th>Request Date</th>
-                                            <th>Leave Encash No.</th>
-                                            <th>Status</th>
-                                            @if ($hr)
-                                                <th>Action</th>
-                                            @endif
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($leaveEncashments as $key => $leaveEncash)
-                                            <tr>
-                                                <td>{{ ++$key }}</td>
-                                                <td>{{ $leaveEncash->getLeaveType() }}</td>
-                                                <td>{{ $leaveEncash->encash_balance . ' ' . $leaveEncash->leaveType->getLeaveBasis() }}
-                                                </td>
-                                                <td>{{ $leaveEncash->getRequestDate() }}</td>
-                                                <td>{{ $leaveEncash->getEncashNumber() }}</td>
-                                                <td><span
-                                                        class="{{ $leaveEncash->getStatusClass() }}">{{ $leaveEncash->getStatus() }}</span>
-                                                </td>
-                                                @if ($hr)
-                                                    <td>
-                                                        <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('approved.leave.encash.show', $leaveEncash->id) }}"
-                                                            title="View Leave Request" target="_blank"><i
-                                                                class="bi bi-eye"></i></a>
-                                                        &emsp;
-                                                        <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.encash.print', $leaveEncash->id) }}"
-                                                            title="Print Leave Request" target="_blank"><i
-                                                                class="bi-printer"></i></a>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($leaveRequests as $key => $leaveRequest)
+                                                <tr>
+                                                    <td>{{ ++$key }}</td>
+                                                    <td>{{ $leaveRequest->getLeaveType() }}</td>
+                                                    <td>{{ $leaveRequest->getLeaveDuration() . ' ' . $leaveRequest->leaveType->getLeaveBasis() }}
                                                     </td>
+                                                    <td>{{ $leaveRequest->getRequestDate() }}</td>
+                                                    <td>{{ $leaveRequest->getLeaveNumber() }}</td>
+                                                    <td>{{ $leaveRequest->getStartDate() }}</td>
+                                                    <td>{{ $leaveRequest->getEndDate() }}</td>
+                                                    <td><span
+                                                            class="{{ $leaveRequest->getStatusClass() }}">{{ $leaveRequest->getStatus() }}</span>
+                                                    </td>
+                                                    @if ($hr)
+                                                        <td>
+                                                            <a class="btn btn-sm btn-outline-primary"
+                                                                href="{{ route('leave.requests.detail', $leaveRequest->id) }}"
+                                                                title="View Leave Request" target="_blank"><i
+                                                                    class="bi bi-eye"></i></a>
+                                                            &emsp;
+                                                            <a class="btn btn-sm btn-outline-primary"
+                                                                href="{{ route('leave.requests.print', $leaveRequest->id) }}"
+                                                                title="Print Leave Request" target="_blank"><i
+                                                                    class="bi-printer"></i></a>
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <div class="card-header fw-bold">
+                                    Approved Leave Encashment Requests
+                                </div>
+                                <div class="card-body" style="overflow: auto;">
+                                    <table class="table table-responsive table-sm" id="leaveEncashTable">
+                                        <thead>
+                                            <tr>
+                                                <th>SN</th>
+                                                <th>Type</th>
+                                                <th>Encashed Balance</th>
+                                                <th>Request Date</th>
+                                                <th>Leave Encash No.</th>
+                                                <th>Status</th>
+                                                @if ($hr)
+                                                    <th>Action</th>
                                                 @endif
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($leaveEncashments as $key => $leaveEncash)
+                                                <tr>
+                                                    <td>{{ ++$key }}</td>
+                                                    <td>{{ $leaveEncash->getLeaveType() }}</td>
+                                                    <td>{{ $leaveEncash->encash_balance . ' ' . $leaveEncash->leaveType->getLeaveBasis() }}
+                                                    </td>
+                                                    <td>{{ $leaveEncash->getRequestDate() }}</td>
+                                                    <td>{{ $leaveEncash->getEncashNumber() }}</td>
+                                                    <td><span
+                                                            class="{{ $leaveEncash->getStatusClass() }}">{{ $leaveEncash->getStatus() }}</span>
+                                                    </td>
+                                                    @if ($hr)
+                                                        <td>
+                                                            <a class="btn btn-sm btn-outline-primary"
+                                                                href="{{ route('approved.leave.encash.show', $leaveEncash->id) }}"
+                                                                title="View Leave Request" target="_blank"><i
+                                                                    class="bi bi-eye"></i></a>
+                                                            &emsp;
+                                                            <a class="btn btn-sm btn-outline-primary"
+                                                                href="{{ route('leave.encash.print', $leaveEncash->id) }}"
+                                                                title="Print Leave Request" target="_blank"><i
+                                                                    class="bi-printer"></i></a>
+                                                        </td>
+                                                    @endif
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    @endisset
+                        @endisset
+                    </div>
+
                 </div>
-
             </div>
         </div>
-    </div>
-@endsection
+    @endsection

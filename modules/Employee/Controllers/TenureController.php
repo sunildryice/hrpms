@@ -48,7 +48,7 @@ class TenureController extends Controller
         $inputs['created_by'] = auth()->id();
         $family = $this->tenures->create($inputs);
         if ($family) {
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee tenure detail is successfully added.');
         }
 

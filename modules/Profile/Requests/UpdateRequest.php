@@ -40,7 +40,7 @@ class UpdateRequest extends FormRequest
             'mobile_number'=>'required|max:17',
             'marital_status'=>'nullable',
             'gender'=>'required',
-            'citizenship_number'=>'nullable|required_with:citizenship_attachment',
+            'citizenship_number'=>'required|required_with:citizenship_attachment',
             'pan_number'=>'nullable|digits:9|required_with:pan_attachment',
             'citizenship_attachment'=>'nullable|mimes:jpg,png,pdf',
             'pan_attachment'=>'nullable|mimes:jpg,png,pdf',

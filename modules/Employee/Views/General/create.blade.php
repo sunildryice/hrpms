@@ -56,7 +56,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label">Personal Email </label>
+                    <label class="form-label required-label">Personal Email </label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -118,7 +118,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationcitizenship" class="form-label">Citizenship
+                    <label for="validationcitizenship" class="form-label required-label">Citizenship
                         No.</label>
                 </div>
             </div>
@@ -193,11 +193,11 @@
             <div class="col-lg-3"><label class="form-label">Passport Number</label></div>
             <div class="col-lg-9">
                 <div class="row">
-                    <div class="col-lg-5">
+                    <div class="col-lg-4">
                         <input type="text" class="form-control" name="passport_number"
                             value="{{ old('passport_number') }}" placeholder="e.g. 12345678 (optional)" />
                     </div>
-                    <div class="col-lg-7">
+                    <div class="col-lg-8">
                         <input type="file" class="form-control" name="passport_attachment"
                             accept=".jpg,.jpeg,.png,.pdf" />
                         <small class="text-muted">Scan/PDF of passport (optional)</small>
@@ -209,11 +209,11 @@
             <div class="col-lg-3"><label class="form-label">Driving License</label></div>
             <div class="col-lg-9">
                 <div class="row g-3">
-                    <div class="col-lg-5">
+                    <div class="col-lg-4">
                         <input type="text" class="form-control" name="vehicle_license_number"
                             value="{{ old('vehicle_license_number') }}" placeholder="License Number (optional)" />
                     </div>
-                    <div class="col-lg-7">
+                    <div class="col-lg-8">
                         <select name="vehicle_license_category[]" class="select2 form-control" multiple="multiple"
                             data-placeholder="Select categories (optional)" style="width: 100%">
                             @foreach ($vehicleLicenseCategories as $cat)

@@ -55,7 +55,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="m-0">Personal Email </label>
+                    <label for="" class="form-label required-label">Personal Email </label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -110,7 +110,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationcitizenship" class="m-0">Citizenship No.
+                    <label for="validationcitizenship" class="form-label required-label">Citizenship No.
                     </label>
                 </div>
             </div>

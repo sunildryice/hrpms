@@ -2,25 +2,26 @@
 
 namespace Modules\Employee\Models;
 
-use App\Traits\ModelEventLogger;
 use DateTime;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\ModelEventLogger;
+use Modules\Master\Models\Gender;
+use Modules\Master\Models\Office;
 use Illuminate\Support\Collection;
-use Modules\ConstructionTrack\Models\Construction;
-use Modules\EmployeeExit\Models\ExitHandOverNote;
-use Modules\EmployeeExit\Models\ExitInterview;
-use Modules\GoodRequest\Models\GoodRequest;
-use Modules\GoodRequest\Models\GoodRequestAsset;
-use Modules\LeaveRequest\Models\LeaveEncash;
+use Modules\Privilege\Models\User;
 use Modules\Master\Models\Department;
 use Modules\Master\Models\Designation;
+use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\EmployeeType;
-use Modules\Master\Models\Gender;
 use Modules\Master\Models\MaritalStatus;
-use Modules\Master\Models\Office;
+use Modules\GoodRequest\Models\GoodRequest;
+use Modules\LeaveRequest\Models\LeaveEncash;
+use Modules\EmployeeExit\Models\ExitInterview;
+use Modules\GoodRequest\Models\GoodRequestAsset;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Modules\EmployeeExit\Models\ExitHandOverNote;
+use Modules\ConstructionTrack\Models\Construction;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\PerformanceReview\Models\PerformanceReview;
-use Modules\Privilege\Models\User;
 use Modules\ProbationaryReview\Models\ProbationaryReview;
 
 class Employee extends Model
@@ -98,6 +99,14 @@ class Employee extends Model
     /**
      * Get the address of the employee.
      */
+
+    public function requestId(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => 'HI-EMP-' . sprintf('%04d', $this->employee_code)
+        );
+    }
+
     public function address()
     {
         return $this->hasOne(Address::class, 'employee_id')->withDefault();
@@ -537,9 +546,9 @@ class Employee extends Model
     {
         if (
             GoodRequestAsset::query()
-            ->where('assigned_user_id', $this->getUserId())
-            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-            ->count()
+                ->where('assigned_user_id', $this->getUserId())
+                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+                ->count()
         ) {
             return null;
         }

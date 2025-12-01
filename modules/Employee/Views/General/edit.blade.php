@@ -102,8 +102,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="date_of_birth" readonly
-                    value="{{ old('date_of_birth') ?: $employee->date_of_birth }}" />
+                <input type="text" class="form-control" name="date_of_birth"
+                    value="{{ old('date_of_birth') ?: $employee->date_of_birth }}" onfocus="this.blur()"
+                    placeholder="yyyy-mm-dd" />
                 <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
             </div>
         </div>
@@ -278,8 +279,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" readonly name="probation_complete_date" class="form-control"
-                    value="{{ $employee->probation_complete_date ?: old('probation_complete_date') }}" />
+                <input type="text" name="probation_complete_date" class="form-control"
+                    value="{{ $employee->probation_complete_date ?: old('probation_complete_date') }}"
+                    onfocus="this.blur()" placeholder="yyyy-mm-dd" />
             </div>
         </div>
         <div class="row mb-2">

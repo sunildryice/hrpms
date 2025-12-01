@@ -350,7 +350,7 @@ return [
     'signature' => 'Signature',
     'sn' => 'SN',
     'specification' => 'Specification',
-    'staff-code' => 'Employee Code',
+    'staff-code' => 'Staff ID',
     'start-date' => 'Start Date',
     'start-datetime' => 'Start Datetime',
     'start-time' => 'Start Time',

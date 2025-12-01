@@ -107,9 +107,6 @@
                     },
                     citizenship_attachment: {
                         validators: {
-                            notEmpty: {
-                                message: 'The citizenship attachment is required.'
-                            },
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',

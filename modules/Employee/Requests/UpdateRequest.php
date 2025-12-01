@@ -54,7 +54,7 @@ class UpdateRequest extends FormRequest
             'gender' => 'nullable',
             'citizenship_number' => 'required|required_with:citizenship_attachment',
             'pan_number' => 'nullable|digits:9|required_with:pan_attachment',
-            'citizenship_attachment' => 'required|mimes:jpg,png,pdf|max:2048',
+            'citizenship_attachment' => 'nullable|mimes:jpg,png,pdf|max:2048',
             'pan_attachment' => 'nullable|mimes:jpg,png,pdf|max:2048',
             'signature' => 'nullable|mimes:jpg,png|max:2048',
             'profile_picture' => 'nullable|mimes:jpg,png|max:2048',

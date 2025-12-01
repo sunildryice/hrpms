@@ -73,14 +73,17 @@
                     },
                     citizenship_number: {
                         validators: {
-                            callback: {
-                                message: 'The citizenship number is required.',
-                                callback: function(input) {
-                                    const value = citizenshipAttachmentField.val();
-                                    return value === '' || employeeEditForm.querySelector(
-                                        '[name="citizenship_number"]').value !== '';
-                                },
+                            notEmpty: {
+                                message: 'The citizenship number is required',
                             },
+                            // callback: {
+                            //     message: 'The citizenship number is required.',
+                            //     callback: function(input) {
+                            //         const value = citizenshipAttachmentField.val();
+                            //         return value === '' || employeeEditForm.querySelector(
+                            //             '[name="citizenship_number"]').value !== '';
+                            //     },
+                            // },
                         },
                     },
                     citizenship_attachment: {

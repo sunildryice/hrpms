@@ -213,7 +213,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea name="remarks" class="form-control" placeholder="Remarks">{!! old('remarks') ?: $employee->latestTenure->remarks !!}</textarea>
+                <textarea name="remarks" class="form-control" placeholder="Remarks">{!! old('remarks') !!}</textarea>
             </div>
         </div>
     </div>

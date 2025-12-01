@@ -23,8 +23,7 @@ class InsuranceController extends Controller
     public function __construct(
         protected InsuranceRepository $insurance,
         protected EmployeeRepository $employees
-    )
-    {
+    ) {
         $this->destinationPath = 'employees';
     }
 
@@ -37,21 +36,21 @@ class InsuranceController extends Controller
      */
     public function store(StoreRequest $request, $employeeId)
     {
-//        $this->authorize('manage-employee');
+        //        $this->authorize('manage-employee');
         $employee = $this->employees->find($employeeId);
         $inputs = $request->validated();
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
         $emp_insurance = $this->insurance->create($inputs);
-        if($emp_insurance){
+        if ($emp_insurance) {
             if ($request->file('attachment')) {
                 $filename = $request->file('attachment')
-                    ->storeAs($this->destinationPath .'/'.$employee->id, time().'_insurance.'. $request->file('attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_insurance.' . $request->file('attachment')->getClientOriginalExtension());
                 $inputs['attachment'] = $filename;
             }
 
             $this->insurance->update($emp_insurance->id, $inputs);
-        return redirect()->back()->withInput()
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Insurance details successfully added.');
         }
         return redirect()->back()->withInput()
@@ -69,19 +68,22 @@ class InsuranceController extends Controller
     {
         $insurance = $this->insurance->with(['employee'])->find($id);
         $attachment  = '';
-        if($insurance->attachment != NULL){
-            $attachment = asset('storage/'.$insurance->attachment);
+        if ($insurance->attachment != NULL) {
+            $attachment = asset('storage/' . $insurance->attachment);
         }
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json([
-                'paid_date'=>$insurance->paid_date ? $insurance->paid_date->format('Y-m-d') : '',
-                'insurance'=>$insurance,
-                'attachment'=>$attachment,
-                'updateAction'=>route('employees.insurance.update', [$employeeId, $insurance->id]),
+                'paid_date' => $insurance->paid_date ? $insurance->paid_date->format('Y-m-d') : '',
+                'insurance' => $insurance,
+                'attachment' => $attachment,
+                'updateAction' => route('employees.insurance.update', [$employeeId, $insurance->id]),
             ]);
         }
 
-        return view('Employee::Insurance.edit')
+
+        return view('Employee::Insurance.edit', [
+            'actionMode' => $actionMode,
+        ])
             ->withInsurance($insurance);
     }
 
@@ -99,13 +101,13 @@ class InsuranceController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$insurance->employee_id, time().'_insurance.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $insurance->employee_id, time() . '_insurance.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $insurance = $this->insurance->update($id, $inputs);
 
-        if($insurance){
-        return redirect()->back()->withInput()
+        if ($insurance) {
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee insurance detail is successfully updated.');
         }
         return redirect()->back()->withInput()

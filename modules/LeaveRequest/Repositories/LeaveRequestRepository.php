@@ -246,11 +246,16 @@ class LeaveRequestRepository extends Repository
     {
         DB::beginTransaction();
         try {
-            $inputs['status_id'] = 1;
+            $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
             $leaveRequest = $this->model->create($inputs);
+
+
             if (array_key_exists('substitutes', $inputs)) {
                 $leaveRequest->substitutes()->sync($inputs['substitutes']);
             }
+
+
+
 
             foreach ($inputs['leave_days'] as $key => $leaveDay) {
                 $leaveMode = $this->leaveMode->find($inputs['leave_mode_id'][$key]);
@@ -277,7 +282,6 @@ class LeaveRequestRepository extends Repository
                 ];
                 $leaveRequest = $this->forward($leaveRequest->id, $forwardInputs);
             }
-
             DB::commit();
 
             return $leaveRequest;
@@ -315,11 +319,7 @@ class LeaveRequestRepository extends Repository
         DB::beginTransaction();
         try {
             $leaveRequest = $this->model->findOrFail($id);
-            if ($leaveRequest->getLeaveDifferenceInDays() > 3) {
-                $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
-            } else {
-                $inputs['status_id'] = config('constant.VERIFIED_STATUS');
-            }
+            $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
             if (! $leaveRequest->leave_number) {
                 $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
                     ->where('end_date', '>=', date('Y-m-d'))

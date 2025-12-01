@@ -9,9 +9,13 @@ use DB;
 
 class TenureRepository extends Repository
 {
-    public function __construct(Tenure $tenure)
-    {
+
+    public function __construct(
+        Tenure $tenure,
+        protected EmployeeRepository $employee
+    ) {
         $this->model = $tenure;
+        $this->employee = $employee;
     }
 
     public function create($inputs)
@@ -27,6 +31,9 @@ class TenureRepository extends Repository
                 'cross_supervisor_id' => $tenure->cross_supervisor_id,
                 'next_line_manager_id' => $tenure->next_line_manager_id,
             ]);
+
+            $this->updateMinimumEmployeeJoiningDate($tenure->employee_id);
+
             DB::commit();
             return $tenure;
         } catch (\Illuminate\Database\QueryException $e) {
@@ -41,7 +48,7 @@ class TenureRepository extends Repository
         try {
             $tenure = $this->model->findOrFail($id);
             $tenure->fill($inputs)->save();
-            if($tenure->id == $tenure->employee->latestTenure->id){
+            if ($tenure->id == $tenure->employee->latestTenure->id) {
                 $tenure->employee->update([
                     'department_id' => $tenure->department_id,
                     'designation_id' => $tenure->designation_id,
@@ -50,6 +57,8 @@ class TenureRepository extends Repository
                     'cross_supervisor_id' => $tenure->cross_supervisor_id,
                     'next_line_manager_id' => $tenure->next_line_manager_id,
                 ]);
+
+                $this->updateMinimumEmployeeJoiningDate($tenure->employee_id);
             }
             DB::commit();
             return $tenure;
@@ -57,5 +66,14 @@ class TenureRepository extends Repository
             DB::rollback();
             return false;
         }
+    }
+
+    public function updateMinimumEmployeeJoiningDate($employeeId)
+    {
+        $employeeTenures = $this->model->where('employee_id', $employeeId);
+        $minDate = $employeeTenures->min('joined_date');
+        $employee = $this->employee->find($employeeId);
+        $employee->joined_date = $minDate;
+        $employee->save();
     }
 }

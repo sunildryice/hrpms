@@ -61,6 +61,9 @@
                     },
                     personal_email_address: {
                         validators: {
+                            notEmpty: {
+                                message: 'The personal email address is required',
+                            },
                             emailAddress: {
                                 message: 'The input must be a email address',
                             },
@@ -82,18 +85,24 @@
                     },
                     citizenship_number: {
                         validators: {
-                            callback: {
-                                message: 'The citizenship number is required.',
-                                callback: function(input) {
-                                    const value = citizenshipAttachmentField.val();
-                                    return value === '' || form.querySelector(
-                                        '[name="citizenship_number"]').value !== '';
-                                },
+                            notEmpty: {
+                                message: 'The citizenship number is required',
                             },
+                            // callback: {
+                            //     message: 'The citizenship number is required.',
+                            //     callback: function(input) {
+                            //         const value = citizenshipAttachmentField.val();
+                            //         return value === '' || form.querySelector(
+                            //             '[name="citizenship_number"]').value !== '';
+                            //     },
+                            // },
                         },
                     },
                     citizenship_attachment: {
                         validators: {
+                            notEmpty: {
+                                message: 'The citizenship attachment is required.'
+                            },
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',

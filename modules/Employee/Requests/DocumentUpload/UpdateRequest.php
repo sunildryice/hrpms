@@ -35,8 +35,8 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'signature' => 'required_without:profile_picture|mimes:jpeg,jpg,png|max:2048',
-            'profile_picture' => 'required_without:signature|mimes:jpeg,jpg,png|max:2048',
+            'signature' => 'nullable|mimes:jpeg,jpg,png|max:2048',
+            'profile_picture' => 'nullable|mimes:jpeg,jpg,png|max:2048',
             'cv_attachment' => 'nullable|mimes:pdf|max:2048',
         ];
     }

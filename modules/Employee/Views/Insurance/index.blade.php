@@ -9,7 +9,9 @@
                     <th>{{ __('label.fy') }}</th>
                     <th>{{ __('label.paid-date') }}</th>
                     <th>{{ __('label.attachment') }}</th>
-                    <th>{{ __('label.action') }}</th>
+                    @if ($actionMode == 'edit')
+                        <th>{{ __('label.action') }}</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
@@ -22,16 +24,18 @@
                         <td>
                             @if (file_exists('storage/' . $insurance->attachment) && $insurance->attachment != '')
                                 <a href="{!! asset('storage/' . $insurance->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
-                                   title="View Attachment">
+                                    title="View Attachment">
                                     <i class="bi-download"></i>
                                 </a>
                             @endif
                         </td>
-                        <td>
-                            <a href="javascript:;" class="btn btn-outline-primary btn-sm"
-                                onclick="displayInsuranceEditForm(this, '{!! route('employees.insurance.edit', [$insurance->employee_id, $insurance->id]) !!}')">
-                                <i class="bi-pencil-square"></i></a>
-                        </td>
+                        @if ($actionMode == 'edit')
+                            <td>
+                                <a href="javascript:;" class="btn btn-outline-primary btn-sm"
+                                    onclick="displayInsuranceEditForm(this, '{!! route('employees.insurance.edit', [$insurance->employee_id, $insurance->id]) !!}')">
+                                    <i class="bi-pencil-square"></i></a>
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>

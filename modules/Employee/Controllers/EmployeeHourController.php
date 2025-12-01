@@ -57,8 +57,9 @@ class EmployeeHourController extends Controller
 
         $hour = $this->hours->create($inputs);
         if ($hour) {
-            Artisan::call('dryice:reconcile:employee:leave', ['employee' => $hour->employee->employee_code]);
-
+            if ($employee->user) {
+                Artisan::call('dryice:reconcile:employee:leave', ['employee' => $hour->employee->employee_code]);
+            }
             return redirect()->back()->withInput()
                 ->withSuccessMessage('Working hour detail is successfully added.');
         }
@@ -113,7 +114,9 @@ class EmployeeHourController extends Controller
         $hour = $this->hours->update($id, $inputs);
 
         if ($hour) {
-            Artisan::call('dryice:reconcile:employee:leave', ['employee' => $hour->employee->employee_code]);
+            if ($employee->user) {
+                Artisan::call('dryice:reconcile:employee:leave', ['employee' => $hour->employee->employee_code]);
+            }
 
             return redirect()->back()->withInput()
                 ->withSuccessMessage('Working hour detail is successfully updated.');

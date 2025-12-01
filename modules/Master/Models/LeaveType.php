@@ -51,6 +51,10 @@ class LeaveType extends Model
      */
     protected $hidden = [];
 
+    protected $casts = [
+        'number_of_days' => 'decimal:1'
+    ];
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by')->withDefault();

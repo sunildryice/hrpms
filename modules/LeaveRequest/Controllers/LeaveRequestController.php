@@ -52,6 +52,7 @@ class LeaveRequestController extends Controller
     public function index(Request $request)
     {
         $authUser = auth()->user();
+
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'logs', 'requester', 'childLeaveRequest', 'leaveDays'])
                 ->select(['*'])
@@ -196,6 +197,8 @@ class LeaveRequestController extends Controller
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         $inputs['updated_by'] = auth()->id();
         $leaveRequest = $this->leaveRequests->create($inputs);
+
+
         if ($leaveRequest) {
             if ($request->file('attachment')) {
                 $filename = $request->file('attachment')
@@ -216,9 +219,15 @@ class LeaveRequestController extends Controller
                 $leaveRequest->approver->notify(new LeaveRequestSubmitted($leaveRequest));
             }
 
+
+
+
             return redirect()->route('leave.requests.index')
                 ->withSuccessMessage($message);
         }
+
+
+
 
         return redirect()->back()->withInput()
             ->withWarningMessage('Leave Request can not be added.');

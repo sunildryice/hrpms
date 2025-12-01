@@ -485,7 +485,19 @@
 
                                         <tr>
                                             <th scope="row">Citizenship Number</th>
-                                            <td colspan="3">{{ $employee->citizenship_number }}</td>
+                                            <td>
+                                                {{ $employee->citizenship_number }}
+                                            </td>
+                                            <td>
+                                                @if ($employee->citizenship_attachment && file_exists('storage/' . $employee->citizenship_attachment))
+                                                    <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}" target="_blank" class="fs-5"
+                                                        title="View Attachment">
+                                                        <i class="bi bi-file-earmark-medical"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted"> (No attachment)</span>
+                                                @endif
+                                            </td>
                                         </tr>
 
                                         <tr>
@@ -495,12 +507,36 @@
 
                                         <tr>
                                             <th scope="row">PAN Number</th>
-                                            <td colspan="3">{{ $employee->pan_number }}</td>
+                                            <td>
+                                                {{ $employee->pan_number }}
+                                            </td>
+                                            <td>
+                                                @if ($employee->pan_attachment && file_exists('storage/' . $employee->pan_attachment))
+                                                    <a href="{!! asset('storage/' . $employee->pan_attachment) !!}" target="_blank" class="fs-5"
+                                                        title="View Attachment">
+                                                        <i class="bi bi-file-earmark-medical"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted"> (No attachment)</span>
+                                                @endif
+                                            </td>
                                         </tr>
 
                                         <tr>
                                             <th scope="row">Passport Number</th>
-                                            <td colspan="3">{{ $employee->passport_number }}</td>
+                                            <td>
+                                                {{ $employee->passport_number }}
+                                            </td>
+                                            <td>
+                                                @if ($employee->passport_attachment && file_exists('storage/' . $employee->passport_attachment))
+                                                    <a href="{!! asset('storage/' . $employee->passport_attachment) !!}" target="_blank" class="fs-5"
+                                                        title="View Attachment">
+                                                        <i class="bi bi-file-earmark-medical"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted"> (No attachment)</span>
+                                                @endif
+                                            </td>
                                         </tr>
 
                                         <tr>

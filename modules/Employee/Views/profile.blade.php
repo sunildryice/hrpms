@@ -447,7 +447,7 @@
                                             <td colspan="3">{{ $employee->official_email_address }}</td>
                                         </tr>
                                         <tr>
-                                            <th scope="row">Telephone ( Mobile)</th>
+                                            <th scope="row">Mobile Number</th>
                                             <td colspan="3">{{ $employee->mobile_number }}</td>
                                         </tr>
                                         <tr>
@@ -461,9 +461,25 @@
                                         </tr>
 
                                         <tr>
+                                            <th scope="row">NID Number</th>
+                                            <td colspan="3">{{ $employee->nid_number }}</td>
+                                        </tr>
+
+                                        <tr>
                                             <th scope="row">PAN Number</th>
                                             <td colspan="3">{{ $employee->pan_number }}</td>
                                         </tr>
+
+                                        <tr>
+                                            <th scope="row">Passport Number</th>
+                                            <td colspan="3">{{ $employee->passport_number }}</td>
+                                        </tr>
+
+                                        <tr>
+                                            <th scope="row">Driving License Number</th>
+                                            <td colspan="3">{{ $employee->vehicle_license_number }}</td>
+                                        </tr>
+
                                         <tr>
                                             <th scope="row">CIT Number</th>
                                             <td colspan="3">{{ $employee->finance->cit_number }}</td>

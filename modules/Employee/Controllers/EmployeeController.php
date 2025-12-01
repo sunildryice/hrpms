@@ -86,7 +86,9 @@ class EmployeeController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('position', function ($employee) {
+                ->addColumn('employee_code', function ($employee) {
+                    return $employee->request_id;
+                })->addColumn('position', function ($employee) {
                     return $employee->getDesignationName();
                 })->addColumn('department', function ($employee) {
                     return $employee->getDepartmentName();

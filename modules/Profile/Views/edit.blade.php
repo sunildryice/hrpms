@@ -4,11 +4,11 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#dashboard-menu').addClass('active');
         });
         var $selectedTab = '{!! request()->query('tab') ?: 'generalInformation' !!}';
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             const employeeEditForm = document.getElementById('employeeEditForm');
             const panAttachmentField = $(employeeEditForm.querySelector('[name="pan_attachment"]'));
             const citizenshipAttachmentField = $(employeeEditForm.querySelector('[name="citizenship_attachment"]'));
@@ -52,7 +52,7 @@
                                 message: 'The input must be a email address',
                             },
                             different: {
-                                compare: function () {
+                                compare: function() {
                                     return employeeEditForm.querySelector(
                                         '[name="official_email_address"]').value;
                                 },
@@ -75,7 +75,7 @@
                         validators: {
                             callback: {
                                 message: 'The citizenship number is required.',
-                                callback: function (input) {
+                                callback: function(input) {
                                     const value = citizenshipAttachmentField.val();
                                     return value === '' || employeeEditForm.querySelector(
                                         '[name="citizenship_number"]').value !== '';
@@ -87,9 +87,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -102,7 +102,7 @@
                             },
                             callback: {
                                 message: 'The PAN number is required.',
-                                callback: function (input) {
+                                callback: function(input) {
                                     const value = panAttachmentField.val();
                                     return value === '' || employeeEditForm.querySelector(
                                         '[name="pan_number"]').value !== '';
@@ -114,9 +114,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -147,24 +147,24 @@
                 },
             });
 
-            $(employeeEditForm).on('change', '[name="gender"]', function (e){
+            $(employeeEditForm).on('change', '[name="gender"]', function(e) {
                 fv.revalidateField('gender');
             });
 
-            employeeEditForm.querySelector('[name="personal_email_address"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="personal_email_address"]').addEventListener('input', function() {
                 fv.revalidateField('official_email_address');
                 fv.revalidateField('personal_email_address');
             });
-            employeeEditForm.querySelector('[name="pan_attachment"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="pan_attachment"]').addEventListener('input', function() {
                 fv.revalidateField('pan_number');
             });
-            employeeEditForm.querySelector('[name="citizenship_attachment"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="citizenship_attachment"]').addEventListener('input', function() {
                 fv.revalidateField('citizenship_number');
             });
-            employeeEditForm.querySelector('[name="citizenship_number"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="citizenship_number"]').addEventListener('input', function() {
                 fv.revalidateField('citizenship_number');
             });
-            employeeEditForm.querySelector('[name="pan_number"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="pan_number"]').addEventListener('input', function() {
                 fv.revalidateField('pan_number');
             });
 
@@ -173,17 +173,17 @@
                 autoHide: true,
                 format: 'yyyy-mm-dd',
                 endDate: '{!! date('Y-m-d') !!}',
-            }).on('change', function (e) {
+            }).on('change', function(e) {
                 fv.revalidateField('date_of_birth');
             });
 
-            $('.step-item').click(function () {
+            $('.step-item').click(function() {
                 $('.step-item').removeClass('active');
                 $(this).addClass('active');
                 var tagid = $(this).data('tag');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + tagid).addClass('active').removeClass('hide');
-            }).ready(function () {
+            }).ready(function() {
                 $('[data-tag="' + $selectedTab + '"]').addClass('active');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + $selectedTab).addClass('active').removeClass('hide');
@@ -192,21 +192,22 @@
 
         function displayEducationEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addEducationBlock').hide();
                 $('#editEducationBlock').show();
                 $('#editEducationBlock').find('[name="education_level_id"]').val(response.education.education_level_id)
                     .select2('destroy').select2();
                 $('#editEducationBlock').find('[name="degree"]').val(response.education.degree);
                 $('#editEducationBlock').find('[name="institution"]').val(response.education.institution);
-                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2('destroy').select2();
+                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2(
+                    'destroy').select2();
                 if (response.attachment != '') {
                     $('#editEducationBlock').find('[name="attachment_exist"]').attr('href', response.attachment);
                     $('.media').show();
                 }
                 $('#editEducationBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -214,7 +215,7 @@
 
         function displayExperienceEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addExperienceBlock').hide();
                 $('#editExperienceBlock').show();
                 $('#editExperienceBlock').find('[name="institution"]').val(response.experience.institution);
@@ -228,7 +229,7 @@
                 }
                 $('#editExperienceBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -236,7 +237,7 @@
 
         function displayFamilyEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addFamilyMemberBlock').hide();
                 $('#editFamilyMemberBlock').show();
                 var fields = ['full_name', 'remarks', 'contact_number', 'province_id', 'district_id', 'local_level_id',
@@ -273,7 +274,7 @@
                         'change');
                 }
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -281,7 +282,7 @@
 
         function displayTrainingEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addTrainingBlock').hide();
                 $('#editTrainingBlock').show();
                 $('#editTrainingBlock').find('[name="institution"]').val(response.training.institution);
@@ -295,7 +296,7 @@
                 }
                 $('#editTrainingBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -350,7 +351,7 @@
                             <ul class="m-0 list-unstyled">
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="generalInformation">
+                                        data-tag="generalInformation">
                                         <i class="nav-icon bi-info-circle"></i> General Information
                                     </a>
                                 </li>
@@ -361,39 +362,46 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="family-details">
+                                        data-tag="family-details">
                                         <i class="nav-icon bi-people"></i>Family Details
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="medicalInformation">
+                                        data-tag="medicalInformation">
                                         <i class="nav-icon bi-calendar-heart"></i> Medical
                                         Information
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="education-details">
+                                        data-tag="education-details">
                                         <i class="nav-icon bi bi-journal-text"></i> Education
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="experience-details">
+                                        data-tag="experience-details">
                                         <i class="nav-icon bi bi-explicit"></i> Experience
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="training-details">
+                                        data-tag="training-details">
                                         <i class="nav-icon bi bi-calendar4-range"></i> Training
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="document-upload-details">
+                                        data-tag="document-upload-details">
                                         <i class="nav-icon bi bi-explicit"></i> Document Upload
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link step-item text-decoration-none"
+                                        data-tag="social-media">
+                                        <i class="nav-icon bi bi-globe"></i> Social Media
                                     </a>
                                 </li>
                             </ul>
@@ -415,7 +423,7 @@
                                 @include('Profile::FamilyDetail.create')
                             </div>
                             <div class="card shadow-sm border rounded mb-5" id="editFamilyMemberBlock"
-                                 style="display: none;">
+                                style="display: none;">
                                 @include('Profile::FamilyDetail.edit')
                             </div>
                             @if ($employee->familyDetails->count())
@@ -441,8 +449,7 @@
                             <div class="card shadow-sm border rounded mb-5" id="addEducationBlock">
                                 @include('Profile::Education.create')
                             </div>
-                            <div class="card shadow-sm border rounded mb-5" id="editEducationBlock"
-                                 style="display: none;">
+                            <div class="card shadow-sm border rounded mb-5" id="editEducationBlock" style="display: none;">
                                 @include('Profile::Education.edit')
                             </div>
                             @if ($employee->education->count())
@@ -456,8 +463,7 @@
                             <div class="card shadow-sm border rounded mb-5" id="addExperienceBlock">
                                 @include('Profile::Experience.create')
                             </div>
-                            <div class="card shadow-sm border rounded mb-5" id="editExperienceBlock"
-                                 style="display: none;">
+                            <div class="card shadow-sm border rounded mb-5" id="editExperienceBlock" style="display: none;">
                                 @include('Profile::Experience.edit')
                             </div>
                             @if ($employee->experiences->count())
@@ -472,7 +478,7 @@
                                 @include('Profile::Training.create')
                             </div>
                             <div class="card shadow-sm border rounded mb-5" id="editTrainingBlock"
-                                 style="display: none;">
+                                style="display: none;">
                                 @include('Profile::Training.edit')
                             </div>
                             @if ($employee->trainings->count())
@@ -491,8 +497,13 @@
                                 </div>
                             @endif
                         </div>
+
+                        <div class="c-tabs-content" id="social-media">
+                            <div class="card shadow-sm border rounded mb-5">
+                                @include('Profile::SocialMedia.edit')
+                            </div>
+                        </div>
                     </div>
-                </div>
             </section>
 
         </div>

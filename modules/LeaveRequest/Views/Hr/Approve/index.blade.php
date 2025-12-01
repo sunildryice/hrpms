@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Approve Leave Requests')
+@section('title', 'HR Approve Leave Requests')
 
 @section('page_js')
     <script type="text/javascript">
@@ -67,10 +67,10 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                 class="text-decoration-none text-dark">Home</a></li>
-                        <li class="breadcrumb-item" aria-current="page">Approve Leave Requests</li>
+                        <li class="breadcrumb-item" aria-current="page">HR Approve Leave Requests</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold">Approve Leave Requests</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold">HR Approve Leave Requests</h4>
             </div>
         </div>
 

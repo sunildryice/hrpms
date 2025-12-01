@@ -19,6 +19,7 @@ use Modules\Profile\Controllers\EmployeeController;
 use Modules\Profile\Controllers\ExperienceController;
 use Modules\Profile\Controllers\FamilyDetailController;
 use Modules\Profile\Controllers\MedicalController;
+use Modules\Profile\Controllers\SocialMediaController;
 use Modules\Profile\Controllers\TrainingController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
@@ -49,8 +50,10 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('profile/trainings/{training}/edit', [TrainingController::class, 'edit'])->name('profile.trainings.edit');
     Route::put('profile/trainings/{training}', [TrainingController::class, 'update'])->name('profile.trainings.update');
 
+    Route::post('profile/{employee}/social-media', [SocialMediaController::class, 'update'])->name('profile.social-media.update');
+
     Route::get('profile/assets', [AssetController::class, 'index'])->name('profile.assets.index');
-//    Route::get('profile/assets/{asset}/handover/create', [HandoverController::class, 'create'])->name('assets.handover.create');
-//    Route::post('profile/assets/{asset}/handover', [HandoverController::class, 'store'])->name('assets.handover.store');
+    //    Route::get('profile/assets/{asset}/handover/create', [HandoverController::class, 'create'])->name('assets.handover.create');
+    //    Route::post('profile/assets/{asset}/handover', [HandoverController::class, 'store'])->name('assets.handover.store');
 
 });

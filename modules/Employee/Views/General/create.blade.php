@@ -110,8 +110,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" readonly name="date_of_birth"
-                    value="{{ old('date_of_birth') }}" />
+                <input type="text" class="form-control" name="date_of_birth" value="{{ old('date_of_birth') }}"
+                    onfocus="this.blur()" placeholder="yyyy-mm-dd" />
                 <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
             </div>
         </div>
@@ -125,7 +125,8 @@
             <div class="col-lg-9">
                 <div class="row">
                     <div class="col-lg-4">
-                        <input type="text" class="form-control @if ($errors->has('citizenship_number')) is-invalid @endif"
+                        <input type="text"
+                            class="form-control @if ($errors->has('citizenship_number')) is-invalid @endif"
                             name="citizenship_number" value="{{ old('citizenship_number') }}"
                             placeholder="Citizenship No">
                         @if ($errors->has('citizenship_number'))

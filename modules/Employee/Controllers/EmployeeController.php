@@ -214,6 +214,7 @@ class EmployeeController extends Controller
             'tenures.dutyStation',
             'trainings',
             'address',
+            'finance',
             'experiences',
         ])->find($id);
         $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
@@ -226,7 +227,11 @@ class EmployeeController extends Controller
             ->getSocialMediaLinksByEmployeeId($employee->id)
             ->pluck('link', 'title');
 
-        return view('Employee::edit')
+        $actionMode = 'edit';
+
+        return view('Employee::edit', [
+            'actionMode' => $actionMode,
+        ])
             ->withAuthUser(auth()->user())
             ->withBloodGroups($this->bloodGroups->get())
             ->withDepartments($this->departments->orderby('title', 'asc')->get())
@@ -349,7 +354,11 @@ class EmployeeController extends Controller
             ->getSocialMediaLinksByEmployeeId($employee->id)
             ->pluck('link', 'title');
 
-        $view = view('Employee::profile');
+        $actionMode = 'show';
+
+        $view = view('Employee::profile', [
+            'actionMode' => $actionMode,
+        ]);
         if ($employee->user) {
             $leaveRequests = $this->employees->getLeaveRequestsOfCurrentAndPreviousFiscalYear($employee->id);
             $leaveEncashments = $this->employees->getLeaveEncashRequestsOfCurrentAndPreviousFiscalYear($employee->id);
@@ -357,6 +366,7 @@ class EmployeeController extends Controller
                 ->withPreviousLeaves($prevLeaves)
                 ->withLeaveEncashments($leaveEncashments);
         }
+
 
         return $view
             ->withAuthUser(auth()->user())

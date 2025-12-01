@@ -46,7 +46,7 @@ class TrainingController extends Controller
         }
         $training = $this->trainings->create($inputs);
         if ($training) {
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee training detail is successfully added.');
         }
 

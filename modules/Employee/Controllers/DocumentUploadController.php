@@ -20,8 +20,7 @@ class DocumentUploadController extends Controller
      */
     public function __construct(
         protected EmployeeRepository $employees
-    )
-    {
+    ) {
         $this->destinationPath = 'employees';
     }
 
@@ -55,7 +54,7 @@ class DocumentUploadController extends Controller
         $inputs['updated_by'] = auth()->id();
         $employeeDocument = $this->employees->update($employee->id, $inputs);
         if ($employeeDocument) {
-        return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee Documents successfully added.');
         }
         return redirect()->back()->withInput()

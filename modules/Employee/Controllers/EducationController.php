@@ -47,13 +47,13 @@ class EducationController extends Controller
         if ($emp_education) {
             if ($request->file('attachment')) {
                 $filename = $request->file('attachment')
-                    ->storeAs($this->destinationPath.'/'.$employee->id, time().'_education.'.$request->file('attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_education.' . $request->file('attachment')->getClientOriginalExtension());
                 $inputs['attachment'] = $filename;
             }
 
             $this->education->update($emp_education->id, $inputs);
 
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Education details successfully added.');
         }
 
@@ -71,7 +71,7 @@ class EducationController extends Controller
         $education = $this->education->with(['employee'])->find($id);
         $attachment = '';
         if ($education->attachment != null) {
-            $attachment = asset('storage/'.$education->attachment);
+            $attachment = asset('storage/' . $education->attachment);
         }
         if ($request->wantsJson()) {
             return response()->json([
@@ -97,7 +97,7 @@ class EducationController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath.'/'.$education->employee_id, time().'_education.'.$request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $education->employee_id, time() . '_education.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $education = $this->education->update($id, $inputs);

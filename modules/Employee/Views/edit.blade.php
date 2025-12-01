@@ -537,13 +537,6 @@
                                 <i class="nav-icon bi bi-explicit"></i> Document Upload
                             </a>
                         </li>
-                        @if ($authUser->can('update-user-role'))
-                            <li class="nav-item">
-                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="login-details">
-                                    <i class="nav-icon bi bi-lock"></i> Login Credentials
-                                </a>
-                            </li>
-                        @endif
 
 
                         <li class="nav-item">
@@ -551,6 +544,14 @@
                                 <i class="nav-icon bi bi-globe"></i> Social Media
                             </a>
                         </li>
+
+                        @if ($authUser->can('update-user-role'))
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="login-details">
+                                    <i class="nav-icon bi bi-lock"></i> Login Credentials
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>

@@ -14,7 +14,7 @@ class UpdateRequest extends FormRequest
      */
     protected function getRedirectUrl()
     {
-        return route('profile.edit', ['tab'=>'document-upload-details']);
+        return route('profile.edit', ['tab' => 'document-upload-details']);
     }
 
     /**
@@ -35,18 +35,21 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'signature'=>'required_without:profile_picture|mimes:jpg,png|max:2048',
-            'profile_picture'=>'required_without:signature|mimes:jpg,png|max:2048',
+            'signature' => 'nullable|mimes:jpeg,jpg,png|max:2048',
+            'profile_picture' => 'nullable|mimes:jpeg,jpg,png|max:2048',
+            'cv_attachment' => 'nullable|mimes:pdf|max:2048',
         ];
     }
 
     public function messages()
     {
         return [
-            'signature.mimes'=>'The signature must be a file of type: jpg, png.',
-            'signature.max'=>'The signature must not be greater than 2MB',
-            'profile_picture.mimes'=>'The profile picture must be a file of type: jpg, png.',
-            'profile_picture.max'=>'The profile picture must not be greater than 2MB',
+            'signature.mimes' => 'The signature must be a file of type: jpg, png.',
+            'signature.max' => 'The signature must not be greater than 2MB',
+            'profile_picture.mimes' => 'The profile picture must be a file of type: jpg, png.',
+            'profile_picture.max' => 'The profile picture must not be greater than 2MB',
+            'cv_attachment.mimes' => 'CV must be a PDF file.',
+            'cv_attachment.max' => 'CV must not be larger than 2MB.',
         ];
     }
 }

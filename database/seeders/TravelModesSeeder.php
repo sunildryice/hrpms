@@ -18,23 +18,18 @@ class TravelModesSeeder extends Seeder
         $travelMode = new TravelMode();
         $travelMode->updateOrCreate([
             'id' => '1'
-        ],[
+        ], [
             'title' => 'Air',
         ]);
         $travelMode->updateOrCreate([
             'id' => '2'
-        ],[
-            'title' => 'Road',
+        ], [
+            'title' => 'Road (Rental)',
         ]);
         $travelMode->updateOrCreate([
-            'id' => '6'
-        ],[
-            'title' => 'Walking',
-        ]);
-        $travelMode->updateOrCreate([
-            'id' => '7'
-        ],[
-            'title' => 'Others'
+            'id' => '3'
+        ], [
+            'title' => 'Road (Public Transport)',
         ]);
     }
 }

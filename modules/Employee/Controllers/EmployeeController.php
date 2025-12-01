@@ -173,7 +173,7 @@ class EmployeeController extends Controller
             }
             $this->employees->update($employee->id, $inputs);
 
-            return redirect()->route('employees.edit', $employee->id)->withInput()
+            return redirect()->route('employees.edit', $employee->id)
                 ->withSuccessMessage('Employee successfully added.');
         }
 

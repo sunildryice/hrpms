@@ -39,7 +39,7 @@ class FinanceController extends Controller
         $employeeFinance = $this->finances->create($inputs);
 
         if ($employeeFinance) {
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee details successfully added.');
         }
 

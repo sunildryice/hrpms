@@ -96,7 +96,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationcitizenship" class="m-0">Citizenship No.
+                    <label for="validationcitizenship" class="form-label required-label">Citizenship No.
                     </label>
                 </div>
             </div>

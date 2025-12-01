@@ -124,6 +124,7 @@ class LeaveRepository extends Repository
                 ->whereYear('reported_date', $year)
                 ->whereMonth('reported_date', $month)
                 ->get();
+
             foreach ($monthLeaves as $employeeLeave) {
                 $leaveRequestIds = $this->leaveRequests->select(['id'])
                     ->where('requester_id', $employee->user->id)
@@ -327,7 +328,7 @@ class LeaveRepository extends Repository
             $factor = $leaveType->leave_basis == 2 ? 8 : 1;
             $earned = round($earnedDays * $factor, 2);
 
-            if (date('Y-'.$month) == $employee->joined_date->format('Y-m')) {
+            if (date('Y-' . $month) == $employee->joined_date->format('Y-m')) {
                 $workingDays = $employee->joined_date->endOfMonth()->format('d') - $employee->joined_date->format('d') + 1;
                 $earnedDays = $earnedDays * $workingDays / $reportedDateMonthDays;
                 $opening = 0;
@@ -335,7 +336,7 @@ class LeaveRepository extends Repository
             }
 
             if ($employee->last_working_date) {
-                if (date('Y-'.$month) == $employee->last_working_date->format('Y-m')) {
+                if (date('Y-' . $month) == $employee->last_working_date->format('Y-m')) {
                     $workingDays = $employee->last_working_date->format('d');
                     $earnedDays = $earnedDays * $workingDays / $reportedDateMonthDays;
                     $earned = round($earnedDays * $factor, 2);

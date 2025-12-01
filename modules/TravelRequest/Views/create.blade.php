@@ -305,7 +305,7 @@
                             <div class="col-lg-3">
                                 <label class="form-label">Passport Number</label>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
                                 <div class="form-control bg-light border-0">
                                     @if ($employeePassportNumber)
                                         <strong class="text-dark">{{ $employeePassportNumber }}</strong>
@@ -317,10 +317,10 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
                                 <label class="form-label">Passport Attachment</label>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-2">
                                 <div
                                     class="form-control bg-light border-0 d-flex align-items-center justify-content-between">
                                     @if ($employeePassportAttachment && \Storage::disk('public')->exists($employeePassportAttachment))
@@ -337,6 +337,14 @@
                                         </span>
                                     @endif
                                 </div>
+                            </div>
+                            <div class="col-lg-3">
+                                @if (!$employeePassportNumber || !$employeePassportAttachment)
+                                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary"
+                                        style="text-decoration: none" target="_blank" rel="noopener noreferrer">
+                                        Edit Profile <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
 

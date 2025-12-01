@@ -356,7 +356,7 @@
                                             <tbody>
                                                 <tr>
                                                     <th scope="row">Staff ID </th>
-                                                    <td colspan="3">{{ $employee->employee_code }}</td>
+                                                    <td colspan="3">{{ $employee->request_id }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Full Name: </th>

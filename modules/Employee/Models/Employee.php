@@ -103,7 +103,7 @@ class Employee extends Model
     public function requestId(): Attribute
     {
         return Attribute::make(
-            get: fn() => 'HI-EMP-' . sprintf('%03d', $this->employee_code)
+            get: fn() => 'HI-EMP-' . sprintf('%04d', $this->employee_code)
         );
     }
 

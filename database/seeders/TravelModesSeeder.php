@@ -15,6 +15,7 @@ class TravelModesSeeder extends Seeder
      */
     public function run()
     {
+        TravelMode::truncate();
         $travelMode = new TravelMode();
         $travelMode->updateOrCreate([
             'id' => '1'

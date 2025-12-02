@@ -60,7 +60,7 @@ class EmployeeHourController extends Controller
             if ($employee->user) {
                 Artisan::call('dryice:reconcile:employee:leave', ['employee' => $hour->employee->employee_code]);
             }
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Working hour detail is successfully added.');
         }
 

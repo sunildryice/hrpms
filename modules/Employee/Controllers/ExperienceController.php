@@ -23,8 +23,7 @@ class ExperienceController extends Controller
     public function __construct(
         protected EmployeeRepository $employees,
         protected ExperienceRepository $experiences
-    )
-    {
+    ) {
         $this->destinationPath = 'employees';
     }
 
@@ -37,20 +36,20 @@ class ExperienceController extends Controller
      */
     public function store(StoreRequest $request, $employeeId)
     {
-//        $this->authorize('manage-employee');
+        //        $this->authorize('manage-employee');
         $employee = $this->employees->find($employeeId);
         $inputs = $request->validated();
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$employee->id, time().'_experience.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_experience.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
 
         $family = $this->experiences->create($inputs);
-        if($family){
-        return redirect()->back()->withInput()
+        if ($family) {
+            return redirect()->back()
                 ->withSuccessMessage('Employee experience detail is successfully added.');
         }
         return redirect()->back()->withInput()
@@ -68,16 +67,16 @@ class ExperienceController extends Controller
     {
         $experience = $this->experiences->with(['employee'])->find($id);
         $attachment  = '';
-        if($experience->attachment != NULL){
-            $attachment = asset('storage/'.$experience->attachment);
+        if ($experience->attachment != NULL) {
+            $attachment = asset('storage/' . $experience->attachment);
         }
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json([
-                'experience'=>$experience,
-                'attachment'=>$attachment,
-                'period_from'=>$experience->period_from ? $experience->period_from->format('Y-m-d') : '',
-                'period_to'=>$experience->period_to ? $experience->period_to->format('Y-m-d') : '',
-                'updateAction'=>route('employees.experiences.update', [$employeeId, $experience->id]),
+                'experience' => $experience,
+                'attachment' => $attachment,
+                'period_from' => $experience->period_from ? $experience->period_from->format('Y-m-d') : '',
+                'period_to' => $experience->period_to ? $experience->period_to->format('Y-m-d') : '',
+                'updateAction' => route('employees.experiences.update', [$employeeId, $experience->id]),
             ]);
         }
 
@@ -99,13 +98,13 @@ class ExperienceController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$experience->employee->id, time().'_experience.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $experience->employee->id, time() . '_experience.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $experience = $this->experiences->update($id, $inputs);
 
-        if($experience){
-        return redirect()->back()->withInput()
+        if ($experience) {
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee experience detail is successfully updated.');
         }
         return redirect()->back()->withInput()

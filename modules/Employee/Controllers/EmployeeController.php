@@ -168,12 +168,12 @@ class EmployeeController extends Controller
 
             if ($request->file('passport_attachment')) {
                 $filename = $request->file('passport_attachment')
-                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
                 $inputs['passport_attachment'] = $filename;
             }
             $this->employees->update($employee->id, $inputs);
 
-            return redirect()->route('employees.edit', $employee->id)->withInput()
+            return redirect()->route('employees.edit', $employee->id)
                 ->withSuccessMessage('Employee successfully added.');
         }
 
@@ -293,7 +293,7 @@ class EmployeeController extends Controller
 
         if ($request->file('passport_attachment')) {
             $filename = $request->file('passport_attachment')
-                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('passport_attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
             $inputs['passport_attachment'] = $filename;
         }
         $employee = $this->employees->update($id, $inputs);

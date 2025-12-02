@@ -35,6 +35,7 @@ use Modules\TravelRequest\Repositories\TravelClaimRepository;
 use Modules\TravelRequest\Repositories\TravelReportRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
+use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
 use Modules\WorkLog\Repositories\WorkPlanRepository;
 
 class SideBarComposer
@@ -78,6 +79,7 @@ class SideBarComposer
         protected DispositionRequestRepository   $dispositionRequests,
         protected TravelAuthorizationRepository  $travelAuthorization,
         protected TransactionRepository          $transactions,
+        protected WorkFromHomeRepository         $workFromHomes
     ) {}
 
     /**
@@ -490,6 +492,12 @@ class SideBarComposer
                 $q->where('status_id', config('constant.SUBMITTED_STATUS'));
             })->count();
 
+
+        $approveWorkFromHomeRequestCount = $this->workFromHomes
+            ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', '=', auth()->id())
+            ->count();
+
         $view->withUser($authUser)
             ->withApproveAdvanceRequestCount($approveAdvanceRequestCount)
             ->withApproveAssetHandoverCount($approveAssetHandoverCount)
@@ -559,7 +567,8 @@ class SideBarComposer
             ->withApproveTravelCancelCount($approveTravelCancelCount)
             ->withApproveTACount($approveTACount)
             ->withHrApproveLeaveCount($hrApproveLeaveCount)
-            ->withVerifySettlementCount($verifySettlementCount);
+            ->withVerifySettlementCount($verifySettlementCount)
+            ->withApproveWorkFromHomeRequestCount($approveWorkFromHomeRequestCount);
 
         return $view;
     }

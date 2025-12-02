@@ -20,8 +20,7 @@ class NotificationController extends Controller
     public function __construct(
         NotificationRepository $notifications,
         UserRepository         $users
-    )
-    {
+    ) {
         $this->notifications = $notifications;
         $this->users = $users;
     }
@@ -34,14 +33,14 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = $this->users->find(auth()->id());
         if ($request->ajax()) {
             return response()->json([
                 'unreadNotificationCount' => $user->unreadNotifications->count(),
                 'notifications' => $user->notifications->take(3),
             ], 200);
         }
-//        $user->unreadNotifications->markAsRead();
+        //        $user->unreadNotifications->markAsRead();
 
         return view('notifications.index')
             ->withNotifications($user->notifications()->whereDate('created_at', '>', now()->subDays(8))->get());

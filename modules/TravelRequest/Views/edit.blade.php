@@ -1033,11 +1033,10 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                                    @if ($errors->has('departure_date')) is-invalid @endif"
+                                class="form-control @if ($errors->has('departure_date')) is-invalid @endif"
                                 name="departure_date"
                                 value="{{ old('departure_date') ?: ($travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '') }}"
-                                data-toggle="datepicker" />
+                                data-toggle="datepicker" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
                             @if ($errors->has('departure_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="departure_date">{!! $errors->first('departure_date') !!}</div>
@@ -1055,11 +1054,10 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                                    @if ($errors->has('return_date')) is-invalid @endif"
+                                class="form-control @if ($errors->has('return_date')) is-invalid @endif"
                                 name="return_date"
                                 value="{{ old('return_date') ?: ($travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '') }}"
-                                data-toggle="datepicker" />
+                                data-toggle="datepicker" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
                             @if ($errors->has('return_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="return_date">{!! $errors->first('return_date') !!}</div>

@@ -717,6 +717,7 @@
                         timePicker24Hour: true,
                         timePickerIncrement: 5,
                         autoApply: true,
+                        autoUpdateInput: false,
                         minDate: '{!! $travelRequest->departure_date->format('Y-m-d H:i') !!}',
                         maxDate: '{!! $travelRequest->return_date->format('Y-m-d H:i') !!}',
                         locale: {
@@ -737,12 +738,12 @@
                         @endif
                     @endif
 
-                    // Revalidate on date change
-                    $(document).on('apply.daterangepicker hide.daterangepicker', '.datetime-picker',
-                        function() {
-                            fv.revalidateField('departure_date');
-                            fv.revalidateField('arrival_date');
-                        });
+                    $('.datetime-picker').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD HH:mm'));
+                        if (typeof fv !== 'undefined') {
+                            fv.revalidateField(this.name);
+                        }
+                    });
                 }, 300);
 
                 $(itineraryForm).on('change', '[name="activity_code_id"]', function(e) {

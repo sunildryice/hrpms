@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="input-group has-validation">
                             <input type="text" class="form-control datetime-picker" name="departure_date"
-                                placeholder="YYYY-MM-DD HH:mm" value="{!! $travelRequestItinerary->departure_date ? $travelRequestItinerary->departure_date->format('Y-m-d H:i') : '' !!}" readonly>
+                                placeholder="YYYY-MM-DD HH:mm" value="{!! $travelRequestItinerary->departure_date ? $travelRequestItinerary->departure_date->format('Y-m-d H:i') : '' !!}" onfocus="this.blur()">
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
                     <div class="row">
                         <div class="input-group has-validation">
                             <input type="text" class="form-control datetime-picker" name="arrival_date"
-                                placeholder="YYYY-MM-DD HH:mm" value="{!! $travelRequestItinerary->arrival_date ? $travelRequestItinerary->arrival_date->format('Y-m-d H:i') : '' !!}" readonly>
+                                placeholder="YYYY-MM-DD HH:mm" value="{!! $travelRequestItinerary->arrival_date ? $travelRequestItinerary->arrival_date->format('Y-m-d H:i') : '' !!}" onfocus="this.blur()">
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>

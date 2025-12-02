@@ -15,8 +15,8 @@
                 <div class="col-lg-3">
                     <div class="row">
                         <div class="input-group has-validation">
-                            <input type="text" class="form-control datetime-picker" name="departure_date"
-                                placeholder="YYYY-MM-DD HH:mm" readonly>
+                            <input type="text" value="{{ old('departure_date') }}" class="form-control datetime-picker" name="departure_date"
+                                placeholder="YYYY-MM-DD HH:mm" onfocus="this.blur()" >
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>
@@ -43,8 +43,8 @@
                 <div class="col-lg-3">
                     <div class="row">
                         <div class="input-group has-validation">
-                            <input type="text" class="form-control datetime-picker" name="arrival_date"
-                                placeholder="YYYY-MM-DD HH:mm" readonly>
+                            <input type="text" value="{{ old('arrival_date') }}" class="form-control datetime-picker" name="arrival_date"
+                                placeholder="YYYY-MM-DD HH:mm" onfocus="this.blur()">
                             <div class="invalid-feedback"></div>
                         </div>
                     </div>

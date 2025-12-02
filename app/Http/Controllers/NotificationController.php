@@ -56,6 +56,7 @@ class NotificationController extends Controller
             $alternateRoute = $jsonData->alternate_link;
         }
         $notification->update(['read_at' => date('Y-m-d H:i:s')]);
+        return redirect($route);
 
         try {
             $name = Session::getName();
@@ -63,7 +64,7 @@ class NotificationController extends Controller
 
             $cookieJar = CookieJar::fromArray([
                 $name => $sessionId,
-            ], env('APP_DOMAIN', 'dms.oneheartworldwide.org'));
+            ], env('APP_DOMAIN', 'hrpms.dryicesolutions.net'));
 
             $client = new Client([
                 'headers' => [

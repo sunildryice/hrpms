@@ -18,8 +18,7 @@ class MedicalController extends Controller
     public function __construct(
         protected EmployeeRepository $employees,
         protected MedicalConditionRepository $medicalCondition
-    ) {
-    }
+    ) {}
 
     /**
      * Store a newly created employee education in storage.
@@ -37,7 +36,7 @@ class MedicalController extends Controller
         $inputs['created_by'] = auth()->id();
         $medical = $employee->medicalCondition()->create($inputs);
         if ($medical) {
-        return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee medical condition is successfully added.');
         }
 
@@ -58,7 +57,7 @@ class MedicalController extends Controller
         $medicalCondition = $this->medicalCondition->update($id, $inputs);
 
         if ($medicalCondition) {
-        return redirect()->back()->withInput()
+            return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee medical condition is successfully updated.');
         }
 

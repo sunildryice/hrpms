@@ -50,7 +50,7 @@ class InsuranceController extends Controller
             }
 
             $this->insurance->update($emp_insurance->id, $inputs);
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Insurance details successfully added.');
         }
         return redirect()->back()->withInput()

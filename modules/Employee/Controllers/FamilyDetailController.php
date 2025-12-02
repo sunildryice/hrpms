@@ -34,9 +34,7 @@ class FamilyDetailController extends Controller
         protected FamilyRelationRepository $familyRelations,
         protected LocalLevelRepository $localLevels,
         protected ProvinceRepository $provinces
-    )
-    {
-    }
+    ) {}
 
     /**
      * Store a newly created employee education in storage.
@@ -47,16 +45,16 @@ class FamilyDetailController extends Controller
      */
     public function store(StoreRequest $request, $employeeId)
     {
-//        $this->authorize('manage-employee');
+        //        $this->authorize('manage-employee');
         $employee = $this->employees->find($employeeId);
         $inputs = $request->validated();
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
-        $inputs['emergency_contact_at'] = $request->emergency_contact ? date('Y-m-d H:i:s'): NULL;
-        $inputs['nominee_at'] = $request->nominee ? date('Y-m-d H:i:s'): NULL;
+        $inputs['emergency_contact_at'] = $request->emergency_contact ? date('Y-m-d H:i:s') : NULL;
+        $inputs['nominee_at'] = $request->nominee ? date('Y-m-d H:i:s') : NULL;
         $family = $this->familyDetails->create($inputs);
-        if($family){
-            return redirect()->back()->withInput()
+        if ($family) {
+            return redirect()->back()
                 ->withSuccessMessage('Employee family detail is successfully added.');
         }
         return redirect()->back()->withInput()
@@ -73,11 +71,11 @@ class FamilyDetailController extends Controller
     public function edit(Request $request, $employeeId, $id)
     {
         $familyMember = $this->familyDetails->with(['employee'])->find($id);
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json([
-                'familyMember'=>$familyMember,
-                'dateOfBirth'=>$familyMember->date_of_birth ? $familyMember->date_of_birth->format('Y-m-d') : '',
-                'updateAction'=>route('employees.family.details.update', [$employeeId, $familyMember->id]),
+                'familyMember' => $familyMember,
+                'dateOfBirth' => $familyMember->date_of_birth ? $familyMember->date_of_birth->format('Y-m-d') : '',
+                'updateAction' => route('employees.family.details.update', [$employeeId, $familyMember->id]),
             ]);
         }
 
@@ -101,14 +99,14 @@ class FamilyDetailController extends Controller
         $familyDetail = $this->familyDetails->find($id);
         $inputs = $request->validated();
         $inputs['updated_by'] = auth()->id();
-        $inputs['emergency_contact_at'] = $request->emergency_contact ? date('Y-m-d H:i:s'): NULL;
-        $inputs['nominee_at'] = $request->nominee ? date('Y-m-d H:i:s'): NULL;
-        if($request->nominee && $familyDetail->nominee_at){
+        $inputs['emergency_contact_at'] = $request->emergency_contact ? date('Y-m-d H:i:s') : NULL;
+        $inputs['nominee_at'] = $request->nominee ? date('Y-m-d H:i:s') : NULL;
+        if ($request->nominee && $familyDetail->nominee_at) {
             unset($inputs['nominee_at']);
         }
         $familyDetail = $this->familyDetails->update($id, $inputs);
 
-        if($familyDetail){
+        if ($familyDetail) {
             return redirect()->back()->withInput()
                 ->withSuccessMessage('Employee family detail is successfully updated.');
         }

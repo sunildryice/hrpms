@@ -23,9 +23,7 @@ class AddressController extends Controller
     public function __construct(
         protected AddressRepository $address,
         protected EmployeeRepository $employees,
-    )
-    {
-    }
+    ) {}
 
     /**
      * Store a newly created employee address in storage.
@@ -40,7 +38,7 @@ class AddressController extends Controller
         $inputs = $request->validated();
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
-        if($request->validationcurrent){
+        if ($request->validationcurrent) {
             $inputs['permanent_province_id'] = $inputs['temporary_province_id'];
             $inputs['permanent_district_id'] = $inputs['temporary_district_id'];
             $inputs['permanent_local_level_id'] = $inputs['temporary_local_level_id'];
@@ -48,8 +46,8 @@ class AddressController extends Controller
             $inputs['permanent_tole'] = $inputs['temporary_tole'];
         }
         $employeeAddress = $this->address->create($inputs);
-        if($employeeAddress){
-            return redirect()->back()->withInput()
+        if ($employeeAddress) {
+            return redirect()->back()
                 ->withSuccessMessage('Address successfully added.');
         }
         return redirect()->back()->withInput()
@@ -70,7 +68,7 @@ class AddressController extends Controller
         $this->authorize('update', $employeeAddress);
         $inputs = $request->validated();
         $inputs['updated_by'] = auth()->id();
-        if($request->validationcurrent){
+        if ($request->validationcurrent) {
             $inputs['permanent_province_id'] = $inputs['temporary_province_id'];
             $inputs['permanent_district_id'] = $inputs['temporary_district_id'];
             $inputs['permanent_local_level_id'] = $inputs['temporary_local_level_id'];
@@ -78,7 +76,7 @@ class AddressController extends Controller
             $inputs['permanent_tole'] = $inputs['temporary_tole'];
         }
         $employeeAddress = $this->address->update($id, $inputs);
-        if($employeeAddress){
+        if ($employeeAddress) {
             return redirect()->back()->withInput()
                 ->withSuccessMessage('Address successfully updated.');
         }

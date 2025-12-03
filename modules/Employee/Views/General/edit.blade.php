@@ -152,7 +152,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationpan" class="m-0">Pan No.
+                    <label for="validationpan" class="m-0">PAN No.
                     </label>
                 </div>
             </div>
@@ -183,7 +183,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-lg-3"><label class="form-label">Passport</label></div>
+            <div class="col-lg-3"><label class="form-label">Passport No.</label></div>
             <div class="col-lg-9">
                 <div class="row g-3">
                     <div class="col-lg-4">
@@ -211,7 +211,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-lg-3"><label class="form-label">Driving License</label></div>
+            <div class="col-lg-3"><label class="form-label">Driving License No.</label></div>
             <div class="col-lg-9">
                 <div class="row g-3">
                     <div class="col-lg-4">

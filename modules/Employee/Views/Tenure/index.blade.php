@@ -10,6 +10,7 @@
                     <th>Department</th>
                     <th>Date of Joining</th>
                     <th>To Date</th>
+                    <th>Contract End Date</th>
                     <th>Duty Station</th>
                     <th>District</th>
                     <th>Line Manager</th>
@@ -23,7 +24,8 @@
                         <td>{{ $tenure->getDesignationName() }}</td>
                         <td>{{ $tenure->getDepartmentName() }}</td>
                         <td>{{ $tenure->getJoinedDate() }}</td>
-                        <td>{{ $tenure->to_date?->format('Y-m-d') }}</td>
+                        <td>{{ $tenure->getToDate() }}</td>
+                        <td>{{ $tenure->getContractEndDate() }}</td>
                         <td>{{ $tenure->duty_station }}</td>
                         <td>{{ $tenure->getDutyStation() }}</td>
                         <td>{{ $tenure->getSupervisorName() }}</td>

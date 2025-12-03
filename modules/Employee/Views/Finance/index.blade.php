@@ -97,7 +97,7 @@
                 @endif
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="forDisability" class="form-label">Disability ?</label>
@@ -110,7 +110,7 @@
                     <label class="form-check-label" for="disabled"></label>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">
         <button type="submit" class="btn btn-primary btn-sm">

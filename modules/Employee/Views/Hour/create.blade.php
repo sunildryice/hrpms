@@ -1,6 +1,6 @@
 <div class="card-header fw-bold">Add New Working Hour</div>
-<form class="needs-validation" action="{{ route('employees.hours.store', $employee) }}" method="post"
-      id="hourAddForm" enctype="multipart/form-data" autocomplete="off">
+<form class="needs-validation" action="{{ route('employees.hours.store', $employee) }}" method="post" id="hourAddForm"
+    enctype="multipart/form-data" autocomplete="off">
     <div class="card-body">
 
         <div class="mb-2 row">
@@ -11,9 +11,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control @if ($errors->has('start_date')) is-invalid @endif"
-                    name="start_date"
-                    value="{{ old('start_date') }}"
-                    readonly />
+                    name="start_date" value="{{ old('start_date') }}" readonly />
                 @if ($errors->has('start_date'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="start_date">{!! $errors->first('start_date') !!}</div>
@@ -30,9 +28,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control @if ($errors->has('end_date')) is-invalid @endif"
-                    name="end_date"
-                    value="{{ old('end_date') }}"
-                    readonly />
+                    name="end_date" value="{{ old('end_date') }}" readonly />
                 @if ($errors->has('end_date'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="end_date">{!! $errors->first('end_date') !!}</div>
@@ -42,6 +38,39 @@
         </div>
 
         <div class="mb-2 row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="start_time" class="form-label required-label">Start Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="time" class="form-control @if ($errors->has('start_time')) is-invalid @endif"
+                    name="start_time" value="{{ old('start_time') }}" />
+                @if ($errors->has('start_time'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="start_time">{!! $errors->first('start_time') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+        <div class="mb-2 row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="end_time" class="form-label required-label">End Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="time" class="form-control @if ($errors->has('end_time')) is-invalid @endif"
+                    name="end_time" value="{{ old('end_time') }}" />
+                @if ($errors->has('end_time'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="end_time">{!! $errors->first('end_time') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="validationinstitution" class="form-label required-label">Work Percentile</label>
@@ -57,7 +86,7 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </div> --}}
 
         <div class="mb-2 row">
             <div class="col-lg-3">
@@ -78,7 +107,7 @@
 </form>
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('hourAddForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -104,20 +133,29 @@
                             },
                         },
                     },
-                    work_percentile: {
+                    start_time: {
                         validators: {
                             notEmpty: {
-                                message: 'Work percentile is required',
+                                message: 'Start time is required',
                             },
-                            numeric: {
-                                message: 'Please enter a valid value',
-                            },
-                            lessThan: {
-                                max: 100,
-                                message: 'Work percentile must be less than or equal to 100',
-                            }
                         },
                     },
+                    end_time: {
+                        validators: {
+                            notEmpty: {
+                                message: 'End time is required',
+                            },
+                        },
+                    },
+                    //         numeric: {
+                    //             message: 'Please enter a valid value',
+                    //         },
+                    //         lessThan: {
+                    //             max: 100,
+                    //             message: 'Work percentile must be less than or equal to 100',
+                    //         }
+                    //     },
+                    // },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),

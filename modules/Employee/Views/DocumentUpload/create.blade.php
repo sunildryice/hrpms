@@ -21,6 +21,13 @@
                         <div data-field="signature">{!! $errors->first('signature') !!}</div>
                     </div>
                 @endif
+                @if (file_exists('storage/' . $employee->signature) && $employee->signature != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->signature) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -42,6 +49,13 @@
                         <div data-field="profile_picture">{!! $errors->first('profile_picture') !!}</div>
                     </div>
                 @endif
+                @if (file_exists('storage/' . $employee->profile_picture) && $employee->profile_picture != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->profile_picture) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -61,6 +75,13 @@
                 @if ($errors->has('cv_attachment'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="cv_attachment">{!! $errors->first('cv_attachment') !!}</div>
+                    </div>
+                @endif
+                @if (file_exists('storage/' . $employee->cv_attachment) && $employee->cv_attachment != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->cv_attachment) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
                     </div>
                 @endif
             </div>

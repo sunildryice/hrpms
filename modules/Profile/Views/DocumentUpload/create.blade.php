@@ -1,8 +1,8 @@
 <div class="card-header fw-bold">
     <h3 class="m-0 fs-6">Add Documents</h3>
 </div>
-<form class="g-3 needs-validation" action="{{ route('profile.document.store') }}" method="post"
-      id="documentForm" enctype="multipart/form-data" autocomplete="off">
+<form class="g-3 needs-validation" action="{{ route('profile.document.store') }}" method="post" id="documentForm"
+    enctype="multipart/form-data" autocomplete="off">
     {!! csrf_field() !!}
     {!! method_field('PUT') !!}
     <div class="card-body">
@@ -15,11 +15,18 @@
             </div>
             <div class="col-lg-9">
                 <input type="file" id="validationsignature" placeholder="" name="signature"
-                       class="form-control js-document-upload @if($errors->has('signature')) is-invalid @endif">
+                    class="form-control js-document-upload @if ($errors->has('signature')) is-invalid @endif">
                 <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
-                @if($errors->has('signature'))
+                @if ($errors->has('signature'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="signature">{!! $errors->first('signature') !!}</div>
+                    </div>
+                @endif
+                @if (file_exists('storage/' . $employee->signature) && $employee->signature != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->signature) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
                     </div>
                 @endif
             </div>
@@ -34,11 +41,18 @@
             </div>
             <div class="col-lg-9">
                 <input type="file" id="validationprofilepicture" name="profile_picture"
-                       class="form-control js-document-upload @if($errors->has('profile_picture')) is-invalid @endif">
+                    class="form-control js-document-upload @if ($errors->has('profile_picture')) is-invalid @endif">
                 <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
-                @if($errors->has('profile_picture'))
+                @if ($errors->has('profile_picture'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="profile_picture">{!! $errors->first('profile_picture') !!}</div>
+                    </div>
+                @endif
+                @if (file_exists('storage/' . $employee->profile_picture) && $employee->profile_picture != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->profile_picture) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
                     </div>
                 @endif
             </div>
@@ -62,12 +76,19 @@
                         <div data-field="cv_attachment">{!! $errors->first('cv_attachment') !!}</div>
                     </div>
                 @endif
+                @if (file_exists('storage/' . $employee->cv_attachment) && $employee->cv_attachment != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $employee->cv_attachment) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">
         <button class="btn btn-primary btn-sm" type="submit">
-            @if($employee->signature != NULL || $employee->profile_picture)
+            @if ($employee->signature != null || $employee->profile_picture)
                 Update
             @else
                 Save
@@ -77,7 +98,7 @@
 </form>
 @push('scripts')
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('documentFormM');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -93,7 +114,7 @@
 
                             callback: {
                                 message: 'You must upload at least one file.',
-                                callback: function (input) {
+                                callback: function(input) {
                                     let isEmpty = true;
                                     const uploadElements = fv.getElements('upload');
                                     for (const i in uploadElements) {
@@ -130,4 +151,3 @@
         });
     </script>
 @endpush
-

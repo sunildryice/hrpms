@@ -27,10 +27,10 @@ class TravelReportRecommendation extends Model
      */
     protected $fillable = [
         'travel_report_id',
-        'recommendation_subject',
-        'recommendation_date',
-        'recommendation_responsible',
-        'recommendation_remarks',
+        'completed_tasks',
+        'activity_date',
+        'day_number',
+        'remarks',
     ];
 
     /**

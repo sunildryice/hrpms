@@ -42,5 +42,6 @@ return [
         'TravelAuthorization',
         'ExitStaffClearance',
         'Mfr',
+        'WorkFromHome',
     ],
 ];

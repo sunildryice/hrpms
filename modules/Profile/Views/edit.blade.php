@@ -494,7 +494,7 @@
                             <div class="card shadow-sm border rounded mb-5" id="addDocumentBlock">
                                 @include('Profile::DocumentUpload.create')
                             </div>
-                            @if ($employee->signature != null || $employee->profile_picture)
+                            @if ($employee->signature != null || $employee->profile_picture || $employee->cv_attachment)
                                 <div class="card shadow-sm border rounded mb-5">
                                     @include('Profile::DocumentUpload.index')
                                 </div>

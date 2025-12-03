@@ -675,7 +675,7 @@
                     <div class="mb-5 card" id="addDocumentBlock">
                         @include('Employee::DocumentUpload.create')
                     </div>
-                    @if ($employee->signature != null || $employee->profile_picture)
+                    @if ($employee->signature != null || $employee->profile_picture || $employee->cv_attachment)
                         <div class="mb-5 card">
                             @include('Employee::DocumentUpload.index')
                         </div>

@@ -677,15 +677,11 @@
                                 <div class="col-lg-10">
                                     <div class="d-flex align-items-start h-100">
                                         <label for="Fdname" class="m-0">
-                                            I certify that the following information is correct
-                                            and per the approved Travel authorization.
-                                            I authorize OHW to treat this as the final claim and
-                                            I will repay any travel allowances to which I am not
-                                            entitled.
-                                            If office provides breakfast, lunch, dinner or
-                                            accommodation, this must be deducted from claim,
-                                            i.e. % charge should
-                                            be 100%-deducted %
+                                            I certify that the following information is correct and per the approved Travel
+                                            authorization. I authorize HERDi to treat this as the final claim and I will
+                                            repay any travel allowances to which I am not entitled. If office provides
+                                            breakfast, lunch, dinner or accommodation, this must be deducted from claim,
+                                            i.e. % change should be 100%-deducted %
                                         </label>
                                     </div>
                                 </div>

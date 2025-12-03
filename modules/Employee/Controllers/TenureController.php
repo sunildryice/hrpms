@@ -102,7 +102,7 @@ class TenureController extends Controller
         $tenure = $this->tenures->update($id, $inputs);
 
         if ($tenure) {
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee tenure detail is successfully updated.');
         }
 

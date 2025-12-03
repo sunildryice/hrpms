@@ -120,6 +120,24 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label for="validationdob" class="form-label">Contract End Date</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control date @if ($errors->has('contract_end_date')) is-invalid @endif"
+                    name="contract_end_date" placeholder="Contract End Date" value="{{ old('contract_end_date') }}"
+                    readonly />
+                @if ($errors->has('contract_end_date'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="contract_end_date">{!! $errors->first('contract_end_date') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="mb-2 row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label for="validationdob" class="form-label">Line Manager</label>
                 </div>
             </div>
@@ -302,6 +320,14 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+            });
+
+            $('[name="contract_end_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+            }).on('change', function(e) {
+                fv.revalidateField('contract_end_date');
             });
 
             $('#tenureAddForm').on('change', '[name="department_id"]', function(e) {

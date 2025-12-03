@@ -61,11 +61,11 @@ class ReconcileEmployeeYearlyLeaveEarnedBalance extends Command
             $this->info($employeeLeave->id .' | '. $employeeLeave->leave_type_id .' | '. $employeeLeave->earned);
             $leaveType = $this->leaveTypes->find($employeeLeave->leave_type_id);
             $this->info($leaveType->title .' | '. $leaveType->number_of_days);
-            $balance = $leaveType->id=18 ? $leaveType->number_of_days : $leaveType->number_of_days-$employeeLeave->taken - $employeeLeave->paid;
+            $balance = $leaveType->id == 18 ? $leaveType->number_of_days : $leaveType->number_of_days - $employeeLeave->taken - $employeeLeave->paid;
 
-            if(in_array($employeeLeave->id, [6153,6028,6014,5985])){
-                $balance = $employeeLeave->opening_balance + $leaveType->number_of_days;
-            }
+//            if(in_array($employeeLeave->id, [6153,6028,6014,5985])){
+//                $balance = $employeeLeave->opening_balance + $leaveType->number_of_days;
+//            }
             $employeeLeave->update([
                 'earned' => $leaveType->number_of_days,
                 'balance'=> $balance,

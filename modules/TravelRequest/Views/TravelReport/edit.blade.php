@@ -4,11 +4,11 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#travel-report-menu').addClass('active');
 
         });
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             const objectivesValidators = {
                 validators: {
                     notEmpty: {
@@ -87,32 +87,32 @@
                         validating: 'bi bi-arrow-repeat',
                     }),
                 },
-            }).on('core.field.added', function (e) {
+            }).on('core.field.added', function(e) {
                 if (e.field === 'recommendation[recommendation_date][' + rowIndex + ']') {
                     // The added field is recommendation date
-                    {{--$(form.querySelector('[name= "' + e.field + '"]')).datepicker({--}}
-                    {{--    language: 'en-GB',--}}
-                    {{--    autoHide: true,--}}
-                    {{--    format: 'yyyy-mm-dd',--}}
-                    {{--    startDate: '{!! date('Y-m-d') !!}',--}}
-                    {{--}).on('change', function(e) {--}}
-                    {{--    fv.revalidateField("'" + e.field + "'");--}}
-                    {{--});--}}
+                    {{-- $(form.querySelector('[name= "' + e.field + '"]')).datepicker({ --}}
+                    {{--    language: 'en-GB', --}}
+                    {{--    autoHide: true, --}}
+                    {{--    format: 'yyyy-mm-dd', --}}
+                    {{--    startDate: '{!! date('Y-m-d') !!}', --}}
+                    {{-- }).on('change', function(e) { --}}
+                    {{--    fv.revalidateField("'" + e.field + "'"); --}}
+                    {{-- }); --}}
                 }
             });
 
             // Attach datepicker to the first existing due date
             // datePicker('recommendation[0].recommendation_date');
-            {{--$(form.querySelector('[name= "recommendation[recommendation_date][0]"')).datepicker({--}}
-            {{--    language: 'en-GB',--}}
-            {{--    autoHide: true,--}}
-            {{--    format: 'yyyy-mm-dd',--}}
-            {{--    startDate: '{!! date('Y-m-d') !!}',--}}
-            {{--}).on('change', function(e) {--}}
-            {{--    fv.revalidateField('recommendation[recommendation_date][0]');--}}
-            {{--});--}}
+            {{-- $(form.querySelector('[name= "recommendation[recommendation_date][0]"')).datepicker({ --}}
+            {{--    language: 'en-GB', --}}
+            {{--    autoHide: true, --}}
+            {{--    format: 'yyyy-mm-dd', --}}
+            {{--    startDate: '{!! date('Y-m-d') !!}', --}}
+            {{-- }).on('change', function(e) { --}}
+            {{--    fv.revalidateField('recommendation[recommendation_date][0]'); --}}
+            {{-- }); --}}
 
-            const removeRow = function (rowIndex) {
+            const removeRow = function(rowIndex) {
                 const row = form.querySelector('[data-row-index="' + rowIndex + '"]');
 
                 // Remove field
@@ -126,12 +126,12 @@
             };
 
             const template = document.getElementById('template');
-            $(document).on('click', '.removeButton', function (e) {
+            $(document).on('click', '.removeButton', function(e) {
                 const index = $(this).closest('tr').attr('data-row-index');
                 // //
                 removeRow(index);
             });
-            document.getElementById('addButton').addEventListener('click', function () {
+            document.getElementById('addButton').addEventListener('click', function() {
                 rowIndex++;
 
                 const clone = template.cloneNode(true);
@@ -171,21 +171,21 @@
                 // Handle the click event of removeButton
                 const removeBtn = clone.querySelector('.js-remove-button');
                 removeBtn.setAttribute('data-row-index', rowIndex);
-                removeBtn.addEventListener('click', function (e) {
+                removeBtn.addEventListener('click', function(e) {
                     // Get the row index
                     const index = e.target.getAttribute('data-row-index');
                     removeRow(index);
                 });
             });
             @foreach ($travelReport->travelReportRecommendations as $index => $recommendation)
-            fv.addField('recommendation[recommendation_subject][' + {{ $index }} + ']',
-                subjectValidators)
-                .addField('recommendation[recommendation_date][' + {{ $index }} + ']',
-                    recommendationDateValidators)
-                .addField('recommendation[recommendation_responsible][' + {{ $index }} + ']',
-                    responsibleValidators)
-                .addField('recommendation[recommendation_remarks][' + {{ $index }} + ']',
-                    remarksValidators);
+                fv.addField('recommendation[recommendation_subject][' + {{ $index }} + ']',
+                        subjectValidators)
+                    .addField('recommendation[recommendation_date][' + {{ $index }} + ']',
+                        recommendationDateValidators)
+                    .addField('recommendation[recommendation_responsible][' + {{ $index }} + ']',
+                        responsibleValidators)
+                    .addField('recommendation[recommendation_remarks][' + {{ $index }} + ']',
+                        remarksValidators);
             @endforeach
         });
     </script>
@@ -235,11 +235,9 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-start">
-                                                <div class="icon-section"><i
-                                                        class="bi-chat-dots dropdown-item-icon"></i>
+                                                <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i>
                                                 </div>
-                                                <div
-                                                    class="d-content-section"> {{ $travelReport->returnLog->log_remarks }}
+                                                <div class="d-content-section"> {{ $travelReport->returnLog->log_remarks }}
                                                 </div>
                                             </div>
                                             <a href="#" class="stretched-link" rel="tooltip" title="Remarks"></a>
@@ -254,9 +252,8 @@
                             <div class="card-header fw-bold">
                                 Update Travel Report
                             </div>
-                            <form action="{{ route('travel.reports.update', $travelReport->id) }}"
-                                  id="travelReportAddForm"
-                                  method="post" enctype="multipart/form-data" autocomplete="off">
+                            <form action="{{ route('travel.reports.update', $travelReport->id) }}" id="travelReportAddForm"
+                                method="post" enctype="multipart/form-data" autocomplete="off">
                                 <div class="card-body">
 
                                     <div class="row">
@@ -270,8 +267,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="objectives" class="form-control"
-                                                              rows="8">{{ $travelReport->objectives }}</textarea>
+                                                    <textarea name="objectives" class="form-control" rows="8">{{ $travelReport->objectives }}</textarea>
                                                     @if ($errors->has('objectives'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
                                                             <div data-field="objectives">
@@ -291,9 +287,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="observation" class="form-control"
-                                                              rows="8"
-                                                              placeholder="">{{ $travelReport->observation }}</textarea>
+                                                    <textarea name="observation" class="form-control" rows="8" placeholder="">{{ $travelReport->observation }}</textarea>
                                                     @if ($errors->has('observation'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
                                                             <div data-field="observation">
@@ -312,9 +306,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="activities" class="form-control"
-                                                              rows="8"
-                                                              placeholder="">{{ $travelReport->activities }}</textarea>
+                                                    <textarea name="activities" class="form-control" rows="8" placeholder="">{{ $travelReport->activities }}</textarea>
                                                     @if ($errors->has('activities'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
                                                             <div data-field="activities">
@@ -325,189 +317,111 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row mb-2">
-                                                <div class="table-responsive">
-                                                    <table class="table table-bordered">
-                                                        <thead>
-                                                        <tr>
-                                                            <th colspan="5">Recommendation For</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <th class="">What</th>
-                                                            <th class="">When</th>
-                                                            <th class="">Who</th>
-                                                            <th class="">Remarks</th>
-                                                            <th></th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
+                                            <div class="row mb-3">
+                                                <div class="col-lg-12">
+                                                    <label class="form-label required-label fw-bold">
+                                                        Daily Carried Activities / Completed Tasks
+                                                    </label>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th width="8%">Day</th>
+                                                                    <th width="15%">Date</th>
+                                                                    <th width="50%">Carried activities / Completed tasks
+                                                                    </th>
+                                                                    <th width="22%">Remarks</th>
+                                                                    <th width="5%"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
 
-                                                        @forelse($travelReport->travelReportRecommendations as $index=>$recommendation)
-                                                            <tr data-row-index="{{ $index }}">
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_subject][{{ $index }}]"
-                                                                            rows="10"
-                                                                            class="form-control"
-                                                                            placeholder="">{!! $recommendation->recommendation_subject !!}</textarea>
-                                                                </td>
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_date][{{ $index }}]"
-                                                                            rows="10"
-                                                                            class="form-control"
-                                                                            placeholder="">{!! $recommendation->recommendation_date !!}</textarea>
-                                                                </td>
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_responsible][{{ $index }}]"
-                                                                            rows="10"
-                                                                            class="form-control"
-                                                                            placeholder="">{!! $recommendation->recommendation_responsible !!}</textarea>
-                                                                </td>
-                                                                <td style="width: 40%">
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_remarks][{{ $index }}]"
-                                                                            rows="10"
-                                                                            class="form-control"
-                                                                            placeholder="">{!! $recommendation->recommendation_remarks !!}</textarea>
-                                                                </td>
-                                                                <td>
-                                                                    @if ($loop->first)
-                                                                        <button type="button"
-                                                                                class="btn btn-primary btn-block"
-                                                                                id="addButton"> +
-                                                                        </button>
-                                                                    @else
-                                                                        <button
-                                                                            class="btn btn-danger btn-block removeButton"
-                                                                            type="button"> -
-                                                                        </button>
-                                                                    @endif
-                                                                </td>
-                                                            </tr>
-                                                        @empty
-                                                            <tr>
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_subject][0]"
-                                                                            rows="10"
-                                                                            class="form-control" placeholder="">
-                                                                            @if (old('recommendation[recommendation_subject][0]'))
-                                                                                {{ old('recommendation[recommendation_subject][0]') }}
+                                                                @forelse($travelReportRecommendations as $index => $rec)
+                                                                    <tr data-row-index="{{ $index }}">
+                                                                        <td>
+                                                                            <input type="text"
+                                                                                class="form-control form-control-sm text-center"
+                                                                                value="Day {{ $index + 1 }}" readonly>
+                                                                            <input type="hidden"
+                                                                                name="recommendation[recommendation_responsible][{{ $index }}]"
+                                                                                value="Day {{ $index + 1 }}">
+                                                                        </td>
+                                                                        <td>
+                                                                            <input type="date"
+                                                                                name="recommendation[recommendation_date][{{ $index }}]"
+                                                                                class="form-control form-control-sm"
+                                                                                value="{{ $rec->recommendation_date ?? old("recommendation.recommendation_date.$index") }}">
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="recommendation[recommendation_subject][{{ $index }}]" rows="4"
+                                                                                class="form-control form-control-sm" placeholder="Describe activities performed">{{ $rec->recommendation_subject ?? old("recommendation.recommendation_subject.$index") }}</textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="recommendation[recommendation_remarks][{{ $index }}]" rows="4"
+                                                                                class="form-control form-control-sm" placeholder="Any remarks">{{ $rec->recommendation_remarks ?? old("recommendation.recommendation_remarks.$index") }}</textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            @if ($loop->first)
+                                                                                <button type="button" id="addButton"
+                                                                                    class="btn btn-primary btn-sm">+</button>
+                                                                            @else
+                                                                                <button type="button"
+                                                                                    class="btn btn-danger btn-sm removeButton">-</button>
                                                                             @endif
-                                                                            </textarea>
-                                                                    @if ($errors->has('recommendation[recommendation_subject][0]'))
-                                                                        <div
-                                                                            class="fv-plugins-message-container invalid-feedback">
-                                                                            <div
-                                                                                data-field="recommendation[recommendation_subject][0]">
-                                                                                {!! $errors->first('recommendation[recommendation_subject][0]') !!}
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_date][0]"
-                                                                            rows="10"
-                                                                            class="form-control" placeholder="">
-                                                                            @if (old('recommendation[recommendation_date][0]'))
-                                                                                {{ old('recommendation[recommendation_date][0]') }}
-                                                                            @endif
-                                                                            </textarea>
-                                                                    @if ($errors->has('recommendation[recommendation_date][0]'))
-                                                                        <div
-                                                                            class="fv-plugins-message-container invalid-feedback">
-                                                                            <div
-                                                                                data-field="recommendation[recommendation_date][0]">
-                                                                                {!! $errors->first('recommendation[recommendation_date][0]') !!}
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_responsible][0]"
-                                                                            rows="10"
-                                                                            class="form-control" placeholder="">
-                                                                            @if (old('recommendation[recommendation_responsible][0]'))
-                                                                                {{ old('recommendation[recommendation_responsible][0]') }}
-                                                                            @endif
-                                                                            </textarea>
-                                                                    @if ($errors->has('recommendation[recommendation_responsible][0]'))
-                                                                        <div
-                                                                            class="fv-plugins-message-container invalid-feedback">
-                                                                            <div
-                                                                                data-field="recommendation[recommendation_responsible][0]">
-                                                                                {!! $errors->first('recommendation[recommendation_responsible][0]') !!}
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td style="width: 40%">
-                                                                        <textarea
-                                                                            name="recommendation[recommendation_remarks][0]"
-                                                                            rows="10"
-                                                                            class="form-control" placeholder="">
-                                                                            @if (old('recommendation[recommendation_remarks][0]'))
-                                                                                {{ old('recommendation[recommendation_remarks][0]') }}
-                                                                            @endif
-                                                                            </textarea>
-                                                                    @if ($errors->has('recommendation[recommendation_remarks][0]'))
-                                                                        <div
-                                                                            class="fv-plugins-message-container invalid-feedback">
-                                                                            <div
-                                                                                data-field="recommendation[recommendation_remarks][0]">
-                                                                                {!! $errors->first('recommendation[recommendation_remarks][0]') !!}
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                </td>
-                                                                <td>
-                                                                    <button type="button"
-                                                                            class="btn btn-primary btn-block"
-                                                                            id="addButton"> +
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        @endforelse
+                                                                        </td>
+                                                                    </tr>
+                                                                @empty
+                                                                    <tr data-row-index="0">
+                                                                        <td>
+                                                                            <input type="text"
+                                                                                class="form-control form-control-sm text-center"
+                                                                                value="Day 1" readonly>
+                                                                            <input type="hidden"
+                                                                                name="recommendation[recommendation_responsible][0]"
+                                                                                value="Day 1">
+                                                                        </td>
+                                                                        <td><input type="date"
+                                                                                name="recommendation[recommendation_date][0]"
+                                                                                class="form-control form-control-sm"></td>
+                                                                        <td>
+                                                                            <textarea name="recommendation[recommendation_subject][0]" rows="4" class="form-control form-control-sm"
+                                                                                placeholder="Describe activities performed"></textarea>
+                                                                        </td>
+                                                                        <td>
+                                                                            <textarea name="recommendation[recommendation_remarks][0]" rows="4" class="form-control form-control-sm"></textarea>
+                                                                        </td>
+                                                                        <td><button type="button" id="addButton"
+                                                                                class="btn btn-primary btn-sm">+</button>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforelse
 
-                                                        <!-- Template -->
-                                                        <tr id="template" style="display: none">
-                                                            <td>
-                                                                    <textarea
-                                                                        data-name="recommendation.recommendation_subject"
-                                                                        rows="10"
-                                                                        class="form-control" placeholder=""></textarea>
-                                                            </td>
-                                                            <td>
-                                                                    <textarea
-                                                                        data-name="recommendation.recommendation_date"
-                                                                        rows="10"
-                                                                        class="form-control" placeholder=""></textarea>
-                                                            </td>
-                                                            <td>
-                                                                    <textarea
-                                                                        data-name="recommendation.recommendation_responsible"
-                                                                        rows="10"
-                                                                        class="form-control" placeholder=""></textarea>
-                                                            </td>
-                                                            <td>
-                                                                    <textarea
-                                                                        data-name="recommendation.recommendation_remarks"
-                                                                        rows="10"
-                                                                        class="form-control" placeholder=""></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <button type="button"
-                                                                        class="btn btn-danger btn-block js-remove-button"
-                                                                        id="removeButton"> -
-                                                                </button>
-                                                            </td>
-                                                        </tr>
-                                                        </tbody>
-                                                    </table>
+                                                                <!-- Template Row -->
+                                                                <tr id="template" style="display: none">
+                                                                    <td>
+                                                                        <input type="text"
+                                                                            class="form-control form-control-sm text-center"
+                                                                            value="Day X" readonly>
+                                                                        <input type="hidden"
+                                                                            data-name="recommendation.recommendation_responsible"
+                                                                            value="">
+                                                                    </td>
+                                                                    <td><input type="date"
+                                                                            data-name="recommendation.recommendation_date"
+                                                                            class="form-control form-control-sm"></td>
+                                                                    <td>
+                                                                        <textarea data-name="recommendation.recommendation_subject" rows="4" class="form-control form-control-sm"></textarea>
+                                                                    </td>
+                                                                    <td>
+                                                                        <textarea data-name="recommendation.recommendation_remarks" rows="4" class="form-control form-control-sm"></textarea>
+                                                                    </td>
+                                                                    <td><button type="button"
+                                                                            class="btn btn-danger btn-sm js-remove-button">-</button>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="row mb-2">
@@ -519,8 +433,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">
-                                                    <textarea name="other_comments" class="form-control"
-                                                              placeholder="">{{ $travelReport->other_comments }}</textarea>
+                                                    <textarea name="other_comments" class="form-control" placeholder="">{{ $travelReport->other_comments }}</textarea>
                                                     @if ($errors->has('other_comments'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
                                                             <div data-field="other_comments">
@@ -532,9 +445,9 @@
                                             </div>
 
                                             @include('Attachment::index', [
-               'modelType' => 'Modules\TravelRequest\Models\TravelReport',
-               'modelId' => $travelReport->id,
-           ])
+                                                'modelType' => 'Modules\TravelRequest\Models\TravelReport',
+                                                'modelId' => $travelReport->id,
+                                            ])
 
                                             <div class="row mb-2">
                                                 <div class="col-lg-3">
@@ -546,18 +459,20 @@
                                                 </div>
                                                 <div class="col-lg-9">
                                                     @php $selectedApproverId = old('approver_id') ?: $travelReport->approver_id; @endphp
-                                                    <select name="approver_id" class="select2 form-control
-                                                @if($errors->has('approver_id')) is-invalid @endif" data-width="100%">
+                                                    <select name="approver_id"
+                                                        class="select2 form-control
+                                                @if ($errors->has('approver_id')) is-invalid @endif"
+                                                        data-width="100%">
                                                         <option value="">Select an Approver</option>
-                                                        @foreach($supervisors as $approver)
-                                                            <option
-                                                                value="{{ $approver->id }}" {{$approver->id == $selectedApproverId ? "selected":""}}>{{ $approver->getFullName() }}</option>
+                                                        @foreach ($supervisors as $approver)
+                                                            <option value="{{ $approver->id }}"
+                                                                {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>
+                                                                {{ $approver->getFullName() }}</option>
                                                         @endforeach
                                                     </select>
                                                     @if ($errors->has('approver_id'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
-                                                            <div
-                                                                data-field="approver_id">{!! $errors->first('approver_id') !!}</div>
+                                                            <div data-field="approver_id">{!! $errors->first('approver_id') !!}</div>
                                                         </div>
                                                     @endif
                                                 </div>
@@ -570,11 +485,11 @@
                                 </div>
                                 <div class="card-footer border-0 justify-content-end d-flex gap-2">
                                     <button type="submit" name="btn" value="save"
-                                            class="btn btn-primary btn-sm">Update
+                                        class="btn btn-primary btn-sm">Update
                                     </button>
                                     @if ($authUser->can('submit', $travelReport))
                                         <button type="submit" name="btn" value="submit"
-                                                class="btn btn-success btn-sm">
+                                            class="btn btn-success btn-sm">
                                             Submit
                                         </button>
                                     @endif

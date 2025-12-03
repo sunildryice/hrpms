@@ -38,6 +38,7 @@ class Tenure extends Model
         'duty_station_id',
         'joined_date',
         'to_date',
+        'contract_end_date',
         'remarks',
         'created_by',
         'updated_by',
@@ -50,7 +51,7 @@ class Tenure extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['joined_date', 'to_date'];
+    protected $dates = ['joined_date', 'to_date', 'contract_end_date'];
 
     /**
      * Get the employee of the tenure.
@@ -166,6 +167,16 @@ class Tenure extends Model
     public function getJoinedDate()
     {
         return $this->joined_date ? $this->joined_date->toFormattedDateString() : '';
+    }
+
+    public function getContractEndDate()
+    {
+        return $this->contract_end_date ? $this->contract_end_date->toFormattedDateString() : '';
+    }
+
+    public function getFormattedContractEndDate()
+    {
+        return $this->contract_end_date ? $this->contract_end_date->format('Y-m-d') : '';
     }
 
     public function getOfficeName()

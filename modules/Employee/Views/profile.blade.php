@@ -484,7 +484,7 @@
                                         </tr>
 
                                         <tr>
-                                            <th scope="row">Citizenship Number</th>
+                                            <th scope="row">Citizenship No.</th>
                                             <td>
                                                 {{ $employee->citizenship_number }}
                                             </td>
@@ -506,7 +506,7 @@
                                         </tr>
 
                                         <tr>
-                                            <th scope="row">PAN Number</th>
+                                            <th scope="row">PAN No.</th>
                                             <td>
                                                 {{ $employee->pan_number }}
                                             </td>
@@ -523,7 +523,7 @@
                                         </tr>
 
                                         <tr>
-                                            <th scope="row">Passport Number</th>
+                                            <th scope="row">Passport No.</th>
                                             <td>
                                                 {{ $employee->passport_number }}
                                             </td>
@@ -540,7 +540,7 @@
                                         </tr>
 
                                         <tr>
-                                            <th scope="row">Driving License Number</th>
+                                            <th scope="row">Driving License No.</th>
                                             <td colspan="3">{{ $employee->vehicle_license_number }}</td>
                                         </tr>
 
@@ -674,10 +674,10 @@
                                                     <th scope="row">Contact Number</th>
                                                     <td>{{ $familyDetail->contact_number }}</td>
                                                 </tr>
-                                                <tr>
+                                                {{-- <tr>
                                                     <th scope="row">Nominee ?</th>
                                                     <td>{{ isset($familyDetail->nominee_at) ? 'Yes' : 'No' }}</td>
-                                                </tr>
+                                                </tr> --}}
                                             </tbody>
                                         </table>
                                     </div>
@@ -739,6 +739,10 @@
                                             <tr>
                                                 <th scope="row">To Date: </th>
                                                 <td colspan="3">{{ $tenure->getToDate() }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">Contract End Date: </th>
+                                                <td colspan="3">{{ $tenure->getContractEndDate() }}</td>
                                             </tr>
                                             @if ($loop->first && $employee->exitHandoverNote && is_null($employee->activated_at))
                                                 <tr class="text-danger">
@@ -834,9 +838,17 @@
                                             <td>{{ $workingHour->end_date->format('Y-M-d') }}</td>
                                         </tr>
                                         <tr>
+                                            <th scope="row">Start Time</th>
+                                            <td>{{ $workingHour->getStartTime() }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">End Time</th>
+                                            <td>{{ $workingHour->getEndTime() }}</td>
+                                        </tr>
+                                        {{-- <tr>
                                             <th scope="row">Work Percentile</th>
                                             <td>{{ $workingHour->work_percentile }}%</td>
-                                        </tr>
+                                        </tr> --}}
                                         <tr>
                                             <th scope="row">Remarks</th>
                                             <td>{{ $workingHour->remarks }}</td>
@@ -879,10 +891,10 @@
                                         <td>{{ $employee->finance->account_number }}</td>
                                     </tr>
 
-                                    <tr>
+                                    {{-- <tr>
                                         <th scope="row" width="10%">Is Disabled</th>
                                         <td>{{ $employee->finance->disabled ? 'Yes' : 'No' }}</td>
-                                    </tr>
+                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -1126,6 +1138,10 @@
                                 <table class="table table-bordered" id="socialMediaTable">
                                     <tbody>
                                         <div>
+                                            <tr>
+                                                <th scope="row" width="10%">Bio</th>
+                                                <td colspan="3">{{ $employee->bio }}</td>
+                                            </tr>
                                             @foreach ($socialMediaAccounts as $account)
                                                 <tr>
                                                     <th scope="row" width="10%">
@@ -1136,11 +1152,6 @@
                                                     </td>
                                                 </tr>
                                             @endforeach
-                                            <tr>
-                                                <th scope="row" width="10%">Bio</th>
-                                                <td colspan="3">{{ $employee->bio }}</td>
-                                            </tr>
-
                                         </div>
                                     </tbody>
                                 </table>

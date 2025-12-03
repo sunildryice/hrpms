@@ -41,7 +41,41 @@
             </div>
         </div>
 
+
         <div class="mb-2 row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="start_time" class="form-label required-label">Start Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="time" class="form-control @if ($errors->has('start_time')) is-invalid @endif"
+                    name="start_time" value="{{ old('start_time') ?: $hour->start_time }}" />
+                @if ($errors->has('start_time'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="start_time">{!! $errors->first('start_time') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+        <div class="mb-2 row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="end_time" class="form-label required-label">End Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="time" class="form-control @if ($errors->has('end_time')) is-invalid @endif"
+                    name="end_time" value="{{ old('end_time') ?: $hour->end_time }}" />
+                @if ($errors->has('end_time'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="end_time">{!! $errors->first('end_time') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="validationinstitution" class="form-label required-label">Work Percentile</label>
@@ -58,7 +92,7 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </div> --}}
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -104,20 +138,34 @@
                             },
                         },
                     },
-                    work_percentile: {
+                    start_time: {
                         validators: {
                             notEmpty: {
-                                message: 'Work percentile is required',
+                                message: 'Start time is required',
                             },
-                            numeric: {
-                                message: 'Please enter a valid value',
-                            },
-                            lessThan: {
-                                max: 100,
-                                message: 'Work percentile must be less than or equal to 100',
-                            }
                         },
                     },
+                    end_time: {
+                        validators: {
+                            notEmpty: {
+                                message: 'End time is required',
+                            },
+                        },
+                    },
+                    // work_percentile: {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'Work percentile is required',
+                    //         },
+                    //         numeric: {
+                    //             message: 'Please enter a valid value',
+                    //         },
+                    //         lessThan: {
+                    //             max: 100,
+                    //             message: 'Work percentile must be less than or equal to 100',
+                    //         }
+                    //     },
+                    // },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),

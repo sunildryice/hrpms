@@ -40,7 +40,7 @@
                     value="{{ old('date_of_birth') }}" readonly>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label">Remarks</label>
@@ -49,8 +49,8 @@
             <div class="col-lg-9">
                 <textarea name="remarks" class="form-control" placeholder="Remarks">{!! old('remarks') !!}</textarea>
             </div>
-        </div>
-        <div class="row mb-2">
+        </div> --}}
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label">Emergency Contact</label>
@@ -63,8 +63,21 @@
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
+        </div> --}}
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="validationTole" class="form-label">Contact Number</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
+                    placeholder="Contact Number">
+            </div>
         </div>
-        <div style="display: none" id="emergencyContactBlock">
+
+        {{-- <div style="display: none" id="emergencyContactBlock">
             <div class="row mb-2">
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
@@ -147,8 +160,8 @@
                         value="{{ old('contact_number') }}" placeholder="Contact Number">
                 </div>
             </div>
-        </div>
-        <div class="row mb-2">
+        </div> --}}
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label">Is Nominee</label>
@@ -161,7 +174,7 @@
                     <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
     </div>
     <div class="card-footer text-end">
@@ -245,7 +258,7 @@
                                         return true;
                                     } else {
                                         validator.updateStatus('local_level_id', validator
-                                        .STATUS_VALID);
+                                            .STATUS_VALID);
                                         return true;
                                     }
                                 }
@@ -277,7 +290,7 @@
                                         return true;
                                     } else {
                                         validator.updateStatus('contact_number', validator
-                                        .STATUS_VALID);
+                                            .STATUS_VALID);
                                         return true;
                                     }
                                 }

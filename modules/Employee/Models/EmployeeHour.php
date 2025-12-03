@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Traits\ModelEventLogger;
+use Carbon\Carbon;
 use Modules\Master\Models\Department;
 use Modules\Master\Models\Designation;
 use Modules\Master\Models\District;
@@ -31,7 +32,9 @@ class EmployeeHour extends Model
         'employee_id',
         'start_date',
         'end_date',
-        'work_percentile',
+        'start_time',
+        'end_time',
+        // 'work_percentile',
         'remarks',
         'created_by',
         'updated_by',
@@ -45,6 +48,11 @@ class EmployeeHour extends Model
     protected $hidden = [];
 
     protected $dates = ['start_date', 'end_date'];
+
+    protected $casts = [
+        'start_time' => 'string',
+        'end_time' => 'string',
+    ];
 
     /**
      * Get the employee of the tenure.
@@ -62,5 +70,15 @@ class EmployeeHour extends Model
     public function getEndDate()
     {
         return $this->end_date ? $this->end_date->toFormattedDateString() : "";
+    }
+
+    public function getStartTime()
+    {
+        return Carbon::parse($this->start_time)->format('g:i A');
+    }
+
+    public function getEndTime()
+    {
+        return Carbon::parse($this->end_time)->format('g:i A');
     }
 }

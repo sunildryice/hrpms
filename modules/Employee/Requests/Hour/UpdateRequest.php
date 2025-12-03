@@ -13,7 +13,7 @@ class UpdateRequest extends FormRequest
      */
     protected function getRedirectUrl()
     {
-        return route('employees.edit', [$this->employee, 'tab'=>'hour-details']);
+        return route('employees.edit', [$this->employee, 'tab' => 'hour-details']);
     }
 
     /**
@@ -34,10 +34,12 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'start_date'=>'required|date',
-            'end_date'=>'required|date',
-            'work_percentile'=>'required|numeric|max:100',
-            'remarks'=>'nullable',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            // 'work_percentile'=>'required|numeric|max:100',
+            'remarks' => 'nullable',
         ];
     }
 }

@@ -258,14 +258,18 @@ class LeaveRepository extends Repository
 
         if ($generateFlag) {
             $month = $reportedDate->format('m');
-            $earnedDays = $leaveType->number_of_days ?? null;
-            $workingDays = $employee->joined_date->endOfMonth()->format('d') - $employee->joined_date->format('d') + 1;
-            $earnedDaysU = $earnedDays * $workingDays / $reportedDateMonthDays;
-
-            $factor = $leaveType->leave_basis == 2 ? 8 : 1;
-            $earned = round($earnedDaysU * $factor, 2);
+            $earned = $leaveType->number_of_days ?? null;
             $previousMonth = ($month == '01') ? 12 : $month - 1;
-            $earned = round($earned * $percentile / 100, 2);
+            if ($leaveType->leave_frequency == 2)
+            {
+                $earnedDays = $leaveType->number_of_days ?? null;
+                $workingDays = $employee->joined_date->endOfMonth()->format('d') - $employee->joined_date->format('d') + 1;
+                $earnedDaysU = $earnedDays * $workingDays / $reportedDateMonthDays;
+
+                $factor = $leaveType->leave_basis == 2 ? 8 : 1;
+                $earned = round($earnedDaysU * $factor, 2);
+                $earned = round($earned * $percentile / 100, 2);
+            }
 
             $opening = 0;
             if ($month == '01') {
@@ -290,6 +294,7 @@ class LeaveRepository extends Repository
                 'balance' => $earned + $opening,
                 'remarks' => 'New leave earned.',
             ];
+
             $employeeLeave = $employee->leaves()->create($inputs);
 
             $employeeLeave->logs()->create([
@@ -344,6 +349,15 @@ class LeaveRepository extends Repository
             }
 
             $earned = round($earned * $percentile / 100, 2);
+            if($earned < 0.4){
+                $earned = 0;
+            } elseif ($earned >= 0.4 && $earned < 0.9){
+                $earned = 0.5;
+            } elseif ($earned >= 0.9 && $earned < 1.4){
+                $earned = 1;
+            } elseif ($earned >= 1.4 && $earned <= 1.5){
+                $earned = 1.5;
+            }
 
             $thisMonthLeave = $this->model->select(['*'])
                 ->where('employee_id', $employee->id)
@@ -391,6 +405,8 @@ class LeaveRepository extends Repository
 
     protected function getWorkPercentile($employee, $reportedDate, $fiscalYear)
     {
+        return 100;
+        /**
         if ($employee->workingHours->count() == 0) {
             return 100;
         }
@@ -403,6 +419,7 @@ class LeaveRepository extends Repository
         }
 
         return $work_percentile * 100;
+        */
     }
 
     protected function countDaysInMonthBetweenDates($startDate, $endDate, $month, $year)

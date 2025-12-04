@@ -253,10 +253,6 @@ class LeaveRequestRepository extends Repository
             if (array_key_exists('substitutes', $inputs)) {
                 $leaveRequest->substitutes()->sync($inputs['substitutes']);
             }
-
-
-
-
             foreach ($inputs['leave_days'] as $key => $leaveDay) {
                 $leaveMode = $this->leaveMode->find($inputs['leave_mode_id'][$key]);
                 $hours = $leaveMode->hours;
@@ -287,7 +283,6 @@ class LeaveRequestRepository extends Repository
             return $leaveRequest;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
-
             return false;
         }
     }

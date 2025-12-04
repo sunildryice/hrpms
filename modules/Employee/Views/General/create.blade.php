@@ -191,7 +191,7 @@
             </div>
         </div>
         <div class="row mb-2">
-            <div class="col-lg-3"><label class="form-label">Passport Number</label></div>
+            <div class="col-lg-3"><label class="form-label">Passport No.</label></div>
             <div class="col-lg-9">
                 <div class="row">
                     <div class="col-lg-4">
@@ -207,7 +207,7 @@
             </div>
         </div>
         <div class="row mb-3">
-            <div class="col-lg-3"><label class="form-label">Driving License</label></div>
+            <div class="col-lg-3"><label class="form-label">Driving License No.</label></div>
             <div class="col-lg-9">
                 <div class="row g-3">
                     <div class="col-lg-4">

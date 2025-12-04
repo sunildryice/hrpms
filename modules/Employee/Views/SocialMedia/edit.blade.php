@@ -4,6 +4,21 @@
 
 
     <div class="row mb-2 py-2 px-3">
+        <div class="col-lg-3 mt-2">
+            <div class="d-flex align-items-start h-100">
+                <label for="bio" class="form-label">Bio</label>
+            </div>
+        </div>
+        <div class="col-lg-9 mt-2">
+            <textarea class="form-control @if ($errors->has('bio')) is-invalid @endif" name="bio" rows="4"
+                placeholder="Bio">{{ old('bio', $employee->bio ?? '') }}</textarea>
+            @if ($errors->has('bio'))
+                <div class="fv-plugins-message-container invalid-feedback">
+                    <div>{!! $errors->first('bio') !!}</div>
+                </div>
+            @endif
+        </div>
+
         @foreach ($socialMediaAccounts as $account)
             <div class="col-lg-3 mt-2">
                 <div class="d-flex align-items-start h-100">
@@ -21,21 +36,6 @@
                 @endif
             </div>
         @endforeach
-
-        <div class="col-lg-3 mt-2">
-            <div class="d-flex align-items-start h-100">
-                <label for="bio" class="form-label">Bio</label>
-            </div>
-        </div>
-        <div class="col-lg-9 mt-2">
-            <textarea class="form-control @if ($errors->has('bio')) is-invalid @endif" name="bio" rows="4"
-                placeholder="Bio">{{ old('bio', $employee->bio ?? '') }}</textarea>
-            @if ($errors->has('bio'))
-                <div class="fv-plugins-message-container invalid-feedback">
-                    <div>{!! $errors->first('bio') !!}</div>
-                </div>
-            @endif
-        </div>
     </div>
 
     <div class="card-footer border-0 justify-content-end d-flex gap-2">

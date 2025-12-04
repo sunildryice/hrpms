@@ -327,6 +327,7 @@ return [
     'remarks-variance-note' => 'Remarks/Variance Note',
     'reminder-days' => 'Reminder Days',
     'reporter' => 'Reporter',
+    'request-id' => 'Request ID',
     'requester' => 'Requester',
     'request-date' => 'Request Date',
     'request-days' => 'Request Days',

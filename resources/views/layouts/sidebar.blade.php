@@ -163,6 +163,42 @@
                         </div>
                     @endif
 
+
+
+
+                    @if (
+                        $authUser->can('work-from-home-request') ||
+                            $authUser->can('approve-work-from-home') ||
+                            $authUser->can('view-work-from-home'))
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarWorkFromHome" role="button"
+                                data-bs-toggle="collapse" data-bs-target="#navbarWorkFromHome" aria-expanded="false"
+                                aria-controls="navbarWorkFromHome" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Work From Home">
+                                <i class="bi bi-person-workspace nav-icon"></i>
+                                <span class="nav-link-title">Work From Home</span> </a>
+
+                            <div id="navbarWorkFromHome" class="collapse">
+
+                                <a class="nav-link" id="wfh-requests-index"
+                                    href="{{ route('wfh.requests.index') }}">Requests</a>
+
+                                @if ($authUser->can('approve-work-from-home'))
+                                    @if ($approveWorkFromHomeRequestCount > 0)
+                                        <a class="nav-link" id="wfh-requests-approve"
+                                            href="{{ route('approve.wfh.requests.index') }}">
+                                            Approve Requests ({{ $approveWorkFromHomeRequestCount }})
+                                        </a>
+                                    @endif
+                                    <a class="nav-link" id="wfh-requests-approved"
+                                        href="{{ route('approved.wfh.requests.index') }}">Approved Requests</a>
+                                @endif
+                            </div>
+
+                        </div>
+                    @endif
+
+
                     @if (
                         $authUser->can('manage-employee-exit') ||
                             $authUser->isHandoverNoteExists() ||

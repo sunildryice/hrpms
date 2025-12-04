@@ -7,7 +7,7 @@
                     <th style="width: 25%">{{ __('label.name') }}</th>
                     <th>{{ __('label.relation') }}</th>
                     <th>{{ __('label.date-of-birth') }}</th>
-                    <th>{{ __('label.type') }}</th>
+                    {{-- <th>{{ __('label.type') }}</th> --}}
                     <th>{{ __('label.contact-no') }}</th>
                     <th>{{ __('label.action') }}</th>
                 </tr>
@@ -18,14 +18,14 @@
                         <td>{{ $family->getFullName() }}</td>
                         <td>{{ $family->getRelationName() }}</td>
                         <td>{{ $family->getDateOfBirth() }}</td>
-                        <td>
+                        {{-- <td>
                             @if ($family->emergency_contact_at)
                                 <span class="badge bg-primary">Emergency Contact</span>
                             @endif
                             @if ($family->nominee_at)
                                 <span class="badge bg-success">Nominee</span>
                             @endif
-                        </td>
+                        </td> --}}
                         <td>{{ $family->contact_number }}</td>
                         <td>
                             <a href="javascript:;" class="btn btn-outline-primary btn-sm"

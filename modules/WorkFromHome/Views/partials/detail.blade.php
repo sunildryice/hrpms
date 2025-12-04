@@ -38,8 +38,8 @@
                     <div class="gap-2 d-flex align-items-start">
                         <div class="icon-section"><i class="bi-calendar3-range dropdown-item-icon"></i></div>
                         <div class="d-content-section">
-                            {{ \Carbon\Carbon::parse($wfhRequest->start_date)->format('Y-m-d') }} -
-                            {{ \Carbon\Carbon::parse($wfhRequest->end_date)->format('Y-m-d') }}
+                            {{ $wfhRequest->getStartDate() }} -
+                            {{ $wfhRequest->getEndDate() }}
                             @php $duration = \Carbon\Carbon::parse($wfhRequest->start_date)->diffInDays(\Carbon\Carbon::parse($wfhRequest->end_date)) + 1; @endphp
                             <span class="badge bg-primary">{{ $duration }} Day{{ $duration > 1 ? 's' : '' }}</span>
                         </div>
@@ -65,7 +65,8 @@
                     </div>
                     <span class="stretched-link" rel="tooltip" title="Deliverables"></span>
                 </li>
-                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason</span></li>
+                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason for Work From
+                        Home</span></li>
                 <li class="position-relative">
                     <div class="gap-2 d-flex align-items-start">
                         <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i></div>

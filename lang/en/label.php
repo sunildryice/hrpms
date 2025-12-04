@@ -290,6 +290,7 @@ return [
     'probation-end-date' => "Probation End Date",
     'problem' => 'Problem',
     'project' => 'Project',
+    'project-name' => 'Project Name',
     'project-code' => 'Project Code',
     'project-codes' => 'Project Codes',
     'project-target-unit' => 'Project Target Unit',

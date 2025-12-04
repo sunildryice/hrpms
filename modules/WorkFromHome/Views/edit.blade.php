@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Create Work From Home Request')
+@section('title', 'Update Work From Home Request')
 
 @section('page_js')
     <script type="text/javascript">
@@ -13,7 +13,7 @@
                 dropdownAutoWidth: true
             });
 
-            const form = document.getElementById('wfhRequestAddForm');
+            const form = document.getElementById('wfhRequestEditForm');
 
 
             $('[name="start_date"]').datepicker({
@@ -70,7 +70,6 @@
                 updateRemoveButtons();
             });
 
-            // Initialize FormValidation (similar to Leave Request form)
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
@@ -120,13 +119,15 @@
                                         const items = $(
                                             '#deliverables-table tbody input[name="deliverables[]"]'
                                         );
-                                        return items.length > 0 && items.filter(function() {
+                                        const filledItems = items.filter(function() {
                                             return $(this).val().trim() !== '';
-                                        }).length === items.length;
+                                        });
+                                        return filledItems.length > 0;
                                     }
                                 }
                             }
-                        },
+                        }
+
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -180,24 +181,27 @@
                                 class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('wfh.requests.index') }}"
                                 class="text-decoration-none text-dark">Work From Home Requests</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Create</li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Work From Home Request</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Edit Work From Home Request</h4>
             </div>
         </div>
     </div>
 
     <div class="card shadow-sm border rounded">
         <div class="card-body">
-            <form action="{{ route('wfh.requests.store') }}" id="wfhRequestAddForm" method="POST" autocomplete="off">
+            <form action="{{ route('wfh.requests.update', $wfhRequest->id) }}" id="wfhRequestEditForm" method="POST"
+                autocomplete="off">
                 @csrf
+                @method('PUT')
                 <div class="mb-3">
                     <label for="project_id" class="form-label required-label">Project</label>
                     <select class="form-control" id="project_id" name="project_id" required>
                         <option value="">Select Project</option>
                         @foreach ($projects as $id => $title)
-                            <option value="{{ $id }}">{{ $title }}</option>
+                            <option value="{{ $id }}" @if ($wfhRequest->project_id == $id) selected @endif>
+                                {{ $title }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -205,16 +209,18 @@
                 <div class="row">
                     <div class="mb-3 col-6">
                         <label for="start_date" class="form-label required-label">Start Date</label>
-                        <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        <input type="date" class="form-control" id="start_date" name="start_date"
+                            value="{{ $wfhRequest->start_date }}" required>
                     </div>
                     <div class="mb-3 col-6">
                         <label for="end_date" class="form-label required-label">End Date</label>
-                        <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        <input type="date" class="form-control" id="end_date" name="end_date"
+                            value="{{ $wfhRequest->end_date }}" required>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="reason" class="form-label required-label">Reason</label>
-                    <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    <textarea class="form-control" id="reason" name="reason" rows="3" required>{{ $wfhRequest->reason_for_work ?? $wfhRequest->reason }}</textarea>
                 </div>
                 <div class="mb-3">
                     <label for="deliverables" class="form-label required-label">Deliverables</label>
@@ -226,11 +232,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td><input type="text" class="form-control" name="deliverables[]" required></td>
-                                <td><button type="button" class="btn btn-danger btn-sm remove-row d-none">Remove</button>
-                                </td>
-                            </tr>
+                            @php $items = is_array($wfhRequest->deliverables) ? $wfhRequest->deliverables : (json_decode($wfhRequest->deliverables, true) ?: []); @endphp
+                            @if (empty($items))
+                                <tr>
+                                    <td><input type="text" class="form-control" name="deliverables[]" required></td>
+                                    <td><button type="button"
+                                            class="btn btn-danger btn-sm remove-row d-none">Remove</button></td>
+                                </tr>
+                            @else
+                                @foreach ($items as $idx => $task)
+                                    <tr>
+                                        <td><input type="text" class="form-control" name="deliverables[]"
+                                                value="{{ $task }}" required></td>
+                                        <td><button type="button"
+                                                class="btn btn-danger btn-sm remove-row @if ($loop->first) d-none @endif">Remove</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                     </table>
                     <button type="button" class="btn btn-primary btn-sm" id="add-task">Add Task</button>
@@ -240,12 +259,13 @@
                     <select class="form-control" id="send_to" name="send_to" required>
                         <option value="">Select Approver</option>
                         @foreach ($supervisors as $id => $fullName)
-                            <option value="{{ $id }}">{{ $fullName }}</option>
+                            <option value="{{ $id }}" @if ($wfhRequest->approver_id == $id) selected @endif>
+                                {{ $fullName }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="gap-2 border-0 card-footer justify-content-end d-flex wfh-form-actions">
-                    <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Save</button>
+                    <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Update</button>
                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">Submit</button>
                     <a href="{{ route('wfh.requests.index') }}" class="btn btn-danger btn-sm">Cancel</a>
                 </div>
@@ -253,6 +273,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-@endpush

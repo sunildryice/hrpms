@@ -98,7 +98,7 @@
             </div>
             <div class="col-lg-9">
                 <div class="card">
-                    <div class="card-header fw-bold">Travel Report Details</div>
+                    <div class="card-header fw-bold">Travel Report </div>
                     <div class="card-body">
 
                         <div class="card mb-3">

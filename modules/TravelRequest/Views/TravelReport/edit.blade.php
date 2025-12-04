@@ -87,7 +87,8 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                startDate: '{{ date('Y-m-d') }}'
+                startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
             }).on('change', function() {
                 fv.revalidateField(this.name);
             });
@@ -106,7 +107,8 @@
                             language: 'en-GB',
                             autoHide: true,
                             format: 'yyyy-mm-dd',
-                            startDate: '{{ date('Y-m-d') }}'
+                            startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                            endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
                         }).on('change', function() {
                             fv.revalidateField(this.name);
                         });
@@ -154,7 +156,8 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
-                    startDate: '{{ date('Y-m-d') }}'
+                    startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                    endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
                 }).on('change', function() {
                     fv.revalidateField(this.name);
                 });
@@ -259,7 +262,10 @@
                                                     @forelse($travelReport->travelReportRecommendations as $index => $rec)
                                                         <tr data-row-index="{{ $index }}">
                                                             <td>
-                                                                <textarea name="recommendation[day_number][{{ $index }}]" rows="5" class="form-control">{{ old("recommendation.day_number.$index", $rec->day_number) }}</textarea>
+                                                                <input type="text"
+                                                                    name="recommendation[day_number][{{ $index }}]"
+                                                                    value="{{ old("recommendation.day_number.$index", $rec->day_number) }}"
+                                                                    class="form-control" rows="1">
                                                             </td>
                                                             <td>
                                                                 <input type="text"
@@ -270,10 +276,10 @@
                                                                     value="{{ old("recommendation.activity_date.$index", $rec->activity_date?->format('Y-m-d')) }}">
                                                             </td>
                                                             <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="5" class="form-control">{{ old("recommendation.completed_tasks.$index", $rec->completed_tasks) }}</textarea>
+                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.$index", $rec->completed_tasks) }}</textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="5" class="form-control">{{ old("recommendation.remarks.$index", $rec->remarks) }}</textarea>
+                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.$index", $rec->remarks) }}</textarea>
                                                             </td>
                                                             <td>
                                                                 @if ($loop->first)
@@ -289,7 +295,8 @@
                                                     @empty
                                                         <tr data-row-index="0">
                                                             <td>
-                                                                <textarea name="recommendation[day_number][0]" rows="5" class="form-control"></textarea>
+                                                                <input type="text" name="recommendation[day_number][0]"
+                                                                    class="form-control" rows="1">
                                                             </td>
                                                             <td><input type="text"
                                                                     name="recommendation[activity_date][0]"
@@ -297,10 +304,10 @@
                                                                     class="form-control form-control-sm"
                                                                     placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
                                                             <td>
-                                                                <textarea name="recommendation[completed_tasks][0]" rows="5" class="form-control"></textarea>
+                                                                <textarea name="recommendation[completed_tasks][0]" rows="3" class="form-control"></textarea>
                                                             </td>
                                                             <td>
-                                                                <textarea name="recommendation[remarks][0]" rows="5" class="form-control"></textarea>
+                                                                <textarea name="recommendation[remarks][0]" rows="3" class="form-control"></textarea>
                                                             </td>
                                                             <td><button type="button" id="addButton"
                                                                     class="btn btn-primary btn-block">+</button></td>
@@ -309,16 +316,17 @@
 
                                                     <tr id="template" style="display: none">
                                                         <td>
-                                                            <textarea data-name="recommendation.day_number" rows="5" class="form-control"></textarea>
+                                                            <input type="text" data-name="recommendation.day_number"
+                                                                class="form-control" rows="1">
                                                         </td>
                                                         <td><input type="text" data-name="recommendation.activity_date"
                                                                 class="form-control form-control-sm"
                                                                 placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
                                                         <td>
-                                                            <textarea data-name="recommendation.completed_tasks" rows="5" class="form-control"></textarea>
+                                                            <textarea data-name="recommendation.completed_tasks" rows="3" class="form-control"></textarea>
                                                         </td>
                                                         <td>
-                                                            <textarea data-name="recommendation.remarks" rows="5" class="form-control"></textarea>
+                                                            <textarea data-name="recommendation.remarks" rows="3" class="form-control"></textarea>
                                                         </td>
                                                         <td><button type="button"
                                                                 class="btn btn-danger btn-block js-remove-button">−</button>
@@ -347,7 +355,7 @@
                                             <label class="form-label required-label">Conclusion & Recommendations</label>
                                         </div>
                                         <div class="col-lg-9">
-                                            <textarea name="conclusion_recommendations" class="form-control" rows="8">{{ old('conclusion_recommendations', $travelReport->conclusion_recommendations) }}</textarea>
+                                            <textarea name="conclusion_recommendations" class="form-control">{{ old('conclusion_recommendations', $travelReport->conclusion_recommendations) }}</textarea>
                                             @error('conclusion_recommendations')
                                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                                             @enderror

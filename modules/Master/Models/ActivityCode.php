@@ -74,6 +74,11 @@ class ActivityCode extends Model
         return $this->title .' : '. $this->description;
     }
 
+    public function getActivityCodeDescription()
+    {
+        return $this->description;
+    }
+
     public function getUpdatedAt()
     {
         return $this->updated_at->toFormattedDateString();

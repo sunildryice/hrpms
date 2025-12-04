@@ -128,11 +128,11 @@ class TravelRequestController extends Controller
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
                     }
 
-                    if ($authUser->can('askAdvance', $row)) {
-                        $btn .= '&emsp;<a href = "javascript:;" class="btn btn-outline-warning btn-sm travel-advance-request" data-travel-request-id="' . $row->id . '"';
-                        $btn .= 'data-href = "' . route('travel.requests.advance.store', $row->id) . '" data-travel-number="' . $row->getTravelRequestNumber() . '" title="Travel Request Advance">';
-                        $btn .= '<i class="bi bi-cash" ></i></a>';
-                    }
+                    // if ($authUser->can('askAdvance', $row)) {
+                    //     $btn .= '&emsp;<a href = "javascript:;" class="btn btn-outline-warning btn-sm travel-advance-request" data-travel-request-id="' . $row->id . '"';
+                    //     $btn .= 'data-href = "' . route('travel.requests.advance.store', $row->id) . '" data-travel-number="' . $row->getTravelRequestNumber() . '" title="Travel Request Advance">';
+                    //     $btn .= '<i class="bi bi-cash" ></i></a>';
+                    // }
 
                     return $btn;
                 })

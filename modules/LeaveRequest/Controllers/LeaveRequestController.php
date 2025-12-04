@@ -53,6 +53,9 @@ class LeaveRequestController extends Controller
     {
         $authUser = auth()->user();
 
+        $employeeLeaveBalances = $this->employeeLeaves->getLeaveBalances($authUser->employee_id);
+
+
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'logs', 'requester', 'childLeaveRequest', 'leaveDays'])
                 ->select(['*'])
@@ -112,7 +115,9 @@ class LeaveRequestController extends Controller
                 ->make(true);
         }
 
-        return view('LeaveRequest::index');
+        return view('LeaveRequest::index', [
+            'employeeLeaveBalances' => $employeeLeaveBalances,
+        ]);
     }
 
     /**

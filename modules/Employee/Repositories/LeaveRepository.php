@@ -260,8 +260,7 @@ class LeaveRepository extends Repository
             $month = $reportedDate->format('m');
             $earned = $leaveType->number_of_days ?? null;
             $previousMonth = ($month == '01') ? 12 : $month - 1;
-            if ($leaveType->leave_frequency == 2)
-            {
+            if ($leaveType->leave_frequency == 2) {
                 $earnedDays = $leaveType->number_of_days ?? null;
                 $workingDays = $employee->joined_date->endOfMonth()->format('d') - $employee->joined_date->format('d') + 1;
                 $earnedDaysU = $earnedDays * $workingDays / $reportedDateMonthDays;
@@ -349,13 +348,13 @@ class LeaveRepository extends Repository
             }
 
             $earned = round($earned * $percentile / 100, 2);
-            if($earned < 0.4){
+            if ($earned < 0.4) {
                 $earned = 0;
-            } elseif ($earned >= 0.4 && $earned < 0.9){
+            } elseif ($earned >= 0.4 && $earned < 0.9) {
                 $earned = 0.5;
-            } elseif ($earned >= 0.9 && $earned < 1.4){
+            } elseif ($earned >= 0.9 && $earned < 1.4) {
                 $earned = 1;
-            } elseif ($earned >= 1.4 && $earned <= 1.5){
+            } elseif ($earned >= 1.4 && $earned <= 1.5) {
                 $earned = 1.5;
             }
 
@@ -419,7 +418,7 @@ class LeaveRepository extends Repository
         }
 
         return $work_percentile * 100;
-        */
+         */
     }
 
     protected function countDaysInMonthBetweenDates($startDate, $endDate, $month, $year)
@@ -436,5 +435,15 @@ class LeaveRepository extends Repository
         }
 
         return $count;
+    }
+
+    public function getLeaveBalances($employeeId)
+    {
+        return $this->model->from('employee_leaves as el')
+            ->select('el.balance', 'lt.title as leave_type_title')
+            ->join('lkup_leave_types as lt', 'el.leave_type_id', '=', 'lt.id')
+            ->where('el.employee_id', $employeeId)
+            ->whereIn('lt.title', ['Annual Leave', 'Sick leave'])
+            ->get();
     }
 }

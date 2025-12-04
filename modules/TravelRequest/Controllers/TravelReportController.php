@@ -2,11 +2,10 @@
 
 namespace Modules\TravelRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Support\Facades\Storage;
-
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\TravelRequest\Notifications\TravelReportSubmitted;
 use Modules\TravelRequest\Repositories\TravelReportRepository;
@@ -17,11 +16,9 @@ use Modules\TravelRequest\Repositories\TravelRequestItineraryRepository;
 use Modules\Privilege\Repositories\RoleRepository;
 use Modules\Master\Repositories\StatusRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\TravelRequest\Requests\TravelReport\StoreRequest;
 use Modules\TravelRequest\Requests\TravelReport\UpdateRequest;
 
-use DataTables;
 
 class TravelReportController extends Controller
 {
@@ -179,11 +176,11 @@ class TravelReportController extends Controller
         $authUser = auth()->user();
         $inputs = $request->validated();
 
-        foreach ($inputs['recommendation']['recommendation_subject'] as $index => $subject) {
-            $recommendationInputs = ['recommendation_subject' => $inputs['recommendation']['recommendation_subject'][$index],
-                'recommendation_date' => $inputs['recommendation']['recommendation_date'][$index],
-                'recommendation_responsible' => $inputs['recommendation']['recommendation_responsible'][$index],
-                'recommendation_remarks' => $inputs['recommendation']['recommendation_remarks'][$index]
+        foreach ($inputs['recommendation']['day_number'] as $index => $subject) {
+            $recommendationInputs = ['day_number' => $inputs['recommendation']['day_number'][$index],
+                'activity_date' => $inputs['recommendation']['activity_date'][$index],
+                'completed_tasks' => $inputs['recommendation']['completed_tasks'][$index],
+                'remarks' => $inputs['recommendation']['remarks'][$index]
             ];
             if (count(array_filter($recommendationInputs))) {
                 $inputs['recommendation_input'][$index] = $recommendationInputs;
@@ -248,11 +245,11 @@ class TravelReportController extends Controller
         $this->authorize('update', $travelReport);
         $inputs = $request->validated();
 
-        foreach ($inputs['recommendation']['recommendation_subject'] as $index => $subject) {
-            $recommendationInputs = ['recommendation_subject' => $inputs['recommendation']['recommendation_subject'][$index],
-                'recommendation_date' => $inputs['recommendation']['recommendation_date'][$index],
-                'recommendation_responsible' => $inputs['recommendation']['recommendation_responsible'][$index],
-                'recommendation_remarks' => $inputs['recommendation']['recommendation_remarks'][$index]
+        foreach ($inputs['recommendation']['day_number'] as $index => $subject) {
+            $recommendationInputs = ['day_number' => $inputs['recommendation']['day_number'][$index],
+                'activity_date' => $inputs['recommendation']['activity_date'][$index],
+                'completed_tasks' => $inputs['recommendation']['completed_tasks'][$index],
+                'remarks' => $inputs['recommendation']['remarks'][$index]
             ];
             if (count(array_filter($recommendationInputs))) {
                 $inputs['recommendation_input'][$index] = $recommendationInputs;

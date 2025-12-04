@@ -336,6 +336,18 @@ class TravelRequest extends Model
         return $this->approver->getFullName();
     }
 
+    public function getRequesterDesignation()
+    {
+        return $this->requester->employee?->getDesignationName() ?? '';
+    }
+
+    public function getReportDate()
+    {
+        return $this->travelReport?->created_at?->format('d M Y')
+            ?? $this->travelReport?->updated_at?->format('d M Y')
+            ?? now()->format('d M Y');
+    }
+
     public function getFinanceUserName()
     {
         return $this->financeUser->getFullName();

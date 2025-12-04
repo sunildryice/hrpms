@@ -445,9 +445,8 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose
-                                    of
-                                    Travel </label>
+                                <label for="validationPurposeofTravel" class="form-label required-label">Purpose of Travel
+                                </label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -470,9 +469,9 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                        @if ($errors->has('departure_date')) is-invalid @endif"
-                                readonly name="departure_date" value="{{ old('departure_date') }}" />
+                                class="form-control @if ($errors->has('departure_date')) is-invalid @endif"
+                                name="departure_date" value="{{ old('departure_date') }}" onfocus="this.blur()"
+                                placeholder="yyyy-mm-dd" />
                             @if ($errors->has('departure_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="departure_date">{!! $errors->first('departure_date') !!}
@@ -490,9 +489,9 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                        @if ($errors->has('return_date')) is-invalid @endif"
-                                readonly name="return_date" value="{{ old('return_date') }}" />
+                                class="form-control @if ($errors->has('return_date')) is-invalid @endif"
+                                name="return_date" value="{{ old('return_date') }}" onfocus="this.blur()"
+                                placeholder="yyyy-mm-dd" />
                             @if ($errors->has('return_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="return_date">{!! $errors->first('return_date') !!}</div>

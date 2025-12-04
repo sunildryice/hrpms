@@ -124,12 +124,12 @@ class TravelRequestItinerary extends Model
 
     public function getArrivalDate()
     {
-        return $this->arrival_date ? $this->arrival_date->toFormattedDateString() : '';
+        return $this->arrival_date?->format('d M Y, h:i A');
     }
 
     public function getDepartureDate()
     {
-        return $this->departure_date ? $this->departure_date->toFormattedDateString() : '';
+        return $this->departure_date?->format('d M Y, h:i A');
     }
 
     public function getDonorCode()

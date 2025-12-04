@@ -717,6 +717,7 @@
                         timePicker24Hour: true,
                         timePickerIncrement: 5,
                         autoApply: true,
+                        autoUpdateInput: false,
                         minDate: '{!! $travelRequest->departure_date->format('Y-m-d H:i') !!}',
                         maxDate: '{!! $travelRequest->return_date->format('Y-m-d H:i') !!}',
                         locale: {
@@ -737,12 +738,12 @@
                         @endif
                     @endif
 
-                    // Revalidate on date change
-                    $(document).on('apply.daterangepicker hide.daterangepicker', '.datetime-picker',
-                        function() {
-                            fv.revalidateField('departure_date');
-                            fv.revalidateField('arrival_date');
-                        });
+                    $('.datetime-picker').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD HH:mm'));
+                        if (typeof fv !== 'undefined') {
+                            fv.revalidateField(this.name);
+                        }
+                    });
                 }, 300);
 
                 $(itineraryForm).on('change', '[name="activity_code_id"]', function(e) {
@@ -1033,11 +1034,10 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                                    @if ($errors->has('departure_date')) is-invalid @endif"
+                                class="form-control @if ($errors->has('departure_date')) is-invalid @endif"
                                 name="departure_date"
                                 value="{{ old('departure_date') ?: ($travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '') }}"
-                                data-toggle="datepicker" />
+                                data-toggle="datepicker" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
                             @if ($errors->has('departure_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="departure_date">{!! $errors->first('departure_date') !!}</div>
@@ -1055,11 +1055,10 @@
                         </div>
                         <div class="col-lg-9">
                             <input type="text"
-                                class="form-control
-                                                    @if ($errors->has('return_date')) is-invalid @endif"
+                                class="form-control @if ($errors->has('return_date')) is-invalid @endif"
                                 name="return_date"
                                 value="{{ old('return_date') ?: ($travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '') }}"
-                                data-toggle="datepicker" />
+                                data-toggle="datepicker" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
                             @if ($errors->has('return_date'))
                                 <div class="fv-plugins-message-container invalid-feedback">
                                     <div data-field="return_date">{!! $errors->first('return_date') !!}</div>

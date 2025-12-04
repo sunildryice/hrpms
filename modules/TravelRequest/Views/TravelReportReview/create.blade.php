@@ -10,235 +10,216 @@
         }
     </style>
 
-    @section('page_js')
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('#navbarVerticalMenu').find('#approve-travel-report-menu').addClass('active');
-            });
-            document.addEventListener('DOMContentLoaded', function (e) {
-                const form = document.getElementById('travelReportApproveForm');
-                const fv = FormValidation.formValidation(form, {
-                    fields: {
-                        status_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Status is required',
-                                },
+@section('page_js')
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#navbarVerticalMenu').find('#approve-travel-report-menu').addClass('active');
+        });
+        document.addEventListener('DOMContentLoaded', function(e) {
+            const form = document.getElementById('travelReportApproveForm');
+            const fv = FormValidation.formValidation(form, {
+                fields: {
+                    status_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Status is required',
                             },
                         },
-                        log_remarks: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Remarks is required',
-                                },
+                    },
+                    log_remarks: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Remarks is required',
                             },
-                        }
-                    },
-                    plugins: {
-                        trigger: new FormValidation.plugins.Trigger(),
-                        bootstrap5: new FormValidation.plugins.Bootstrap5(),
-                        submitButton: new FormValidation.plugins.SubmitButton(),
-                        defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-                        icon: new FormValidation.plugins.Icon({
-                            valid: 'bi bi-check2-square',
-                            invalid: 'bi bi-x-lg',
-                            validating: 'bi bi-arrow-repeat',
-                        }),
-                    },
-                });
-
-                $(form).on('change', '[name="status_id"]', function (e) {
-                    fv.revalidateField('status_id');
-                });
+                        },
+                    }
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                    icon: new FormValidation.plugins.Icon({
+                        valid: 'bi bi-check2-square',
+                        invalid: 'bi bi-x-lg',
+                        validating: 'bi bi-arrow-repeat',
+                    }),
+                },
             });
-        </script>
-    @endsection
-    @section('page-content')
 
-        <div class="page-header pb-3 mb-3 border-bottom">
-            <div class="d-flex align-items-center">
-                <div class="brd-crms flex-grow-1">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item">
-                                <a href="{!! route('dashboard.index') !!}"
-                                   class="text-decoration-none text-dark">Home</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('approve.travel.reports.index') }}"
-                                   class="text-decoration-none text-dark">Travel
-                                    Report</a>
-                            </li>
-                            <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
-                        </ol>
-                    </nav>
-                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
-                </div>
+            $(form).on('change', '[name="status_id"]', function(e) {
+                fv.revalidateField('status_id');
+            });
+        });
+    </script>
+@endsection
+@section('page-content')
+
+    <div class="page-header pb-3 mb-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="brd-crms flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">
+                            <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('approve.travel.reports.index') }}"
+                                class="text-decoration-none text-dark">Travel
+                                Report</a>
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
             </div>
         </div>
+    </div>
 
-        <section class="registration">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Travel Information
-                        </div>
-                        <div class="card-body">
-                            @include('TravelRequest::Partials.detail')
-                        </div>
+    <section class="registration">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Travel Information
                     </div>
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Travel Report
-                        </div>
-                        <div class="card-body">
-                            @include('TravelRequest::Partials.report-detail')
-                        </div>
+                    <div class="card-body">
+                        @include('TravelRequest::Partials.detail')
                     </div>
                 </div>
-                <div class="col-lg-9">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Travel Report
-                        </div>
-                        <div class="card-body">
-                            <div id="reportTable">
-                                <div class="card">
-                                    <div class="card-header fw-bold">{{ __('label.objectives') }}</div>
-                                    <div class="card-body cb-height">
-                                        {{ $travelReport->objectives }}
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        {{ __('label.a') . '. ' . __('label.observation') }}</div>
-                                    <div class="card-body cb-height">
-                                        {{ $travelReport->observation }}
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        {{ __('label.b') . '. ' . __('label.activities') }}</div>
-                                    <div class="card-body cb-height">
-                                        {{ $travelReport->activities }}
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        {{ __('label.c') . '. ' . __('label.other-comments') }}</div>
-                                    <div class="card-body cb-height">
-                                        {{ $travelReport->other_comments }}
-                                    </div>
-                                </div>
-                            </div>
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Travel Report Summary
+                    </div>
+                    <div class="card-body">
+                        @include('TravelRequest::Partials.report-detail')
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="card">
+                    <div class="card-header fw-bold">Travel Report </div>
+                    <div class="card-body">
 
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table" id="travelRecommendationTable">
-                                            <thead>
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">General Objective/Purpose of Travel</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->objectives)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Major Achievement</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->major_achievement)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Daily Carried Activities / Completed Tasks</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
                                             <tr>
-                                                <th colspan="4">Recommendation For</th>
+                                                <th>Day</th>
+                                                <th>Date</th>
+                                                <th>Carried Activities / Completed Tasks</th>
+                                                <th style="width: 40%">Remarks</th>
                                             </tr>
-                                            <tr>
-                                                <th>{{ __('label.serial-no') }}</th>
-                                                <th>{{ __('label.what') }}</th>
-                                                <th>{{ __('label.when') }}</th>
-                                                <th>{{ __('label.who') }}</th>
-                                                <th>{{ __('label.remarks') }}</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @forelse($travelReport->travelReportRecommendations as $index => $recommendation)
+                                        </thead>
+                                        <tbody>
+                                            @forelse($travelReport->travelReportRecommendations as $rec)
                                                 <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td class="recommend-col">{{ $recommendation['recommendation_subject'] }}</td>
-                                                    <td class="recommend-col">{{ $recommendation['recommendation_date'] }}</td>
-                                                    <td class="recommend-col">{{ $recommendation['recommendation_responsible'] }}</td>
-                                                    <td class="recommend-col">{{ $recommendation['recommendation_remarks'] }}</td>
+                                                    <td>{{ nl2br(e($rec->day_number)) }}</td>
+                                                    <td>{{ $rec->activity_date?->format('d M Y') }}</td>
+                                                    <td>{{ nl2br(e($rec->completed_tasks)) }}</td>
+                                                    <td>{{ nl2br(e($rec->remarks)) }}</td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="4" class="text-center">
-                                                        {{ __('message.record-not-found') }}</td>
+                                                    <td colspan="4" class="text-center text-muted">No activities recorded
+                                                    </td>
                                                 </tr>
                                             @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </div>
-                            <div class="card">
-                                @include('Attachment::list', [
-                           'modelType' => 'Modules\TravelRequest\Models\TravelReport',
-                           'modelId' => $travelReport->id,
-                       ])
                             </div>
                         </div>
 
-                        <form action="{{ route('approve.travel.reports.store', $travelReport->id) }}"
-                              id="travelReportApproveForm" method="post" enctype="multipart/form-data"
-                              autocomplete="off">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="row mb-2">
-                                            <div class="col-lg-3">
-                                                <div class="d-flex align-items-start h-100">
-                                                    <label for="validationleavetype"
-                                                           class="form-label required-label">Status</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-9">
-                                                <select name="status_id" class="select2 form-control" data-width="100%">
-                                                    <option value="">Select a Status</option>
-                                                    <option value="2">Return to Requester</option>
-                                                    <option value="6">Approve</option>
-                                                </select>
-                                                @if ($errors->has('status_id'))
-                                                    <div class="fv-plugins-message-container invalid-feedback">
-                                                        <div data-field="status_id">
-                                                            {!! $errors->first('status_id') !!}
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="row mb-2">
-                                            <div class="col-lg-3">
-                                                <div class="d-flex align-items-start h-100">
-                                                    <label for="validationRemarks"
-                                                           class="form-label required-label">Remarks</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-9">
-                                                <textarea type="text"
-                                                          class="form-control @if ($errors->has('log_remarks')) is-invalid @endif"
-                                                          name="log_remarks">{{ old('log_remarks') }}</textarea>
-                                                @if ($errors->has('log_remarks'))
-                                                    <div class="fv-plugins-message-container invalid-feedback">
-                                                        <div
-                                                            data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
-                                                    </div>
-                                                @endif
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Not Completed Activities & Reasons</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->not_completed_activities)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Conclusion & Recommendations</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->conclusion_recommendations)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            @include('Attachment::list', [
+                                'modelType' => 'Modules\TravelRequest\Models\TravelReport',
+                                'modelId' => $travelReport->id,
+                            ])
+                        </div>
+                    </div>
+
+                    <form action="{{ route('approve.travel.reports.store', $travelReport->id) }}"
+                        id="travelReportApproveForm" method="post" enctype="multipart/form-data" autocomplete="off">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="validationleavetype"
+                                                    class="form-label required-label">Status</label>
                                             </div>
                                         </div>
-                                        {!! csrf_field() !!}
+                                        <div class="col-lg-9">
+                                            <select name="status_id" class="select2 form-control" data-width="100%">
+                                                <option value="">Select a Status</option>
+                                                <option value="2">Return to Requester</option>
+                                                <option value="6">Approve</option>
+                                            </select>
+                                            @if ($errors->has('status_id'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="status_id">
+                                                        {!! $errors->first('status_id') !!}
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="validationRemarks"
+                                                    class="form-label required-label">Remarks</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                            @if ($errors->has('log_remarks'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    {!! csrf_field() !!}
                                 </div>
                             </div>
-                            <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                                @if (!$authUser->can('submit', $travelReport))
-                                    <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                                        Submit
-                                    </button>
-                                @endif
-                                <a href="{!! route('approve.travel.reports.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="card-footer border-0 justify-content-end d-flex gap-2">
+                            @if (!$authUser->can('submit', $travelReport))
+                                <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                                    Submit
+                                </button>
+                            @endif
+                            <a href="{!! route('approve.travel.reports.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </section>
-    @stop
+        </div>
+    </section>
+@stop

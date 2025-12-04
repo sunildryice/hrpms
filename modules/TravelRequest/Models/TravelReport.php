@@ -31,9 +31,10 @@ class TravelReport extends Model
     protected $fillable = [
         'travel_request_id',
         'objectives',
-        'observation',
-        'activities',
-        'other_comments',
+        'major_achievement',
+        'not_completed_activities',
+        'conclusion_recommendations',
+        'total_travel_days',
         'approver_id',
         'status_id',
         'created_by',

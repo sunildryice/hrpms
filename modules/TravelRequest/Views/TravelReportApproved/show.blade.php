@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#approved-travel-report-menu').addClass('active');
         });
     </script>
@@ -41,135 +41,102 @@
             </div>
             <div class="col-lg-9">
                 <div class="card">
-                    <div class="card-header fw-bold">
-                        Travel Report
-                    </div>
+                    <div class="card-header fw-bold">Travel Report </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="reportTable">
-                                <thead>
-                                <tr>
-                                    <th colspan="2">{{ __('label.objectives') }}</th>
-                                    <th>{{ $travelReport->objectives }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
 
-                                <tr>
-                                    <td style="width:15px;"></td>
-                                    <td>{{ __('label.a') . '. ' . __('label.observation') }}</td>
-                                    <td>{{ $travelReport->observation }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width:15px;"></td>
-                                    <td>{{ __('label.b') . '. ' . __('label.activities') }}</td>
-                                    <td>{{ $travelReport->activities }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width:15px;"></td>
-                                    <td colspan="2">{{ __('label.c') . '. ' . __('label.recommendation') }}
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">General Objective/Purpose of Travel</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->objectives)) }}</div>
                         </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        Recommendation For
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="travelRecommendationTable">
-                                <thead>
-                                <tr>
-                                    <th>{{ __('label.serial-no') }}</th>
-                                    <th>{{ __('label.what') }}</th>
-                                    <th>{{ __('label.when') }}</th>
-                                    <th>{{ __('label.who') }}</th>
-                                    <th>{{ __('label.remarks') }}</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @forelse($travelReport->travelReportRecommendations as $index=>$recommendation)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $recommendation['recommendation_subject'] }}</td>
-                                        <td>{{ $recommendation['recommendation_date'] }}</td>
-                                        <td>{{ $recommendation['recommendation_responsible'] }}</td>
-                                        <td>{{ $recommendation['recommendation_remarks'] }}</td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="5" class="text-center">
-                                            {{ __('message.record-not-found') }}</td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        Comments
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="">
-                                <tbody>
-                                <tr>
-                                    <td style="width:15px;"></td>
-                                    <td>{{ __('label.d') . '. ' . __('label.other-comments') }}</td>
-                                    <td>{{ $travelReport->other_comments }}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                @include('Attachment::list', [
-                       'modelType' => 'Modules\TravelRequest\Models\TravelReport',
-                       'modelId' => $travelReport->id,
-                   ])
-                </div>
 
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        Travel Report Process
-                    </div>
-                    <div class="card-body">
-                        <div class="c-b">
-                            @foreach($travelReport->logs as $log)
-                                <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
-                                    <div width="40" height="40"
-                                         class="rounded-circle mr-3 user-icon">
-                                        <i class="bi-person-circle fs-5"></i>
-                                    </div>
-                                    <div class="w-100">
-                                        <div
-                                            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                            <div
-                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
-                                                <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
-                                                <span
-                                                    class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
-                                            </div>
-                                            <small
-                                                title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
-                                        </div>
-                                        <p class="text-justify comment-text mb-0 mt-1">
-                                            {{ $log->log_remarks }}
-                                        </p>
-                                    </div>
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Major Achievement</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->major_achievement)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Daily Carried Activities / Completed Tasks</div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Day</th>
+                                                <th>Date</th>
+                                                <th>Carried Activities / Completed Tasks</th>
+                                                <th style="width: 40%">Remarks</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($travelReport->travelReportRecommendations as $rec)
+                                                <tr>
+                                                    <td>{{ nl2br(e($rec->day_number)) }}</td>
+                                                    <td>{{ $rec->activity_date?->format('d M Y') }}</td>
+                                                    <td>{{ nl2br(e($rec->completed_tasks)) }}</td>
+                                                    <td>{{ nl2br(e($rec->remarks)) }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">No activities recorded
+                                                    </td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
-                            @endforeach
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Not Completed Activities & Reasons</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->not_completed_activities)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header fw-bold">Conclusion & Recommendations</div>
+                            <div class="card-body">{{ nl2br(e($travelReport->conclusion_recommendations)) }}</div>
+                        </div>
+
+                        <div class="card mb-3">
+                            @include('Attachment::list', [
+                                'modelType' => 'Modules\TravelRequest\Models\TravelReport',
+                                'modelId' => $travelReport->id,
+                            ])
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Travel Report Process
+                            </div>
+                            <div class="card-body">
+                                <div class="c-b">
+                                    @foreach ($travelReport->logs as $log)
+                                        <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
+                                            <div width="40" height="40" class="rounded-circle mr-3 user-icon">
+                                                <i class="bi-person-circle fs-5"></i>
+                                            </div>
+                                            <div class="w-100">
+                                                <div
+                                                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                                    <div
+                                                        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                                        <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
+                                                        <span
+                                                            class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
+                                                    </div>
+                                                    <small
+                                                        title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                </div>
+                                                <p class="text-justify comment-text mb-0 mt-1">
+                                                    {{ $log->log_remarks }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
     </section>
 @stop

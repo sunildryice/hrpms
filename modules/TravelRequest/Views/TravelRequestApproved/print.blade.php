@@ -3,8 +3,6 @@
 @section('title', 'Travel Authorization Print')
 @section('page_css')
     <style>
-
-
         table {
             border: 1px solid;
         }
@@ -60,7 +58,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 l-logo"
+                                    style="width: 200px;">
                             </div>
 
                         </div>
@@ -188,7 +187,11 @@
                             @endforeach
                             @if ($travelRequest->travelRequestEstimate)
                                 @php
-                                    $total = $travelRequest->travelRequestItineraries->sum('dsa_total_price') + $travelRequest->travelRequestEstimate->estimated_air_fare + $travelRequest->travelRequestEstimate->estimated_vehicle_fare + $travelRequest->travelRequestEstimate->miscellaneous_amount;
+                                    $total =
+                                        $travelRequest->travelRequestItineraries->sum('dsa_total_price') +
+                                        $travelRequest->travelRequestEstimate->estimated_air_fare +
+                                        $travelRequest->travelRequestEstimate->estimated_vehicle_fare +
+                                        $travelRequest->travelRequestEstimate->miscellaneous_amount;
                                 @endphp
                                 <tr>
                                     <td colspan="2">Excess Baggage</td>
@@ -309,7 +312,9 @@
                     </table>
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
-                            <div><strong>{{$travelRequest->isConsultantTravel() ? "Prepared By: (On Belalf of Consultant)" : 'Requested By:'}}</strong></div>
+                            <div>
+                                <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
+                            </div>
                             <div><strong>Name:</strong> {{ $travelRequest->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
                             <div>

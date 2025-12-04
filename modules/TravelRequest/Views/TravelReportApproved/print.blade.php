@@ -37,7 +37,7 @@
         <div class="print-title fw-bold mb-3 translate-middle text-center">
             <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $requester->office->getOfficeName() }}</div>
-            <div class="fs-8"> Field Visit Report Form</div>
+            <div class="fs-8"> Field Visit Report</div>
         </div>
 
         <div class="print-header">
@@ -100,13 +100,13 @@
             <div class="row">
                 <div class="col-lg-12">
 
-                    <div class="my-3">1. General Objective/Purpose of Travel</div>
-                    <div class="border p-3 mb-4" style="min-height: 80px;">{!! nl2br(e($travelReport->objectives)) !!}</div>
+                    <div class="my-2 fw-bold">1. General Objective/Purpose of Travel</div>
+                    <div class="mb-4" style="min-height: 20px;">{!! nl2br(e($travelReport->objectives)) !!}</div>
 
-                    <div class="my-3">2. Major Achievement</div>
-                    <div class="border p-3 mb-4" style="min-height: 80px;">{!! nl2br(e($travelReport->major_achievement)) !!}</div>
+                    <div class="my-2 fw-bold">2. Major Achievement</div>
+                    <div class="mb-4" style="min-height: 20px;">{!! nl2br(e($travelReport->major_achievement)) !!}</div>
 
-                    <div class="my-3">3. Daily Carried Activities / Completed Tasks</div>
+                    <div class="my-2 fw-bold">3. Daily Carried Activities / Completed Tasks</div>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -132,11 +132,11 @@
                         </tbody>
                     </table>
 
-                    <div class="my-3">4. Not Completed Activities & Reasons</div>
-                    <div class="border p-3 mb-4" style="min-height: 80px;">{!! nl2br(e($travelReport->not_completed_activities)) !!}</div>
+                    <div class="my-2 fw-bold">4. Not Completed Activities & Reasons</div>
+                    <div class="mb-4" style="min-height: 20px;">{!! nl2br(e($travelReport->not_completed_activities)) !!}</div>
 
-                    <div class="my-3">5. Conclusion & Recommendations</div>
-                    <div class="border p-3 mb-5" style="min-height: 100px;">{!! nl2br(e($travelReport->conclusion_recommendations)) !!}</div>
+                    <div class="my-2 fw-bold">5. Conclusion & Recommendations</div>
+                    <div class="mb-5" style="min-height: 100px;">{!! nl2br(e($travelReport->conclusion_recommendations)) !!}</div>
 
                     <div class="row">
                         <div class="col-lg-6 mb-4">

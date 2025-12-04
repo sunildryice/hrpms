@@ -44,28 +44,33 @@
                         @if ($logs->count())
                             <div class="c-b">
                                 @foreach ($logs as $log)
-                                    <div class="d-flex py-2 gap-3 mb-3 border-bottom">
-                                        <div class="rounded-circle user-icon d-flex align-items-center justify-content-center"
-                                            style="width:40px;height:40px;">
+                                    <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom">
+                                        <div class="rounded-circle user-icon"
+                                            style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;">
                                             <i class="bi-person-circle fs-5"></i>
                                         </div>
-
                                         <div class="w-100">
-                                            <div class="d-flex flex-column flex-md-row justify-content-between">
-                                                <div>
-                                                    <label class="form-label mb-0">
-                                                        {{ $log->createdBy->full_name ?? 'User' }}
-                                                    </label>
+                                            <div
+                                                class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                                <div
+                                                    class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2">
+                                                    <label
+                                                        class="form-label mb-0">{{ $log->createdBy->full_name ?? 'User' }}</label>
                                                 </div>
 
-                                                <small title="{{ $log->created_at }}">
-                                                    {{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y h:i A') }}
+
+                                                <small
+                                                    title="{{ $log->created_at }}">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y h:i A') }}
                                                 </small>
                                             </div>
 
-                                            <p class="text-justify mb-0 mt-1">
-                                                {{ $log->log_remarks ?? '' }}
-                                            </p>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}
+                                                </p>
+                                                <div class="badge {{ $log->getStatusClass() ?? 'bg-secondary' }}">
+                                                    {{ $log->getStatus() }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach

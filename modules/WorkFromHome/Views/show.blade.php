@@ -55,10 +55,20 @@
                                                     <label
                                                         class="form-label mb-0">{{ $log->createdBy->full_name ?? 'User' }}</label>
                                                 </div>
+
+
                                                 <small
-                                                    title="{{ $log->created_at }}">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y h:i A') }}</small>
+                                                    title="{{ $log->created_at }}">{{ \Carbon\Carbon::parse($log->created_at)->format('M d, Y h:i A') }}
+                                                </small>
                                             </div>
-                                            <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}</p>
+
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}
+                                                </p>
+                                                <div class="badge {{ $log->getStatusClass() ?? 'bg-secondary' }}">
+                                                    {{ $log->getStatus() }}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach

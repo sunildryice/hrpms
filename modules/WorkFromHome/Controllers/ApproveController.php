@@ -92,10 +92,10 @@ class ApproveController extends Controller
         if ($workFromHome->status_id == config('constant.APPROVED_STATUS')) {
             $workFromHome->requester->notify(new WorkFromHomeRequestApproved($workFromHome));
 
-            $message = 'Your Work From Home request has been approved.';
+            $message = 'Work From Home request approved successfully.';
         } elseif ($workFromHome->status_id == config('constant.REJECTED_STATUS')) {
             $workFromHome->requester->notify(new WorkFromHomeRequestRejected($workFromHome));
-            $message = 'Your Work From Home request has been rejected.';
+            $message = 'Work From Home request rejected successfully.';
         }
 
         $authUser = auth()->user();

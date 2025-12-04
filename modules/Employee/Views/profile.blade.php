@@ -300,6 +300,10 @@
                             ({{ $employee->employee_code }})
                             <a href="#" class="stretched-link" rel="tooltip" title="Profile"></a>
                         </li>
+                        <li><span rel="tooltip" title="Designation"><i class="bi-briefcase dropdown-item-icon me-2"></i>
+                                {{ $employee->designation->title }}</span>
+                        </li>
+
                         <li><span rel="tooltip" title="Marital Status"><i
                                     class="bi-question-circle dropdown-item-icon me-2"></i>
                                 {{ $employee->getMaritalStatus() }}</span>
@@ -318,7 +322,7 @@
                             {{ $employee->mobile_number }}
                             <a href="#" class="stretched-link" rel="tooltip" title="Contact Number"></a>
                         </li>
-                        e @php
+                        @php
                             $locationUrl = $employee->address?->current_location;
                         @endphp
                         @isset($locationUrl)

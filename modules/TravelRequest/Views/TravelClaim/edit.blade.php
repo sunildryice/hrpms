@@ -92,6 +92,10 @@
                 //     name: 'charging_office'
                 // },
                 {
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
+                },
+                {
                     data: 'attachment',
                     name: 'attachment'
                 },
@@ -163,6 +167,13 @@
                             validators: {
                                 notEmpty: {
                                     message: 'Description is required',
+                                },
+                            },
+                        },
+                        invoice_bill_number: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Invoice / Bill number is required',
                                 },
                             },
                         },
@@ -510,6 +521,7 @@
                                                     <th scope="col">{{ __('label.date') }}</th>
                                                     <th scope="col">{{ __('label.description') }}</th>
                                                     <th scope="col">{{ __('label.amount') }}</th>
+                                                    <th scope="col">Invoice / Bill Number</th>
                                                     {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
@@ -519,7 +531,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="4">{{ __('label.sub-total') }}</td>
+                                                    <td colspan="3">{{ __('label.sub-total') }}</td>
                                                     <td id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
                                                     {{-- <td colspan="2"></td> --}}

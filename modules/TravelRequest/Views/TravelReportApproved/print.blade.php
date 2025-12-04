@@ -60,21 +60,36 @@
                             <li><span
                                     class="fw-bold me-2">Ref:</span><span>{{ $travelRequest->getTravelRequestNumber() }}</span>
                             </li>
-                            <li><span
-                                    class="fw-bold me-2">Project:</span><span>{{ $travelRequest->getProjectCode() }}</span>
+                            <li><span class="fw-bold me-2">Date:</span><span>{{ $travelRequest->getReportDate() }}</span>
                             </li>
-                            <li><span class="fw-bold me-2">Visit conducted
+
+                            <li class="mb-3"></li>
+
+
+                            <li><span class="fw-bold me-2">Prepared
+                                    by:</span><span>{{ $travelRequest->getRequesterName() }}
+                                </span></li>
+                            <li><span class="fw-bold me-2">Designation:</span><span>{{ $requester->getDesignationName() }}
+                                </span></li>
+                            <li><span class="fw-bold me-2">Submitted
+                                    to:</span><span>{{ $travelRequest->getApproverName() }}
+                                </span></li>
+                            {{-- <li><span
+                                        class="fw-bold me-2">Project:</span><span>{{ $travelRequest->getProjectCode() }}</span>
+                                </li> --}}
+                            {{-- <li><span class="fw-bold me-2">Visit conducted
                                     by:</span><span>{{ $travelRequest->getRequesterName() }} @if ($travelRequest->accompanyingStaffs)
                                         , {{ $travelRequest->getAccompanyingStaffs() }}
                                     @endif
-                                </span></li>
-                            <li><span class="fw-bold me-2">Visit duration with
+                                </span></li> --}}
+                            <li><span class="fw-bold me-2">Travelled
+                                    District/Place:</span><span>{{ $travelRequest->final_destination }}</span>
+                            </li>
+                            <li><span class="fw-bold me-2">Travelling
                                     date:</span><span>{{ $travelRequest->getDepartureDate() }} to
                                     {{ $travelRequest->getReturnDate() }}</span></li>
-                            <li><span class="fw-bold me-2">Visit
-                                    Location:</span><span>{{ $travelRequest->final_destination }}</span></li>
-                            <li><span class="fw-bold me-2">Overview of specific
-                                    objectives:</span><span>{{ $travelReport->objectives }}</span></li>
+                            <li><span class="fw-bold me-2">Total Travel
+                                    Days:</span><span>{{ $travelRequest->getTotalDays() }}</span></li>
                         </ul>
                     </div>
                 </div>

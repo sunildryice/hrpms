@@ -258,12 +258,10 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <textarea name="recommendation[day_number][0]" rows="5" class="form-control" placeholder="">
-@if (old('recommendation[day_number][0]'))
-{{ old('recommendation[day_number][0]') }}
-@endif
-</textarea>
-
+                                                            <input type="text" name="recommendation[day_number][0]"
+                                                                class="form-control" rows="1"
+                                                                @if (old('recommendation[day_number][0]')) {{ old('recommendation[day_number][0]') }} @endif>
+                                                                
                                                             @if ($errors->has('recommendation[day_number][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                                     <div data-field="recommendation[day_number][0]">
@@ -288,11 +286,11 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <textarea name="recommendation[completed_tasks][0]" rows="5" class="form-control" placeholder="">
-@if (old('recommendation[completed_tasks][0]'))
-{{ old('recommendation[completed_tasks][0]') }}
-@endif
-</textarea>
+                                                            <textarea name="recommendation[completed_tasks][0]" rows="3" class="form-control" placeholder="">
+                                                                @if (old('recommendation[completed_tasks][0]'))
+                                                                    {{ old('recommendation[completed_tasks][0]') }}
+                                                                @endif
+                                                            </textarea>
                                                             @if ($errors->has('recommendation[completed_tasks][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                                     <div data-field="recommendation[completed_tasks][0]">
@@ -302,11 +300,11 @@
                                                             @endif
                                                         </td>
                                                         <td style="width: 40%">
-                                                            <textarea name="recommendation[remarks][0]" rows="5" class="form-control" placeholder="">
-@if (old('recommendation[remarks][0]'))
-{{ old('recommendation[remarks][0]') }}
-@endif
-</textarea>
+                                                            <textarea name="recommendation[remarks][0]" rows="3" class="form-control" placeholder="">
+                                                                @if (old('recommendation[remarks][0]'))
+                                                                    {{ old('recommendation[remarks][0]') }}
+                                                                @endif
+                                                            </textarea>
                                                             @if ($errors->has('recommendation[remarks][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                                     <div data-field="recommendation[remarks][0]">
@@ -325,7 +323,8 @@
                                                     <!-- Template -->
                                                     <tr id="template" style="display: none">
                                                         <td>
-                                                            <textarea data-name="recommendation.day_number" rows="5" class="form-control" placeholder=""></textarea>
+                                                            <input type="text" data-name="recommendation.day_number"
+                                                                class="form-control" rows="1">
                                                         </td>
                                                         <td>
                                                             <input type="text" data-name="recommendation.activity_date"
@@ -333,10 +332,10 @@
                                                                 placeholder="yyyy-mm-dd" onfocus="this.blur()">
                                                         </td>
                                                         <td>
-                                                            <textarea data-name="recommendation.completed_tasks" rows="5" class="form-control" placeholder=""></textarea>
+                                                            <textarea data-name="recommendation.completed_tasks" rows="3" class="form-control" placeholder=""></textarea>
                                                         </td>
                                                         <td>
-                                                            <textarea data-name="recommendation.remarks" rows="5" class="form-control" placeholder=""></textarea>
+                                                            <textarea data-name="recommendation.remarks" rows="3" class="form-control" placeholder=""></textarea>
                                                         </td>
                                                         <td>
                                                             <button type="button"

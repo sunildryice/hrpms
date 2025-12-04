@@ -87,7 +87,8 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                startDate: '{{ date('Y-m-d') }}'
+                startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
             }).on('change', function() {
                 fv.revalidateField(this.name);
             });
@@ -106,7 +107,8 @@
                             language: 'en-GB',
                             autoHide: true,
                             format: 'yyyy-mm-dd',
-                            startDate: '{{ date('Y-m-d') }}'
+                            startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                            endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
                         }).on('change', function() {
                             fv.revalidateField(this.name);
                         });
@@ -154,7 +156,8 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
-                    startDate: '{{ date('Y-m-d') }}'
+                    startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                    endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
                 }).on('change', function() {
                     fv.revalidateField(this.name);
                 });

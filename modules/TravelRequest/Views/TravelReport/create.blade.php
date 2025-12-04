@@ -90,7 +90,8 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                startDate: '{{ date('Y-m-d') }}'
+                startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
             }).on('change', function() {
                 fv.revalidateField(this.name);
             });
@@ -131,7 +132,8 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
-                    startDate: '{{ date('Y-m-d') }}'
+                    startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                    endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
                 }).on('change', function() {
                     fv.revalidateField(this.name);
                 });
@@ -261,7 +263,7 @@
                                                             <input type="text" name="recommendation[day_number][0]"
                                                                 class="form-control" rows="1"
                                                                 @if (old('recommendation[day_number][0]')) {{ old('recommendation[day_number][0]') }} @endif>
-                                                                
+
                                                             @if ($errors->has('recommendation[day_number][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                                     <div data-field="recommendation[day_number][0]">
@@ -288,8 +290,8 @@
                                                         <td>
                                                             <textarea name="recommendation[completed_tasks][0]" rows="3" class="form-control" placeholder="">
                                                                 @if (old('recommendation[completed_tasks][0]'))
-                                                                    {{ old('recommendation[completed_tasks][0]') }}
-                                                                @endif
+{{ old('recommendation[completed_tasks][0]') }}
+@endif
                                                             </textarea>
                                                             @if ($errors->has('recommendation[completed_tasks][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">
@@ -302,8 +304,8 @@
                                                         <td style="width: 40%">
                                                             <textarea name="recommendation[remarks][0]" rows="3" class="form-control" placeholder="">
                                                                 @if (old('recommendation[remarks][0]'))
-                                                                    {{ old('recommendation[remarks][0]') }}
-                                                                @endif
+{{ old('recommendation[remarks][0]') }}
+@endif
                                                             </textarea>
                                                             @if ($errors->has('recommendation[remarks][0]'))
                                                                 <div class="fv-plugins-message-container invalid-feedback">

@@ -36,12 +36,13 @@
         .table tr td {
             padding: 0.25rem 0.75rem;
         }
+
         .staff-image {
             width: 180px;
         }
 
 
-        .staff-image  img{
+        .staff-image img {
             height: 100px;
             object-fit: contain;
         }
@@ -55,10 +56,11 @@
     <section class="print-info bg-white p-3" id="print-info">
 
         <div class="print-title fw-bold mb-3 translate-middle text-center">
-            <div class="fs-5"> One Heart Worldwide</div>
-            <div class="fs-8">{{$employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? "Consultant" : "Staff"}} Personal information</div>
+            <div class="fs-5">HERD International</div>
+            <div class="fs-8">
+                {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant' : 'Staff' }}
+                Personal information</div>
         </div>
-
         <div class="print-header">
             <div class="row">
                 <div class="col-lg-8">
@@ -79,7 +81,9 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <th colspan="5">{{$employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? "Consultant" : "Staff"}} Personal Information </th>
+                        <th colspan="5">
+                            {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant' : 'Staff' }}
+                            Personal Information </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,7 +92,8 @@
                         <td colspan="3">{{ $employee->employee_code }}</td>
                         <td rowspan="5" class="staff-image text-center bg-white ">
                             @if (file_exists('storage/' . $employee->profile_picture) && $employee->profile_picture != '')
-                                <img src="{{ asset('storage/'. $employee->profile_picture) }}" alt="" class="w-100 ">
+                                <img src="{{ asset('storage/' . $employee->profile_picture) }}" alt=""
+                                    class="w-100 ">
                             @endif
                         </td>
                     </tr>
@@ -106,7 +111,10 @@
                     </tr>
                     <tr>
                         <th scope="row">Joining Date: </th>
-                        <td colspan="3">@if ($employee->latestTenure->joined_date != null) {{ $employee->latestTenure->joined_date->format('M d, Y') }} @endif
+                        <td colspan="3">
+                            @if ($employee->latestTenure->joined_date != null)
+                                {{ $employee->latestTenure->joined_date->format('M d, Y') }}
+                            @endif
                         </td>
                     </tr>
                     <tr>
@@ -114,15 +122,11 @@
                         <td colspan="4">{{ $employee->getDutyStation() }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Supervisor Name:</th>
+                        <th scope="row">Line Manager Name:</th>
                         <td colspan="4">{{ $employee->latestTenure->getSupervisorName() }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Cross-functional Supervisor Name:</th>
-                        <td colspan="4">{{ $employee->latestTenure->getCrossSupervisorName() }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Next Line Manager Name:</th>
+                        <th scope="row">Reviewer Name:</th>
                         <td colspan="4">{{ $employee->latestTenure->getNextLineManagerName() }}</td>
                     </tr>
                     <tr>
@@ -133,7 +137,8 @@
                         <td colspan="4">District: {{ $employee->address->temporary_district->district_name }}</td>
                     </tr>
                     <tr>
-                        <td colspan="4">Municipality: {{ $employee->address->temporary_local_level->local_level_name }}</td>
+                        <td colspan="4">Municipality: {{ $employee->address->temporary_local_level->local_level_name }}
+                        </td>
                     </tr>
                     <tr>
                         <td>Ward: {{ $employee->address->temporary_ward }}</td>
@@ -147,7 +152,8 @@
                         <td colspan="4">District: {{ $employee->address->permanent_district->district_name }}</td>
                     </tr>
                     <tr>
-                        <td colspan="4">Municipality: {{ $employee->address->permanent_local_level->local_level_name }}</td>
+                        <td colspan="4">Municipality: {{ $employee->address->permanent_local_level->local_level_name }}
+                        </td>
                     </tr>
                     <tr>
                         <td>Ward: {{ $employee->address->permanent_ward }}</td>
@@ -192,16 +198,17 @@
                     <tr>
                         <th>If married:</th>
                         <td>Spouse Name : {{ $employee->isMarried() ? $employee->spouse->getFullName() : '' }}</td>
-                        <td colspan="3">Date of Birth AD* : {{ $employee->isMarried() ? $employee->spouse->getDateOfBirth() : '' }}</td>
+                        <td colspan="3">Date of Birth AD* :
+                            {{ $employee->isMarried() ? $employee->spouse->getDateOfBirth() : '' }}</td>
                     </tr>
                     {{-- <tr>
                         <td colspan="3">Attach Citizenship</td>
                     </tr> --}}
                     <tr>
                         @if ($employee->isMarried())
-                            @foreach ($employee->childrens as $key=>$child)
-                                <th>Child {{++$key}} Name: </th>
-                                <td>{{$child->getFullName()}}</td>
+                            @foreach ($employee->childrens as $key => $child)
+                                <th>Child {{ ++$key }} Name: </th>
+                                <td>{{ $child->getFullName() }}</td>
                             @endforeach
                         @else
                             <th>Child 1 Name:</th>
@@ -417,11 +424,11 @@
                     </tr>
                     <tr>
                         <th scope="row">Telephone ( Mobile)</th>
-                        <td colspan="5">{{$employee->emergencyContact->contact_number}}</td>
+                        <td colspan="5">{{ $employee->emergencyContact->contact_number }}</td>
                     </tr>
                     <tr>
                         <th scope="row" rowspan="3">Nominee:</th>
-                        <td>Name: {{ $employee->nominee->getFullName()}}</td>
+                        <td>Name: {{ $employee->nominee->getFullName() }}</td>
                     </tr>
                     <tr>
                         <td>Relationship: {{ $employee->nominee->getRelationName() }}</td>
@@ -432,11 +439,11 @@
 
                     <tr>
                         <th scope="row">Probation Completion date/ Period:</th>
-                        <td colspan="5">{{$employee->probation_complete_date}}</td>
+                        <td colspan="5">{{ $employee->probation_complete_date }}</td>
                     </tr>
                     <tr>
                         <th scope="row">Last working date:</th>
-                        <td colspan="5">{{$employee->last_working_date}}</td>
+                        <td colspan="5">{{ $employee->last_working_date }}</td>
                     </tr>
 
                 </tbody>

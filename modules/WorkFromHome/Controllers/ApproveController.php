@@ -33,21 +33,25 @@ class ApproveController extends Controller
         if ($request->ajax()) {
             $query = $this->workFromHomes
                 ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
-                ->where('approver_id', '=', auth()->id());
+                ->where('approver_id', '=', auth()->id())
+                ->orderBy('created_at', 'desc');
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('request_date', function ($row) {
-                    return $row->request_date ? Carbon::parse($row->request_date)->format('Y-m-d') : '';
+                    return $row->getRequestDate();
                 })
                 ->editColumn('start_date', function ($row) {
-                    return $row->start_date ? Carbon::parse($row->start_date)->format('Y-m-d') : '';
+                    return $row->getStartDate();
                 })
                 ->editColumn('end_date', function ($row) {
-                    return $row->end_date ? Carbon::parse($row->end_date)->format('Y-m-d') : '';
+                    return $row->getEndDate();
                 })
                 ->addColumn('project', function ($row) {
-                    return $row->project->short_name ?? '-';
+                    return $row->project->title ?? '-';
+                })
+                ->addColumn('employee', function ($row) {
+                    return $row->requester->employee->full_name ?? $row->requester->full_name ?? '-';
                 })
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
@@ -87,8 +91,11 @@ class ApproveController extends Controller
 
         if ($workFromHome->status_id == config('constant.APPROVED_STATUS')) {
             $workFromHome->requester->notify(new WorkFromHomeRequestApproved($workFromHome));
+
+            $message = 'Your Work From Home request has been approved.';
         } elseif ($workFromHome->status_id == config('constant.REJECTED_STATUS')) {
             $workFromHome->requester->notify(new WorkFromHomeRequestRejected($workFromHome));
+            $message = 'Your Work From Home request has been rejected.';
         }
 
         $authUser = auth()->user();
@@ -103,6 +110,6 @@ class ApproveController extends Controller
 
         $this->workFromHomeLogs->create($logInputs);
 
-        return redirect()->route('approve.wfh.requests.index')->with('success_message', 'Work From Home request approved successfully.');
+        return redirect()->route('approve.wfh.requests.index')->with('success_message', $message);
     }
 }

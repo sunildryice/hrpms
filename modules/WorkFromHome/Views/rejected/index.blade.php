@@ -1,11 +1,11 @@
 @extends('layouts.container')
 
-@section('title', 'Approved Requests')
+@section('title', 'Rejected Requests')
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#wfh-requests-approved').addClass('active');
+            $('#navbarVerticalMenu').find('#wfh-requests-rejected').addClass('active');
 
             if ($.fn.DataTable.isDataTable('#wfhRequestTable')) {
                 $('#wfhRequestTable').DataTable().destroy();
@@ -16,7 +16,7 @@
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('approved.wfh.requests.index') }}",
+                ajax: "{{ route('rejected.wfh.requests.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',

@@ -184,12 +184,19 @@
                                     href="{{ route('wfh.requests.index') }}">Requests</a>
 
                                 @if ($authUser->can('approve-work-from-home'))
-                                    @if ($approveWorkFromHomeRequestCount > 0)
-                                        <a class="nav-link" id="wfh-requests-approve"
-                                            href="{{ route('approve.wfh.requests.index') }}">
-                                            Approve Requests ({{ $approveWorkFromHomeRequestCount }})
-                                        </a>
-                                    @endif
+                                    <a class="nav-link" id="wfh-requests-approve"
+                                        href="{{ route('approve.wfh.requests.index') }}">
+                                        Approve Requests
+                                        @if ($approveWorkFromHomeRequestCount > 0)
+                                            ({{ $approveWorkFromHomeRequestCount }})
+                                        @endif
+                                    </a>
+
+                                    <a class="nav-link" id="wfh-requests-rejected"
+                                        href="{{ route('rejected.wfh.requests.index') }}">
+                                        Rejected Requests
+                                    </a>
+
                                     <a class="nav-link" id="wfh-requests-approved"
                                         href="{{ route('approved.wfh.requests.index') }}">Approved Requests</a>
                                 @endif

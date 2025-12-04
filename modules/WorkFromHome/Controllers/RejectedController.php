@@ -6,13 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Modules\WorkFromHome\Requests\Approve\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
 
-class ApprovedController extends Controller
+class RejectedController extends Controller
 {
     public function __construct(
         protected ProjectCodeRepository $projects,
@@ -29,7 +30,7 @@ class ApprovedController extends Controller
 
         if ($request->ajax()) {
             $query = $this->workFromHomes
-                ->where('status_id', '=', config('constant.APPROVED_STATUS'))
+                ->where('status_id', '=', config('constant.REJECTED_STATUS'))
                 ->where('approver_id', '=', auth()->id())
                 ->orderBy('created_at', 'desc');
 
@@ -47,9 +48,6 @@ class ApprovedController extends Controller
                 ->addColumn('project', function ($row) {
                     return $row->project->title ?? '-';
                 })
-                ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
-                })
                 ->addColumn('employee', function ($row) {
                     return $row->requester->employee->full_name ?? $row->requester->full_name ?? '-';
                 })
@@ -61,7 +59,7 @@ class ApprovedController extends Controller
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . route('approved.wfh.requests.show', $row->id) . '" class="btn btn-sm btn-primary">
+                    $btn = '<a href="' . route('rejected.wfh.requests.show', $row->id) . '" class="btn btn-sm btn-primary">
                     <i class="bi bi-eye"></i> 
                     </a>';
                     return $btn;
@@ -70,7 +68,7 @@ class ApprovedController extends Controller
                 ->make(true);
         }
 
-        return view('WorkFromHome::approved.index');
+        return view('WorkFromHome::rejected.index');
     }
 
     public function show($id)
@@ -79,6 +77,6 @@ class ApprovedController extends Controller
             ->with('logs')->find($id);
 
 
-        return view('WorkFromHome::approved.show', compact('wfhRequest'));
+        return view('WorkFromHome::rejected.show', compact('wfhRequest'));
     }
 }

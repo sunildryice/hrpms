@@ -81,4 +81,24 @@ class EmployeeHour extends Model
     {
         return Carbon::parse($this->end_time)->format('g:i A');
     }
+
+    public function getStartTimeAttribute($value)
+    {
+        return $value ? date('g:i A', strtotime($value)) : null;
+    }
+
+    public function getEndTimeAttribute($value)
+    {
+        return $value ? date('g:i A', strtotime($value)) : null;
+    }
+
+    public function setStartTimeAttribute($value)
+    {
+        $this->attributes['start_time'] = $value ? Carbon::parse($value)->format('H:i:s') : null;
+    }
+
+    public function setEndTimeAttribute($value)
+    {
+        $this->attributes['end_time'] = $value ? Carbon::parse($value)->format('H:i:s') : null;
+    }
 }

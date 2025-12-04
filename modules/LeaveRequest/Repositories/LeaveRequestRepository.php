@@ -246,7 +246,12 @@ class LeaveRequestRepository extends Repository
     {
         DB::beginTransaction();
         try {
-            $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
+
+            if ($inputs['btn'] == 'submit') {
+                $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
+            } else {
+                $inputs['status_id'] = config('constant.CREATED_STATUS');
+            }
             $leaveRequest = $this->model->create($inputs);
 
 
@@ -281,6 +286,14 @@ class LeaveRequestRepository extends Repository
                     'original_user_id' => $inputs['original_user_id'],
                 ];
                 $leaveRequest = $this->forward($leaveRequest->id, $forwardInputs);
+            } else {
+                $logInputs = [
+                    'user_id' => $inputs['created_by'],
+                    'status_id' => $leaveRequest->status_id,
+                    'log_remarks' => 'Leave request is created.',
+                    'original_user_id' => $inputs['original_user_id'],
+                ];
+                $leaveRequest->logs()->create($logInputs);
             }
             DB::commit();
 

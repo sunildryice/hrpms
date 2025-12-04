@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\WorkFromHome\Controllers\ApproveController;
 use Modules\WorkFromHome\Controllers\RequestController;
 use Modules\WorkFromHome\Controllers\ApprovedController;
+use Modules\WorkFromHome\Controllers\RejectedController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
@@ -11,6 +12,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('wfh/requests/create', [RequestController::class, 'create'])->name('wfh.requests.create');
     Route::post('wfh/requests', [RequestController::class, 'store'])->name('wfh.requests.store');
     Route::get('wfh/{id}/requests', [RequestController::class, 'show'])->name('wfh.requests.show');
+    Route::get('wfh/{id}/requests/edit', [RequestController::class, 'edit'])->name('wfh.requests.edit');
+    Route::put('wfh/{id}/requests', [RequestController::class, 'update'])->name('wfh.requests.update');
 });
 
 Route::middleware(['web', 'auth', 'logger'])->prefix('approve')
@@ -26,4 +29,11 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('approved')
         Route::get('wfh/requests', [ApprovedController::class, 'index'])->name('approved.wfh.requests.index');
         Route::get('wfh/{id}/requests', [ApprovedController::class, 'show'])->name('approved.wfh.requests.show');
         Route::post('wfh/{id}/requests', [ApprovedController::class, 'update'])->name('approved.wfh.requests.update');
+    });
+
+
+Route::middleware(['web', 'auth', 'logger'])->prefix('rejected')
+    ->group(function () {
+        Route::get('wfh/requests', [RejectedController::class, 'index'])->name('rejected.wfh.requests.index');
+        Route::get('wfh/{id}/requests', [RejectedController::class, 'show'])->name('rejected.wfh.requests.show');
     });

@@ -26,12 +26,12 @@ class UpdateRequest extends FormRequest
     {
         return [
             'activity_code_id'=>'required|exists:lkup_activity_codes,id',
-            'donor_code_id'=>'required|exists:lkup_donor_codes,id',
             'expense_date'=>'required|date',
             'expense_amount'=>'required|numeric|min:0.01',
-            'office_id'=>'required|exists:lkup_offices,id',
             'expense_description'=>'required',
             'attachment'=>'nullable|mimes:png,jpg,pdf|max:2048',
+            // 'donor_code_id'=>'required|exists:lkup_donor_codes,id',
+            // 'office_id'=>'required|exists:lkup_offices,id',
         ];
     }
 

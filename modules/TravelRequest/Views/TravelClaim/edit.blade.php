@@ -71,10 +71,10 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
                 {
                     data: 'expense_date',
                     name: 'expense_date'
@@ -87,10 +87,10 @@
                     data: 'expense_amount',
                     name: 'expense_amount'
                 },
-                {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'attachment',
                     name: 'attachment'
@@ -144,7 +144,7 @@
                         activity_code_id: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Activity code is required',
+                                    message: 'Activity is required',
                                 },
                             },
                         },
@@ -182,13 +182,13 @@
                                 },
                             },
                         },
-                        office_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Charging office is required',
-                                },
-                            },
-                        },
+                        // office_id: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Charging office is required',
+                        //         },
+                        //     },
+                        // },
                         attachment: {
                             validators: {
                                 file: {
@@ -506,11 +506,11 @@
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th scope="col">{{ __('label.activity') }}</th>
-                                                    <th scope="col">{{ __('label.donor') }}</th>
+                                                    {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
                                                     <th scope="col">{{ __('label.date') }}</th>
                                                     <th scope="col">{{ __('label.description') }}</th>
                                                     <th scope="col">{{ __('label.amount') }}</th>
-                                                    <th scope="col">Charging Office</th>
+                                                    {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>
@@ -522,7 +522,7 @@
                                                     <td colspan="4">{{ __('label.sub-total') }}</td>
                                                     <td id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
-                                                    <td colspan="2"></td>
+                                                    {{-- <td colspan="2"></td> --}}
                                                 </tr>
                                             </tfoot>
                                         </table>

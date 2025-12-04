@@ -8,7 +8,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Activity Code</label>
+                    <label for="" class="form-label required-label">Activity</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -20,7 +20,7 @@
                 </select>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">Donor Code</label>
@@ -34,7 +34,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -67,7 +67,7 @@
                 <input type="number" class="form-control" name="expense_amount" value="{{ $travelExpense->expense_amount }}" placeholder="Expense Amount">
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">Charging Office</label>
@@ -81,7 +81,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

@@ -35,6 +35,7 @@ class TravelClaimExpense extends Model
         'expense_date',
         'expense_description',
         'expense_amount',
+        'invoice_bill_number',
         'office_id',
         'attachment',
         'created_by',
@@ -79,7 +80,7 @@ class TravelClaimExpense extends Model
     {
         return $this->belongsTo(Office::class, 'office_id')->withDefault();
     }
-    
+
     public function getActivityCode()
     {
         return $this->activityCode->getActivityCodeWithDescription();
@@ -89,7 +90,7 @@ class TravelClaimExpense extends Model
     {
         return $this->expense_date ? $this->expense_date->toFormattedDateString() : '';
     }
-    
+
     public function getActivityTitle()
     {
         return $this->activityCode->title;
@@ -102,6 +103,6 @@ class TravelClaimExpense extends Model
 
     public function getAmount()
     {
-        return $this->expense_amount;   
+        return $this->expense_amount;
     }
 }

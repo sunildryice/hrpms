@@ -24,23 +24,28 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'objectives' =>'required|string',
-            'observation'=>'required|string',
-            'activities' =>'required|string',
-            'other_comments'=>'nullable',
-            'recommendation.recommendation_subject.*'=>'nullable',
-            'recommendation.recommendation_date.*'=>'nullable',
-            'recommendation.recommendation_responsible.*'=>'nullable',
-            'recommendation.recommendation_remarks.*'=>'nullable',
-            'approver_id'=>'required|exists:users,id',
-            'btn'=>'required',
+            'objectives' => 'required|string',
+            'major_achievement' => 'required|string',
+            'not_completed_activities' => 'required|string',
+            'conclusion_recommendations' => 'nullable',
+            'total_travel_days' => 'nullable|integer|min:1',
+
+            'recommendation.day_number.*' => 'nullable|string',
+            'recommendation.activity_date.*' => 'nullable|date',
+            'recommendation.completed_tasks.*' => 'nullable|string',
+            'recommendation.remarks.*' => 'nullable|string',
+
+            'approver_id' => 'required|exists:users,id',
+            'btn' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'recommendation.recommendation_subject.*.required'=>'Subject is required.'
+            'recommendation.activity_date.*.required' => 'Date is required for each day.',
+            'recommendation.activity_date.*.date' => 'Please enter a valid date.',
+            'recommendation.completed_tasks.*.required' => 'Please describe the activities completed on this day.',
         ];
     }
 }

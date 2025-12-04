@@ -33,6 +33,10 @@ class TravelReportRecommendation extends Model
         'remarks',
     ];
 
+    protected $casts = [
+        'activity_date' => 'date',
+    ];
+
     /**
      * The attributes excluded from the model's JSON form.
      *

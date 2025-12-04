@@ -27,6 +27,7 @@ class StoreRequest extends FormRequest
             'activity_code_id'=>'required|exists:lkup_activity_codes,id',
             'expense_date'=>'required|date',
             'expense_amount'=>'required|numeric|min:0.01',
+            'invoice_bill_number'=> 'nullable',
             'expense_description'=>'required',
             'attachment'=>'nullable|mimes:png,jpg,pdf|max:5120',
             // 'donor_code_id'=>'required|exists:lkup_donor_codes,id',

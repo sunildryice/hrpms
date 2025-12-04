@@ -5,6 +5,7 @@ namespace Modules\WorkFromHome\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
+use Modules\Master\Models\Status;
 
 class WorkFromHomeLog extends Model
 {
@@ -23,5 +24,21 @@ class WorkFromHomeLog extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class, 'status_id');
+    }
+
+
+    public function getStatus()
+    {
+        return ucwords($this->status->title);
+    }
+
+    public function getStatusClass()
+    {
+        return $this->status->status_class;
     }
 }

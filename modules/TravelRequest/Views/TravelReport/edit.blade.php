@@ -83,11 +83,35 @@
                 },
             });
 
+            $('input[name="recommendation[activity_date][0]"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                startDate: '{{ date('Y-m-d') }}'
+            }).on('change', function() {
+                fv.revalidateField(this.name);
+            });
+
             @foreach ($travelReport->travelReportRecommendations as $index => $rec)
                 fv.addField('recommendation[day_number][{{ $index }}]', subjectValidators)
                     .addField('recommendation[activity_date][{{ $index }}]', dateValidators)
                     .addField('recommendation[completed_tasks][{{ $index }}]', taskValidators)
                     .addField('recommendation[remarks][{{ $index }}]', remarkValidators);
+
+                $(document).ready(function() {
+                    const input = document.querySelector(
+                        'input[name="recommendation[activity_date][{{ $index }}]"]');
+                    if (input && !$(input).hasClass('hasDatepicker')) {
+                        $(input).datepicker({
+                            language: 'en-GB',
+                            autoHide: true,
+                            format: 'yyyy-mm-dd',
+                            startDate: '{{ date('Y-m-d') }}'
+                        }).on('change', function() {
+                            fv.revalidateField(this.name);
+                        });
+                    }
+                });
             @endforeach
 
             const removeRow = function(button) {
@@ -108,6 +132,7 @@
                 });
             });
 
+            // Add new row
             document.getElementById('addButton').addEventListener('click', function() {
                 const clone = template.cloneNode(true);
                 clone.removeAttribute('id');
@@ -122,6 +147,17 @@
                     'recommendation[completed_tasks][' + rowIndex + ']';
                 clone.querySelector('[data-name="recommendation.remarks"]').name =
                     'recommendation[remarks][' + rowIndex + ']';
+
+                const dateInput = clone.querySelector('input[name="recommendation[activity_date][' +
+                    rowIndex + ']"]');
+                $(dateInput).datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                    startDate: '{{ date('Y-m-d') }}'
+                }).on('change', function() {
+                    fv.revalidateField(this.name);
+                });
 
                 fv.addField('recommendation[day_number][' + rowIndex + ']', subjectValidators);
                 fv.addField('recommendation[activity_date][' + rowIndex + ']', dateValidators);
@@ -226,10 +262,11 @@
                                                                 <textarea name="recommendation[day_number][{{ $index }}]" rows="5" class="form-control">{{ old("recommendation.day_number.$index", $rec->day_number) }}</textarea>
                                                             </td>
                                                             <td>
-                                                                <input type="date"
+                                                                <input type="text"
                                                                     name="recommendation[activity_date][{{ $index }}]"
                                                                     data-name="recommendation.activity_date"
                                                                     class="form-control form-control-sm"
+                                                                    placeholder="yyyy-mm-dd" onfocus="this.blur()"
                                                                     value="{{ old("recommendation.activity_date.$index", $rec->activity_date?->format('Y-m-d')) }}">
                                                             </td>
                                                             <td>
@@ -254,10 +291,11 @@
                                                             <td>
                                                                 <textarea name="recommendation[day_number][0]" rows="5" class="form-control"></textarea>
                                                             </td>
-                                                            <td><input type="date"
+                                                            <td><input type="text"
                                                                     name="recommendation[activity_date][0]"
                                                                     data-name="recommendation.activity_date"
-                                                                    class="form-control form-control-sm"></td>
+                                                                    class="form-control form-control-sm"
+                                                                    placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
                                                             <td>
                                                                 <textarea name="recommendation[completed_tasks][0]" rows="5" class="form-control"></textarea>
                                                             </td>
@@ -273,8 +311,9 @@
                                                         <td>
                                                             <textarea data-name="recommendation.day_number" rows="5" class="form-control"></textarea>
                                                         </td>
-                                                        <td><input type="date" data-name="recommendation.activity_date"
-                                                                class="form-control form-control-sm"></td>
+                                                        <td><input type="text" data-name="recommendation.activity_date"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
                                                         <td>
                                                             <textarea data-name="recommendation.completed_tasks" rows="5" class="form-control"></textarea>
                                                         </td>

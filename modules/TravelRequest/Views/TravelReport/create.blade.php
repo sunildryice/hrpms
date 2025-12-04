@@ -86,6 +86,15 @@
                 },
             });
 
+            $('input[name="recommendation[activity_date][0]"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                startDate: '{{ date('Y-m-d') }}'
+            }).on('change', function() {
+                fv.revalidateField(this.name);
+            });
+
             const removeRow = function(rowIndex) {
                 const row = form.querySelector('[data-row-index="' + rowIndex + '"]');
                 if (!row) return;
@@ -116,6 +125,16 @@
                     'recommendation[completed_tasks][' + rowIndex + ']');
                 clone.querySelector('[data-name="recommendation.remarks"]').setAttribute('name',
                     'recommendation[remarks][' + rowIndex + ']');
+
+                const dateInput = clone.querySelector('[data-name="recommendation.activity_date"]');
+                $(dateInput).datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                    startDate: '{{ date('Y-m-d') }}'
+                }).on('change', function() {
+                    fv.revalidateField(this.name);
+                });
 
                 // Add validation
                 fv.addField('recommendation[day_number][' + rowIndex + ']', subjectValidators);
@@ -254,9 +273,10 @@
                                                             @endif
                                                         </td>
                                                         <td>
-                                                            <input type="date" name="recommendation[activity_date][0]"
+                                                            <input type="text" name="recommendation[activity_date][0]"
                                                                 data-name="recommendation.activity_date"
                                                                 class="form-control form-control-sm"
+                                                                placeholder="yyyy-mm-dd" onfocus="this.blur()"
                                                                 @if (old('recommendation[activity_date][0]')) {{ old('recommendation[activity_date][0]') }} @endif>
 
                                                             @if ($errors->has('recommendation[activity_date][0]'))
@@ -308,8 +328,9 @@
                                                             <textarea data-name="recommendation.day_number" rows="5" class="form-control" placeholder=""></textarea>
                                                         </td>
                                                         <td>
-                                                            <input type="date" data-name="recommendation.activity_date"
-                                                                class="form-control">
+                                                            <input type="text" data-name="recommendation.activity_date"
+                                                                class="form-control form-control-sm"
+                                                                placeholder="yyyy-mm-dd" onfocus="this.blur()">
                                                         </td>
                                                         <td>
                                                             <textarea data-name="recommendation.completed_tasks" rows="5" class="form-control" placeholder=""></textarea>

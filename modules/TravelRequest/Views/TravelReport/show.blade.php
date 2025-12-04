@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#travel-report-menu').addClass('active');
         });
     </script>
@@ -20,7 +20,8 @@
                             <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
                         </li>
                         <li class="breadcrumb-item">
-                            <a href="{{ route('travel.reports.index') }}" class="text-decoration-none text-dark">Travel Report</a>
+                            <a href="{{ route('travel.reports.index') }}" class="text-decoration-none text-dark">Travel
+                                Report</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
@@ -81,7 +82,8 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="4" class="text-center text-muted">No activities recorded</td>
+                                                    <td colspan="4" class="text-center text-muted">No activities recorded
+                                                    </td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
@@ -117,8 +119,10 @@
                                                 <i class="bi-person-circle fs-5"></i>
                                             </div>
                                             <div class="w-100">
-                                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                                <div
+                                                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                                    <div
+                                                        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
                                                         <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
                                                         <span class="badge bg-primary c-badge">
                                                             {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}

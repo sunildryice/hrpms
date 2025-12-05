@@ -35,11 +35,13 @@ use Modules\Employee\Controllers\UserController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('employees/{employee}/profile', [EmployeeController::class, 'profile'])->name('employees.profile');
+    Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
+
     Route::middleware('can:manage-employee')->group(function () {
-        Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
+
         Route::get('employees/create', [EmployeeController::class, 'create'])->name('employees.create');
         Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
-        Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
 
         Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
         Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
@@ -129,15 +131,14 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::delete('employees/payments/masters/{payment}/details/{detail}', [PaymentDetailController::class, 'destroy'])->name('employees.payments.masters.details.destroy');
     });
 
+    Route::get('consultant', [ConsultantController::class, 'index'])->name('consultant.index');
+    Route::get('consultant/{consultant}/profile', [ConsultantController::class, 'profile'])->name('consultant.profile');
     Route::middleware('can:manage-employee')->group(function () {
-        Route::get('consultant', [ConsultantController::class, 'index'])->name('consultant.index');
         Route::get('consultant/create', [ConsultantController::class, 'create'])->name('consultant.create');
         Route::post('consultant', [ConsultantController::class, 'store'])->name('consultant.store');
         Route::get('consultant/{consultant}/edit', [ConsultantController::class, 'edit'])->name('consultant.edit');
         Route::put('consultant/{consultant}', [ConsultantController::class, 'update'])->name('consultant.update');
         Route::delete('consultant/{consultant}', [ConsultantController::class, 'destroy'])->name('consultant.destroy');
-
-        Route::get('consultant/{consultant}/profile', [ConsultantController::class, 'profile'])->name('consultant.profile');
     });
 
 

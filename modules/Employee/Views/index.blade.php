@@ -11,7 +11,7 @@
 @endphp
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#navbarVerticalMenu').find('#employees-menu').addClass('active');
 
             var oTable = $('#employeeTable').DataTable({
@@ -20,9 +20,9 @@
                 serverSide: true,
                 ajax: "{{ route('employees.index', ['active=' . !$active]) }}",
                 columns: [{
-                        data: 'employee_code',
-                        name: 'employee_code'
-                    },
+                    data: 'employee_code',
+                    name: 'employee_code'
+                },
                     {
                         data: 'full_name',
                         name: 'full_name'
@@ -74,26 +74,28 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
                             <a href="{!! route('dashboard.index') !!}"
-                                class="text-decoration-none text-dark">{{ __('label.home') }}</a>
+                               class="text-decoration-none text-dark">{{ __('label.home') }}</a>
                         </li>
                         <li class="breadcrumb-item"><a href="#"
-                                class="text-decoration-none text-dark">{{ __('label.human-resource') }}</a></li>
+                                                       class="text-decoration-none text-dark">{{ __('label.human-resource') }}</a>
+                        </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
             </div>
-
-
-            <div class="add-info d-flex flex-wrap gap-2">
-                <a href="{!! route('employees.create') !!}" class="btn btn-primary btn-sm">
-                    <i class="bi-person-plus"></i> Add New Employee
-                </a>
-                <a href="{!! route('employees.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
-                    View {!! $label !!} Employees <i class="fa fa-lg fa-flip-horizontal"></i>
-                </a>
-                <a href="{{ route('employees.update.leave') }}" class="btn btn-primary btn-sm">Update Employee Leave</a>
-            </div>
+            @if(auth()->user()->can('manage-employee'))
+                <div class="add-info d-flex flex-wrap gap-2">
+                    <a href="{!! route('employees.create') !!}" class="btn btn-primary btn-sm">
+                        <i class="bi-person-plus"></i> Add New Employee
+                    </a>
+                    <a href="{!! route('employees.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
+                        View {!! $label !!} Employees <i class="fa fa-lg fa-flip-horizontal"></i>
+                    </a>
+                    <a href="{{ route('employees.update.leave') }}" class="btn btn-primary btn-sm">Update Employee
+                        Leave</a>
+                </div>
+            @endif
         </div>
     </div>
     <div class="card">
@@ -101,17 +103,17 @@
             <div class="table-responsive">
                 <table class="table table-borderedless" id="employeeTable">
                     <thead class="bg-light">
-                        <tr>
-                            <th class="" style="width:120px;">{{ __('label.staff-code') }}</th>
-                            <th>{{ __('label.name') }}</th>
-                            <th>{{ __('label.email-address') }}</th>
-                            <th>{{ __('label.position') }}</th>
-                            <th>{{ __('label.department') }}</th>
-                            <th>{{ __('label.supervisor') }}</th>
-                            <th>{{ __('label.office') }}</th>
-                            <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.action') }}</th>
-                        </tr>
+                    <tr>
+                        <th class="" style="width:120px;">{{ __('label.staff-code') }}</th>
+                        <th>{{ __('label.name') }}</th>
+                        <th>{{ __('label.email-address') }}</th>
+                        <th>{{ __('label.position') }}</th>
+                        <th>{{ __('label.department') }}</th>
+                        <th>{{ __('label.supervisor') }}</th>
+                        <th>{{ __('label.office') }}</th>
+                        <th>{{ __('label.status') }}</th>
+                        <th>{{ __('label.action') }}</th>
+                    </tr>
                     </thead>
                     <tbody>
                     </tbody>

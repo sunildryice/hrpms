@@ -30,24 +30,25 @@ class ConsultantController extends Controller
     protected $destinationPath;
 
     public function __construct(
-        protected BloodGroupRepository $bloodGroups,
-        protected DepartmentRepository $departments,
-        protected DesignationRepository $designations,
-        protected DistrictRepository $districts,
-        protected EducationRepository $education,
-        protected EducationLevelRepository $educationLevel,
-        protected EmployeeRepository $employees,
-        protected FamilyRelationRepository $familyRelations,
-        protected GenderRepository $genders,
-        protected LeaveRepository $leaves,
-        protected LeaveTypeRepository $leaveTypes,
-        protected LocalLevelRepository $localLevels,
-        protected MaritalStatusRepository $maritalStatus,
-        protected OfficeRepository $offices,
+        protected BloodGroupRepository        $bloodGroups,
+        protected DepartmentRepository        $departments,
+        protected DesignationRepository       $designations,
+        protected DistrictRepository          $districts,
+        protected EducationRepository         $education,
+        protected EducationLevelRepository    $educationLevel,
+        protected EmployeeRepository          $employees,
+        protected FamilyRelationRepository    $familyRelations,
+        protected GenderRepository            $genders,
+        protected LeaveRepository             $leaves,
+        protected LeaveTypeRepository         $leaveTypes,
+        protected LocalLevelRepository        $localLevels,
+        protected MaritalStatusRepository     $maritalStatus,
+        protected OfficeRepository            $offices,
         protected PayrollFiscalYearRepository $payrollFiscalYears,
-        protected ProvinceRepository $provinces,
-        protected RoleRepository $roles
-    ) {
+        protected ProvinceRepository          $provinces,
+        protected RoleRepository              $roles
+    )
+    {
         $this->destinationPath = 'consultant';
     }
 
@@ -79,13 +80,13 @@ class ConsultantController extends Controller
                     return $employee->getDutyStation();
                 })->addColumn('status', function ($employee) {
                     return $employee->getActiveStatus();
-                })->addColumn('action', function ($employee) {
+                })->addColumn('action', function ($employee) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('consultant.profile', [$employee->id]) . '" rel="tooltip" title="View Consultant Detail"><i class="bi bi-eye"></i></a>';
-                    //                    if($authUser->can('update', $employee)) {
-                    $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('consultant.edit', $employee->id) . '" rel="tooltip" title="Edit Consultant"><i class="bi-pencil-square"></i></a>';
-                    //                    }
+                    if ($authUser->can('update', $employee)) {
+                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
+                        $btn .= route('consultant.edit', $employee->id) . '" rel="tooltip" title="Edit Consultant"><i class="bi-pencil-square"></i></a>';
+                    }
                     // if ($authUser->can('payroll')) {
                     //     $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
                     //     $btn .= route('employees.payments.masters.index', $employee->id).'" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
@@ -183,8 +184,8 @@ class ConsultantController extends Controller
     /**
      * Update the specified employee in storage.
      *
-     * @param  \Modules\Employee\Requests\UpdateRequest  $request
-     * @param  int  $id
+     * @param \Modules\Employee\Requests\UpdateRequest $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -223,7 +224,7 @@ class ConsultantController extends Controller
     /**
      * Remove the specified employee from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException

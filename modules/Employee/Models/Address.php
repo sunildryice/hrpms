@@ -121,10 +121,13 @@ class Address extends Model
 
     public function getTemporaryAddress()
     {
-        $address = '';
-
-        if ($this->temporary_province?->province_name) {
-            $address .= $this->temporary_province->province_name;
+        $address =  $this->temporary_tole . ' - '.$this->temporary_ward;
+        if ($this->temporary_local_level?->local_level_name) {
+            if (empty($address)) {
+                $address .= $this->temporary_local_level->local_level_name;
+            } else {
+                $address .= ', '.$this->temporary_local_level->local_level_name;
+            }
         }
 
         if ($this->temporary_district?->district_name) {
@@ -135,13 +138,9 @@ class Address extends Model
             }
         }
 
-        if ($this->temporary_local_level?->local_level_name) {
-            if (empty($address)) {
-                $address .= $this->temporary_local_level->local_level_name;
-            } else {
-                $address .= ', '.$this->temporary_local_level->local_level_name;
-            }
-        }
+//        if ($this->temporary_province?->province_name) {
+//            $address .= $this->temporary_province->province_name;
+//        }
 
         return $address;
     }

@@ -220,10 +220,12 @@
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
             </div>
             <div class="add-info justify-content-end">
+                @can('manage-employee')
                 <div class="py-3 mb-2 rounded text-end">
                     <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
                         style=" text-decoration: none"> <i class="bi bi-printer me-1"></i>Print</a>
                 </div>
+                    @endif
             </div>
         </div>
     </div>
@@ -254,12 +256,12 @@
                             <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->getFullName() }} ({{ $employee->employee_code }})
                             <a href="#" class="stretched-link" rel="tooltip" title="Profile"></a>
                         </li>
-                        <li><span rel="tooltip" title="Marital Status"><i
+                        <li><span rel="tooltip" title="Designation"><i
                                     class="bi-question-circle dropdown-item-icon me-2"></i>
-                                {{ $employee->getMaritalStatus() }}</span>
+                                {{ $employee->getDesignationName() }}</span>
                         </li>
                         <li><span rel="tooltip" title="Address"><i class="bi-pin-map dropdown-item-icon"></i>
-                                {{ $employee->address->temporary_district ? $employee->address->temporary_district->district_name : '' }}</span>
+                                {{ $employee->address ? $employee->address->getTemporaryAddress() : '' }}</span>
                         </li>
 
                         <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Contacts</span>
@@ -277,6 +279,7 @@
 
             </div>
         </div>
+        @can('manage-employee')
         <div class="col-lg-9">
             {{-- <div class="py-3 mb-2 rounded text-end">
                 <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
@@ -1207,6 +1210,6 @@
 
             </div>
         </div>
+        @endif
     </div>
-</div>
 @endsection

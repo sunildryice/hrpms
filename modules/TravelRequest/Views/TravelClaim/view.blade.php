@@ -54,12 +54,12 @@
                     name: 'departure_date'
                 },
                 {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
                     data: 'arrival_date',
                     name: 'arrival_date'
+                },
+                {
+                    data: 'departure_place',
+                    name: 'departure_place'
                 },
                 {
                     data: 'arrival_place',
@@ -82,12 +82,12 @@
                     name: 'total_amount'
                 },
                 {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-                {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment'
                 },
             ]
         });
@@ -195,9 +195,9 @@
                                             </th>
                                             <th scope="col" rowspan="2">{{ __('label.total-dsa') }}
                                             </th>
-                                            <th scope="col" rowspan="2">{{ __('label.attachment') }}
-                                            </th>
                                             <th scope="col" rowspan="2">{{ __('label.remarks') }}
+                                            </th>
+                                            <th scope="col" rowspan="2">{{ __('label.attachment') }}
                                             </th>
                                         </tr>
                                         <tr>

@@ -323,6 +323,10 @@
                     name: 'description'
                 },
                 {
+                    data: 'attachment',
+                    name: 'attachment'
+                },
+                {
                     data: 'action',
                     name: 'action',
                     orderable: false,
@@ -566,6 +570,7 @@
                                                     <th scope="col">{{ __('label.total-dsa') }}</th>
                                                     {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.remarks') }}</th>
+                                                    <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>
                                             </thead>
@@ -576,31 +581,33 @@
                                                     <td colspan="7">{{ __('label.sub-total') }}</td>
                                                     <td id="total_itinerary_amount">
                                                         {{ $travelClaim->total_itinerary_amount }}</td>
-                                                    <td colspan="2"></td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">{{ __('label.grand-total') }}</td>
                                                     <td id="total_amount">
                                                         {{ $travelClaim->total_amount }}
                                                     </td>
-                                                    <td colspan="2"></td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">{{ __('label.advance-amount') }}
                                                     </td>
-                                                    <td colspan="3">
+                                                    <td colspan="2">
                                                         <input type="number" class="form-control" name="advance_amount"
                                                             value="{{ $travelClaim->advance_amount }}" />
                                                     </td>
+                                                    <td colspan="2"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">
                                                         {{ __('label.refundable-reimbursable-amount') }}
                                                     </td>
-                                                    <td colspan="3">
+                                                    <td colspan="2">
                                                         <input readonly class="form-control" name="refundable_amount"
                                                             value="{{ $travelClaim->refundable_amount }}" />
                                                     </td>
+                                                    <td colspan="2"></td>
                                                 </tr>
                                             </tfoot>
                                         </table>

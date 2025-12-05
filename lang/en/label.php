@@ -385,6 +385,7 @@ return [
     'to-place' => 'To Place',
     'total' => 'Total',
     'total-price' => 'Total Price',
+    'total-advance-amount' => 'Total Advance Amount',
     'total-amount' => 'Total Amount',
     'total-days' => 'Total Days',
     'total-dsa' => 'Total DSA',

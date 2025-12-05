@@ -532,9 +532,8 @@
                                             <tfoot>
                                                 <tr>
                                                     <td colspan="3">{{ __('label.sub-total') }}</td>
-                                                    <td id="total_expense_amount">
+                                                    <td colspan="4" id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
-                                                    {{-- <td colspan="2"></td> --}}
                                                 </tr>
                                             </tfoot>
                                         </table>

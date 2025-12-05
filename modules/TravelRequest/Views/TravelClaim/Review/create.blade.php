@@ -73,10 +73,6 @@
                     name: 'arrival_place'
                 },
                 {
-                    data: 'attachment',
-                    name: 'attachment',
-                },
-                {
                     data: 'overnights',
                     name: 'overnights'
                 },
@@ -96,13 +92,17 @@
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment',
                 },
             ]
         });
@@ -234,28 +234,28 @@
                                         <th scope="col">{{ __('label.from') }}</th>
                                         <th scope="col">{{ __('label.to-date') }}</th>
                                         <th scope="col">{{ __('label.to') }}</th>
-                                        <th scope="col">{{ __('label.attachment') }}</th>
                                         <th scope="col">{{ __('label.overnights') }}</th>
                                         <th scope="col">{{ __('label.dsa-rate') }}</th>
                                         <th scope="col">{{ __('label.percentage') }}</th>
                                         <th scope="col">{{ __('label.activity-code') }}</th>
                                         <th scope="col">{{ __('label.total-dsa') }}</th>
-                                        <th scope="col">Charging Office</th>
+                                        {{-- <th scope="col">Charging Office</th> --}}
                                         <th scope="col">{{ __('label.remarks') }}</th>
+                                        <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="9">{{ __('label.sub-total') }}</td>
+                                        <td colspan="8">{{ __('label.sub-total') }}</td>
                                         <td id="total_itinerary_amount">
                                             {{ $travelClaim->total_itinerary_amount }}</td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="9">{{ __('label.grand-total') }}</td>
+                                        <td colspan="8">{{ __('label.grand-total') }}</td>
                                         <td id="grand_total_amount">
                                             {{ $travelClaim->total_amount }}
                                         </td>
@@ -264,7 +264,7 @@
 
                                     </tr>
                                     <tr>
-                                        <td colspan="9">{{ __('label.advance-amount') }}</td>
+                                        <td colspan="8">{{ __('label.advance-amount') }}</td>
                                         <td id="advance_amount">
                                             {{ $travelClaim->advance_amount }}
                                         </td>
@@ -273,7 +273,7 @@
 
                                     </tr>
                                     <tr>
-                                        <td colspan="9">
+                                        <td colspan="8">
                                             {{ __('label.refundable-reimbursable-amount') }}</td>
                                         <td id="refundable_amount">
                                             {{ $travelClaim->refundable_amount }}

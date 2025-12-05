@@ -304,10 +304,10 @@
                                 {{ $employee->designation->title }}</span>
                         </li>
 
-                        <li><span rel="tooltip" title="Marital Status"><i
+                        {{-- <li><span rel="tooltip" title="Marital Status"><i
                                     class="bi-question-circle dropdown-item-icon me-2"></i>
                                 {{ $employee->getMaritalStatus() }}</span>
-                        </li>
+                        </li> --}}
                         <li><span rel="tooltip" title="Address"><i class="bi-pin-map dropdown-item-icon"></i>
                                 {{ $employee->address->temporary_district ? $employee->address->temporary_district->district_name : '' }}</span>
                         </li>

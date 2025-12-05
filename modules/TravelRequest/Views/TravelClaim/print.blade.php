@@ -147,7 +147,7 @@
                                 <td rowspan="2">{{ $itinerary->total_amount }}</td>
                                 {{-- <td rowspan="2">{{ $itinerary->office->office_name }}</td> --}}
                                 <td rowspan="2">
-                                    {{ $itinerary->travelRequestItinerary->activityCode->getActivityCodeDescription() }}</td>
+                                    {{ $itinerary->travelRequestItinerary->activityCode->getActivityCodeWithDescription() }}</td>
                                 {{-- <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td> --}}
                                 <td rowspan="2">
                                     {{ $itinerary->description ?: $itinerary->travelRequestItinerary->description }}</td>

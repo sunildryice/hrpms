@@ -97,25 +97,25 @@
                             <td>Date</td>
                             <td style="width: 50%">Description of Expenses (Other than DSA)</td>
                             <td>Amount</td>
-                            <td>Charging Office</td>
-                            <td>Acvt. Code</td>
-                            <td>Donor</td>
+                            {{-- <td>Charging Office</td> --}}
+                            <td>Activity</td>
+                            {{-- <td>Donor</td> --}}
                         </tr>
                         @foreach ($travelClaim->expenses as $expense)
                             <tr>
                                 <td>{{ $expense->getExpenseDate() }}</td>
                                 <td>{{ $expense->expense_description }}</td>
                                 <td>{{ $expense->expense_amount }}</td>
-                                <td>{{ $expense->office->office_name }}</td>
+                                {{-- <td>{{ $expense->office->office_name }}</td> --}}
                                 <td>{{ $expense->activityCode->getActivityCode() }}</td>
-                                <td>{{ $expense->donorCode->description }}</td>
+                                {{-- <td>{{ $expense->donorCode->description }}</td> --}}
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
                             <td colspan="2" class="text-end">Sub-Total (A)</td>
-                            <td colspan="4">{{ $travelClaim->total_expense_amount }}</td>
+                            <td colspan="2">{{ $travelClaim->total_expense_amount }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -129,9 +129,9 @@
                             <th>DSA rate</th>
                             <th>% of DSA charged</th>
                             <th>Total DSA</th>
-                            <th>Charging Office</th>
-                            <th>Activity Code</th>
-                            <th>Donor</th>
+                            {{-- <th>Charging Office</th> --}}
+                            <th>Activity</th>
+                            {{-- <th>Donor</th> --}}
                             <th>Remarks</th>
                         </tr>
                     </thead>
@@ -145,10 +145,10 @@
                                 <td rowspan="2">{{ $itinerary->travelRequestItinerary->dsa_unit_price }}</td>
                                 <td rowspan="2">{{ $itinerary->percentage_charged }}</td>
                                 <td rowspan="2">{{ $itinerary->total_amount }}</td>
-                                <td rowspan="2">{{ $itinerary->office->office_name }}</td>
+                                {{-- <td rowspan="2">{{ $itinerary->office->office_name }}</td> --}}
                                 <td rowspan="2">
-                                    {{ $itinerary->travelRequestItinerary->activityCode->getActivityCode() }}</td>
-                                <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td>
+                                    {{ $itinerary->travelRequestItinerary->activityCode->getActivityCodeDescription() }}</td>
+                                {{-- <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td> --}}
                                 <td rowspan="2">
                                     {{ $itinerary->description ?: $itinerary->travelRequestItinerary->description }}</td>
                             </tr>
@@ -201,8 +201,8 @@
                         <tr>
                             <th scope="col">{{ __('label.activity') }}</th>
                             <th scope="col">Subledger</th>
-                            <th scope="col">{{ __('label.donor') }}</th>
-                            <th scope="col">Charging Office</th>
+                            {{-- <th scope="col">{{ __('label.donor') }}</th>
+                            <th scope="col">Charging Office</th> --}}
                             <th scope="col">{{ __('label.amount') }}</th>
                         </tr>
                     </thead>
@@ -211,15 +211,15 @@
                             <tr>
                                 <td>{{ $summary->getActivityTitle() }}</td>
                                 <td>{{ $summary->subledger }}</td>
-                                <td>{{ $summary->getDonorDescription() }}</td>
-                                <td>{{ $summary->office->office_name }}</td>
+                                {{-- <td>{{ $summary->getDonorDescription() }}</td>
+                                <td>{{ $summary->office->office_name }}</td> --}}
                                 <td>{{ $summary->getAmount() }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="4">{{ __('label.total-amount') }}</td>
+                            <td colspan="2">{{ __('label.total-amount') }}</td>
                             <td>
                                 {{ $travelClaim->total_expense_amount + $travelClaim->total_itinerary_amount }}</td>
                         </tr>

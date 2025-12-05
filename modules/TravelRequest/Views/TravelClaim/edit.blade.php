@@ -314,10 +314,10 @@
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'description',
                     name: 'description'
@@ -565,7 +565,7 @@
                                                     <th scope="col">{{ __('label.dsa-rate') }}</th>
                                                     <th scope="col">{{ __('label.percentage') }}</th>
                                                     <th scope="col">{{ __('label.total-dsa') }}</th>
-                                                    <th scope="col">Charging Office</th>
+                                                    {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.remarks') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>

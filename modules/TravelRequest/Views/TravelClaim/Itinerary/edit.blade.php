@@ -59,7 +59,7 @@
                 <input type="text" class="form-control" value="{{ $travelClaimItinerary->travelRequestItinerary->getAccountCode() }}" disabled>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="m-0">{{ __('label.donor-code') }}</label>
@@ -68,7 +68,7 @@
             <div class="col-lg-3">
                 <input type="text" class="form-control" value="{{ $travelClaimItinerary->travelRequestItinerary->getDonorCode() }}" disabled>
             </div>
-        </div>
+        </div> --}}
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -105,7 +105,7 @@
                 <input type="number" class="form-control" name="total_amount" value="{{ $travelClaimItinerary->total_amount }}" disabled>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">Charging Office</label>
@@ -119,7 +119,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        </div> --}}
          <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

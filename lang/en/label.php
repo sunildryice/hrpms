@@ -201,6 +201,7 @@ return [
     'inventory-categories' => 'Inventory Categories',
     'inventory-type' => 'Inventory Type',
     'invoice-number' => 'Invoice Number',
+    'invoice-bill-number' => 'Invoice / Bill Number',
     'item' => 'Item',
     'item-code' => 'Item Code',
     'item-name' => 'Item Name',

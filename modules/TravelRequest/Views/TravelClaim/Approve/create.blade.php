@@ -18,10 +18,10 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
                 {
                     data: 'expense_date',
                     name: 'expense_date'
@@ -35,9 +35,13 @@
                     name: 'expense_amount'
                 },
                 {
-                    data: 'charging_office',
-                    name: 'charging_office'
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
                 },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'attachment',
                     name: 'attachment'
@@ -210,11 +214,12 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        <th scope="col">{{ __('label.donor') }}</th>
+                                        {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
                                         <th scope="col">{{ __('label.date') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
                                         <th scope="col">{{ __('label.amount') }}</th>
-                                        <th scope="col">Charging Office</th>
+                                        <th scope="col">{{ __('label.invoice-bill-number') }}</th>
+                                        {{-- <th scope="col">Charging Office</th> --}}
                                         <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>
@@ -222,9 +227,10 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="4">{{ __('label.sub-total') }}</td>
+                                        <td colspan="3">{{ __('label.sub-total') }}</td>
                                         <td id="total_expense_amount">
                                             {{ $travelClaim->total_expense_amount }}</td>
+                                        <td></td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
@@ -318,7 +324,8 @@
                                                         {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                     </span>
                                                 </div>
-                                                <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                <small
+                                                    title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                             </div>
                                             <p class="text-justify comment-text mb-0 mt-1">
                                                 {{ $log->log_remarks }}

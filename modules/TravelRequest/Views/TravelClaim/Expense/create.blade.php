@@ -73,7 +73,8 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Invoice / Bill Number</label>
+                    <label for=""
+                        class="form-label required-label">{{ __('label.invoice-bill-number') }}</label>
                 </div>
             </div>
             <div class="col-lg-9">

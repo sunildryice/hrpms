@@ -32,6 +32,10 @@
                     name: 'expense_amount'
                 },
                 {
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
+                },
+                {
                     data: 'attachment',
                     name: 'attachment'
                 },
@@ -152,6 +156,7 @@
                                             <th scope="col">{{ __('label.date') }}</th>
                                             <th scope="col">{{ __('label.description') }}</th>
                                             <th scope="col">{{ __('label.amount') }}</th>
+                                            <th scope="col">{{ __('label.invoice-bill-number') }}</th>
                                             <th scope="col">{{ __('label.attachment') }}</th>
                                         </tr>
                                     </thead>
@@ -259,7 +264,8 @@
                                                         {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                     </span>
                                                 </div>
-                                                <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                <small
+                                                    title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                             </div>
                                             <p class="text-justify comment-text mb-0 mt-1">
                                                 {{ $log->log_remarks }}

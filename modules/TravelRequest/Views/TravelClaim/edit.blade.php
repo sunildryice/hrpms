@@ -521,7 +521,7 @@
                                                     <th scope="col">{{ __('label.date') }}</th>
                                                     <th scope="col">{{ __('label.description') }}</th>
                                                     <th scope="col">{{ __('label.amount') }}</th>
-                                                    <th scope="col">Invoice / Bill Number</th>
+                                                    <th scope="col">{{ __('label.invoice-bill-number') }}</th>
                                                     {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>

@@ -157,7 +157,9 @@ class ConsultantController extends Controller
             ->orderBy('full_name', 'asc')
             ->get();
 
+        $actionMode = 'edit';
         return view('Employee::Consultant.edit')
+            ->withActionMode($actionMode)
             ->withAuthUser(auth()->user())
             ->withBloodGroups($this->bloodGroups->get())
             ->withDepartments($this->departments->orderby('title', 'asc')->get())

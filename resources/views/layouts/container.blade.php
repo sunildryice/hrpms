@@ -14,6 +14,7 @@
         .boolean_display {
             display: none;
         }
+
         .span-mimic-text-input {
             border: .0625rem solid rgba(231, 234, 243, .7);
             border-radius: 0.25rem;
@@ -28,7 +29,7 @@
 <div class="preloader">
     <div class="cube-wrapper">
         <div class="mb-4">
-{{--            <img src="{{ asset('img/logonp.png') }}" alt="Logo">--}}
+            {{--            <img src="{{ asset('img/logonp.png') }}" alt="Logo"> --}}
         </div>
         <div class="cube-folding">
             <span class="leaf1"></span>
@@ -43,7 +44,7 @@
 <body class="position-relative">
     <div class="pre-laoder d-none">
         <div class="gap-3 -logo d-flex align-items-center justify-content-center flex-column">
-{{--            <img src="{{ asset('img/logonp.png') }}" alt="">--}}
+            {{--            <img src="{{ asset('img/logonp.png') }}" alt=""> --}}
             <div class="loader"></div>
             <h6 class="fs-6 text-uppercase text-primary">Loading</h6>
 

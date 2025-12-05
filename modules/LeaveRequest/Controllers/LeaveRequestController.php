@@ -53,6 +53,9 @@ class LeaveRequestController extends Controller
     {
         $authUser = auth()->user();
 
+        $employeeLeaveBalances = $this->employeeLeaves->getLeaveBalances($authUser->employee_id);
+
+
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'logs', 'requester', 'childLeaveRequest', 'leaveDays'])
                 ->select(['*'])
@@ -90,7 +93,8 @@ class LeaveRequestController extends Controller
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
                         $btn .= route('leave.requests.edit', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-title="Edit Leave Request"><i class="bi-pencil-square"></i></a>';
-                    } elseif ($authUser->can('print', $row)) {
+                    } else
+                    if ($authUser->can('print', $row)) {
                         $btn .= '&emsp;<a target="_blank" class="btn btn-outline-primary btn-sm" ';
                         $btn .= 'href="' . route('leave.requests.print', $row->id) . '">';
                         $btn .= '<i class="bi-printer"></i></a>';
@@ -112,7 +116,9 @@ class LeaveRequestController extends Controller
                 ->make(true);
         }
 
-        return view('LeaveRequest::index');
+        return view('LeaveRequest::index', [
+            'employeeLeaveBalances' => $employeeLeaveBalances,
+        ]);
     }
 
     /**
@@ -185,6 +191,7 @@ class LeaveRequestController extends Controller
         $inputs = $request->validated();
         $leave = $this->employeeLeaves->find($request->leave_type_id);
         $checkLeaveExists = $this->leaveRequests->checkOverlapLeaveDays(array_combine($inputs['leave_days'], $inputs['leave_mode_id']), $authUser->employee->id);
+
         if ($checkLeaveExists) {
             return redirect()->back()
                 ->withInput()
@@ -196,6 +203,7 @@ class LeaveRequestController extends Controller
         $inputs['request_date'] = date('Y-m-d');
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         $inputs['updated_by'] = auth()->id();
+
         $leaveRequest = $this->leaveRequests->create($inputs);
 
 
@@ -214,6 +222,7 @@ class LeaveRequestController extends Controller
                     $reviewer->notify(new LeaveRequestSubmittedReview($leaveRequest));
                 }
             }
+
             if ($leaveRequest->status_id == config('constant.VERIFIED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmitted($leaveRequest));

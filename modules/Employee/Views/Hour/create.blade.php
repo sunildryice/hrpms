@@ -1,3 +1,23 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+    .flatpickr-time .flatpickr-am-pm {
+        width: 50px;
+        padding: 0 8px;
+        text-align: center;
+        cursor: pointer;
+        font-weight: 600;
+        color: #393939;
+    }
+
+    .flatpickr-time .flatpickr-am-pm:hover {
+        background: #eee;
+    }
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <div class="card-header fw-bold">Add New Working Hour</div>
 <form class="needs-validation" action="{{ route('employees.hours.store', $employee) }}" method="post" id="hourAddForm"
     enctype="multipart/form-data" autocomplete="off">
@@ -53,6 +73,7 @@
                 @endif
             </div>
         </div>
+
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -69,24 +90,6 @@
                 @endif
             </div>
         </div>
-
-        {{-- <div class="mb-2 row">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="validationinstitution" class="form-label required-label">Work Percentile</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <input type="number" class="form-control @if ($errors->has('work_percentile')) is-invalid @endif"
-                    id="validationinstitution" value="{{ old('work_percentile') }}"
-                    placeholder="" name="work_percentile" autofocus>
-                @if ($errors->has('work_percentile'))
-                    <div class="fv-plugins-message-container invalid-feedback">
-                        <div data-field="work_percentile">{!! $errors->first('work_percentile') !!}</div>
-                    </div>
-                @endif
-            </div>
-        </div> --}}
 
         <div class="mb-2 row">
             <div class="col-lg-3">
@@ -105,57 +108,98 @@
     </div>
     {!! csrf_field() !!}
 </form>
+
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function(e) {
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Initialize jQuery datepicker for start_date and end_date
+            $('[name="start_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd'
+            }).on('change', function(e) {
+                if (typeof fv !== 'undefined') {
+                    fv.revalidateField('start_date');
+                    fv.revalidateField('end_date');
+                }
+            });
+
+            $('[name="end_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd'
+            }).on('change', function(e) {
+                if (typeof fv !== 'undefined') {
+                    fv.revalidateField('end_date');
+                    fv.revalidateField('start_date');
+                }
+            });
+
+            if (typeof flatpickr !== 'undefined') {
+                const timeOptions = {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: "h:i K",
+                    minuteIncrement: 1,
+                    allowInput: false,
+                    clickOpens: true,
+                    enableTime: true,
+                    time_24hr: false,
+                };
+
+                const startTimeEl = document.querySelector("input[name='start_time']");
+                const endTimeEl = document.querySelector("input[name='end_time']");
+
+                if (startTimeEl) {
+                    flatpickr(startTimeEl, timeOptions);
+                }
+
+                if (endTimeEl) {
+                    flatpickr(endTimeEl, timeOptions);
+                }
+            }
+
+            // Form validation setup
             const form = document.getElementById('hourAddForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
                     start_date: {
                         validators: {
                             notEmpty: {
-                                message: 'Start date is required',
+                                message: 'Start date is required'
                             },
                             date: {
                                 format: 'YYYY-MM-DD',
-                                message: 'The value is not a valid date',
-                            },
-                        },
+                                message: 'The value is not a valid date'
+                            }
+                        }
                     },
                     end_date: {
                         validators: {
                             notEmpty: {
-                                message: 'End date is required',
+                                message: 'End date is required'
                             },
                             date: {
                                 format: 'YYYY-MM-DD',
-                                message: 'The value is not a valid date',
-                            },
-                        },
+                                message: 'The value is not a valid date'
+                            }
+                        }
                     },
                     start_time: {
                         validators: {
                             notEmpty: {
-                                message: 'Start time is required',
-                            },
-                        },
+                                message: 'Start time is required'
+                            }
+                        }
                     },
                     end_time: {
                         validators: {
                             notEmpty: {
-                                message: 'End time is required',
-                            },
-                        },
-                    },
-                    //         numeric: {
-                    //             message: 'Please enter a valid value',
-                    //         },
-                    //         lessThan: {
-                    //             max: 100,
-                    //             message: 'Work percentile must be less than or equal to 100',
-                    //         }
-                    //     },
-                    // },
+                                message: 'End time is required'
+                            }
+                        }
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -166,39 +210,19 @@
                         format: 'YYYY-MM-DD',
                         startDate: {
                             field: 'start_date',
-                            message: 'Start date must be a valid date and earlier than end date.',
+                            message: 'Start date must be a valid date and earlier than end date.'
                         },
                         endDate: {
                             field: 'end_date',
-                            message: 'End date must be a valid date and later than start date.',
-                        },
+                            message: 'End date must be a valid date and later than start date.'
+                        }
                     }),
                     icon: new FormValidation.plugins.Icon({
                         valid: 'bi bi-check2-square',
                         invalid: 'bi bi-x-lg',
-                        validating: 'bi bi-arrow-repeat',
-                    }),
-                },
-            });
-
-            $('[name="start_date"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd',
-                //endDate: '{!! date('Y-m-d') !!}',
-            }).on('change', function(e) {
-                fv.revalidateField('start_date');
-                fv.revalidateField('end_date');
-            });
-
-            $('[name="end_date"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd',
-                //endDate: '{!! date('Y-m-d') !!}',
-            }).on('change', function(e) {
-                fv.revalidateField('end_date');
-                fv.revalidateField('start_date');
+                        validating: 'bi bi-arrow-repeat'
+                    })
+                }
             });
         });
     </script>

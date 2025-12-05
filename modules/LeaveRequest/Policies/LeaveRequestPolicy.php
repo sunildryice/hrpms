@@ -92,6 +92,10 @@ class LeaveRequestPolicy
      */
     public function update(User $user, LeaveRequest $leaveRequest)
     {
-        return in_array($leaveRequest->status_id, [1, 2]) && in_array($user->id, [$leaveRequest->requester_id, $leaveRequest->created_by]);
+        $leaveStatus = [
+            config('constant.CREATED_STATUS'),
+            config('constant.RETURNED_STATUS')
+        ];
+        return in_array($leaveRequest->status_id, $leaveStatus) && in_array($user->id, [$leaveRequest->requester_id, $leaveRequest->created_by]);
     }
 }

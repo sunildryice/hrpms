@@ -28,6 +28,14 @@
                         name: 'request_id'
                     },
                     {
+                        data: 'employee',
+                        name: 'employee'
+                    },
+                    {
+                        data: 'project',
+                        name: 'project'
+                    },
+                    {
                         data: 'request_date',
                         name: 'request_date'
                     },
@@ -38,10 +46,6 @@
                     {
                         data: 'end_date',
                         name: 'end_date'
-                    },
-                    {
-                        data: 'project',
-                        name: 'project'
                     },
                     {
                         data: 'action',
@@ -107,10 +111,11 @@
                         <tr>
                             <th>{{ __('label.sn') }}</th>
                             <th>{{ __('label.request-id') }}</th>
+                            <th>{{ __('label.employee-name') }}</th>
+                            <th>{{ __('label.project-name') }}</th>
                             <th>{{ __('label.request-date') }}</th>
                             <th>{{ __('label.start-date') }}</th>
                             <th>{{ __('label.end-date') }}</th>
-                            <th>{{ __('label.project') }}</th>
                             <th style="width: 140px;">{{ __('label.action') }}</th>
                         </tr>
                     </thead>

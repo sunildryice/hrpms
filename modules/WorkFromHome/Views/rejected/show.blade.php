@@ -1,11 +1,11 @@
 @extends('layouts.container')
 
-@section('title', 'Approved Request Detail')
+@section('title', 'Rejected Request Detail')
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#wfh-requests-approved').addClass('active');
+            $('#navbarVerticalMenu').find('#wfh-requests-rejected').addClass('active');
         });
     </script>
 @endsection

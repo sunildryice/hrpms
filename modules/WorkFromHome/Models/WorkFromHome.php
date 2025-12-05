@@ -2,6 +2,7 @@
 
 namespace Modules\WorkFromHome\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\ProjectCode;
@@ -49,7 +50,17 @@ class WorkFromHome extends Model
 
     public function getStartDate()
     {
-        return $this->start_date->toFormattedDateString();
+        return Carbon::parse($this->start_date)->format('M j, Y');
+    }
+
+    public function getEndDate()
+    {
+        return Carbon::parse($this->end_date)->format('M j, Y');
+    }
+
+    public function getRequestDate()
+    {
+        return Carbon::parse($this->request_date)->format('M j, Y');
     }
 
     public function getStatus()

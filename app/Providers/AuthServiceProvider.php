@@ -5,7 +5,9 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Modules\Employee\Models\Address;
+use Modules\Employee\Models\Employee;
 use Modules\Employee\Policies\AddressPolicy;
+use Modules\Employee\Policies\EmployeePolicy;
 use Modules\EventCompletion\Models\EventCompletion;
 use Modules\EventCompletion\Policies\EventCompletionPolicy;
 use Modules\Grn\Models\Grn;
@@ -55,6 +57,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         Address::class => AddressPolicy::class,
+        Employee::class => EmployeePolicy::class,
         ExitInterview::class => ExitInterViewPolicy::class,
         Grn::class => GrnPolicy::class,
         GrnItem::class => GrnItemPolicy::class,
@@ -107,8 +110,8 @@ class AuthServiceProvider extends ServiceProvider
             return $user->can('approve-travel-request') || $user->can('approve-recommended-travel-request');
         });
 
-        Gate::define('approve-event-form',function ($user) use ($permission){
+        Gate::define('approve-event-form', function ($user) use ($permission) {
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
-        });      
+        });
     }
 }

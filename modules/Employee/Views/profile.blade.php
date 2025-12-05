@@ -36,12 +36,12 @@
             $($ele).closest('form').find('.balance').val(balance);
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#navbarVerticalMenu').find('#employees-menu').addClass('active');
 
             $('#leaveRequestsTable').DataTable();
 
-            $(document).on('shown.bs.modal', '#openModal', function(e) {
+            $(document).on('shown.bs.modal', '#openModal', function (e) {
                 const form = document.getElementById('leaveEditForm');
                 const fv = FormValidation.formValidation(form, {
                     fields: {
@@ -70,11 +70,11 @@
                             validating: 'bi bi-arrow-repeat',
                         }),
                     },
-                }).on('core.form.valid', function(event) {
+                }).on('core.form.valid', function (event) {
                     $url = fv.form.action;
                     $form = fv.form;
                     data = $($form).serialize();
-                    var successCallback = function(response) {
+                    var successCallback = function (response) {
 
                         console.log(response);
                         $('#openModal').modal('hide');
@@ -95,18 +95,18 @@
                     ajaxSubmit($url, 'POST', data, successCallback);
                 });
 
-                $(form).on('change', '[name="opening_balance"]', function(e) {
+                $(form).on('change', '[name="opening_balance"]', function (e) {
                     calcBalanceLeave(this);
-                }).on('change', '[name="earned"]', function(e) {
+                }).on('change', '[name="earned"]', function (e) {
                     calcBalanceLeave(this);
-                }).on('change', '[name="taken"]', function(e) {
+                }).on('change', '[name="taken"]', function (e) {
                     calcBalanceLeave(this);
-                }).on('change', '[name="lapsed"]', function(e) {
+                }).on('change', '[name="lapsed"]', function (e) {
                     calcBalanceLeave(this);
                 });
             });
 
-            $('.step-item').click(function() {
+            $('.step-item').click(function () {
                 $('.step-item').removeClass('active');
                 $(this).addClass('active');
                 var tagid = $(this).data('tag');
@@ -119,11 +119,11 @@
                 serverSide: true,
                 ajax: "{{ route('employees.assets.index', $employee->id) }}",
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
                     {
                         data: 'asset_number',
                         name: 'asset_number'
@@ -250,10 +250,12 @@
             <div class="brd-crms flex-grow-1">
                 <nav aria-label="breadcrumb">
                     <ol class="m-0 breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
-                                class="text-decoration-none text-dark">Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('employees.index') }}"
-                                class="text-decoration-none text-dark">Employee</a></li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('dashboard.index') }}" class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('employees.index') }}" class="text-decoration-none text-dark">Employee</a>
+                        </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>
@@ -261,11 +263,12 @@
             </div>
             <div class="add-info justify-content-end">
                 <div class="py-3 mb-2 rounded text-end">
-                    <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
-                        style=" text-decoration: none"> <i class="bi bi-printer me-1"></i>Print</a>
                     @can('manage-employee')
+                        <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary"
+                           target="_blank"
+                           style=" text-decoration: none"> <i class="bi bi-printer me-1"></i>Print</a>
                         <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-sm btn-primary"
-                            style=" text-decoration: none"> <i class="bi bi-pencil me-1"></i>Edit</a>
+                           style=" text-decoration: none"> <i class="bi bi-pencil me-1"></i>Edit</a>
                     @endcan
                 </div>
             </div>
@@ -308,10 +311,12 @@
                                     class="bi-question-circle dropdown-item-icon me-2"></i>
                                 {{ $employee->getMaritalStatus() }}</span>
                         </li> --}}
-                        <li><span rel="tooltip" title="Address"><i class="bi-pin-map dropdown-item-icon"></i>
-                                {{ $employee->address->temporary_district ? $employee->address->temporary_district->district_name : '' }}</span>
+                        <li>
+                            <span rel="tooltip" title="Address">
+                                <i class="bi-pin-map dropdown-item-icon"></i>
+                                {{ $employee->address ? $employee->address->getTemporaryAddress() : '' }}
+                            </span>
                         </li>
-
                         <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Contacts</span>
                         </li>
                         <li class="position-relative"><i class="bi-envelope dropdown-item-icon me-2"></i>
@@ -328,7 +333,7 @@
                         @isset($locationUrl)
                             <li class="position-relative"><i class="bi-geo-alt dropdown-item-icon me-2"></i>
                                 <a href="{{ $locationUrl }}" target="_blank" class="stretched-link" rel="tooltip"
-                                    title="Google Map location"> Location </a>
+                                   title="Google Map location"> Location </a>
                             </li>
                         @endisset
                     </ul>
@@ -336,136 +341,138 @@
 
             </div>
         </div>
-        <div class="col-lg-9">
-            {{-- <div class="py-3 mb-2 rounded text-end">
-                <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
-                    style=" text-decoration: none">Print <i class="bi bi-printer"></i></a>
-            </div> --}}
+        @if(auth()->user()->can('manage-employee'))
+            <div class="col-lg-9">
+                {{-- <div class="py-3 mb-2 rounded text-end">
+                    <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
+                        style=" text-decoration: none">Print <i class="bi bi-printer"></i></a>
+                </div> --}}
 
-            <div class="mb-3 bg-menus- bg-s-custom">
-                <nav class="tabs-s">
-                    <ul class="-primary">
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="general_information"
-                                class="nav-link step-item text-decoration-none active">
-                                <i class="nav-icon bi bi-info-circle"></i>General Information
-                            </a>
-                        </li>
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="leave" class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-person-workspace"></i>Leave Details
-                            </a>
-                        </li>
-                        @if ($authUser->can('employee-attendance'))
+                <div class="mb-3 bg-menus- bg-s-custom">
+                    <nav class="tabs-s">
+                        <ul class="-primary">
                             <li class="nav-item parent-tab-s">
-                                <a href="{{ route('attendance.view', $employee->id) }}" target="_blank"
-                                    class="nav-link text-decoration-none">
-                                    <i class="nav-icon bi bi-fingerprint"></i>Attendance
+                                <a href="javascript:void(0);" data-tag="general_information"
+                                   class="nav-link step-item text-decoration-none active">
+                                    <i class="nav-icon bi bi-info-circle"></i>General Information
                                 </a>
                             </li>
-                        @endif
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="address"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-pin-map"></i>Address
-                            </a>
-                        </li>
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="family_details"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-people"></i>Family Details
-                            </a>
-                        </li>
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="tenure"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-person-workspace"></i>Tenure
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="leave"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-person-workspace"></i>Leave Details
+                                </a>
+                            </li>
+                            @if ($authUser->can('employee-attendance'))
+                                <li class="nav-item parent-tab-s">
+                                    <a href="{{ route('attendance.view', $employee->id) }}" target="_blank"
+                                       class="nav-link text-decoration-none">
+                                        <i class="nav-icon bi bi-fingerprint"></i>Attendance
+                                    </a>
+                                </li>
+                            @endif
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="address"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-pin-map"></i>Address
+                                </a>
+                            </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="family_details"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-people"></i>Family Details
+                                </a>
+                            </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="tenure"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-person-workspace"></i>Tenure
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="asset"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-cart"></i>Assets
-                            </a>
-                        </li>
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="medical_information"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-calendar-heart"></i>Medical Information
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="asset"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-cart"></i>Assets
+                                </a>
+                            </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="medical_information"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-calendar-heart"></i>Medical Information
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="working_hours"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-clock-history"></i>Working Hours
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="working_hours"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-clock-history"></i>Working Hours
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="finance"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-cash-stack"></i>Finance
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="finance"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-cash-stack"></i>Finance
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="insurance"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-shield-check"></i>Insurance
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="insurance"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-shield-check"></i>Insurance
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="document_uploads"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-upload"></i>Document Uploads
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="document_uploads"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-upload"></i>Document Uploads
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="education"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-journal-text"></i>Education
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="education"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-journal-text"></i>Education
+                                </a>
+                            </li>
 
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="experience"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-explicit"></i>Experience
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="experience"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-explicit"></i>Experience
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="training"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-calendar4-range"></i>Training
-                            </a>
-                        </li>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="training"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-calendar4-range"></i>Training
+                                </a>
+                            </li>
 
-                        <li class="nav-item parent-tab-s">
-                            <a href="javascript:void(0);" data-tag="social_media"
-                                class="nav-link step-item text-decoration-none">
-                                <i class="nav-icon bi bi-globe"></i>Social Media
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+                            <li class="nav-item parent-tab-s">
+                                <a href="javascript:void(0);" data-tag="social_media"
+                                   class="nav-link step-item text-decoration-none">
+                                    <i class="nav-icon bi bi-globe"></i>Social Media
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
 
-            <div class="c-tabs-contents">
-                <div class="c-tabs-content active" id="general_information">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            General Information
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="generalInformationTable">
-                                    <tbody>
+                <div class="c-tabs-contents">
+                    <div class="c-tabs-content active" id="general_information">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                General Information
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="generalInformationTable">
+                                        <tbody>
                                         <tr>
                                             <th scope="row" width="10%">Staff ID</th>
                                             <td colspan="3">{{ $employee->request_id }}</td>
@@ -494,8 +501,9 @@
                                             </td>
                                             <td>
                                                 @if ($employee->citizenship_attachment && file_exists('storage/' . $employee->citizenship_attachment))
-                                                    <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}" target="_blank" class="fs-5"
-                                                        title="View Attachment">
+                                                    <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}"
+                                                       target="_blank" class="fs-5"
+                                                       title="View Attachment">
                                                         <i class="bi bi-file-earmark-medical"></i>
                                                     </a>
                                                 @else
@@ -516,8 +524,9 @@
                                             </td>
                                             <td>
                                                 @if ($employee->pan_attachment && file_exists('storage/' . $employee->pan_attachment))
-                                                    <a href="{!! asset('storage/' . $employee->pan_attachment) !!}" target="_blank" class="fs-5"
-                                                        title="View Attachment">
+                                                    <a href="{!! asset('storage/' . $employee->pan_attachment) !!}"
+                                                       target="_blank" class="fs-5"
+                                                       title="View Attachment">
                                                         <i class="bi bi-file-earmark-medical"></i>
                                                     </a>
                                                 @else
@@ -533,8 +542,9 @@
                                             </td>
                                             <td>
                                                 @if ($employee->passport_attachment && file_exists('storage/' . $employee->passport_attachment))
-                                                    <a href="{!! asset('storage/' . $employee->passport_attachment) !!}" target="_blank" class="fs-5"
-                                                        title="View Attachment">
+                                                    <a href="{!! asset('storage/' . $employee->passport_attachment) !!}"
+                                                       target="_blank" class="fs-5"
+                                                       title="View Attachment">
                                                         <i class="bi bi-file-earmark-medical"></i>
                                                     </a>
                                                 @else
@@ -585,31 +595,31 @@
                                             <th scope="row">Office</th>
                                             <td colspan="3">{{ $employee->latestTenure->getOfficeName() }}</td>
                                         </tr>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="insurance">
-                    @include('Employee::Insurance.index')
-                </div>
+                    <div class="c-tabs-content" id="insurance">
+                        @include('Employee::Insurance.index')
+                    </div>
 
-                <div class="c-tabs-content" id="document_uploads">
-                    @include('Employee::DocumentUpload.index')
-                </div>
+                    <div class="c-tabs-content" id="document_uploads">
+                        @include('Employee::DocumentUpload.index')
+                    </div>
 
-                <div class="c-tabs-content" id="address">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Address
-                        </div>
-                        <div class="card-body">
-                            <div class="p2">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="addressTable">
-                                        <tbody>
+                    <div class="c-tabs-content" id="address">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Address
+                            </div>
+                            <div class="card-body">
+                                <div class="p2">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="addressTable">
+                                            <tbody>
                                             <tr>
                                                 <th scope="row" rowspan="4" width="10%">Current Address</th>
                                                 <td colspan="3">Province:
@@ -646,26 +656,26 @@
                                                 <td>Ward: {{ $employee->address->permanent_ward }}</td>
                                                 <td colspan="2">Tole: {{ $employee->address->permanent_tole }}</td>
                                             </tr>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="c-tabs-content" id="family_details">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Family Details
-                        </div>
-                        @if ($employee->familyDetails->isNotEmpty())
-                            @foreach ($employee->familyDetails as $familyDetail)
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="familyDetailsTable">
-                                            <tbody>
+                    <div class="c-tabs-content" id="family_details">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Family Details
+                            </div>
+                            @if ($employee->familyDetails->isNotEmpty())
+                                @foreach ($employee->familyDetails as $familyDetail)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="familyDetailsTable">
+                                                <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">Full Name</th>
                                                     <td>{{ $familyDetail->full_name }}</td>
@@ -682,17 +692,17 @@
                                                     <th scope="row">Nominee ?</th>
                                                     <td>{{ isset($familyDetail->nominee_at) ? 'Yes' : 'No' }}</td>
                                                 </tr> --}}
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="card-body">
-                                <div class="p2">
-                                    <div class="table-responsive">
-                                        <table class="table" id="familyDetailsTable">
-                                            <tbody>
+                                @endforeach
+                            @else
+                                <div class="card-body">
+                                    <div class="p2">
+                                        <div class="table-responsive">
+                                            <table class="table" id="familyDetailsTable">
+                                                <tbody>
                                                 <tr>
                                                     <th scope="row">Full Name</th>
                                                     <td></td>
@@ -709,54 +719,54 @@
                                                     <th scope="row">Nominee ?</th>
                                                     <td></td>
                                                 </tr>
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-
-                <div class="c-tabs-content" id="tenure">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Tenure
+                            @endif
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                @foreach ($employee->tenures as $tenure)
-                                    <table class="table table-bordered">
-                                        <tbody>
+                    </div>
+
+
+                    <div class="c-tabs-content" id="tenure">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Tenure
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    @foreach ($employee->tenures as $tenure)
+                                        <table class="table table-bordered">
+                                            <tbody>
                                             @if ($loop->first)
                                                 <label class="mb-2 form-label fw-bold">Latest Tenure</label>
                                             @endif
                                             <tr>
-                                                <th scope="row" width="10%">Position: </th>
+                                                <th scope="row" width="10%">Position:</th>
                                                 <td colspan="3">{{ $tenure->getDesignationName() }}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Joining Date: </th>
+                                                <th scope="row">Joining Date:</th>
                                                 <td colspan="3">{{ $tenure->getJoinedDate() }}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">To Date: </th>
+                                                <th scope="row">To Date:</th>
                                                 <td colspan="3">{{ $tenure->getToDate() }}</td>
                                             </tr>
                                             <tr>
-                                                <th scope="row">Contract End Date: </th>
+                                                <th scope="row">Contract End Date:</th>
                                                 <td colspan="3">{{ $tenure->getContractEndDate() }}</td>
                                             </tr>
                                             @if ($loop->first && $employee->exitHandoverNote && is_null($employee->activated_at))
                                                 <tr class="text-danger">
-                                                    <th scope="row">Resignation Date: </th>
+                                                    <th scope="row">Resignation Date:</th>
                                                     <td colspan="3">
                                                         {{ $employee->exitHandoverNote?->getResignationDate() }}
                                                     </td>
                                                 </tr>
                                                 <tr class="text-danger">
-                                                    <th scope="row">Last Duty Date: </th>
+                                                    <th scope="row">Last Duty Date:</th>
                                                     <td colspan="3">
                                                         {{ $employee->exitHandoverNote?->getLastDutyDate() }}
                                                     </td>
@@ -788,23 +798,23 @@
                                                     {{ $tenure->getNextLineManagerName() }}
                                                 </td>
                                             </tr>
-                                        </tbody>
-                                    </table>
-                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="c-tabs-content" id="medical_information">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Medical Information
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-bordered" id="medicalInformationTable">
-                                <tbody>
+                    <div class="c-tabs-content" id="medical_information">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Medical Information
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-bordered" id="medicalInformationTable">
+                                    <tbody>
                                     <tr>
                                         <th scope="row" width="10%">Blood Group</th>
                                         <td>{{ $employee->medicalCondition->bloodGroup->title }}</td>
@@ -817,22 +827,22 @@
                                         <th scope="row">Remarks</th>
                                         <td>{{ $employee->medicalCondition->remarks }}</td>
                                     </tr>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="c-tabs-content" id="working_hours">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Working Hours
-                        </div>
-                        <div class="card-body">
-                            @foreach ($employee->workingHours as $workingHour)
-                                <table class="table table-bordered">
-                                    <tbody class="my-2">
+                    <div class="c-tabs-content" id="working_hours">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Working Hours
+                            </div>
+                            <div class="card-body">
+                                @foreach ($employee->workingHours as $workingHour)
+                                    <table class="table table-bordered">
+                                        <tbody class="my-2">
                                         <tr>
                                             <th scope="row" width="10%">Start Date</th>
                                             <td>{{ $workingHour->start_date->format('Y-M-d') }}</td>
@@ -857,23 +867,23 @@
                                             <th scope="row">Remarks</th>
                                             <td>{{ $workingHour->remarks }}</td>
                                         </tr>
-                                    </tbody>
-                                </table>
-                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
 
 
-                <div class="c-tabs-content" id="finance">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Finance
-                        </div>
+                    <div class="c-tabs-content" id="finance">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Finance
+                            </div>
 
-                        <div class="card-body">
-                            <table class="table table-bordered">
-                                <tbody class="my-2">
+                            <div class="card-body">
+                                <table class="table table-bordered">
+                                    <tbody class="my-2">
                                     <tr>
                                         <th scope="row" width="10%">CIT Number</th>
                                         <td>{{ $employee->finance->cit_number }}</td>
@@ -899,23 +909,23 @@
                                         <th scope="row" width="10%">Is Disabled</th>
                                         <td>{{ $employee->finance->disabled ? 'Yes' : 'No' }}</td>
                                     </tr> --}}
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="education">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Education
-                        </div>
-                        @if ($employee->education->isNotEmpty())
-                            @foreach ($employee->education as $education)
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="educationTable">
-                                            <tbody>
+                    <div class="c-tabs-content" id="education">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Education
+                            </div>
+                            @if ($employee->education->isNotEmpty())
+                                @foreach ($employee->education as $education)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="educationTable">
+                                                <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">Education Level</th>
                                                     <td>{{ $education->getEducationLevel() }}</td>
@@ -932,16 +942,16 @@
                                                     <th scope="row">Passed Year</th>
                                                     <td>{{ $education->getPassedYear() }}</td>
                                                 </tr>
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="educationTable">
-                                        <tbody>
+                                @endforeach
+                            @else
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="educationTable">
+                                            <tbody>
                                             <tr>
                                                 <th scope="row" width="10%">Education Level</th>
                                                 <td></td>
@@ -958,25 +968,25 @@
                                                 <th scope="row">Passed Year</th>
                                                 <td></td>
                                             </tr>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="c-tabs-content" id="experience">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Experience
+                            @endif
                         </div>
-                        @if ($employee->experiences->isNotEmpty())
-                            @foreach ($employee->experiences as $experience)
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="experienceTable">
-                                            <tbody>
+                    </div>
+
+                    <div class="c-tabs-content" id="experience">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Experience
+                            </div>
+                            @if ($employee->experiences->isNotEmpty())
+                                @foreach ($employee->experiences as $experience)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="experienceTable">
+                                                <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">Institution</th>
                                                     <td colspan="3">{{ $experience->institution }}</td>
@@ -996,16 +1006,16 @@
                                                     <th scope="row">Remarks</th>
                                                     <td colspan="3">{{ $experience->remarks }}</td>
                                                 </tr>
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="experienceTable">
-                                        <tbody>
+                                @endforeach
+                            @else
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="experienceTable">
+                                            <tbody>
                                             <tr>
                                                 <th scope="row" width="10%">Institution</th>
                                                 <td colspan="3"></td>
@@ -1025,20 +1035,20 @@
                                                 <th scope="row">Remarks</th>
                                                 <td colspan="3"></td>
                                             </tr>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="asset">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table" id="assetTable">
-                                    <thead>
+                    <div class="c-tabs-content" id="asset">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="assetTable">
+                                        <thead>
                                         <tr>
                                             <th>{{ __('label.sn') }}</th>
                                             <th>{{ __('label.asset-number') }}</th>
@@ -1049,26 +1059,26 @@
                                             <th>Handover Approver</th>
                                             <th>Handover</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="training">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Training
-                        </div>
-                        @if ($employee->trainings->isNotEmpty())
-                            @foreach ($employee->trainings as $training)
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="trainingTable">
-                                            <tbody>
+                    <div class="c-tabs-content" id="training">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Training
+                            </div>
+                            @if ($employee->trainings->isNotEmpty())
+                                @foreach ($employee->trainings as $training)
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered" id="trainingTable">
+                                                <tbody>
                                                 <div>
                                                     <tr>
                                                         <th scope="row" width="10%">Institution</th>
@@ -1090,16 +1100,16 @@
                                                         <td colspan="3">{{ $training->remarks }}</td>
                                                     </tr>
                                                 </div>
-                                            </tbody>
-                                        </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
-                                </div>
-                            @endforeach
-                        @else
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-bordered" id="trainingTable">
-                                        <tbody>
+                                @endforeach
+                            @else
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="trainingTable">
+                                            <tbody>
                                             <div>
                                                 <tr>
                                                     <th scope="row" width="10%">Institution</th>
@@ -1121,26 +1131,25 @@
                                                     <td colspan="3"></td>
                                                 </tr>
                                             </div>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="c-tabs-content" id="social_media">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            Social Media
+                            @endif
                         </div>
+                    </div>
+
+                    <div class="c-tabs-content" id="social_media">
+                        <div class="card">
+                            <div class="card-header fw-bold">
+                                Social Media
+                            </div>
 
 
-
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="socialMediaTable">
-                                    <tbody>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="socialMediaTable">
+                                        <tbody>
                                         <div>
                                             <tr>
                                                 <th scope="row" width="10%">Bio</th>
@@ -1152,30 +1161,30 @@
                                                         {{ $account->title }}</th>
                                                     <td colspan="3">
                                                         <a target="_blank"
-                                                            href="{{ $socialMediaLinks[$account->title] ?? '' }}">{{ $employeeSocialMediaLinks[$account->title] ?? '' }}</a>
+                                                           href="{{ $socialMediaLinks[$account->title] ?? '' }}">{{ $employeeSocialMediaLinks[$account->title] ?? '' }}</a>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </div>
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="c-tabs-content" id="leave">
-                    <div class="card">
-                        <div class="card-header d-flex align-items-center justify-content-between">
-                            <div>Leave Details</div>
-                            <a href="{{ route('employees.leaves.export', $employee->id) }}"
-                                class="btn btn-sm btn-primary text-capitalize"> Export <i
-                                    class="bi bi-cloud-download"></i></a>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="employeeLeaveTable">
-                                    <thead class="bg-light">
+                    <div class="c-tabs-content" id="leave">
+                        <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <div>Leave Details</div>
+                                <a href="{{ route('employees.leaves.export', $employee->id) }}"
+                                   class="btn btn-sm btn-primary text-capitalize"> Export <i
+                                        class="bi bi-cloud-download"></i></a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="employeeLeaveTable">
+                                        <thead class="bg-light">
                                         <tr>
                                             <th rowspan="2">Month</th>
                                             @foreach ($leaveTypes as $leaveType)
@@ -1185,7 +1194,8 @@
                                                     </th>
                                                 @else
                                                     <th rowspan="1" class="text-center">{{ $leaveType->title }}
-                                                        ({{ $leaveType->getLeaveBasis() }})</th>
+                                                        ({{ $leaveType->getLeaveBasis() }})
+                                                    </th>
                                                 @endif
                                             @endforeach
                                         </tr>
@@ -1202,8 +1212,8 @@
                                                 @endif
                                             @endforeach
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         @foreach ($leaves->groupBy('reported_date') as $leaveGroups)
                                             @if (
                                                 $employee->exitHandoverNote &&
@@ -1234,8 +1244,8 @@
                                                 @endforeach
                                             </tr>
                                         @endforeach
-                                    </tbody>
-                                    <tfoot>
+                                        </tbody>
+                                        <tfoot>
                                         <th>Total</th>
                                         @foreach ($leaveTypes as $leaveType)
                                             @if ($leaveType->leave_frequency == 2)
@@ -1264,32 +1274,32 @@
                                                 <td class="text-center">{{ $takenTotal }}</td>
                                             @endif
                                         @endforeach
-                                    </tfoot>
-                                </table>
+                                        </tfoot>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    @if ($employee->user)
-                        @foreach ($previousLeaves->groupBy(function ($item) {
-                return $item->reported_date->format('Y');
-            })->sortKeysDesc() as $index => $prevLeaves)
-                            <div class="mb-3 card collapsible-card">
-                                <div class="card-header d-flex align-items-center justify-content-between">
+                        @if ($employee->user)
+                            @foreach ($previousLeaves->groupBy(function ($item) {
+                    return $item->reported_date->format('Y');
+                })->sortKeysDesc() as $index => $prevLeaves)
+                                <div class="mb-3 card collapsible-card">
+                                    <div class="card-header d-flex align-items-center justify-content-between">
                                     <span role="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapse-{{ $index }}" aria-expanded="false"
-                                        aria-controls="collapseCard">
+                                          data-bs-target="#collapse-{{ $index }}" aria-expanded="false"
+                                          aria-controls="collapseCard">
                                         Leave Details: {{ $index }}
                                         <i class="bi bi-caret-down-fill indicator"></i>
                                     </span>
-                                    <a href="{{ route('employees.leaves.export.year', [$employee->id, $index]) }}"
-                                        class="btn btn-sm btn-primary text-capitalize"> Export <i
-                                            class="bi bi-cloud-download"></i></a>
-                                </div>
-                                <div id="collapse-{{ $index }}" class="collapse">
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered" id="employeeLeaveTable">
-                                                <thead class="bg-light">
+                                        <a href="{{ route('employees.leaves.export.year', [$employee->id, $index]) }}"
+                                           class="btn btn-sm btn-primary text-capitalize"> Export <i
+                                                class="bi bi-cloud-download"></i></a>
+                                    </div>
+                                    <div id="collapse-{{ $index }}" class="collapse">
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered" id="employeeLeaveTable">
+                                                    <thead class="bg-light">
                                                     <tr>
                                                         <th rowspan="2">Month</th>
                                                         @foreach ($leaveTypes as $leaveType)
@@ -1301,7 +1311,8 @@
                                                             @else
                                                                 <th rowspan="1" class="text-center">
                                                                     {{ $leaveType->title }}
-                                                                    ({{ $leaveType->getLeaveBasis() }})</th>
+                                                                    ({{ $leaveType->getLeaveBasis() }})
+                                                                </th>
                                                             @endif
                                                         @endforeach
                                                     </tr>
@@ -1318,8 +1329,8 @@
                                                             @endif
                                                         @endforeach
                                                     </tr>
-                                                </thead>
-                                                <tbody>
+                                                    </thead>
+                                                    <tbody>
                                                     @foreach ($prevLeaves->groupBy('reported_date') as $leaveGroups)
                                                         @if (
                                                             $employee->exitHandoverNote &&
@@ -1356,8 +1367,8 @@
                                                             @endforeach
                                                         </tr>
                                                     @endforeach
-                                                </tbody>
-                                                <tfoot>
+                                                    </tbody>
+                                                    <tfoot>
                                                     <th>Total</th>
                                                     @foreach ($leaveTypes as $leaveType)
                                                         @if ($leaveType->leave_frequency == 2)
@@ -1386,29 +1397,29 @@
                                                             <td class="text-center">{{ $takenTotal }}</td>
                                                         @endif
                                                     @endforeach
-                                                </tfoot>
-                                            </table>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                    @endif
+                            @endforeach
+                        @endif
 
 
-                    @php
-                        $authUser = auth()->user();
-                        $hr = $authUser->hasRole('Human Resource');
-                    @endphp
+                        @php
+                            $authUser = auth()->user();
+                            $hr = $authUser->hasRole('Human Resource');
+                        @endphp
 
-                    @isset($employee->user)
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Approved Leave Requests
-                            </div>
-                            <div class="card-body" style="overflow: auto;">
-                                <table class="table table-responsive table-sm" id="leaveRequestsTable">
-                                    <thead>
+                        @isset($employee->user)
+                            <div class="card">
+                                <div class="card-header fw-bold">
+                                    Approved Leave Requests
+                                </div>
+                                <div class="card-body" style="overflow: auto;">
+                                    <table class="table table-responsive table-sm" id="leaveRequestsTable">
+                                        <thead>
                                         <tr>
                                             <th>SN</th>
                                             <th>Type</th>
@@ -1422,8 +1433,8 @@
                                                 <th>Action</th>
                                             @endif
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         @foreach ($leaveRequests as $key => $leaveRequest)
                                             <tr>
                                                 <td>{{ ++$key }}</td>
@@ -1440,30 +1451,30 @@
                                                 @if ($hr)
                                                     <td>
                                                         <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.requests.detail', $leaveRequest->id) }}"
-                                                            title="View Leave Request" target="_blank"><i
+                                                           href="{{ route('leave.requests.detail', $leaveRequest->id) }}"
+                                                           title="View Leave Request" target="_blank"><i
                                                                 class="bi bi-eye"></i></a>
                                                         &emsp;
                                                         <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.requests.print', $leaveRequest->id) }}"
-                                                            title="Print Leave Request" target="_blank"><i
+                                                           href="{{ route('leave.requests.print', $leaveRequest->id) }}"
+                                                           title="Print Leave Request" target="_blank"><i
                                                                 class="bi-printer"></i></a>
                                                     </td>
                                                 @endif
                                             </tr>
                                         @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Approved Leave Encashment Requests
-                            </div>
-                            <div class="card-body" style="overflow: auto;">
-                                <table class="table table-responsive table-sm" id="leaveEncashTable">
-                                    <thead>
+                            <div class="card">
+                                <div class="card-header fw-bold">
+                                    Approved Leave Encashment Requests
+                                </div>
+                                <div class="card-body" style="overflow: auto;">
+                                    <table class="table table-responsive table-sm" id="leaveEncashTable">
+                                        <thead>
                                         <tr>
                                             <th>SN</th>
                                             <th>Type</th>
@@ -1475,8 +1486,8 @@
                                                 <th>Action</th>
                                             @endif
                                         </tr>
-                                    </thead>
-                                    <tbody>
+                                        </thead>
+                                        <tbody>
                                         @foreach ($leaveEncashments as $key => $leaveEncash)
                                             <tr>
                                                 <td>{{ ++$key }}</td>
@@ -1491,26 +1502,27 @@
                                                 @if ($hr)
                                                     <td>
                                                         <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('approved.leave.encash.show', $leaveEncash->id) }}"
-                                                            title="View Leave Request" target="_blank"><i
+                                                           href="{{ route('approved.leave.encash.show', $leaveEncash->id) }}"
+                                                           title="View Leave Request" target="_blank"><i
                                                                 class="bi bi-eye"></i></a>
                                                         &emsp;
                                                         <a class="btn btn-sm btn-outline-primary"
-                                                            href="{{ route('leave.encash.print', $leaveEncash->id) }}"
-                                                            title="Print Leave Request" target="_blank"><i
+                                                           href="{{ route('leave.encash.print', $leaveEncash->id) }}"
+                                                           title="Print Leave Request" target="_blank"><i
                                                                 class="bi-printer"></i></a>
                                                     </td>
                                                 @endif
                                             </tr>
                                         @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    @endisset
-                </div>
+                        @endisset
+                    </div>
 
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 @endsection

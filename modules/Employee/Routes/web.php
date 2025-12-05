@@ -131,15 +131,14 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::delete('employees/payments/masters/{payment}/details/{detail}', [PaymentDetailController::class, 'destroy'])->name('employees.payments.masters.details.destroy');
     });
 
+    Route::get('consultant', [ConsultantController::class, 'index'])->name('consultant.index');
+    Route::get('consultant/{consultant}/profile', [ConsultantController::class, 'profile'])->name('consultant.profile');
     Route::middleware('can:manage-employee')->group(function () {
-        Route::get('consultant', [ConsultantController::class, 'index'])->name('consultant.index');
         Route::get('consultant/create', [ConsultantController::class, 'create'])->name('consultant.create');
         Route::post('consultant', [ConsultantController::class, 'store'])->name('consultant.store');
         Route::get('consultant/{consultant}/edit', [ConsultantController::class, 'edit'])->name('consultant.edit');
         Route::put('consultant/{consultant}', [ConsultantController::class, 'update'])->name('consultant.update');
         Route::delete('consultant/{consultant}', [ConsultantController::class, 'destroy'])->name('consultant.destroy');
-
-        Route::get('consultant/{consultant}/profile', [ConsultantController::class, 'profile'])->name('consultant.profile');
     });
 
 

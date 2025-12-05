@@ -81,7 +81,7 @@ class ClaimExpenseController extends Controller
                     return $btn;
                 });
             return $datatable->addColumn('activity', function ($row) {
-                return $row->getActivityCode();
+                return $row->activityCode?->getActivityCodeDescription();
             })->addColumn('donor', function ($row) {
                 return $row->donorCode->description;
             })->rawColumns(['action', 'attachment'])

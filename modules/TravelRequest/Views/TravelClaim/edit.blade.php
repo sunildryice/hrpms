@@ -163,20 +163,20 @@
                                 },
                             },
                         },
-                        description: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Description is required',
-                                },
-                            },
-                        },
-                        invoice_bill_number: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Invoice / Bill number is required',
-                                },
-                            },
-                        },
+                        // description: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Description is required',
+                        //         },
+                        //     },
+                        // },
+                        // invoice_bill_number: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Invoice / Bill number is required',
+                        //         },
+                        //     },
+                        // },
                         expense_amount: {
                             validators: {
                                 notEmpty: {

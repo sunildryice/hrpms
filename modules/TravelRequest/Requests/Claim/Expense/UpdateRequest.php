@@ -29,7 +29,7 @@ class UpdateRequest extends FormRequest
             'expense_date'=>'required|date',
             'expense_amount'=>'required|numeric|min:0.01',
             'invoice_bill_number'=> 'nullable',
-            'expense_description'=>'required',
+            'expense_description'=>'nullable',
             'attachment'=>'nullable|mimes:png,jpg,pdf|max:2048',
             // 'donor_code_id'=>'required|exists:lkup_donor_codes,id',
             // 'office_id'=>'required|exists:lkup_offices,id',

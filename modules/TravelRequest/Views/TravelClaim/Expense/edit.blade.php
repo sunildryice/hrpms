@@ -13,10 +13,10 @@
             </div>
             <div class="col-lg-9">
                 <select class="form-control select2" data-width="100%" name="activity_code_id">
-                    <option value="">Select Activity Code</option>
+                    <option value="">Select Activity</option>
                     @foreach ($activityCodes as $activityCode)
                         <option value="{!! $activityCode->id !!}" @if ($travelExpense->activity_code_id == $activityCode->id) selected @endif>
-                            {{ $activityCode->getActivityCodeWithDescription() }}</option>
+                            {{ $activityCode->getActivityCodeDescription() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -52,7 +52,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Description</label>
+                    <label for="" class="form-label">Description</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -74,8 +74,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for=""
-                        class="form-label required-label">{{ __('label.invoice-bill-number') }}</label>
+                    <label for="" class="form-label">{{ __('label.invoice-bill-number') }}</label>
                 </div>
             </div>
             <div class="col-lg-9">

@@ -118,7 +118,7 @@
             <div class="col-md-2">
                 <div class="card border shadow-sm rounded h-100">
                     <div class="card-header">
-                        {{ $leaveBalance->leave_type_title }}
+                        {{ $leaveBalance->getLeaveType() }}
                     </div>
                     <div class="card-body text-center">
                         <p class="text-muted mb-1 small">Balance</p>

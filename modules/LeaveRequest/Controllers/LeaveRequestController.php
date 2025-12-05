@@ -53,8 +53,11 @@ class LeaveRequestController extends Controller
     {
         $authUser = auth()->user();
 
-        $employeeLeaveBalances = $this->employeeLeaves->getLeaveBalances($authUser->employee_id);
-
+        $employeeLeaveBalances = $this->employeeLeaves->getEmployeeLeaves($authUser->employee_id);
+        $employeeLeaveBalances = $employeeLeaveBalances->filter(function ($leave) {
+           return in_array($leave->leave_type_id, [config('constant.SICK_LEAVE'), config('constant.ANNUAL_LEAVE')]);
+        });
+//        dd($employeeLeaveBalances);
 
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'logs', 'requester', 'childLeaveRequest', 'leaveDays'])
@@ -137,7 +140,6 @@ class LeaveRequestController extends Controller
         $sql = 'SELECT u1.* FROM employee_leaves u1
             WHERE u1.employee_id=? AND u1.reported_date = (SELECT MAX(u2.reported_date)
                                                            FROM employee_leaves u2 WHERE u2.employee_id=? AND u2.leave_type_id = u1.leave_type_id )';
-
 
         $leaveIds = \DB::select($sql, [$authUser->employee_id, $authUser->employee_id]);
 

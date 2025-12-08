@@ -278,49 +278,77 @@
         var itineraryTable = $('#itineraryTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('travel.claims.itineraries.index', $travelClaim->id) }}",
+            ajax: "{{ route('travel.claims.dsa.index', $travelClaim->id) }}",
             bFilter: false,
             bPaginate: false,
             bInfo: false,
             columns: [{
-                    data: 'departure_date',
-                    name: 'departure_date'
+                    data: 'activities',
+                    name: 'activities'
                 },
                 {
                     data: 'departure_place',
                     name: 'departure_place'
                 },
                 {
-                    data: 'arrival_date',
-                    name: 'arrival_date'
-                },
-                {
                     data: 'arrival_place',
                     name: 'arrival_place'
                 },
                 {
-                    data: 'overnights',
-                    name: 'overnights'
+                    data: 'departure_date',
+                    name: 'departure_date'
                 },
                 {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
+                    data: 'arrival_date',
+                    name: 'arrival_date'
                 },
                 {
-                    data: 'percentage_charged',
-                    name: 'percentage_charged'
+                    data: 'days_spent',
+                    name: 'days_spent'
+                },
+                {
+                    data: 'breakfast',
+                    name: 'breakfast'
+                },
+                {
+                    data: 'lunch',
+                    name: 'lunch'
+                },
+                {
+                    data: 'dinner',
+                    name: 'dinner'
+                },
+                {
+                    data: 'incident_cost',
+                    name: 'incident_cost'
+                },
+                {
+                    data: 'total_dsa',
+                    name: 'total_dsa'
+                },
+                {
+                    data: 'daily_allowance',
+                    name: 'daily_allowance'
+                },
+                {
+                    data: 'lodging_expense',
+                    name: 'lodging_expense'
+                },
+                {
+                    data: 'other_expense',
+                    name: 'other_expense'
                 },
                 {
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                // {
-                //     data: 'charging_office',
-                //     name: 'charging_office'
-                // },
                 {
-                    data: 'description',
-                    name: 'description'
+                    data: 'mode_of_travel',
+                    name: 'mode_of_travel'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
                 },
                 {
                     data: 'attachment',
@@ -333,6 +361,19 @@
                     searchable: false
                 },
             ]
+        });
+
+        $('#itineraryTable').on('click', '.delete-record', function(e) {
+            e.preventDefault();
+            $object = $(this);
+            var $url = $object.attr('data-href');
+            var successCallback = function(response) {
+                toastr.success(response.message, 'Success', {
+                    timeOut: 5000
+                });
+                itineraryTable.ajax.reload();
+            }
+            ajaxDeleteSweetAlert($url, successCallback);
         });
 
         $(document).on('click', '.open-itinerary-modal-form', function(e) {
@@ -381,6 +422,20 @@
                                     message: 'The value is not a valid date',
                                 },
                             },
+                        },
+                        departure_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The Departure Place is required'
+                                }
+                            }
+                        },
+                        arrival_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The Arrival Place is required'
+                                }
+                            }
                         },
                         attachment: {
                             validators: {
@@ -618,17 +673,43 @@
                                         <table class="table" id="itineraryTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col">{{ __('label.from-date') }}</th>
+                                                    <th scope="col" rowspan="2">Activities
+                                                    </th>
+                                                    <th scope="col" colspan="2" class="text-center">
+                                                        {{ __('label.destination') }}</th>
+                                                    <th scope="col" colspan="2" class="text-center">
+                                                        {{ __('label.date') }}</th>
+                                                    <th scope="col" rowspan="2">Days Spent
+                                                    </th>
+                                                    <th scope="col" colspan="4" class="text-center">
+                                                        DSA per day</th>
+                                                    <th scope="col" rowspan="2">Total DSA
+                                                    </th>
+                                                    <th scope="col" rowspan="2">Daily Allowance
+                                                    </th>
+                                                    <th scope="col" rowspan="2">Lodging Expense
+                                                    </th>
+                                                    <th scope="col" rowspan="2">Other Expense
+                                                    </th>
+                                                    <th scope="col" rowspan="2">Total Amount
+                                                    </th>
+                                                    <th scope="col" rowspan="2">{{ __('label.mode-of-travel') }}</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.remarks') }}
+                                                    </th>
+                                                    <th scope="col" rowspan="2">{{ __('label.attachment') }}
+                                                    </th>
+                                                    <th scope="col" rowspan="2">{{ __('label.action') }}
+                                                    </th>
+                                                </tr>
+                                                <tr>
                                                     <th scope="col">{{ __('label.from') }}</th>
-                                                    <th scope="col">{{ __('label.to-date') }}</th>
                                                     <th scope="col">{{ __('label.to') }}</th>
-                                                    <th scope="col">{{ __('label.overnights') }}</th>
-                                                    <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                                    <th scope="col">{{ __('label.percentage') }}</th>
-                                                    <th scope="col">{{ __('label.total-dsa') }}</th>
-                                                    <th scope="col">{{ __('label.remarks') }}</th>
-                                                    <th scope="col">{{ __('label.attachment') }}</th>
-                                                    <th style="width: 150px">{{ __('label.action') }}</th>
+                                                    <th scope="col">{{ __('label.from') }}</th>
+                                                    <th scope="col">{{ __('label.to') }}</th>
+                                                    <th scope="col">Breakfast</th>
+                                                    <th scope="col">Lunch</th>
+                                                    <th scope="col">Dinner</th>
+                                                    <th scope="col">Incidental</th>
                                                 </tr>
                                             </thead>
                                             <tbody>

@@ -86,7 +86,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Breakfast</label>
+                    <label for="" class="form-label">Breakfast</label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -99,7 +99,7 @@
             </div>
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Lunch</label>
+                    <label for="" class="form-label">Lunch</label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -114,7 +114,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Dinner</label>
+                    <label for="" class="form-label">Dinner</label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -127,7 +127,7 @@
             </div>
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Incidental Cost </label>
+                    <label for="" class="form-label">Incidental Cost </label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -175,7 +175,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Lodging expenses</label>
+                    <label for="" class="form-label">Lodging expenses</label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -188,7 +188,7 @@
             </div>
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Other expenses</label>
+                    <label for="" class="form-label">Other expenses</label>
                 </div>
             </div>
             <div class="col-lg-3">
@@ -237,7 +237,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Remarks</label>
+                    <label for="" class="form-label">Remarks</label>
                 </div>
             </div>
             <div class="col-lg-9">

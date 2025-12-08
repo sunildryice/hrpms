@@ -34,7 +34,7 @@ class ClaimDsaController extends Controller
     }
 
     /**
-     * Display a listing of the travel claim expenses
+     * Display a listing of the travel DSA claims
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -44,16 +44,20 @@ class ClaimDsaController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->travelDsaClaims->select(['*'])->with(['activityCode', 'donorCode', 'office'])
+            $data = $this->travelDsaClaims->select(['*'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('charging_office', function ($row) {
-                    return $row->office->getOfficeName();
+                ->addColumn('departure_date', function ($row) {
+                    return $row->getDepartureDate();
                 })
-                ->addColumn('expense_date', function ($row) {
-                    return $row->getExpenseDate();
-                })->addColumn('attachment', function ($row) {
+                ->addColumn('arrival_date', function ($row) {
+                    return $row->getArrivalDate();
+                })
+                ->addColumn('mode_of_travel', function ($row) {
+                    return $row->getTravelModes();
+                })
+                ->addColumn('attachment', function ($row) {
                     $attachment = '';
                     if (file_exists('storage/' . $row->attachment) && $row->attachment != '') {
                         $attachment = '<a href = "' . asset('storage/' . $row->attachment) . '" target = "_blank" class="fs-5" ';
@@ -71,18 +75,14 @@ class ClaimDsaController extends Controller
                     }
                     return $btn;
                 });
-            return $datatable->addColumn('activity', function ($row) {
-                return $row->activityCode?->getActivityCodeDescription();
-            })->addColumn('donor', function ($row) {
-                return $row->donorCode->description;
-            })->rawColumns(['action', 'attachment'])
+            return $datatable->rawColumns(['action', 'attachment'])
                 ->make(true);
         }
         return true;
     }
 
     /**
-     * Show the form for creating a new travel claim expense.
+     * Show the form for creating a new travel claim DSA.
      *
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -90,7 +90,6 @@ class ClaimDsaController extends Controller
     public function create($id)
     {
         $travelClaim = $this->travelClaims->find($id);
-        $offices = $this->offices->getActiveOffices();
 
         return view('TravelRequest::TravelClaim.DsaClaim.create')
             ->withTravelModes($this->travelModes->get())
@@ -98,7 +97,7 @@ class ClaimDsaController extends Controller
     }
 
     /**
-     * Store a newly created travel claim expense in storage.
+     * Store a newly created travel claim DSA in storage.
      *
      * @param StoreRequest $request
      * @param $id
@@ -123,17 +122,17 @@ class ClaimDsaController extends Controller
                 'status' => 'ok',
                 'travelClaim' => $travelDsaClaim->travelClaim,
                 'travelDsaClaim' => $travelDsaClaim,
-                'message' => 'Travel Request Claim Itinerary is successfully added.'
+                'message' => 'Travel DSA Claim Itinerary is successfully added.'
             ], 200);
         }
         return response()->json([
             'status' => 'error',
-            'message' => 'Travel Request Claim Itinerary can not be added.'
+            'message' => 'Travel DSA Claim Itinerary can not be added.'
         ], 422);
     }
 
     /**
-     * Show the form for editing the specified travel claim expense.
+     * Show the form for editing the specified travel claim DSA.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
@@ -142,17 +141,17 @@ class ClaimDsaController extends Controller
     public function edit($claimId, $id)
     {
         $travelClaim = $this->travelClaims->find($claimId);
-        $travelClaimExpense = $this->travelDsaClaims->find($id);
+        $travelDsaClaim = $this->travelDsaClaims->find($id);
         $this->authorize('update', $travelClaim);
-        $offices = $this->offices->getActiveOffices();
 
         return view('TravelRequest::TravelClaim.DsaClaim.edit')
             ->withTravelModes($this->travelModes->get())
+            ->withTravelDsaClaim($travelDsaClaim)
             ->withTravelClaim($travelClaim);
     }
 
     /**
-     * Update the specified travel claim expense in storage.
+     * Update the specified travel claim DSA in storage.
      *
      * @param UpdateRequest $request
      * @param $claimId
@@ -162,32 +161,32 @@ class ClaimDsaController extends Controller
      */
     public function update(UpdateRequest $request, $claimId, $id)
     {
-        $travelClaimExpense = $this->travelDsaClaims->find($id);
-        $this->authorize('update', $travelClaimExpense->travelClaim);
+        $travelDsaClaims = $this->travelDsaClaims->find($id);
+        $this->authorize('update', $travelDsaClaims->travelClaim);
         $inputs = $request->validated();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath . '/' . $travelClaimExpense->travelClaim->travel_request_id, time() . '_claim_expense.' . $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $travelDsaClaims->travelClaim->travel_request_id, time() . '_claim_dsa.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $inputs['updated_by'] = auth()->id();
-        $travelClaimExpense = $this->travelDsaClaims->update($id, $inputs);
-        if ($travelClaimExpense) {
+        $travelDsaClaims = $this->travelDsaClaims->update($id, $inputs);
+        if ($travelDsaClaims) {
             return response()->json([
                 'status' => 'ok',
-                'travelClaim' => $travelClaimExpense->travelClaim,
-                'travelClaimExpense' => $travelClaimExpense,
-                'message' => 'Travel expense is successfully updated.'
+                'travelClaim' => $travelDsaClaims->travelClaim,
+                'travelDsaClaims' => $travelDsaClaims,
+                'message' => 'Travel DSA Claim Itinerary is successfully updated.'
             ], 200);
         }
         return response()->json([
             'status' => 'error',
-            'message' => 'Travel expense can not be updated.'
+            'message' => 'Travel DSA Claim Itinerary can not be updated.'
         ], 422);
     }
 
     /**
-     * Remove the specified travel claim expense from storage.
+     * Remove the specified travel claim DSA from storage.
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -195,21 +194,21 @@ class ClaimDsaController extends Controller
      */
     public function destroy($claimId, $id)
     {
-        $travelClaimExpense = $this->travelDsaClaims->find($id);
-        $this->authorize('delete', $travelClaimExpense->travelClaim);
+        $travelDsaClaims = $this->travelDsaClaims->find($id);
+        $this->authorize('delete', $travelDsaClaims->travelClaim);
         $flag = $this->travelDsaClaims->destroy($id);
         if ($flag) {
             $travelClaim = $this->travelClaims->find($claimId);
             return response()->json([
                 'type' => 'success',
                 'travelClaim' => $travelClaim,
-                'message' => 'Travel expense is successfully deleted.',
+                'message' => 'Travel DSA Claim Itinerary is successfully deleted.',
             ], 200);
         }
         return response()->json([
             'type' => 'error',
-            'travelClaim' => $travelClaimExpense->travelClaim,
-            'message' => 'Travel expense can not deleted.',
+            'travelClaim' => $travelDsaClaims->travelClaim,
+            'message' => 'Travel DSA Claim Itinerary can not deleted.',
         ], 422);
     }
 }

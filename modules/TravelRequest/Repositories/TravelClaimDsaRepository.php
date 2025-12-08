@@ -11,8 +11,7 @@ class TravelClaimDsaRepository extends Repository
     public function __construct(
         TravelClaimRepository $travelClaims,
         TravelDsaClaim $travelDsaClaim
-    )
-    {
+    ) {
         $this->travelClaims = $travelClaims;
         $this->model = $travelDsaClaim;
     }
@@ -22,6 +21,9 @@ class TravelClaimDsaRepository extends Repository
         DB::beginTransaction();
         try {
             $claimDsa = $this->model->create($inputs);
+            if (array_key_exists('travel_modes', $inputs)) {
+                $claimDsa->travelModes()->sync($inputs['travel_modes']);
+            }
             // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return $claimDsa;
@@ -32,30 +34,35 @@ class TravelClaimDsaRepository extends Repository
         }
     }
 
-    public function destroy($id)
+    public function update($id, $inputs)
     {
         DB::beginTransaction();
         try {
             $claimDsa = $this->model->findOrFail($id);
-            $claimDsa->delete();
-            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            $claimDsa->fill($inputs)->save();
+            if (array_key_exists('travel_modes', $inputs)) {
+                $claimDsa->travelModes()->sync($inputs['travel_modes']);
+            } else {
+                $claimDsa->travelModes()->sync([]);
+            }
+            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
-            return true;
+            return $claimDsa;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             return false;
         }
     }
-
-    public function update($id, $data)
+    public function destroy($id)
     {
         DB::beginTransaction();
         try {
             $claimDsa = $this->model->findOrFail($id);
-            $claimDsa->fill($data)->save();
-            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            $claimDsa->travelModes()->detach();
+            $claimDsa->delete();
+            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
-            return $claimDsa;
+            return true;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
             return false;

@@ -144,6 +144,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::get('travel/claims/{travelClaim}/itineraries/{expense}/edit', [ClaimItineraryController::class, 'edit'])->name('travel.claims.itineraries.edit');
         Route::post('travel/claims/{travelClaim}/itineraries/{expense}', [ClaimItineraryController::class, 'update'])->name('travel.claims.itineraries.update');
     });
+    Route::get('travel/claims/{travelClaim}/dsa', [ClaimDsaController::class, 'index'])->name('travel.claims.dsa.index');
     Route::get('travel/claims/{travelClaim}/expenses', [ClaimExpenseController::class, 'index'])->name('travel.claims.expenses.index');
     Route::get('travel/claims/{travelClaim}/itineraries', [ClaimItineraryController::class, 'index'])->name('travel.claims.itineraries.index');
 

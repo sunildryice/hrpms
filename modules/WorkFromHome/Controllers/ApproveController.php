@@ -102,7 +102,7 @@ class ApproveController extends Controller
 
         $logInputs = [
             'user_id' => $authUser->id,
-            'log_remarks' => 'Work From Home request is ' . strtolower($workFromHome->status->title) . '.',
+            'log_remarks' => $inputs['approver_remarks'] ?? '',
             'original_user_id' => $workFromHome->requester_id,
             'status_id' => $workFromHome->status_id,
             'work_from_home_id' => $workFromHome->id,

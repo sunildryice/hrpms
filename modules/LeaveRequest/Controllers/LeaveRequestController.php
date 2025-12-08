@@ -55,9 +55,8 @@ class LeaveRequestController extends Controller
 
         $employeeLeaveBalances = $this->employeeLeaves->getEmployeeLeaves($authUser->employee_id);
         $employeeLeaveBalances = $employeeLeaveBalances->filter(function ($leave) {
-           return in_array($leave->leave_type_id, [config('constant.SICK_LEAVE'), config('constant.ANNUAL_LEAVE')]);
+            return in_array($leave->leave_type_id, [config('constant.SICK_LEAVE'), config('constant.ANNUAL_LEAVE')]);
         });
-//        dd($employeeLeaveBalances);
 
         if ($request->ajax()) {
             $data = $this->leaveRequests->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'logs', 'requester', 'childLeaveRequest', 'leaveDays'])
@@ -164,6 +163,7 @@ class LeaveRequestController extends Controller
         $leaveModes = $this->leaveModes
             ->where('title', '!=', 'No Leave')
             ->get();
+
 
         $leaveTypes = $leaveTypes->sortBy(function ($leave, $key) {
             return $this->sortOrder[$leave->leave_type_id] ?? PHP_INT_MAX;

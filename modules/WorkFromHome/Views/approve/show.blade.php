@@ -131,9 +131,9 @@
                                 <div class="row mb-3">
                                     <label class="col-lg-3 col-form-label required">Remarks</label>
                                     <div class="col-lg-9">
-                                        <textarea class="form-control @error('review_remarks') is-invalid @enderror" name="review_remarks">{{ old('review_remarks') }}</textarea>
+                                        <textarea class="form-control @error('approver_remarks') is-invalid @enderror" name="approver_remarks">{{ old('approver_remarks') }}</textarea>
 
-                                        @error('review_remarks')
+                                        @error('approver_remarks')
                                             <div class="invalid-feedback d-block">
                                                 {{ $message }}
                                             </div>

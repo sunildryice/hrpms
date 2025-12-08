@@ -128,7 +128,6 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-
         $authUser = auth()->user();
         $socialMediaAccounts = $this->socialMediaAccounts->get();
         return view('Employee::create', [

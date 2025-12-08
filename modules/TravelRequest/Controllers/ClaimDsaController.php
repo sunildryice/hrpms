@@ -98,7 +98,7 @@ class ClaimDsaController extends Controller
         $travelClaim = $this->travelClaims->find($id);
         $offices = $this->offices->getActiveOffices();
 
-        return view('TravelRequest::TravelClaim.Expense.create')
+        return view('TravelRequest::TravelClaim.DsaClaim.create')
             ->withOffices($offices)
             ->withActivityCodes($activityCodes)
             ->withDonorCodes($this->donorCodes->getActiveDonorCodes())
@@ -151,7 +151,7 @@ class ClaimDsaController extends Controller
         $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $offices = $this->offices->getActiveOffices();
 
-        return view('TravelRequest::TravelClaim.Expense.edit')
+        return view('TravelRequest::TravelClaim.DsaClaim.edit')
             ->withOffices($offices)
             ->withActivityCodes($activityCodes)
             ->withDonorCodes($this->donorCodes->getActiveDonorCodes())

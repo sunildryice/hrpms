@@ -11,25 +11,26 @@
 |
 */
 
-use Modules\TravelRequest\Controllers\ClaimApproveController;
-use Modules\TravelRequest\Controllers\ClaimApprovedController;
 use Modules\TravelRequest\Controllers\ClaimController;
-use Modules\TravelRequest\Controllers\ClaimExpenseController;
-use Modules\TravelRequest\Controllers\ClaimItineraryController;
-use Modules\TravelRequest\Controllers\ClaimPaymentController;
+use Modules\TravelRequest\Controllers\ClaimDsaController;
 use Modules\TravelRequest\Controllers\ClaimReviewController;
-use Modules\TravelRequest\Controllers\LocalTravelApproveController;
-use Modules\TravelRequest\Controllers\LocalTravelApprovedController;
 use Modules\TravelRequest\Controllers\LocalTravelController;
-use Modules\TravelRequest\Controllers\LocalTravelItineraryController;
-use Modules\TravelRequest\Controllers\LocalTravelPaymentController;
-use Modules\TravelRequest\Controllers\TravelReportApprovedController;
+use Modules\TravelRequest\Controllers\ClaimApproveController;
+use Modules\TravelRequest\Controllers\ClaimExpenseController;
+use Modules\TravelRequest\Controllers\ClaimPaymentController;
 use Modules\TravelRequest\Controllers\TravelReportController;
+use Modules\TravelRequest\Controllers\ClaimApprovedController;
+use Modules\TravelRequest\Controllers\TravelRequestController;
+use Modules\TravelRequest\Controllers\ClaimItineraryController;
+use Modules\TravelRequest\Controllers\LocalTravelApproveController;
+use Modules\TravelRequest\Controllers\LocalTravelPaymentController;
 use Modules\TravelRequest\Controllers\TravelReportReviewController;
+use Modules\TravelRequest\Controllers\LocalTravelApprovedController;
+use Modules\TravelRequest\Controllers\LocalTravelItineraryController;
+use Modules\TravelRequest\Controllers\TravelReportApprovedController;
 use Modules\TravelRequest\Controllers\TravelRequestAdvanceController;
 use Modules\TravelRequest\Controllers\TravelRequestApproveController;
 use Modules\TravelRequest\Controllers\TravelRequestApprovedController;
-use Modules\TravelRequest\Controllers\TravelRequestController;
 use Modules\TravelRequest\Controllers\TravelRequestEstimateController;
 use Modules\TravelRequest\Controllers\TravelRequestItineraryController;
 
@@ -133,6 +134,12 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::get('travel/claims/{travelClaim}/expenses/{expense}/edit', [ClaimExpenseController::class, 'edit'])->name('travel.claims.expenses.edit');
         Route::post('travel/claims/{travelClaim}/expenses/{expense}', [ClaimExpenseController::class, 'update'])->name('travel.claims.expenses.update');
         Route::delete('travel/claims/{travelClaim}/expenses/{expense}/destroy', [ClaimExpenseController::class, 'destroy'])->name('travel.claims.expenses.destroy');
+
+        Route::get('travel/claims/{travelClaim}/dsa/create', [ClaimDsaController::class, 'create'])->name('travel.claims.dsa.create');
+        Route::post('travel/claims/{travelClaim}/dsa', [ClaimDsaController::class, 'store'])->name('travel.claims.dsa.store');
+        Route::get('travel/claims/{travelClaim}/dsa/{dsa}/edit', [ClaimDsaController::class, 'edit'])->name('travel.claims.dsa.edit');
+        Route::post('travel/claims/{travelClaim}/dsa/{dsa}', [ClaimDsaController::class, 'update'])->name('travel.claims.dsa.update');
+        Route::delete('travel/claims/{travelClaim}/dsa/{dsa}/destroy', [ClaimDsaController::class, 'destroy'])->name('travel.claims.dsa.destroy');
 
         Route::get('travel/claims/{travelClaim}/itineraries/{expense}/edit', [ClaimItineraryController::class, 'edit'])->name('travel.claims.itineraries.edit');
         Route::post('travel/claims/{travelClaim}/itineraries/{expense}', [ClaimItineraryController::class, 'update'])->name('travel.claims.itineraries.update');

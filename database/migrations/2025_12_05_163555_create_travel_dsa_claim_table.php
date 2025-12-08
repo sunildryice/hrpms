@@ -36,6 +36,7 @@ return new class extends Migration {
             $table->decimal('total_amount', 10, 2)->nullable()->default(null);
 
             $table->text('remarks')->nullable()->default(null);
+            $table->string('attachment')->nullable()->default(null);
             $table->nullableTimestamps();
 
             $table->foreign('travel_claim_id')->references('id')->on('travel_claims');

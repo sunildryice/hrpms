@@ -41,6 +41,7 @@ class TravelDsaClaim extends Model
         'other_expense',
         'total_amount',
         'remarks',
+        'attachment',
         'created_by',
         'updated_by',
     ];

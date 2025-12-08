@@ -71,10 +71,10 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
                 {
                     data: 'expense_date',
                     name: 'expense_date'
@@ -87,9 +87,13 @@
                     data: 'expense_amount',
                     name: 'expense_amount'
                 },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
-                    data: 'charging_office',
-                    name: 'charging_office'
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
                 },
                 {
                     data: 'attachment',
@@ -144,7 +148,7 @@
                         activity_code_id: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Activity code is required',
+                                    message: 'Activity is required',
                                 },
                             },
                         },
@@ -159,13 +163,20 @@
                                 },
                             },
                         },
-                        description: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Description is required',
-                                },
-                            },
-                        },
+                        // description: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Description is required',
+                        //         },
+                        //     },
+                        // },
+                        // invoice_bill_number: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Invoice / Bill number is required',
+                        //         },
+                        //     },
+                        // },
                         expense_amount: {
                             validators: {
                                 notEmpty: {
@@ -182,13 +193,13 @@
                                 },
                             },
                         },
-                        office_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Charging office is required',
-                                },
-                            },
-                        },
+                        // office_id: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Charging office is required',
+                        //         },
+                        //     },
+                        // },
                         attachment: {
                             validators: {
                                 file: {
@@ -303,13 +314,17 @@
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment'
                 },
                 {
                     data: 'action',
@@ -325,6 +340,7 @@
             $('#claimItineraryModal').find('.modal-content').html('');
             $('#claimItineraryModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                 const claimItineraryForm = document.getElementById('claimItineraryForm');
+
                 $(claimItineraryForm).find(".select2").each(function() {
                     $(this)
                         .wrap("<div class=\"position-relative\"></div>")
@@ -334,28 +350,35 @@
                             dropdownAutoWidth: true
                         });
                 });
+
                 const fv = FormValidation.formValidation(claimItineraryForm, {
                     fields: {
-                        percentage_charged: {
+                        activities: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Percentage charged is required',
+                                    message: 'Activities is required'
+                                }
+                            }
+                        },
+                        departure_date: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The Departure date is required',
                                 },
-                                numeric: {
-                                    message: 'The percentage should be number.',
-                                },
-                                between: {
-                                    inclusive: true,
-                                    min: 0,
-                                    max: 100,
-                                    message: 'The value must be between 0 to 100',
+                                date: {
+                                    format: 'YYYY-MM-DD',
+                                    message: 'The value is not a valid date',
                                 },
                             },
                         },
-                        charging_office: {
+                        arrival_date: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Charging office is required',
+                                    message: 'The Arrival date is required',
+                                },
+                                date: {
+                                    format: 'YYYY-MM-DD',
+                                    message: 'The value is not a valid date',
                                 },
                             },
                         },
@@ -363,12 +386,12 @@
                             validators: {
                                 file: {
                                     extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '5097152',
-                                    message: 'The selected file is not valid file or must not be greater than 5 MB.',
-                                },
-                            },
-                        },
+                                    type: 'image/jpeg,image/jpg,image/png,application/pdf',
+                                    maxSize: 5097152,
+                                    message: 'File must be jpeg, jpg, png or pdf and less than 5MB'
+                                }
+                            }
+                        }
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -377,55 +400,99 @@
                         icon: new FormValidation.plugins.Icon({
                             valid: 'bi bi-check2-square',
                             invalid: 'bi bi-x-lg',
-                            validating: 'bi bi-arrow-repeat',
+                            validating: 'bi bi-arrow-repeat'
                         }),
                     },
-                }).on('core.form.valid', function(event) {
-                    $url = fv.form.action;
-                    $form = fv.form;
-                    var formData = new FormData();
-                    $('#claimItineraryForm input, #claimItineraryForm select, #claimItineraryForm textarea')
-                        .each(function(index) {
-                            var input = $(this);
-                            formData.append(input.attr('name'), input.val());
-                        });
-                    var attachmentFiles = claimItineraryForm.querySelector('[name="attachment"]')
-                        .files;
-                    if (attachmentFiles.length > 0) {
-                        formData.append('attachment', attachmentFiles[0]);
-                    }
+                }).on('core.form.valid', function() {
+                    const $url = fv.form.action;
+                    const formData = new FormData(claimItineraryForm);
 
-                    var successCallback = function(response) {
+                    const successCallback = function(response) {
                         $('#claimItineraryModal').modal('hide');
-                        toastr.success(response.message, 'Success', {
-                            timeOut: 5000
-                        });
-                        $('#travelClaimEditForm').find('#total_expense_amount').text(response
+                        toastr.success(response.message || 'Saved successfully');
+                        $('#travelClaimEditForm #total_expense_amount').text(response
                             .travelClaim.total_expense_amount);
-                        $('#travelClaimEditForm').find('#total_itinerary_amount').text(response
+                        $('#travelClaimEditForm #total_itinerary_amount').text(response
                             .travelClaim.total_itinerary_amount);
-                        $('#travelClaimEditForm').find('#total_amount').text(response
-                            .travelClaim.total_amount);
-                        $('#travelClaimEditForm').find('[name="refundable_amount"]').val(
-                            response.travelClaim.refundable_amount);
+                        $('#travelClaimEditForm #total_amount').text(response.travelClaim
+                            .total_amount);
+                        $('#travelClaimEditForm [name="refundable_amount"]').val(response
+                            .travelClaim.refundable_amount);
                         itineraryTable.ajax.reload();
-                    }
+                    };
+
                     ajaxSubmitFormData($url, 'POST', formData, successCallback);
                 });
-                $(claimItineraryForm).on('change', '[name="percentage_charged"]', function(e) {
-                    calculationTotalDsaAmount(this);
-                });
 
-                function calculationTotalDsaAmount($element) {
-                    dsaUnitPrice = parseFloat($($element).closest('form').find('[name="dsa_unit_price"]')
-                        .val());
-                    overnights = parseFloat($($element).closest('form').find('[name="overnights"]').val());
-                    percentageCharged = parseFloat($($element).closest('form').find(
-                        '[name="percentage_charged"]').val());
-                    dsaTotalAmount = dsaUnitPrice * overnights;
-                    totalAmount = dsaTotalAmount ? parseFloat(dsaTotalAmount * percentageCharged / 100) : 0;
-                    $($element).closest('form').find('[name="total_amount"]').val(totalAmount);
+                const departurePicker = $(claimItineraryForm.querySelector('[name="departure_date"]'))
+                    .datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                        endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}',
+                        zIndex: 2048,
+                    }).on('change pick.datepicker', updateCalculations);
+
+                const arrivalPicker = $(claimItineraryForm.querySelector('[name="arrival_date"]'))
+                    .datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
+                        endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}',
+                        zIndex: 2048,
+                    }).on('change pick.datepicker', updateCalculations);
+
+                function updateCalculations() {
+                    const $form = $(claimItineraryForm);
+
+                    const breakfast = parseFloat($form.find('[name="breakfast"]').val()) || 0;
+                    const lunch = parseFloat($form.find('[name="lunch"]').val()) || 0;
+                    const dinner = parseFloat($form.find('[name="dinner"]').val()) || 0;
+                    const incidental = parseFloat($form.find('[name="incident_cost"]').val()) || 0;
+
+                    const totalDsaPerDay = breakfast + lunch + dinner + incidental;
+                    $form.find('[name="total_dsa"]').val(totalDsaPerDay.toFixed(2));
+
+                    const depDateStr = $form.find('[name="departure_date"]').val();
+                    const arrDateStr = $form.find('[name="arrival_date"]').val();
+
+
+                    let daysSpent = 0;
+
+                    if (depDateStr && arrDateStr) {
+                        const dep = new Date(depDateStr);
+                        const arr = new Date(arrDateStr);
+
+                        const diffInDays = Math.floor((arr - dep) / (1000 * 60 * 60 * 24));
+
+                        if (arrDateStr === depDateStr) {
+                            daysSpent = diffInDays;
+                        } else {
+                            daysSpent = diffInDays;
+                        }
+                    }
+
+                    $form.find('[name="days_spent"]').val(daysSpent);
+
+                    const dailyAllowance = totalDsaPerDay * daysSpent;
+                    $form.find('[name="daily_allowance"]').val(dailyAllowance.toFixed(2));
+
+                    const lodging = parseFloat($form.find('[name="lodging_expense"]').val()) || 0;
+                    const other = parseFloat($form.find('[name="other_expense"]').val()) || 0;
+                    const totalAmount = dailyAllowance + lodging + other;
+
+                    $form.find('[name="total_amount"]').val(totalAmount.toFixed(2));
                 }
+
+                $(claimItineraryForm).on('change keyup',
+                    'input[name="breakfast"], input[name="lunch"], input[name="dinner"], ' +
+                    'input[name="incident_cost"], input[name="lodging_expense"], input[name="other_expense"]',
+                    updateCalculations
+                );
+
+                setTimeout(updateCalculations, 300);
             });
         });
     </script>
@@ -506,11 +573,12 @@
                                             <thead class="thead-light">
                                                 <tr>
                                                     <th scope="col">{{ __('label.activity') }}</th>
-                                                    <th scope="col">{{ __('label.donor') }}</th>
+                                                    {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
                                                     <th scope="col">{{ __('label.date') }}</th>
                                                     <th scope="col">{{ __('label.description') }}</th>
                                                     <th scope="col">{{ __('label.amount') }}</th>
-                                                    <th scope="col">Charging Office</th>
+                                                    <th scope="col">{{ __('label.invoice-bill-number') }}</th>
+                                                    {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>
@@ -519,10 +587,9 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="4">{{ __('label.sub-total') }}</td>
-                                                    <td id="total_expense_amount">
+                                                    <td colspan="3">{{ __('label.sub-total') }}</td>
+                                                    <td colspan="4" id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
-                                                    <td colspan="2"></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -535,6 +602,80 @@
                     </div>
 
                     <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> Travel Itineraries</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                    class="m-2 btn btn-primary btn-sm text-capitalize open-itinerary-modal-form"
+                                    href="{!! route('travel.claims.dsa.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add Claim Itinerary
+                                </button>
+                            @endif
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="itineraryTable">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col">{{ __('label.from-date') }}</th>
+                                                    <th scope="col">{{ __('label.from') }}</th>
+                                                    <th scope="col">{{ __('label.to-date') }}</th>
+                                                    <th scope="col">{{ __('label.to') }}</th>
+                                                    <th scope="col">{{ __('label.overnights') }}</th>
+                                                    <th scope="col">{{ __('label.dsa-rate') }}</th>
+                                                    <th scope="col">{{ __('label.percentage') }}</th>
+                                                    <th scope="col">{{ __('label.total-dsa') }}</th>
+                                                    <th scope="col">{{ __('label.remarks') }}</th>
+                                                    <th scope="col">{{ __('label.attachment') }}</th>
+                                                    <th style="width: 150px">{{ __('label.action') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            {{-- <tfoot>
+                                                <tr>
+                                                    <td colspan="7">{{ __('label.sub-total') }}</td>
+                                                    <td id="total_itinerary_amount">
+                                                        {{ $travelClaim->total_itinerary_amount }}</td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="7">{{ __('label.grand-total') }}</td>
+                                                    <td id="total_amount">
+                                                        {{ $travelClaim->total_amount }}
+                                                    </td>
+                                                    <td colspan="3"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="7">{{ __('label.advance-amount') }}
+                                                    </td>
+                                                    <td colspan="2">
+                                                        <input type="number" class="form-control" name="advance_amount"
+                                                            value="{{ $travelClaim->advance_amount }}" />
+                                                    </td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="7">
+                                                        {{ __('label.refundable-reimbursable-amount') }}
+                                                    </td>
+                                                    <td colspan="2">
+                                                        <input readonly class="form-control" name="refundable_amount"
+                                                            value="{{ $travelClaim->refundable_amount }}" />
+                                                    </td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                            </tfoot> --}}
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {{-- <div class="card">
                         <div class="card-header fw-bold">
                             Travel Itineraries
                         </div>
@@ -553,8 +694,8 @@
                                                     <th scope="col">{{ __('label.dsa-rate') }}</th>
                                                     <th scope="col">{{ __('label.percentage') }}</th>
                                                     <th scope="col">{{ __('label.total-dsa') }}</th>
-                                                    <th scope="col">Charging Office</th>
                                                     <th scope="col">{{ __('label.remarks') }}</th>
+                                                    <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>
                                             </thead>
@@ -565,31 +706,33 @@
                                                     <td colspan="7">{{ __('label.sub-total') }}</td>
                                                     <td id="total_itinerary_amount">
                                                         {{ $travelClaim->total_itinerary_amount }}</td>
-                                                    <td colspan="2"></td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">{{ __('label.grand-total') }}</td>
                                                     <td id="total_amount">
                                                         {{ $travelClaim->total_amount }}
                                                     </td>
-                                                    <td colspan="2"></td>
+                                                    <td colspan="3"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">{{ __('label.advance-amount') }}
                                                     </td>
-                                                    <td colspan="3">
+                                                    <td colspan="2">
                                                         <input type="number" class="form-control" name="advance_amount"
                                                             value="{{ $travelClaim->advance_amount }}" />
                                                     </td>
+                                                    <td colspan="2"></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="7">
                                                         {{ __('label.refundable-reimbursable-amount') }}
                                                     </td>
-                                                    <td colspan="3">
+                                                    <td colspan="2">
                                                         <input readonly class="form-control" name="refundable_amount"
                                                             value="{{ $travelClaim->refundable_amount }}" />
                                                     </td>
+                                                    <td colspan="2"></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -597,7 +740,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="card">
                         <div class="card-header fw-bold">Process</div>

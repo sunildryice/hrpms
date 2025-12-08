@@ -18,10 +18,10 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
                 {
                     data: 'expense_date',
                     name: 'expense_date'
@@ -31,17 +31,21 @@
                     name: 'expense_description'
                 },
                 {
-                    data: 'attachment',
-                    name: 'attachment',
-                },
-                {
                     data: 'expense_amount',
                     name: 'expense_amount'
                 },
                 {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                }
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
+                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
+                {
+                    data: 'attachment',
+                    name: 'attachment',
+                },
             ]
         });
 
@@ -69,10 +73,6 @@
                     name: 'arrival_place'
                 },
                 {
-                    data: 'attachment',
-                    name: 'attachment',
-                },
-                {
                     data: 'overnights',
                     name: 'overnights'
                 },
@@ -92,13 +92,17 @@
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                {
-                    data: 'charging_office',
-                    name: 'charging_office'
-                },
+                // {
+                //     data: 'charging_office',
+                //     name: 'charging_office'
+                // },
                 {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment',
                 },
             ]
         });
@@ -192,21 +196,24 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        <th scope="col">{{ __('label.donor') }}</th>
+                                        {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
                                         <th scope="col">{{ __('label.date') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
-                                        <th scope="col">{{ __('label.attachment') }}</th>
                                         <th scope="col">{{ __('label.amount') }}</th>
-                                        <th scope="col">Charging Office</th>
+                                        <th scope="col">{{ __('label.invoice-bill-number') }}</th>
+                                        {{-- <th scope="col">Charging Office</th> --}}
+                                        <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="5">{{ __('label.sub-total') }}</td>
+                                        <td colspan="3">{{ __('label.sub-total') }}</td>
                                         <td id="total_expense_amount">
                                             {{ $travelClaim->total_expense_amount }}</td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -227,52 +234,52 @@
                                         <th scope="col">{{ __('label.from') }}</th>
                                         <th scope="col">{{ __('label.to-date') }}</th>
                                         <th scope="col">{{ __('label.to') }}</th>
-                                        <th scope="col">{{ __('label.attachment') }}</th>
                                         <th scope="col">{{ __('label.overnights') }}</th>
                                         <th scope="col">{{ __('label.dsa-rate') }}</th>
                                         <th scope="col">{{ __('label.percentage') }}</th>
                                         <th scope="col">{{ __('label.activity-code') }}</th>
                                         <th scope="col">{{ __('label.total-dsa') }}</th>
-                                        <th scope="col">Charging Office</th>
+                                        {{-- <th scope="col">Charging Office</th> --}}
                                         <th scope="col">{{ __('label.remarks') }}</th>
+                                        <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <td colspan="9">{{ __('label.sub-total') }}</td>
+                                        <td colspan="8">{{ __('label.sub-total') }}</td>
                                         <td id="total_itinerary_amount">
                                             {{ $travelClaim->total_itinerary_amount }}</td>
-                                            <td></td>
-                                            <td></td>
+                                        <td></td>
+                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="9">{{ __('label.grand-total') }}</td>
+                                        <td colspan="8">{{ __('label.grand-total') }}</td>
                                         <td id="grand_total_amount">
                                             {{ $travelClaim->total_amount }}
                                         </td>
                                         <td></td>
-                                            <td></td>
+                                        <td></td>
 
                                     </tr>
                                     <tr>
-                                        <td colspan="9">{{ __('label.advance-amount') }}</td>
+                                        <td colspan="8">{{ __('label.advance-amount') }}</td>
                                         <td id="advance_amount">
                                             {{ $travelClaim->advance_amount }}
                                         </td>
                                         <td></td>
-                                            <td></td>
+                                        <td></td>
 
                                     </tr>
                                     <tr>
-                                        <td colspan="9">
+                                        <td colspan="8">
                                             {{ __('label.refundable-reimbursable-amount') }}</td>
                                         <td id="refundable_amount">
                                             {{ $travelClaim->refundable_amount }}
                                         </td>
                                         <td></td>
-                                            <td></td>
+                                        <td></td>
 
                                     </tr>
                                 </tfoot>
@@ -305,7 +312,8 @@
                                                             {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                         </span>
                                                     </div>
-                                                    <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                    <small
+                                                        title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                                 </div>
                                                 <p class="text-justify comment-text mb-0 mt-1">
                                                     {{ $log->log_remarks }}
@@ -318,7 +326,8 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationleavetype" class="form-label required-label">Status</label>
+                                                <label for="validationleavetype"
+                                                    class="form-label required-label">Status</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
@@ -339,7 +348,8 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                                <label for="validationRemarks"
+                                                    class="form-label required-label">Remarks</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">

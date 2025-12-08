@@ -26,7 +26,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'percentage_charged'=>'required|numeric|min:0',
-            'office_id' => 'required|exists:lkup_offices,id',
+            // 'office_id' => 'required|exists:lkup_offices,id',
             'description' => 'nullable',
             'attachment'=>'nullable|mimes:png,jpg,pdf|max:2048',
         ];

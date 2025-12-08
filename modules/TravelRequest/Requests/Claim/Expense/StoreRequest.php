@@ -25,12 +25,13 @@ class StoreRequest extends FormRequest
     {
         return [
             'activity_code_id'=>'required|exists:lkup_activity_codes,id',
-            'donor_code_id'=>'required|exists:lkup_donor_codes,id',
             'expense_date'=>'required|date',
             'expense_amount'=>'required|numeric|min:0.01',
-            'office_id'=>'required|exists:lkup_offices,id',
-            'expense_description'=>'required',
+            'invoice_bill_number'=> 'nullable',
+            'expense_description'=>'nullable',
             'attachment'=>'nullable|mimes:png,jpg,pdf|max:5120',
+            // 'donor_code_id'=>'required|exists:lkup_donor_codes,id',
+            // 'office_id'=>'required|exists:lkup_offices,id',
         ];
     }
 

@@ -2,42 +2,33 @@
 
 namespace Modules\TravelRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-use Illuminate\Support\Facades\Storage;
-use Modules\Master\Repositories\ActivityCodeRepository;
-use Modules\Master\Repositories\DonorCodeRepository;
 use Modules\Master\Repositories\OfficeRepository;
-use Modules\TravelRequest\Repositories\TravelClaimExpenseRepository;
+use Modules\Master\Repositories\TravelModeRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
+use Modules\TravelRequest\Requests\Claim\DsaClaim\StoreRequest;
+use Modules\TravelRequest\Repositories\TravelClaimDsaRepository;
+use Modules\TravelRequest\Requests\Claim\DsaClaim\UpdateRequest;
 
-use Modules\TravelRequest\Requests\Claim\Expense\StoreRequest;
-use Modules\TravelRequest\Requests\Claim\Expense\UpdateRequest;
-
-use DataTables;
-
-class ClaimExpenseController extends Controller
+class ClaimDsaController extends Controller
 {
     /**
      * Create a new controller instance.
      *
-     * @param ActivityCodeRepository $activityCodes
      * @param TravelClaimRepository $travelClaims
-     * @param TravelClaimExpenseRepository $travelExpenses
+     * @param TravelClaimDsaRepository $travelDsaClaims
+     * @param TravelModeRepository $travelModes
      */
     public function __construct(
-        ActivityCodeRepository       $activityCodes,
-        DonorCodeRepository $donorCodes,
-        TravelClaimRepository        $travelClaims,
-        TravelClaimExpenseRepository $travelExpenses,
-        OfficeRepository $offices
-    )
-    {
-        $this->activityCodes = $activityCodes;
-        $this->donorCodes = $donorCodes;
+        protected TravelClaimRepository $travelClaims,
+        protected TravelClaimDsaRepository $travelDsaClaims,
+        protected TravelModeRepository $travelModes,
+        protected OfficeRepository $offices
+    ) {
         $this->travelClaims = $travelClaims;
-        $this->travelExpenses = $travelExpenses;
+        $this->travelDsaClaims = $travelDsaClaims;
         $this->offices = $offices;
         $this->destinationPath = 'travelRequest';
     }
@@ -53,13 +44,13 @@ class ClaimExpenseController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->travelExpenses->select(['*'])->with(['activityCode','donorCode','office'])
+            $data = $this->travelDsaClaims->select(['*'])->with(['activityCode', 'donorCode', 'office'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('charging_office', function ($row) {
                     return $row->office->getOfficeName();
-                }) 
+                })
                 ->addColumn('expense_date', function ($row) {
                     return $row->getExpenseDate();
                 })->addColumn('attachment', function ($row) {
@@ -72,10 +63,10 @@ class ClaimExpenseController extends Controller
                 })->addColumn('action', function ($row) use ($authUser, $travelClaim) {
                     $btn = '';
                     if ($authUser->can('update', $travelClaim)) {
-                        $btn = '<a data-toggle="modal" class="btn btn-outline-primary btn-sm open-expense-modal-form" href="';
-                        $btn .= route('travel.claims.expenses.edit', [$row->travel_claim_id, $row->id]) . '"><i class="bi-pencil-square"></i></a>';
+                        $btn = '<a data-toggle="modal" class="btn btn-outline-primary btn-sm open-itinerary-modal-form" href="';
+                        $btn .= route('travel.claims.dsa.edit', [$row->travel_claim_id, $row->id]) . '"><i class="bi-pencil-square"></i></a>';
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="' . route('travel.claims.expenses.destroy', [$row->travel_claim_id, $row->id]) . '">';
+                        $btn .= 'data-href="' . route('travel.claims.dsa.destroy', [$row->travel_claim_id, $row->id]) . '">';
                         $btn .= '<i class="bi-trash"></i></a>';
                     }
                     return $btn;
@@ -98,14 +89,11 @@ class ClaimExpenseController extends Controller
      */
     public function create($id)
     {
-        $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $travelClaim = $this->travelClaims->find($id);
         $offices = $this->offices->getActiveOffices();
 
-        return view('TravelRequest::TravelClaim.Expense.create')
-            ->withOffices($offices)
-            ->withActivityCodes($activityCodes)
-            ->withDonorCodes($this->donorCodes->getActiveDonorCodes())
+        return view('TravelRequest::TravelClaim.DsaClaim.create')
+            ->withTravelModes($this->travelModes->get())
             ->withTravelClaim($travelClaim);
     }
 
@@ -123,21 +111,25 @@ class ClaimExpenseController extends Controller
         $inputs = $request->validated();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath . '/' . $travelClaim->travel_request_id, time() . '_claim_expense.' . $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $travelClaim->travel_request_id, time() . '_claim_dsa.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $inputs['travel_claim_id'] = $travelClaim->id;
         $inputs['created_by'] = $authUser->id;
-        $travelClaimExpense = $this->travelExpenses->create($inputs);
+        $travelDsaClaim = $this->travelDsaClaims->create($inputs);
 
-        if ($travelClaimExpense) {
-            return response()->json(['status' => 'ok',
-                'travelClaim' => $travelClaimExpense->travelClaim,
-                'travelClaimExpense' => $travelClaimExpense,
-                'message' => 'Travel expense is successfully added.'], 200);
+        if ($travelDsaClaim) {
+            return response()->json([
+                'status' => 'ok',
+                'travelClaim' => $travelDsaClaim->travelClaim,
+                'travelDsaClaim' => $travelDsaClaim,
+                'message' => 'Travel Request Claim Itinerary is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Travel expense can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Travel Request Claim Itinerary can not be added.'
+        ], 422);
     }
 
     /**
@@ -150,16 +142,13 @@ class ClaimExpenseController extends Controller
     public function edit($claimId, $id)
     {
         $travelClaim = $this->travelClaims->find($claimId);
-        $travelClaimExpense = $this->travelExpenses->find($id);
+        $travelClaimExpense = $this->travelDsaClaims->find($id);
         $this->authorize('update', $travelClaim);
-        $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $offices = $this->offices->getActiveOffices();
 
-        return view('TravelRequest::TravelClaim.Expense.edit')
-            ->withOffices($offices)
-            ->withActivityCodes($activityCodes)
-            ->withDonorCodes($this->donorCodes->getActiveDonorCodes())
-            ->withTravelExpense($travelClaimExpense);
+        return view('TravelRequest::TravelClaim.DsaClaim.edit')
+            ->withTravelModes($this->travelModes->get())
+            ->withTravelClaim($travelClaim);
     }
 
     /**
@@ -173,7 +162,7 @@ class ClaimExpenseController extends Controller
      */
     public function update(UpdateRequest $request, $claimId, $id)
     {
-        $travelClaimExpense = $this->travelExpenses->find($id);
+        $travelClaimExpense = $this->travelDsaClaims->find($id);
         $this->authorize('update', $travelClaimExpense->travelClaim);
         $inputs = $request->validated();
         if ($request->file('attachment')) {
@@ -182,15 +171,19 @@ class ClaimExpenseController extends Controller
             $inputs['attachment'] = $filename;
         }
         $inputs['updated_by'] = auth()->id();
-        $travelClaimExpense = $this->travelExpenses->update($id, $inputs);
+        $travelClaimExpense = $this->travelDsaClaims->update($id, $inputs);
         if ($travelClaimExpense) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'travelClaim' => $travelClaimExpense->travelClaim,
                 'travelClaimExpense' => $travelClaimExpense,
-                'message' => 'Travel expense is successfully updated.'], 200);
+                'message' => 'Travel expense is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Travel expense can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Travel expense can not be updated.'
+        ], 422);
     }
 
     /**
@@ -202,9 +195,9 @@ class ClaimExpenseController extends Controller
      */
     public function destroy($claimId, $id)
     {
-        $travelClaimExpense = $this->travelExpenses->find($id);
+        $travelClaimExpense = $this->travelDsaClaims->find($id);
         $this->authorize('delete', $travelClaimExpense->travelClaim);
-        $flag = $this->travelExpenses->destroy($id);
+        $flag = $this->travelDsaClaims->destroy($id);
         if ($flag) {
             $travelClaim = $this->travelClaims->find($claimId);
             return response()->json([

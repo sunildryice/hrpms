@@ -115,7 +115,7 @@
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
                         <label for="total_amount"
-                            class="m-0">{{ __('label.total-amount') }}</label>
+                            class="m-0">{{ __('label.total-advance-amount') }}</label>
                     </div>
                 </div>
                 <div class="col-lg-9">

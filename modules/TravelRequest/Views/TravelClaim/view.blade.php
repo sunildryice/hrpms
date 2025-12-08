@@ -32,6 +32,10 @@
                     name: 'expense_amount'
                 },
                 {
+                    data: 'invoice_bill_number',
+                    name: 'invoice_bill_number'
+                },
+                {
                     data: 'attachment',
                     name: 'attachment'
                 },
@@ -50,12 +54,12 @@
                     name: 'departure_date'
                 },
                 {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
                     data: 'arrival_date',
                     name: 'arrival_date'
+                },
+                {
+                    data: 'departure_place',
+                    name: 'departure_place'
                 },
                 {
                     data: 'arrival_place',
@@ -78,12 +82,12 @@
                     name: 'total_amount'
                 },
                 {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-                {
                     data: 'description',
                     name: 'description'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment'
                 },
             ]
         });
@@ -152,6 +156,7 @@
                                             <th scope="col">{{ __('label.date') }}</th>
                                             <th scope="col">{{ __('label.description') }}</th>
                                             <th scope="col">{{ __('label.amount') }}</th>
+                                            <th scope="col">{{ __('label.invoice-bill-number') }}</th>
                                             <th scope="col">{{ __('label.attachment') }}</th>
                                         </tr>
                                     </thead>
@@ -160,9 +165,8 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="3">{{ __('label.sub-total') }}</td>
-                                            <td id="total_expense_amount">
+                                            <td colspan="3" id="total_expense_amount">
                                                 {{ $travelClaim->total_expense_amount }}</td>
-                                            <td></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -191,9 +195,9 @@
                                             </th>
                                             <th scope="col" rowspan="2">{{ __('label.total-dsa') }}
                                             </th>
-                                            <th scope="col" rowspan="2">{{ __('label.attachment') }}
-                                            </th>
                                             <th scope="col" rowspan="2">{{ __('label.remarks') }}
+                                            </th>
+                                            <th scope="col" rowspan="2">{{ __('label.attachment') }}
                                             </th>
                                         </tr>
                                         <tr>
@@ -208,31 +212,27 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="7">{{ __('label.sub-total') }}</td>
-                                            <td id="total_itinerary_amount">
+                                            <td colspan="3" id="total_itinerary_amount">
                                                 {{ $travelClaim->total_itinerary_amount }}</td>
-                                            <td></td>
                                         </tr>
                                         <tr>
                                             <td colspan="7">{{ __('label.grand-total') }}</td>
-                                            <td id="grand_total_amount">
+                                            <td colspan="3" id="grand_total_amount">
                                                 {{ $travelClaim->total_amount }}
                                             </td>
-                                            <td></td>
                                         </tr>
                                         <tr>
                                             <td colspan="7">{{ __('label.advance-amount') }}</td>
-                                            <td id="advance_amount">
+                                            <td colspan="3" id="advance_amount">
                                                 {{ $travelClaim->advance_amount }}
                                             </td>
-                                            <td></td>
                                         </tr>
                                         <tr>
                                             <td colspan="7">
                                                 {{ __('label.refundable-reimbursable-amount') }}</td>
-                                            <td id="refundable_amount">
+                                            <td colspan="3" id="refundable_amount">
                                                 {{ $travelClaim->refundable_amount }}
                                             </td>
-                                            <td></td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -259,7 +259,8 @@
                                                         {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                     </span>
                                                 </div>
-                                                <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                <small
+                                                    title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                             </div>
                                             <p class="text-justify comment-text mb-0 mt-1">
                                                 {{ $log->log_remarks }}

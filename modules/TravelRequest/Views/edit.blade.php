@@ -13,6 +13,14 @@
             //     width: '100%',
             //     dropdownAutoWidth: true
             // });
+
+            //Hide "Add Estimation" button if an estimate already exists
+            @if ($travelRequest->travelRequestEstimate)
+                $('.estimateAddBlock').hide();
+            @else
+                $('.estimateAddBlock').show();
+            @endif
+
             const form = document.getElementById('travelRequestEditForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -1240,10 +1248,12 @@
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">
                         <span> Travel Advance Request</span>
-                        <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
-                            href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
-                            <i class="bi-plus"></i> Add Estimation
-                        </button>
+                        <div class="estimateAddBlock">
+                            <button data-toggle="modal" class="btn btn-primary btn-sm open-estimation-modal-form"
+                                href="{!! route('travel.requests.estimate.create', $travelRequest->id) !!}">
+                                <i class="bi-plus"></i> Add Estimation
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body estimate">
@@ -1259,7 +1269,7 @@
                                     <th scope="col">{{ __('label.miscellaneous-amount') }}</th>
                                     <th scope="col">{{ __('label.estimated-event-activities-cost') }}</th>
                                     <th scope="col">{{ __('label.miscellaneous-remarks') }}</th>
-                                    <th scope="col">{{ __('label.total-amount') }}</th>
+                                    <th scope="col">{{ __('label.total-advance-amount') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>

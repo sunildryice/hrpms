@@ -22,10 +22,11 @@ class TravelClaimDsaRepository extends Repository
         DB::beginTransaction();
         try {
             $claimDsa = $this->model->create($inputs);
-            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return $claimDsa;
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e->getMessage());
             DB::rollback();
             return false;
         }

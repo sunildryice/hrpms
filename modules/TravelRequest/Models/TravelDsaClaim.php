@@ -97,4 +97,17 @@ class TravelDsaClaim extends Model
         }
     }
 
+    public function getDaySpents()
+    {
+        $daySpents = 0;
+        if($this->arrival_date && $this->departure_date){
+            if($this->arrival_date == $this->travelRequest->return_date){
+                $daySpents = $this->arrival_date->diffInDays($this->departure_date);
+            } else {
+                $daySpents = $this->arrival_date->diffInDays($this->departure_date)+1;
+            }
+        }
+        return $daySpents;
+    }
+
 }

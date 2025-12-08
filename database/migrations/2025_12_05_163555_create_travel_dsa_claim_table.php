@@ -37,6 +37,8 @@ return new class extends Migration {
 
             $table->text('remarks')->nullable()->default(null);
             $table->string('attachment')->nullable()->default(null);
+            $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('updated_by')->nullable()->default(null);
             $table->nullableTimestamps();
 
             $table->foreign('travel_claim_id')->references('id')->on('travel_claims');

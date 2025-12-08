@@ -286,7 +286,6 @@
 
                     </div>
 
-
                     <div class="card">
                         <div class="card-header fw-bold">Process</div>
                         <div class="card-body">

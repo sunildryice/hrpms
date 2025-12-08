@@ -2,6 +2,17 @@
 
 @section('title', 'Work From Home Requests')
 
+
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -16,6 +27,7 @@
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
+                scrollX: true,
                 ajax: "{{ route('wfh.requests.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
@@ -30,7 +42,9 @@
                     },
                     {
                         data: 'project',
-                        name: 'project'
+                        name: 'project',
+                        className: 'wrap-text'
+
                     },
                     {
                         data: 'request_date',

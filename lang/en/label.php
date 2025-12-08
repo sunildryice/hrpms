@@ -420,5 +420,6 @@ return [
     'program-date' => 'Program Date',
     'venue' => 'Venue',
     'partner-org' => 'Partner Organization',
-    'partner-organization' => 'Partner Organization'
+    'partner-organization' => 'Partner Organization',
+    'temporary-address' => 'Temporary Address',
 ];

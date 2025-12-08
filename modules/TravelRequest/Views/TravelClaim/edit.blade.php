@@ -667,40 +667,6 @@
                                             </thead>
                                             <tbody>
                                             </tbody>
-                                            {{-- <tfoot>
-                                                <tr>
-                                                    <td colspan="7">{{ __('label.sub-total') }}</td>
-                                                    <td id="total_itinerary_amount">
-                                                        {{ $travelClaim->total_itinerary_amount }}</td>
-                                                    <td colspan="3"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">{{ __('label.grand-total') }}</td>
-                                                    <td id="total_amount">
-                                                        {{ $travelClaim->total_amount }}
-                                                    </td>
-                                                    <td colspan="3"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">{{ __('label.advance-amount') }}
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <input type="number" class="form-control" name="advance_amount"
-                                                            value="{{ $travelClaim->advance_amount }}" />
-                                                    </td>
-                                                    <td colspan="2"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">
-                                                        {{ __('label.refundable-reimbursable-amount') }}
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <input readonly class="form-control" name="refundable_amount"
-                                                            value="{{ $travelClaim->refundable_amount }}" />
-                                                    </td>
-                                                    <td colspan="2"></td>
-                                                </tr>
-                                            </tfoot> --}}
                                         </table>
                                     </div>
                                 </div>
@@ -745,6 +711,33 @@
                                                     <td colspan="3">{{ __('label.sub-total') }}</td>
                                                     <td colspan="4" id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">Total DSA</td>
+                                                    <td colspan="4"  id="total_itinerary_amount">
+                                                        {{ $travelClaim->total_itinerary_amount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">{{ __('label.grand-total') }}</td>
+                                                    <td colspan="4"  id="total_amount">
+                                                        {{ $travelClaim->total_amount }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">{{ __('label.advance-amount') }}
+                                                    </td>
+                                                    <td colspan="4">
+                                                        {{ $travelClaim->advance_amount }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">
+                                                        {{ __('label.refundable-reimbursable-amount') }}
+                                                    </td>
+                                                    <td colspan="4">
+                                                        <input readonly class="form-control" name="refundable_amount"
+                                                            value="{{ $travelClaim->refundable_amount }}" />
+                                                    </td>
                                                 </tr>
                                             </tfoot>
                                         </table>

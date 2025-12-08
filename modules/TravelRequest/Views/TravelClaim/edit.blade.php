@@ -611,58 +611,11 @@
 
                     <div class="card">
                         <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                            <span> Travel Expenses</span>
-                            @if ($authUser->can('update', $travelClaim))
-                                <button data-toggle="modal"
-                                    class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"
-                                    href="{!! route('travel.claims.expenses.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add New
-                                    Expense
-                                </button>
-                            @endif
-                        </div>
-                        <div class="container-fluid-s">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table" id="expenseTable">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th scope="col">{{ __('label.activity') }}</th>
-                                                    {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
-                                                    <th scope="col">{{ __('label.date') }}</th>
-                                                    <th scope="col">{{ __('label.description') }}</th>
-                                                    <th scope="col">{{ __('label.amount') }}</th>
-                                                    <th scope="col">{{ __('label.invoice-bill-number') }}</th>
-                                                    {{-- <th scope="col">Charging Office</th> --}}
-                                                    <th scope="col">{{ __('label.attachment') }}</th>
-                                                    <th style="width: 150px">{{ __('label.action') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="3">{{ __('label.sub-total') }}</td>
-                                                    <td colspan="4" id="total_expense_amount">
-                                                        {{ $travelClaim->total_expense_amount }}</td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                            <span> Travel Itineraries</span>
+                            <span> TADA Claim</span>
                             @if ($authUser->can('update', $travelClaim))
                                 <button data-toggle="modal"
                                     class="m-2 btn btn-primary btn-sm text-capitalize open-itinerary-modal-form"
-                                    href="{!! route('travel.claims.dsa.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add Claim Itinerary
+                                    href="{!! route('travel.claims.dsa.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add DSA Claim
                                 </button>
                             @endif
                         </div>
@@ -756,26 +709,31 @@
 
                     </div>
 
-                    {{-- <div class="card">
-                        <div class="card-header fw-bold">
-                            Travel Itineraries
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> Claim Expenses</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                    class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"
+                                    href="{!! route('travel.claims.expenses.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add New
+                                    Expense
+                                </button>
+                            @endif
                         </div>
                         <div class="container-fluid-s">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table" id="itineraryTable">
+                                        <table class="table" id="expenseTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col">{{ __('label.from-date') }}</th>
-                                                    <th scope="col">{{ __('label.from') }}</th>
-                                                    <th scope="col">{{ __('label.to-date') }}</th>
-                                                    <th scope="col">{{ __('label.to') }}</th>
-                                                    <th scope="col">{{ __('label.overnights') }}</th>
-                                                    <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                                    <th scope="col">{{ __('label.percentage') }}</th>
-                                                    <th scope="col">{{ __('label.total-dsa') }}</th>
-                                                    <th scope="col">{{ __('label.remarks') }}</th>
+                                                    <th scope="col">{{ __('label.activity') }}</th>
+                                                    {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
+                                                    <th scope="col">{{ __('label.date') }}</th>
+                                                    <th scope="col">{{ __('label.description') }}</th>
+                                                    <th scope="col">{{ __('label.amount') }}</th>
+                                                    <th scope="col">{{ __('label.invoice-bill-number') }}</th>
+                                                    {{-- <th scope="col">Charging Office</th> --}}
                                                     <th scope="col">{{ __('label.attachment') }}</th>
                                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                                 </tr>
@@ -784,44 +742,18 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td colspan="7">{{ __('label.sub-total') }}</td>
-                                                    <td id="total_itinerary_amount">
-                                                        {{ $travelClaim->total_itinerary_amount }}</td>
-                                                    <td colspan="3"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">{{ __('label.grand-total') }}</td>
-                                                    <td id="total_amount">
-                                                        {{ $travelClaim->total_amount }}
-                                                    </td>
-                                                    <td colspan="3"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">{{ __('label.advance-amount') }}
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <input type="number" class="form-control" name="advance_amount"
-                                                            value="{{ $travelClaim->advance_amount }}" />
-                                                    </td>
-                                                    <td colspan="2"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">
-                                                        {{ __('label.refundable-reimbursable-amount') }}
-                                                    </td>
-                                                    <td colspan="2">
-                                                        <input readonly class="form-control" name="refundable_amount"
-                                                            value="{{ $travelClaim->refundable_amount }}" />
-                                                    </td>
-                                                    <td colspan="2"></td>
+                                                    <td colspan="3">{{ __('label.sub-total') }}</td>
+                                                    <td colspan="4" id="total_expense_amount">
+                                                        {{ $travelClaim->total_expense_amount }}</td>
                                                 </tr>
                                             </tfoot>
                                         </table>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
-                    </div> --}}
+                    </div>
 
                     <div class="card">
                         <div class="card-header fw-bold">Process</div>

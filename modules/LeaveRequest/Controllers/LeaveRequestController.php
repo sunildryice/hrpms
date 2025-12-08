@@ -289,18 +289,23 @@ class LeaveRequestController extends Controller
 
 
         if (
+            $leaveRequest->leave_type_id == config('constant.SICK_LEAVE') ||
+            $leaveRequest->leave_type_id == config('constant.ANNUAL_LEAVE')
+        ) {
+            $query = $this->leaveModes->query();
+        } else {
+            $query = $this->leaveModes->query()
+                ->whereNotIn('title', ['First Half', 'Second Half']);
+        }
+
+        if (
             is_null($leaveRequest->modification_number) &&
             is_null($leaveRequest->modification_leave_request_id)
         ) {
-            $leaveModes = $this->leaveModes
-                ->where('title', '!=', 'No Leave')
-                ->get();
-        } else {
-            $leaveModes = $this->leaveModes
-                ->get();
+            $query->where('title', '!=', 'No Leave');
         }
 
-
+        $leaveModes = $query->get();
 
         $employeeLeave = $this->employeeLeaves->select(['*'])
             ->where('employee_id', $authUser->employee_id)

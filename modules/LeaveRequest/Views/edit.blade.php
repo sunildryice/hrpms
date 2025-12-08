@@ -668,19 +668,10 @@
                                                 <td>
                                                     <select class="form-control leave_mode" name="leave_mode_id[]">
                                                         @foreach ($leaveModes as $leaveMode)
-                                                            @if ($leaveRequest->leaveType->leave_basis == 2)
-                                                                <option data-hour="{{ $leaveMode->hours }}"
-                                                                    @if ($leaveMode->id == $record->leave_mode_id) selected @endif
-                                                                    value="{{ $leaveMode->id }}">{!! $leaveMode->title !!}
-                                                                </option>
-                                                            @else
-                                                                @if ($leaveMode->hours == 8 || $leaveMode->hours == 0)
-                                                                    <option data-hour="{{ $leaveMode->hours }}"
-                                                                        @if ($leaveMode->id == $record->leave_mode_id) selected @endif
-                                                                        value="{{ $leaveMode->id }}">
-                                                                        {!! $leaveMode->title !!}</option>
-                                                                @endif
-                                                            @endif
+                                                            <option data-hour="{{ $leaveMode->hours }}"
+                                                                @if ($leaveMode->id == $record->leave_mode_id) selected @endif
+                                                                value="{{ $leaveMode->id }}">{!! $leaveMode->title !!}
+                                                            </option>
                                                         @endforeach
                                                     </select>
                                                 </td>

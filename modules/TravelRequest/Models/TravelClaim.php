@@ -96,9 +96,9 @@ class TravelClaim extends Model
     /**
      * Get the itineraries of the travel claim
      */
-    public function itineraries()
+    public function dsaClaim()
     {
-        return $this->hasMany(TravelClaimItinerary::class, 'travel_claim_id');
+        return $this->hasMany(TravelDsaClaim::class, 'travel_claim_id');
     }
 
     /**

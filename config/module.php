@@ -43,5 +43,6 @@ return [
         'ExitStaffClearance',
         'Mfr',
         'WorkFromHome',
+        'LieuLeave',
     ],
 ];

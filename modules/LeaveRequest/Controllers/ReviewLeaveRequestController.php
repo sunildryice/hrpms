@@ -109,6 +109,8 @@ class ReviewLeaveRequestController extends Controller
         $leaveRequest = $this->leaveRequests->find($leaveRequestId);
         $this->authorize('review', $leaveRequest);
         $inputs['user_id'] = auth()->id();
+
+
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         if ($leaveRequest->approver_id == auth()->id()) {
             $inputs['log_remarks'] = $inputs['review_remarks'];

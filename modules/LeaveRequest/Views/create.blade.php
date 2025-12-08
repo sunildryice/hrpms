@@ -13,6 +13,7 @@
         var holidays = '{!! str_replace('&quot;', '', json_encode($holidays)) !!}';
         let leaveModes = (JSON.parse('{!! json_encode($leaveModes->map->only(['id', 'title', 'hours'])) !!}'));
 
+
         $('.submit-btn').attr('disabled', false)
 
         var getDateArray = function(start, end) {
@@ -47,6 +48,28 @@
             }
         }
 
+        function getLeaveModes(leaveTypeId) {
+            return new Promise(function(resolve, reject) {
+                var url = "{{ route('api.leave.modes.index', ['leaveTypeId' => 'LEAVE_TYPE_ID']) }}"
+                    .replace('LEAVE_TYPE_ID', leaveTypeId);
+
+                var successCallback = function(response) {
+                    leaveModes = response.leaveModes || [];
+                    resolve(leaveModes);
+                };
+
+                var errorCallback = function(error) {
+                    console.log(error);
+                    reject(error);
+                };
+
+                ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+            });
+        }
+
+
+
+
         var showHideAttachment = function($element) {
             let days = 0;
             var leaveType = $($element).closest('form').find('[name="leave_type_id"] option:selected').text();
@@ -64,8 +87,14 @@
             }
         }
 
-        var generateLeaveTable = function($element) {
+        var generateLeaveTable = async function($element) {
             leaveTypeId = $($element).closest('form').find('[name="leave_type_id"]').val();
+
+            try {
+                await getLeaveModes(leaveTypeId);
+            } catch (error) {
+                console.log('Error fetching leave modes:', error);
+            }
             startDate = $($element).closest('form').find('[name="start_date"]').val();
             endDate = $($element).closest('form').find('[name="end_date"]').val();
             leaveBasis = $($element).closest('form').find('[name="leave_basis"]').val();
@@ -84,14 +113,8 @@
 
                 selectBox = '<select class="form-control leave_mode" name="leave_mode_id[]">';
                 leaveModes.forEach(function(leaveMode, index) {
-                    if (leaveBasis == 2) {
-                        selectBox += '<option value="' + leaveMode.id + '">' + leaveMode.title + '</option>';
-                    } else {
-                        if (leaveMode.hours == 8) {
-                            selectBox += '<option value="' + leaveMode.id + '">' + leaveMode.title +
-                                '</option>';
-                        }
-                    }
+                    selectBox += '<option value="' + leaveMode.id + '">' + leaveMode.title +
+                        '</option>';
                 });
                 selectBox += '</select>';
 

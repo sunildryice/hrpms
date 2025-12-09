@@ -42,7 +42,7 @@
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap5: new FormValidation.plugins.Bootstrap5(),
                     submitButton: new FormValidation.plugins.SubmitButton(),
-                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                    // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                     icon: new FormValidation.plugins.Icon({
                         valid: 'bi bi-check2-square',
                         invalid: 'bi bi-x-lg',
@@ -57,6 +57,30 @@
                 advanceAmount = parseFloat($(this).closest('form').find('[name="advance_amount"]').val());
                 totalAmount = parseFloat($(this).closest('form').find('#total_amount').text());
                 $(this).closest('form').find('[name="refundable_amount"]').val(totalAmount - advanceAmount);
+            });
+
+            // Validate agree checkbox on submit
+            const agreeCheckbox = document.querySelector('input[name="agree"]');
+            fv.on('core.form.valid', function() {
+                const clickedButton = document.activeElement;
+
+                if (clickedButton && clickedButton.name === 'btn' && clickedButton.value === 'submit') {
+                    if (!agreeCheckbox.checked) {
+                        toastr.error('You must certify the declaration before submitting the claim.',
+                            'Required');
+                        agreeCheckbox.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        agreeCheckbox.focus();
+                        const box = agreeCheckbox.closest('.form-check');
+                        box.classList.add('border', 'border-danger', 'border-3', 'rounded');
+                        setTimeout(() => box.classList.remove('border', 'border-danger', 'border-3',
+                            'rounded'), 1000);
+                        return false;
+                    }
+                }
+                claimForm.submit();
             });
         });
 
@@ -714,12 +738,12 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">Total DSA</td>
-                                                    <td colspan="4"  id="total_itinerary_amount">
+                                                    <td colspan="4" id="total_itinerary_amount">
                                                         {{ $travelClaim->total_itinerary_amount }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">{{ __('label.grand-total') }}</td>
-                                                    <td colspan="4"  id="total_amount">
+                                                    <td colspan="4" id="total_amount">
                                                         {{ $travelClaim->total_amount }}
                                                     </td>
                                                 </tr>

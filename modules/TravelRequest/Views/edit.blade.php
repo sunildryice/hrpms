@@ -1203,13 +1203,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                    <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">
-                        Update
-                    </button>
-                </div>
-                {!! csrf_field() !!}
-                {!! method_field('PUT') !!}
             </div>
             <div class="card">
                 <div class="card-header fw-bold">
@@ -1281,12 +1274,17 @@
             </div>
 
             <div class="justify-content-end d-flex gap-2" id="submitRequest">
+                <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">
+                    Update
+                </button>
                 <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm submit-record"
                     @if (!$authUser->can('submit', $travelRequest)) style="display:none;" @endif>
                     Submit
                 </button>
                 <a href="{!! route('travel.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
             </div>
+            {!! csrf_field() !!}
+            {!! method_field('PUT') !!}
         </form>
     </section>
 

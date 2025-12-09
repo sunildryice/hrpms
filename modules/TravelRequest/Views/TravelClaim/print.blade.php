@@ -97,18 +97,14 @@
                             <td>Date</td>
                             <td style="width: 50%">Description of Expenses (Other than DSA)</td>
                             <td>Amount</td>
-                            {{-- <td>Charging Office</td> --}}
                             <td>Activity</td>
-                            {{-- <td>Donor</td> --}}
                         </tr>
                         @foreach ($travelClaim->expenses as $expense)
                             <tr>
                                 <td>{{ $expense->getExpenseDate() }}</td>
                                 <td>{{ $expense->expense_description }}</td>
                                 <td>{{ $expense->expense_amount }}</td>
-                                {{-- <td>{{ $expense->office->office_name }}</td> --}}
                                 <td>{{ $expense->activityCode->getActivityCode() }}</td>
-                                {{-- <td>{{ $expense->donorCode->description }}</td> --}}
                             </tr>
                         @endforeach
                     </tbody>
@@ -123,64 +119,52 @@
                 <table class="table border">
                     <thead>
                         <tr>
-                            <th colspan="2">TRAVEL ITINERARY</th>
+                            <th colspan="2">Tada Claim</th>
                             <th class="text-center">Date</th>
-                            <th>No. of overnights</th>
-                            <th>DSA rate</th>
-                            <th>% of DSA charged</th>
+                            <th>Days Spent</th>
                             <th>Total DSA</th>
-                            {{-- <th>Charging Office</th> --}}
                             <th>Activity</th>
-                            {{-- <th>Donor</th> --}}
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($travelClaim->dsaClaim as $itinerary)
+                        @foreach ($travelClaim->dsaClaim as $dsaClaim)
                             <tr>
                                 <td>DEP:</td>
-                                <td>{{ $itinerary->travelRequestItinerary?->departure_place }}</td>
-                                <td>{{ $itinerary->travelRequestItinerary?->getDepartureDate() }}</td>
-                                <td rowspan="2">{{ $itinerary->travelRequestItinerary?->getOvernights() }}</td>
-                                <td rowspan="2">{{ $itinerary->travelRequestItinerary?->dsa_unit_price }}</td>
-                                <td rowspan="2">{{ $itinerary?->percentage_charged }}</td>
-                                <td rowspan="2">{{ $itinerary?->total_amount }}</td>
-                                {{-- <td rowspan="2">{{ $itinerary->office->office_name }}</td> --}}
+                                <td>{{ $dsaClaim->departure_place }}</td>
+                                <td>{{ $dsaClaim->getDepartureDate() }}</td>
+                                <td rowspan="2">{{ $dsaClaim->days_spent }}</td>
+                                <td rowspan="2">{{ $dsaClaim?->total_amount }}</td>
                                 <td rowspan="2">
-                                    {{ $itinerary->travelRequestItinerary?->activityCode->getActivityCodeWithDescription() }}</td>
-                                {{-- <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td> --}}
+                                    {{ $dsaClaim->activities}}</td>
                                 <td rowspan="2">
-                                    {{ $itinerary?->description ?: $itinerary?->travelRequestItinerary?->description }}</td>
+                                    {{ $dsaClaim?->remarks}}</td>
                             </tr>
                             <tr>
                                 <td>ARR:</td>
-                                <td>{{ $itinerary?->travelRequestItinerary?->arrival_place }}</td>
-                                <td>{{ $itinerary?->travelRequestItinerary?->getArrivalDate() }}</td>
+                                <td>{{ $dsaClaim?->arrival_place }}</td>
+                                <td>{{ $dsaClaim?->getArrivalDate() }}</td>
                             </tr>
                         @endforeach
                         <tr>
-                            <td colspan="5" class="text-end">Sub-Total (B)</td>
-                            <td></td>
+                            <td colspan="4" class="text-end">Sub-Total (B)</td>
                             <td>{{ $travelClaim->total_itinerary_amount }}</td>
-                            <td></td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="5" class="text-end">Grand Total A+B</td>
-                            <td></td>
+                            <td colspan="4" class="text-end">Grand Total A+B</td>
                             <td>{{ $travelClaim->total_expense_amount + $travelClaim->total_itinerary_amount }}</td>
-                            <td></td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="5" class="text-end">Advance Taken</td>
-                            <td></td>
+                            <td colspan="4" class="text-end">Advance Taken</td>
                             <td>{{ $travelClaim->advance_amount }}</td>
-                            <td></td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="5" class="text-end">Amount refundable/(reimbursable)</td>
-                            <td></td>
+                            <td colspan="4" class="text-end">Amount refundable/(reimbursable)</td>
                             <td>{{ $travelClaim->refundable_amount }}</td>
-                            <td></td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
                             <td colspan="8">

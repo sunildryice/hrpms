@@ -136,26 +136,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($travelClaim->itineraries as $itinerary)
+                        @foreach ($travelClaim->dsaClaim as $itinerary)
                             <tr>
                                 <td>DEP:</td>
-                                <td>{{ $itinerary->travelRequestItinerary->departure_place }}</td>
-                                <td>{{ $itinerary->travelRequestItinerary->getDepartureDate() }}</td>
-                                <td rowspan="2">{{ $itinerary->travelRequestItinerary->getOvernights() }}</td>
-                                <td rowspan="2">{{ $itinerary->travelRequestItinerary->dsa_unit_price }}</td>
-                                <td rowspan="2">{{ $itinerary->percentage_charged }}</td>
-                                <td rowspan="2">{{ $itinerary->total_amount }}</td>
+                                <td>{{ $itinerary->travelRequestItinerary?->departure_place }}</td>
+                                <td>{{ $itinerary->travelRequestItinerary?->getDepartureDate() }}</td>
+                                <td rowspan="2">{{ $itinerary->travelRequestItinerary?->getOvernights() }}</td>
+                                <td rowspan="2">{{ $itinerary->travelRequestItinerary?->dsa_unit_price }}</td>
+                                <td rowspan="2">{{ $itinerary?->percentage_charged }}</td>
+                                <td rowspan="2">{{ $itinerary?->total_amount }}</td>
                                 {{-- <td rowspan="2">{{ $itinerary->office->office_name }}</td> --}}
                                 <td rowspan="2">
-                                    {{ $itinerary->travelRequestItinerary->activityCode->getActivityCodeWithDescription() }}</td>
+                                    {{ $itinerary->travelRequestItinerary?->activityCode->getActivityCodeWithDescription() }}</td>
                                 {{-- <td rowspan="2">{{ $itinerary->travelRequestItinerary->donorCode->description }}</td> --}}
                                 <td rowspan="2">
-                                    {{ $itinerary->description ?: $itinerary->travelRequestItinerary->description }}</td>
+                                    {{ $itinerary?->description ?: $itinerary?->travelRequestItinerary?->description }}</td>
                             </tr>
                             <tr>
                                 <td>ARR:</td>
-                                <td>{{ $itinerary->travelRequestItinerary->arrival_place }}</td>
-                                <td>{{ $itinerary->travelRequestItinerary->getArrivalDate() }}</td>
+                                <td>{{ $itinerary?->travelRequestItinerary?->arrival_place }}</td>
+                                <td>{{ $itinerary?->travelRequestItinerary?->getArrivalDate() }}</td>
                             </tr>
                         @endforeach
                         <tr>
@@ -193,7 +193,7 @@
                     </tbody>
                 </table>
 
-                <table class="table border">
+                {{-- <table class="table border">
                     <thead>
                         <tr>
                             <th colspan="5">Summary of Travel Claim</th>
@@ -201,8 +201,8 @@
                         <tr>
                             <th scope="col">{{ __('label.activity') }}</th>
                             <th scope="col">Subledger</th>
-                            {{-- <th scope="col">{{ __('label.donor') }}</th>
-                            <th scope="col">Charging Office</th> --}}
+                            <th scope="col">{{ __('label.donor') }}</th>
+                            <th scope="col">Charging Office</th>
                             <th scope="col">{{ __('label.amount') }}</th>
                         </tr>
                     </thead>
@@ -211,8 +211,8 @@
                             <tr>
                                 <td>{{ $summary->getActivityTitle() }}</td>
                                 <td>{{ $summary->subledger }}</td>
-                                {{-- <td>{{ $summary->getDonorDescription() }}</td>
-                                <td>{{ $summary->office->office_name }}</td> --}}
+                                <td>{{ $summary->getDonorDescription() }}</td>
+                                <td>{{ $summary->office->office_name }}</td>
                                 <td>{{ $summary->getAmount() }}</td>
                             </tr>
                         @endforeach
@@ -224,7 +224,7 @@
                                 {{ $travelClaim->total_expense_amount + $travelClaim->total_itinerary_amount }}</td>
                         </tr>
                     </tfoot>
-                </table>
+                </table> --}}
 
                 @if (!empty($travelClaim->reviewedLog))
                     <div class="mb-3">

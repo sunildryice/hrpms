@@ -547,9 +547,9 @@
                         const diffInDays = Math.floor((arr - dep) / (1000 * 60 * 60 * 24));
 
                         if (arrDateStr === depDateStr) {
-                            daysSpent = diffInDays;
+                            daysSpent = diffInDays + 1;
                         } else {
-                            daysSpent = diffInDays;
+                            daysSpent = diffInDays + 1;
                         }
                     }
 

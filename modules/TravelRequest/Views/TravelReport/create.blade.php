@@ -250,10 +250,10 @@
                                                         <th colspan="5">Daily Carried Activities / Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        <th class="">Day</th>
-                                                        <th class="">Date</th>
-                                                        <th class="">Carried Activities / Completed Tasks</th>
-                                                        <th class="">Remarks</th>
+                                                        <th>Day</th>
+                                                        <th>Date</th>
+                                                        <th>Carried Activities / Completed Tasks</th>
+                                                        <th style="width: 30%">Remarks</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -301,7 +301,7 @@
                                                                 </div>
                                                             @endif
                                                         </td>
-                                                        <td style="width: 40%">
+                                                        <td>
                                                             <textarea name="recommendation[remarks][0]" rows="3" class="form-control" placeholder="">
                                                                 @if (old('recommendation[remarks][0]'))
 {{ old('recommendation[remarks][0]') }}

@@ -92,22 +92,6 @@
                     className: 'sticky-col'
                 }
             ],
-            drawCallback: function() {
-                let data = this.api().ajax.json();
-                let table = this[0];
-                let footer = table.getElementsByTagName('tfoot')[0];
-                if (!footer) {
-                    footer = document.createElement("tfoot");
-                    table.appendChild(footer);
-                }
-                footer.innerHTML = '';
-                footer.innerHTML = `<tr>
-                                        <td colspan=3 style="text-align:right">Total Distance :</td>
-                                        <td>${data.sum_total_distance}</td>
-                                        <td colspan=2 style="text-align:right">Total Amount :</td>
-                                        <td colspan=3>${data.sum_total_fare}</td>
-                                    </tr>`;
-            },
         });
 
         $('#localTravelItineraryTable').on('click', '.delete-record', function(e) {

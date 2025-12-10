@@ -24,17 +24,22 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'travel_mode'=>'required',
-            'activity_code_id'=>'required|exists:lkup_activity_codes,id',
-            'account_code_id'=>'required|exists:lkup_account_codes,id',
-            'donor_code_id'=>'nullable',
-            'travel_date'=>'required|date',
-            'purpose'=>'required|string|max:255',
-            'departure_place'=>'nullable|string|max:255',
-            'arrival_place'=>'nullable|string|max:255',
-            'total_distance'=>'nullable|numeric|min:0.01',
-            'total_fare'=>'required|numeric|min:0.01',
-            'remarks'=>'nullable',
+            'travel_mode' => 'required',
+            'travel_date' => 'required|date',
+            'number_of_travelers' => 'nullable|integer|min:0',
+            'names_of_travelers.*.name' => 'required_if:number_of_travelers,>,0|string|max:255',
+            'pickup_location' => 'nullable|string|max:255',
+            'remarks' => 'nullable',
+            'attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:5120',
+
+            // 'activity_code_id'=>'required|exists:lkup_activity_codes,id',
+            // 'account_code_id'=>'required|exists:lkup_account_codes,id',
+            // 'donor_code_id'=>'nullable',
+            // 'purpose'=>'required|string|max:255',
+            // 'departure_place'=>'nullable|string|max:255',
+            // 'arrival_place'=>'nullable|string|max:255',
+            // 'total_distance'=>'nullable|numeric|min:0.01',
+            // 'total_fare'=>'required|numeric|min:0.01',
         ];
     }
 }

@@ -123,20 +123,6 @@
                 });
                 const fv = FormValidation.formValidation(form, {
                     fields: {
-                        activity_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The activity code is required',
-                                },
-                            },
-                        },
-                        account_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The account code is required',
-                                },
-                            },
-                        },
                         travel_date: {
                             validators: {
                                 notEmpty: {
@@ -148,36 +134,10 @@
                                 },
                             },
                         },
-                        purpose: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Purpose is required',
-                                },
-                            },
-                        },
                         travel_mode: {
                             validators: {
                                 notEmpty: {
                                     message: 'Travel mode is required',
-                                },
-                            },
-                        },
-                        total_fare: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Total fare is required',
-                                },
-                                greaterThan: {
-                                    message: 'The value must be greater than or equal to 0.01',
-                                    min: 0.01,
-                                },
-                            },
-                        },
-                        total_distance: {
-                            validators: {
-                                greaterThan: {
-                                    message: 'The value must be greater than or equal to 0.01',
-                                    min: 0.01,
                                 },
                             },
                         },
@@ -215,37 +175,91 @@
                     fv.revalidateField('travel_date');
                 });
 
-                $(form).on('change', '[name="travel_mode_id"]', function(e) {
-                    fv.revalidateField('travel_mode_id');
-                }).on('change', '[name="activity_code_id"]', function(e) {
-                    $element = $(this);
-                    var activityCodeId = $element.val();
-                    var htmlToReplace = '<option value="">Select Account Code</option>';
-                    $($element).closest('form').find('[name="account_code_id"]').html(
-                        htmlToReplace);
-                    if (activityCodeId) {
-                        var url = baseUrl + '/api/master/activity-codes/' + activityCodeId;
-                        var successCallback = function(response) {
-                            response.accountCodes.forEach(function(accountCode) {
-                                htmlToReplace += '<option value="' + accountCode.id +
-                                    '">' +
-                                    accountCode.title + ' ' + accountCode.description +
-                                    '</option>';
-                            });
-                            $($element).closest('form').find('[name="account_code_id"]').html(
-                                    htmlToReplace)
-                                .trigger('change');
-                        }
-                        var errorCallback = function(error) {
-                            console.log(error);
-                        }
-                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                const $travelerContainer = $('#travelers-names-container');
+                const $numberInput = $('#number_of_travelers');
+
+                function renderTravelerRows() {
+                    const count = parseInt($numberInput.val()) || 0;
+                    const existing = window.currentTravelersData || [];
+
+                    $travelerContainer.empty();
+
+                    if (count <= 0) return;
+
+                    for (let i = 0; i < count; i++) {
+                        const name = existing[i]?.name || '';
+
+                        let rowHTML = `
+                        <div class="row mb-2 align-items-end traveler-row">
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-8 col-xl-6">
+                                <input type="text" 
+                                       name="names_of_travelers[${i}][name]" 
+                                       class="form-control" 
+                                       placeholder="Full Name *" 
+                                       value="${name}" 
+                                       required>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row" title="Remove">
+                                        <i class="bi bi-trash"></i>
+                                    </button>`;
+                                
+                                    if (i === count - 1) {
+                                        rowHTML += `
+                                    <button type="button" class="btn btn-success btn-sm add-traveler-row ms-1" title="Add another traveler">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>`;
+                                    }
+                                    rowHTML += `
+                                </div>
+                            </div>
+                        </div>`;
+
+                        $travelerContainer.append(rowHTML);
                     }
-                    fv.revalidateField('activity_code_id');
-                    fv.revalidateField('account_code_id');
-                }).on('change', '[name="account_code_id"]', function(e) {
-                    fv.revalidateField('account_code_id');
-                }).on('change', '[name="approver_id"]', function(e) {
+                }
+
+                // When number of travelers changes
+                $numberInput.on('input change', function() {
+                    let val = parseInt($(this).val()) || 0;
+                    if (val < 0) val = 0;
+                    if (val > 50) val = 50; // optional max
+                    $(this).val(val);
+                    renderTravelerRows();
+                });
+
+                // Click + button → increase count by 1
+                $travelerContainer.on('click', '.add-traveler-row', function() {
+                    const current = parseInt($numberInput.val()) || 0;
+                    $numberInput.val(current + 1).trigger('change');
+                });
+
+                // Click trash → remove that row and re-index
+                $travelerContainer.on('click', '.remove-traveler-row', function() {
+                    $(this).closest('.traveler-row').remove();
+
+                    // Rebuild with correct indexing
+                    const remainingCount = $travelerContainer.find('.traveler-row').length;
+                    $numberInput.val(remainingCount);
+
+                    // Re-render to fix indexes and + button position
+                    const tempData = [];
+                    $travelerContainer.find('input[name^="names_of_travelers"]').each(function() {
+                        tempData.push({
+                            name: $(this).val()
+                        });
+                    });
+                    window.currentTravelersData = tempData;
+
+                    renderTravelerRows();
+                });
+
+                // Initial render when modal opens
+                renderTravelerRows();
+
+                $(form).on('change', '[name="approver_id"]', function(e) {
                     fv.revalidateField('approver_id');
                 });
             });
@@ -367,7 +381,7 @@
                         $selectedTravelRequest = old('travel_request_id') ?: $localTravel->travel_request_id;
                         $selectedApproverId = old('approver_id') ?: $localTravel->approver_id;
                     @endphp
-                    
+
                     {{-- <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">

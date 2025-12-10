@@ -9,6 +9,13 @@
             const form = document.getElementById('localTravelEditForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
+                    project_code_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Project is required',
+                            },
+                        },
+                    },
                     title: {
                         validators: {
                             notEmpty: {
@@ -231,7 +238,7 @@
                     var activityCodeId = $element.val();
                     var htmlToReplace = '<option value="">Select Account Code</option>';
                     $($element).closest('form').find('[name="account_code_id"]').html(
-                    htmlToReplace);
+                        htmlToReplace);
                     if (activityCodeId) {
                         var url = baseUrl + '/api/master/activity-codes/' + activityCodeId;
                         var successCallback = function(response) {
@@ -297,6 +304,37 @@
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
+                                <label for="validationProject" class="form-label required-label">Project
+                                </label>
+                            </div>
+                        </div>
+                        @php $selectedProjectCodeId =  old('project_code_id') ?: $localTravel->project_code_id  @endphp
+                        <div class="col-lg-10">
+                            <select name="project_code_id"
+                                class="select2 form-control
+                                                    @if ($errors->has('project_code_id')) is-invalid @endif"
+                                data-width="100%">
+                                <option value="">Select a Project</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        {{ $project->id == $selectedProjectCodeId ? 'selected' : '' }}>
+                                        {{ $project->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('project_code_id'))
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <div data-field="project_code_id">
+                                        {!! $errors->first('project_code_id') !!}
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-lg-2">
+                            <div class="d-flex align-items-start h-100">
                                 <label for="validationRemarks" class="form-label required-label">Purpose</label>
                             </div>
                         </div>
@@ -311,14 +349,13 @@
                         </div>
                     </div>
 
-                                        <div class="mb-2 row">
+                    {{-- <div class="mb-2 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationProject" class="form-label">Request For
                                 </label>
                             </div>
                         </div>
-
                         <div class="col-lg-10">
                             <select name="employee_id"
                                 class="select2 form-control
@@ -340,15 +377,14 @@
                                 </div>
                             @endif
                         </div>
-
-                    </div>
+                    </div> --}}
 
                     @php
                         $selectedTravelRequest = old('travel_request_id') ?: $localTravel->travel_request_id;
                         $selectedApproverId = old('approver_id') ?: $localTravel->approver_id;
                     @endphp
-
-                    <div class="row mb-2">
+                    
+                    {{-- <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationpurchasetype" class="form-label">Travel Request (If
@@ -373,12 +409,12 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Remarks</label>
+                                <label for="validationRemarks" class="form-label">Reason For travel</label>
                             </div>
                         </div>
                         <div class="col-lg-10">

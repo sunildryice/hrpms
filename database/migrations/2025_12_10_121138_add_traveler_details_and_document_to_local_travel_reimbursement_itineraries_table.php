@@ -15,7 +15,7 @@ return new class extends Migration {
         Schema::table('local_travel_reimbursement_itineraries', function (Blueprint $table) {
 
             $table->unsignedTinyInteger('number_of_travelers')->default(0)->after('travel_mode');
-            $table->json('names_of_travelers')->nullable()->after('external_traveler_count');
+            $table->json('names_of_travelers')->nullable()->after('number_of_travelers');
             $table->string('pickup_location')->nullable()->after('names_of_travelers');
             $table->string('attachment')->nullable()->default(null);
 

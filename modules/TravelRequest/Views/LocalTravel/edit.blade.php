@@ -57,32 +57,20 @@
                     name: 'travel_date'
                 },
                 {
-                    data: 'purpose',
-                    name: 'purpose'
-                },
-                {
                     data: 'travel_mode',
                     name: 'travel_mode'
                 },
                 {
-                    data: 'total_distance',
-                    name: 'total_distance'
-                },
-                {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'total_fare',
-                    name: 'total_fare'
+                    data: 'pickup_location',
+                    name: 'pickup_location'
                 },
                 {
                     data: 'remarks',
                     name: 'remarks'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment',
                 },
                 {
                     data: 'action',
@@ -141,6 +129,16 @@
                                 },
                             },
                         },
+                        attachment: {
+                            validators: {
+                                file: {
+                                    extension: 'jpeg,jpg,png,pdf',
+                                    type: 'image/jpeg,image/jpg,image/png,application/pdf',
+                                    maxSize: 5097152,
+                                    message: 'File must be jpeg, jpg, png or pdf and less than 2MB'
+                                }
+                            }
+                        }
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -152,19 +150,19 @@
                             validating: 'bi bi-arrow-repeat',
                         }),
                     },
-                }).on('core.form.valid', function(event) {
-                    $url = fv.form.action;
-                    $form = fv.form;
-                    data = $($form).serialize();
-                    var successCallback = function(response) {
+                }).on('core.form.valid', function() {
+                    const $url = fv.form.action;
+                    const formData = new FormData(form);
+
+                    const successCallback = function(response) {
                         $('#openModal').modal('hide');
-                        toastr.success(response.message, 'Success', {
-                            timeOut: 5000
-                        });
+                        toastr.success(response.message || 'Saved successfully');
                         oTable.ajax.reload();
-                    }
-                    ajaxSubmit($url, 'POST', data, successCallback);
+                    };
+
+                    ajaxSubmitFormData($url, 'POST', formData, successCallback);
                 });
+
                 $('[name="travel_date"]').datepicker({
                     language: 'en-GB',
                     autoHide: true,
@@ -205,14 +203,14 @@
                                     <button type="button" class="btn btn-danger btn-sm remove-traveler-row" title="Remove">
                                         <i class="bi bi-trash"></i>
                                     </button>`;
-                                
-                                    if (i === count - 1) {
-                                        rowHTML += `
+
+                        if (i === count - 1) {
+                            rowHTML += `
                                     <button type="button" class="btn btn-success btn-sm add-traveler-row ms-1" title="Add another traveler">
                                         <i class="bi bi-plus-lg"></i>
                                     </button>`;
-                                    }
-                                    rowHTML += `
+                        }
+                        rowHTML += `
                                 </div>
                             </div>
                         </div>`;
@@ -475,13 +473,10 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">{{ __('label.date') }}</th>
-                                    <th scope="col">{{ __('label.purpose') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
-                                    <th scope="col">{{ __('label.km') }}</th>
-                                    <th scope="col">{{ __('label.from') }}</th>
-                                    <th scope="col">{{ __('label.to') }}</th>
-                                    <th scope="col">{{ __('label.fare') }}</th>
+                                    <th scope="col">Pickup Location</th>
                                     <th scope="col">{{ __('label.remarks') }}</th>
+                                    <th scope="col">{{ __('label.attachment') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>

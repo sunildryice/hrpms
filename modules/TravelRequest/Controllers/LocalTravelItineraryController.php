@@ -56,7 +56,6 @@ class LocalTravelItineraryController extends Controller
             $authUser = auth()->user();
             $localTravel = $this->localTravels->find($localTravelId);
             $data = $this->localTravelItineraries->select(['*'])
-                ->with(['activityCode', 'accountCode'])
                 ->where('local_travel_reimbursement_id', $localTravelId);
             $datatable = DataTables::of($data)
                 ->addIndexColumn();
@@ -72,21 +71,17 @@ class LocalTravelItineraryController extends Controller
             }
             return $datatable->addColumn('travel_date', function ($row) {
                 return $row->getTravelDate();
-            })->addColumn('activity', function ($row) {
-                return $row->getActivityCode();
-            })->addColumn('account', function ($row) {
-                return $row->getAccountCode();
             })->addColumn('travel_mode', function ($row) {
                 return $row->travel_mode;
-            })
-                ->withQuery('sum_total_fare', function ($filteredQuery) {
-                    return $filteredQuery->sum('total_fare');
-                })
-                ->withQuery('sum_total_distance', function ($filteredQuery) {
-                    return $filteredQuery->sum('total_distance');
-                })
-                ->rawColumns(['action'])
-                ->make(true);
+            })->addColumn('attachment', function ($row) {
+                $attachment = '';
+                if (file_exists('storage/' . $row->attachment) && $row->attachment != '') {
+                    $attachment = '<a href = "' . asset('storage/' . $row->attachment) . '" target = "_blank" class="fs-5" ';
+                    $attachment .= 'title = "View Attachment" ><i class="bi bi-file-earmark-medical"></i></a>';
+                }
+                return $attachment;
+            })->rawColumns(['action', 'attachment'])
+            ->make(true);
         }
         return true;
     }

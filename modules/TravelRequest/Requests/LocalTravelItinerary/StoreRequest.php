@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
             'names_of_travelers.*.name' => 'required_if:number_of_travelers,>,0|string|max:255',
             'pickup_location' => 'nullable|string|max:255',
             'remarks' => 'nullable',
-            'attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:5120',
+            'attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
 
             // 'activity_code_id'=>'required|exists:lkup_activity_codes,id',
             // 'account_code_id'=>'required|exists:lkup_account_codes,id',
@@ -40,6 +40,14 @@ class StoreRequest extends FormRequest
             // 'arrival_place'=>'nullable|string|max:255',
             // 'total_distance'=>'nullable|numeric|min:0.01',
             // 'total_fare'=>'required|numeric|min:0.01',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'attachment.mimes' => 'Only png,jpg or pdf files are allowed.',
+            'attachment.size' => 'Maximum allowed file size is 2MB.',
         ];
     }
 }

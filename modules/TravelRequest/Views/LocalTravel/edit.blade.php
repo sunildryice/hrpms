@@ -410,7 +410,7 @@
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Reason For travel</label>
+                                <label for="validationRemarks" class="form-label">Reason For Travel</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -475,7 +475,7 @@
                                     <th scope="col">{{ __('label.date') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
                                     <th scope="col">Pickup Location</th>
-                                    <th scope="col">{{ __('label.remarks') }}</th>
+                                    <th scope="col">{{ __('label.reason') }}</th>
                                     <th scope="col">{{ __('label.attachment') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>

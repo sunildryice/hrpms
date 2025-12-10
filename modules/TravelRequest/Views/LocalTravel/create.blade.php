@@ -199,7 +199,7 @@
                         <div class="mb-2 row">
                             <div class="col-lg-2">
                                 <div class="d-flex align-items-start h-100">
-                                    <label for="validationRemarks" class="form-label">Reason For travel</label>
+                                    <label for="validationRemarks" class="form-label">Reason For Travel</label>
                                 </div>
                             </div>
                             <div class="col-lg-10">

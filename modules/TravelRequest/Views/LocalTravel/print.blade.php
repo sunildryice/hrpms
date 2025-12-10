@@ -123,7 +123,7 @@
                                     <td>{{ $itinerary->getTravelDate() }}</td>
                                     <td>{{ $itinerary->getTravelMode() }}</td>
                                     <td>{{ $itinerary->pickup_location }}</td>
-                                    <td>{{ $itinerary->remarks }}</td>
+                                    <td>{{ $itinerary->reason }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

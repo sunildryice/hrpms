@@ -106,7 +106,7 @@
                                         <th scope="col">{{ __('label.date') }}</th>
                                         <th scope="col">{{ __('label.mode') }}</th>
                                         <th scope="col">Pickup Location</th>
-                                        <th scope="col">{{ __('label.remarks') }}</th>
+                                        <th scope="col">{{ __('label.reason') }}</th>
                                         <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>

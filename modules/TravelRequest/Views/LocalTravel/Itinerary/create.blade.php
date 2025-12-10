@@ -29,11 +29,32 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Mode</label>
+                    <label for="travel_mode" class="form-label required-label">Mode</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="travel_mode" value="" placeholder="Travel Mode">
+                <select name="travel_mode" id="travel_mode"
+                    class="form-control select2 @error('travel_mode') is-invalid @enderror" required>
+                    <option value="" selected>Select Travel Mode</option>
+                    <option value="Taxi">Taxi</option>
+                    <option value="Bike">Bike</option>
+                </select>
+
+                @error('travel_mode')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">Pickup Location</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="pickup_location" value=""
+                    placeholder="Pickup Location">
             </div>
         </div>
 

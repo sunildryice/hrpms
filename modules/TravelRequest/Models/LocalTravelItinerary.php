@@ -42,6 +42,10 @@ class LocalTravelItinerary extends Model
         'total_distance',
         'total_fare',
         'remarks',
+        'number_of_travelers',
+        'names_of_travelers',
+        'pickup_location',
+        'attachment',
         'created_by',
         'updated_by',
     ];
@@ -54,6 +58,9 @@ class LocalTravelItinerary extends Model
     protected $hidden = [];
 
     protected $dates = ['travel_date'];
+    protected $casts = [
+        'names_of_travelers' => 'array',
+    ];
 
     /**
      * Get the activity code.

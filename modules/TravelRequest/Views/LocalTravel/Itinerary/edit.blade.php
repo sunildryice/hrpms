@@ -57,7 +57,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Pickup Location</label>
+                    <label for="" class="form-label">Pickup Location</label>
                 </div>
             </div>
             <div class="col-lg-9">

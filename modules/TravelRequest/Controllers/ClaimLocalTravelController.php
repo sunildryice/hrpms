@@ -86,7 +86,7 @@ class ClaimLocalTravelController extends Controller
     {
         $travelClaim = $this->travelClaims->find($id);
 
-        return view('TravelRequest::TravelClaim.LocalTravel.create')
+        return view('TravelRequest::TravelClaim.LocalTravelClaim.create')
             ->withTravelClaim($travelClaim);
     }
 
@@ -138,7 +138,7 @@ class ClaimLocalTravelController extends Controller
         $localTravel = $this->localTravels->find($id);
         $this->authorize('update', $travelClaim);
 
-        return view('TravelRequest::TravelClaim.LocalTravel.edit')
+        return view('TravelRequest::TravelClaim.LocalTravelClaim.edit')
             ->withLocalTravelClaim($localTravel)
             ->withTravelClaim($travelClaim);
     }

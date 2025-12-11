@@ -62,10 +62,10 @@ class ClaimLocalTravelController extends Controller
                 })->addColumn('action', function ($row) use ($authUser, $travelClaim) {
                     $btn = '';
                     if ($authUser->can('update', $travelClaim)) {
-                        $btn = '<a data-toggle="modal" class="btn btn-outline-primary btn-sm open-itinerary-modal-form" href="';
-                        $btn .= route('travel.claims.dsa.edit', [$row->travel_claim_id, $row->id]) . '"><i class="bi-pencil-square"></i></a>';
+                        $btn = '<a data-toggle="modal" class="btn btn-outline-primary btn-sm open-local-travel-modal-form" href="';
+                        $btn .= route('travel.claims.local.travel.edit', [$row->travel_claim_id, $row->id]) . '"><i class="bi-pencil-square"></i></a>';
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="' . route('travel.claims.dsa.destroy', [$row->travel_claim_id, $row->id]) . '">';
+                        $btn .= 'data-href="' . route('travel.claims.local.travel.destroy', [$row->travel_claim_id, $row->id]) . '">';
                         $btn .= '<i class="bi-trash"></i></a>';
                     }
                     return $btn;

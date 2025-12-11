@@ -2,7 +2,7 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Local Travel Claim</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('travel.claims.dsa.update', [$localTravelClaim->travel_claim_id, $localTravelClaim->id]) !!}" method="post" enctype="multipart/form-data" id="claimLocalTravelForm"
+<form action="{!! route('travel.claims.local.travel.update', [$localTravelClaim->travel_claim_id, $localTravelClaim->id]) !!}" method="post" enctype="multipart/form-data" id="claimLocalTravelForm"
     autocomplete="off">
     <div class="modal-body">
         <div class="mb-2 row">
@@ -44,8 +44,8 @@
 
         <div class="mb-2 row">
             <div class="col-lg-3"><label class="form-label">Travel Fare</label></div>
-            <div class="col-lg-3">
-                <input type="number" class="form-control" name="travel_fare" id="edit_travel_fare" readonly
+            <div class="col-lg-9">
+                <input type="number" class="form-control" name="travel_fare" id="edit_travel_fare"
                     value="{{ old('travel_fare', $localTravelClaim->travel_fare) }}">
             </div>
         </div>

@@ -782,7 +782,7 @@
                                         @if ($errors->has('reviewer_id')) is-invalid @endif"
                                             data-width="100%">
                                             <option value="">Select an Approver</option>
-                                            @foreach ($supervisors as $approver)
+                                            @foreach ($approvers as $approver)
                                                 <option value="{{ $approver->id }}" @selected($approver->id == (old('approver_id') ?: $travelClaim->approver_id))>
                                                     {{ $approver->full_name }}</option>
                                             @endforeach

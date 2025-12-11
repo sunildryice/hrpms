@@ -159,7 +159,8 @@ class TravelClaimRepository extends Repository
 
             $expenseAmount = $travelClaim->expenses->sum('expense_amount');
             $dsaAmount = $travelClaim->dsaClaim->sum('total_amount');
-            $totalClaimed = $expenseAmount + $dsaAmount;
+            $localTravelAmount = $travelClaim->localTravels->sum('travel_fare');
+            $totalClaimed = $expenseAmount + $dsaAmount + $localTravelAmount;
 
             $updateInputs = [
                 'total_expense_amount' => $expenseAmount,

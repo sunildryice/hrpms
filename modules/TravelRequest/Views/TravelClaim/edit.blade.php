@@ -85,7 +85,9 @@
 
             function updateClaimTotals(response) {
                 const claim = response.travelClaim;
+
                 $('#total_expense_amount').text(claim.total_expense_amount || '0.00');
+                $('#total_local_travel_amount').text(claim.total_local_travel_amount || '0.00');
                 $('#total_itinerary_amount').text(claim.total_itinerary_amount || '0.00');
                 $('#total_amount').text(claim.total_amount || '0.00');
                 $('[name="refundable_amount"]').val(claim.refundable_amount || '0.00');
@@ -102,10 +104,6 @@
                         data: 'activity',
                         name: 'activity'
                     },
-                    // {
-                    //     data: 'donor',
-                    //     name: 'donor'
-                    // },
                     {
                         data: 'expense_date',
                         name: 'expense_date'
@@ -118,13 +116,53 @@
                         data: 'expense_amount',
                         name: 'expense_amount'
                     },
-                    // {
-                    //     data: 'charging_office',
-                    //     name: 'charging_office'
-                    // },
                     {
                         data: 'invoice_bill_number',
                         name: 'invoice_bill_number'
+                    },
+                    {
+                        data: 'attachment',
+                        name: 'attachment'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
+
+            var claimLocalTravelTable = $('#claimLocalTravelTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('travel.claims.local.travel.index', $travelClaim->id) }}",
+                bFilter: false,
+                bPaginate: false,
+                bInfo: false,
+                columns: [{
+                        data: 'travel_date',
+                        name: 'travel_date'
+                    },
+                    {
+                        data: 'purpose',
+                        name: 'purpose'
+                    },
+                    {
+                        data: 'departure_place',
+                        name: 'departure_place'
+                    },
+                    {
+                        data: 'arrival_place',
+                        name: 'arrival_place'
+                    },
+                    {
+                        data: 'travel_fare',
+                        name: 'travel_fare'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
                     },
                     {
                         data: 'attachment',
@@ -306,13 +344,6 @@
                                     },
                                 },
                             },
-                            // office_id: {
-                            //     validators: {
-                            //         notEmpty: {
-                            //             message: 'Charging office is required',
-                            //         },
-                            //     },
-                            // },
                             attachment: {
                                 validators: {
                                     file: {
@@ -374,6 +405,133 @@
 
                     $(expenseForm).on('change', '[name="activity_code_id"]', function(e) {
                         fv.revalidateField('activity_code_id');
+                    });
+                });
+            });
+
+            $('#claimLocalTravelTable').on('click', '.delete-record', function(e) {
+                e.preventDefault();
+                $object = $(this);
+                var $url = $object.attr('data-href');
+                var successCallback = function(response) {
+                    toastr.success(response.message, 'Success', {
+                        timeOut: 5000
+                    });
+                    updateClaimTotals(response);
+                    claimLocalTravelTable.ajax.reload();
+                }
+                ajaxDeleteSweetAlert($url, successCallback);
+            });
+
+            $(document).on('click', '.open-local-travel-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const claimLocalTravelForm = document.getElementById('claimLocalTravelForm');
+                    $(claimLocalTravelForm).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
+                    });
+
+                    const fv = FormValidation.formValidation(claimLocalTravelForm, {
+                        fields: {
+                            travel_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Travel date is required',
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The value is not a valid date',
+                                    },
+                                },
+                            },
+                            purpose: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Purpose is required',
+                                    },
+                                },
+                            },
+                            travel_fare: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The travel fare is required',
+                                    },
+                                    numeric: {
+                                        message: 'The travel fare should be number.',
+                                    },
+                                    between: {
+                                        inclusive: true,
+                                        min: 1,
+                                        max: 99999999,
+                                        message: 'The value must be between 1 to 99999999',
+                                    },
+                                },
+                            },
+                            departure_place: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Departure Place is required'
+                                    }
+                                }
+                            },
+                            arrival_place: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Arrival Place is required'
+                                    }
+                                }
+                            },
+                            attachment: {
+                                validators: {
+                                    file: {
+                                        extension: 'jpeg,jpg,png,pdf',
+                                        type: 'image/jpeg,image/png,application/pdf',
+                                        maxSize: '2097152',
+                                        message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(claimLocalTravelForm);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            updateClaimTotals(response);
+                            claimLocalTravelTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+                    $(claimLocalTravelForm).find('[name="travel_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        startDate: '{!! $travelClaim->travelRequest->departure_date->format('Y-m-d') !!}',
+                        endDate: '{!! $travelClaim->travelRequest->return_date->format('Y-m-d') !!}',
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('travel_date');
                     });
                 });
             });
@@ -687,7 +845,47 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> Local Travel Claim</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                    class="m-2 btn btn-primary btn-sm text-capitalize open-local-travel-modal-form"
+                                    href="{!! route('travel.claims.local.travel.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add Local Travel Claim
+                                </button>
+                            @endif
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="claimLocalTravelTable">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col" rowspan="2">{{ __('label.date') }}</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.purpose') }}</th>
+                                                    <th scope="col" colspan="2" class="text-center">
+                                                        {{ __('label.destination') }}</th>
+                                                    <th scope="col" rowspan="2">Total fare</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.remarks') }}</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.attachment') }}</th>
+                                                    <th style="width: 150px" rowspan="2">{{ __('label.action') }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col">{{ __('label.from') }}</th>
+                                                    <th scope="col">{{ __('label.to') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card">
@@ -726,6 +924,12 @@
                                                     <td colspan="3">{{ __('label.sub-total') }}</td>
                                                     <td colspan="4" id="total_expense_amount">
                                                         {{ $travelClaim->total_expense_amount }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3">Total Local Travel</td>
+                                                    <td colspan="4" id="total_local_travel_amount">
+                                                        {{ number_format($travelClaim->localTravels->sum('travel_fare'), 2) }}
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">Total DSA</td>

@@ -3,10 +3,10 @@
 namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelClaim extends Model
 {
@@ -51,6 +51,7 @@ class TravelClaim extends Model
     protected $hidden = [];
 
     protected $dates = ['pay_date', 'paid_at'];
+    protected $appends = ['total_local_travel_amount'];
 
     /**
      * Get the approved log for the travel claim.
@@ -99,6 +100,18 @@ class TravelClaim extends Model
     public function dsaClaim()
     {
         return $this->hasMany(TravelDsaClaim::class, 'travel_claim_id');
+    }
+    /**
+     * Get the local travels of the travel claim
+     */
+    public function localTravels()
+    {
+        return $this->hasMany(TravelClaimLocalTravel::class, 'travel_claim_id');
+    }
+
+    public function getTotalLocalTravelAmountAttribute()
+    {
+        return $this->localTravels->sum('travel_fare');
     }
 
     /**

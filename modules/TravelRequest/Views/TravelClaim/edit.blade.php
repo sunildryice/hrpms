@@ -687,7 +687,47 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> Local Travel Claim</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                    class="m-2 btn btn-primary btn-sm text-capitalize open-local-travel-modal-form"
+                                    href="{!! route('travel.claims.local.travel.create', $travelClaim->id) !!}"><i class="bi-plus"></i> Add Local Travel Claim
+                                </button>
+                            @endif
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="claimLocalTravelForm">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col" rowspan="2">{{ __('label.date') }}</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.purpose') }}</th>
+                                                    <th scope="col" colspan="2" class="text-center">
+                                                        {{ __('label.destination') }}</th>
+                                                    <th scope="col">Total fare</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.remarks') }}</th>
+                                                    <th scope="col" rowspan="2">{{ __('label.attachment') }}</th>
+                                                    <th style="width: 150px" rowspan="2">{{ __('label.action') }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="col">{{ __('label.from') }}</th>
+                                                    <th scope="col">{{ __('label.to') }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card">

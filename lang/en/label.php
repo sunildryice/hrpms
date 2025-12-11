@@ -311,6 +311,7 @@ return [
     'quantity-remaining' => 'Quantity Remaining',
     'questions' => 'Questions',
     'rate' => 'Rate',
+    'reason' => 'Reason',
     'questioned-cost' => 'Questioned Cost',
     'reason-and-improvement-to-extend' => 'If YES, please provide reasons and, where appropriate, specify any areas of improvement required and how these will be monitored.',
     'reason-to-address-difficulty' => 'If NO, please provide reasons below and summarise what action has been taken to address any difficulties which have arisen during the probationary period.',

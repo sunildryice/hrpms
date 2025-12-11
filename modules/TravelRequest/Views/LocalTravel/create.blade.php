@@ -9,6 +9,13 @@
             const form = document.getElementById('localTravelAddForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
+                    project_code_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Project is required',
+                            },
+                        },
+                    },
                     title: {
                         validators: {
                             notEmpty: {
@@ -86,101 +93,131 @@
                 enctype="multipart/form-data" autocomplete="off">
                 <div class="card-body">
                     <div class="mb-2 row">
-                        <div class="col-lg-2">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label required-label">Purpose</label>
-                            </div>
-                        </div>
-                        <div class="col-lg-10">
-                            <input type="text" value="{{ old('title') }}"
-                                class="form-control @if ($errors->has('title')) is-invalid @endif" name="title" />
-                            @if ($errors->has('title'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="title">{!! $errors->first('title') !!}</div>
+                        <div class="row mb-2">
+                            <div class="col-lg-2">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="validationProject" class="form-label required-label">Project
+                                    </label>
                                 </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="mb-2 row">
-                        <div class="col-lg-2">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationProject" class="form-label">Request For
-                                </label>
+                            </div>
+                            <div class="col-lg-10">
+                                <select name="project_code_id"
+                                    class="select2 form-control
+                                        @if ($errors->has('project_code_id')) is-invalid @endif"
+                                    data-width="100%">
+                                    <option value="">Select Project</option>
+                                    @foreach ($projects as $project)
+                                        <option value="{{ $project->id }}"
+                                            {{ $project->id == old('project_code_id') ? 'selected' : '' }}>
+                                            {{ $project->getProjectCodeWithDescription() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('project_code_id'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="project_code_id">
+                                            {!! $errors->first('project_code_id') !!}
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                        <div class="col-lg-10">
-                            <select name="employee_id"
-                                class="select2 form-control
+
+                        <div class="mb-2 row">
+                            <div class="col-lg-2">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="validationRemarks" class="form-label required-label">Purpose</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <input type="text" value="{{ old('title') }}"
+                                    class="form-control @if ($errors->has('title')) is-invalid @endif"
+                                    name="title" />
+                                @if ($errors->has('title'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="title">{!! $errors->first('title') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- <div class="mb-2 row">
+                            <div class="col-lg-2">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="validationProject" class="form-label">Request For
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <select name="employee_id"
+                                    class="select2 form-control
                                         @if ($errors->has('employee_id')) is-invalid @endif"
-                                data-width="100%">
-                                <option value="">Select Employee/Consultant</option>
-                                @foreach ($consultants as $consultant)
-                                    <option value="{{ $consultant->id }}"
-                                        {{ $consultant->id == old('employee_id') ? 'selected' : '' }}>
-                                        {{ $consultant->getFullName() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @if ($errors->has('employee_id'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="employee_id">
-                                        {!! $errors->first('employee_id') !!}
+                                    data-width="100%">
+                                    <option value="">Select Employee/Consultant</option>
+                                    @foreach ($consultants as $consultant)
+                                        <option value="{{ $consultant->id }}"
+                                            {{ $consultant->id == old('employee_id') ? 'selected' : '' }}>
+                                            {{ $consultant->getFullName() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('employee_id'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="employee_id">
+                                            {!! $errors->first('employee_id') !!}
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-
-
-                    <div class="mb-2 row">
-                        <div class="col-lg-2">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationpurchasetype" class="form-label">Travel Request (If any)</label>
+                                @endif
                             </div>
                         </div>
-                        <div class="col-lg-10">
-                            <select name="travel_request_id" class="select2 form-control" data-width="100%">
-                                <option value="">Select Travel Request</option>
-                                @foreach ($travelRequests as $travelRequest)
-                                    <option value="{{ $travelRequest->id }}" data-purchase="{{ $travelRequest->id }}"
-                                        {{ $travelRequest->id == old('travel_request_id') ? 'selected' : '' }}>
-                                        {{ $travelRequest->getTravelRequestNumber() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @if ($errors->has('travel_request_id'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="travel_request_id">
-                                        {!! $errors->first('travel_request_id') !!}
-                                    </div>
+                        <div class="mb-2 row">
+                            <div class="col-lg-2">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="validationpurchasetype" class="form-label">Travel Request (If any)</label>
                                 </div>
-                            @endif
-                        </div>
-                    </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <select name="travel_request_id" class="select2 form-control" data-width="100%">
+                                    <option value="">Select Travel Request</option>
+                                    @foreach ($travelRequests as $travelRequest)
+                                        <option value="{{ $travelRequest->id }}" data-purchase="{{ $travelRequest->id }}"
+                                            {{ $travelRequest->id == old('travel_request_id') ? 'selected' : '' }}>
+                                            {{ $travelRequest->getTravelRequestNumber() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('travel_request_id'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="travel_request_id">
+                                            {!! $errors->first('travel_request_id') !!}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div> --}}
 
-                    <div class="mb-2 row">
-                        <div class="col-lg-2">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Remarks</label>
+                        <div class="mb-2 row">
+                            <div class="col-lg-2">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="validationRemarks" class="form-label">Reason For Travel</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-10">
+                                <textarea type="text" class="form-control @if ($errors->has('remarks')) is-invalid @endif" name="remarks">{{ old('remarks') }}</textarea>
+                                @if ($errors->has('remarks'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="remarks">{!! $errors->first('remarks') !!}</div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
-                        <div class="col-lg-10">
-                            <textarea type="text" class="form-control @if ($errors->has('remarks')) is-invalid @endif" name="remarks">{{ old('remarks') }}</textarea>
-                            @if ($errors->has('remarks'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="remarks">{!! $errors->first('remarks') !!}</div>
-                                </div>
-                            @endif
-                        </div>
+                        {!! csrf_field() !!}
                     </div>
-                    {!! csrf_field() !!}
-                </div>
-                <div class="gap-2 border-0 card-footer justify-content-end d-flex">
-                    <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Save
-                    </button>
-                    <a href="{!! route('local.travel.reimbursements.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                </div>
+                    <div class="gap-2 border-0 card-footer justify-content-end d-flex">
+                        <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Save
+                        </button>
+                        <a href="{!! route('local.travel.reimbursements.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
             </form>
         </div>
     </section>

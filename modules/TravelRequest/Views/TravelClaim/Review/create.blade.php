@@ -49,6 +49,44 @@
             ]
         });
 
+        var claimLocalTravelTable = $('#claimLocalTravelTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('travel.claims.local.travel.index', $travelClaim->id) }}",
+            bFilter: false,
+            bPaginate: false,
+            bInfo: false,
+            columns: [{
+                    data: 'travel_date',
+                    name: 'travel_date'
+                },
+                {
+                    data: 'purpose',
+                    name: 'purpose'
+                },
+                {
+                    data: 'departure_place',
+                    name: 'departure_place'
+                },
+                {
+                    data: 'arrival_place',
+                    name: 'arrival_place'
+                },
+                {
+                    data: 'travel_fare',
+                    name: 'travel_fare'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment'
+                },
+            ]
+        });
+
         var itineraryTable = $('#itineraryTable').DataTable({
             processing: true,
             serverSide: true,
@@ -262,6 +300,40 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Local Travel Claim
+                    </div>
+                    <div class="container-fluid-s">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="claimLocalTravelTable">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" rowspan="2">{{ __('label.date') }}</th>
+                                                <th scope="col" rowspan="2">{{ __('label.purpose') }}</th>
+                                                <th scope="col" colspan="2" class="text-center">
+                                                    {{ __('label.destination') }}</th>
+                                                <th scope="col" rowspan="2">Total fare</th>
+                                                <th scope="col" rowspan="2">{{ __('label.remarks') }}</th>
+                                                <th scope="col" rowspan="2">{{ __('label.attachment') }}</th>
+                                            </tr>
+                                            <tr>
+                                                <th scope="col">{{ __('label.from') }}</th>
+                                                <th scope="col">{{ __('label.to') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-header fw-bold">
                         Claim Expenses
@@ -286,6 +358,12 @@
                                         <td colspan="3">{{ __('label.sub-total') }}</td>
                                         <td colspan="3" id="total_expense_amount">
                                             {{ $travelClaim->total_expense_amount }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">Total Local Travel</td>
+                                        <td colspan="3" id="total_local_travel_amount">
+                                            {{ sprintf('%.2f', $travelClaim->localTravels->sum('travel_fare')) }}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">Total DSA</td>
@@ -322,7 +400,7 @@
                 </div>
 
                 {{-- @include('TravelRequest::Partials.summary') --}}
-                
+
                 <div class="card">
                     <div class="card-header fw-bold">
                         Process

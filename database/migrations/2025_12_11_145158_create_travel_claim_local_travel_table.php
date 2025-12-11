@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('travel_claim_id');
             $table->text('purpose')->nullable()->default(null);
-            $table->date('date')->nullable()->default(null);
+            $table->date('travel_date')->nullable()->default(null);
             $table->string('departure_place')->nullable()->default(null);
             $table->string('arrival_place')->nullable()->default(null);
             $table->decimal('travel_fare', 10, 2)->nullable()->default(null);

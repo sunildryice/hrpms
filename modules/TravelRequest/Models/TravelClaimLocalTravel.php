@@ -3,7 +3,6 @@
 namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
-use Modules\Master\Models\TravelMode;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 

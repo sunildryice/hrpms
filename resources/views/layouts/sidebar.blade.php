@@ -739,19 +739,11 @@
                                  data-bs-parent="#navbarMasterMenu" hs-parent-area="#navbarMasterMenu">
                                 @if ($authUser->can('manage-activity-area'))
                                     <a class="nav-link" href="{{ route('master.activity.areas.index') }}"
-                                       id="activity-areas-menu">{{ __('label.activity-areas') }}</a>
+                                       id="activity-areas-menu">{{ __('label.activity-stages') }}</a>
                                 @endif
-                                @if ($authUser->can('manage-activity-code'))
+                                @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"
-                                       id="activity-codes-menu">{{ __('label.activity-codes') }}</a>
-                                @endif
-                                @if ($authUser->can('manage-account-code'))
-                                    <a class="nav-link" href="{{ route('master.account.codes.index') }}"
-                                       id="account-codes-menu">{{ __('label.account-codes') }}</a>
-                                @endif
-                                @if ($authUser->can('manage-bill-category'))
-                                    <a class="nav-link" href="{{ route('master.bill.categories.index') }}"
-                                       id="bill-categories-menu">{{ __('label.bill-categories') }}</a>
+                                       id="activity-codes-menu">{{ __('label.activities') }}</a>
                                 @endif
 
                                 @if ($authUser->can('manage-department'))
@@ -766,23 +758,7 @@
                                     <a class="nav-link" href="{{ route('master.districts.index') }}"
                                        id="districts-menu">Districts </a>
                                 @endif
-                                @if ($authUser->can('manage-donor-code'))
-                                    <a class="nav-link" href="{{ route('master.donor.codes.index') }}"
-                                       id="donor-codes-menu">{{ __('label.donor-codes') }}</a>
-                                @endif
-                                @if ($authUser->can('manage-dsa-category'))
-                                    <a class="nav-link" href="{{ route('master.dsa.categories.index') }}"
-                                       id="dsa-categories-menu">{{ __('label.dsa-categories') }}</a>
-                                @endif
 
-                                @if ($authUser->can('manage-expense-category'))
-                                    <a class="nav-link" href="{{ route('master.expense.categories.index') }}"
-                                       id="expense-categories-menu">{{ __('label.expense-categories') }}</a>
-                                @endif
-                                @if ($authUser->can('manage-expense-type'))
-                                    <a class="nav-link" href="{{ route('master.expense.types.index') }}"
-                                       id="expense-types-menu">{{ __('label.expense-types') }}</a>
-                                @endif
                                 @if ($authUser->can('manage-exit-question'))
                                     <a class="nav-link" href="{{ route('master.exit.questions.index') }}"
                                        id="exit-questions-menu">{{ __('label.exit-questions') }}</a>
@@ -801,11 +777,6 @@
                                        id="districts-menu">Family Relation </a>
                                 @endif
 
-                                @if ($authUser->can('manage-health-facility'))
-                                    <a class="nav-link" href="{{ route('master.health.facilities.index') }}"
-                                       id="health-facilities-menu">{{ __('label.health-facility') }}</a>
-                                @endif
-
                                 @if ($authUser->can('manage-item'))
                                     <a class="nav-link" href="{{ route('master.items.index') }}"
                                        id="items-menu">{{ __('label.items') }}</a>
@@ -818,11 +789,6 @@
                                 @if ($authUser->can('manage-leave-type'))
                                     <a class="nav-link" href="{{ route('master.leave.types.index') }}"
                                        id="leave-types-menu">Leave Types </a>
-                                @endif
-
-                                @if ($authUser->can('manage-meeting-hall'))
-                                    <a class="nav-link" href="{{ route('master.meeting.hall.index') }}"
-                                       id="meeting-hall-menu">{{ __('label.meeting-hall') }}</a>
                                 @endif
 
                                 @if ($authUser->can('manage-office'))
@@ -838,22 +804,14 @@
                                        id="holidays-menu">Office Holidays </a>
                                 @endif
 
-                                @if ($authUser->can('manage-project-code'))
+                                @if ($authUser->can('manage-projects'))
                                     <a class="nav-link" href="{{ route('master.project.codes.index') }}"
-                                       id="project-codes-menu">{{ __('label.project-codes') }}</a>
+                                       id="project-codes-menu">{{ __('label.projects') }}</a>
                                 @endif
-                                {{-- @if ($authUser->can('manage-partner-organization')) --}}
-                                <a class="nav-link" href="{{ route('master.partner.org.index') }}"
-                                   id="partner-org-menu">{{ __('label.partner-org') }}</a>
-                                {{-- @endif --}}
+
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"
                                        id="probationary-indicators-menu">{{ __('label.probationary-indicators') }}</a>
-                                @endif
-
-                                @if ($authUser->can('manage-training-question'))
-                                    <a class="nav-link" href="{{ route('master.training.questions.index') }}"
-                                       id="training-questions-menu">{{ __('label.training-questions') }}</a>
                                 @endif
 
                                 @if ($authUser->can('manage-unit'))

@@ -1,5 +1,5 @@
 <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Project Code</h5>
+    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Project</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form action="{!! route('master.project.codes.update',$projectCode->id) !!}" method="post"
@@ -8,7 +8,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Project Code </label>
+                    <label for="" class="form-label required-label">Project Name </label>
                 </div>
             </div>
             <div class="col-lg-9">

@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', __('label.project-codes'))
+@section('title', __('label.projects'))
 
 @section('page_js')
     <script type="text/javascript">
@@ -138,7 +138,7 @@
                         <table class="table" id="projectCodeTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">{{ __('label.project-code') }}</th>
+                                    <th scope="col">{{ __('label.name') }}</th>
                                     <th scope="col">Short Name</th>
                                     <th scope="col">{{ __('label.description') }}</th>
                                     <th scope="col">{{ __('label.created-by') }}</th>

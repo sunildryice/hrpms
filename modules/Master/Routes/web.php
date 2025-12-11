@@ -295,7 +295,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             Route::delete('probationary/questions/{probationaryQuestion}', [ProbationaryQuestionController::class, 'destroy'])->name('master.probationary.questions.destroy');
         });
 
-        Route::middleware('can:manage-project-code')->group(function () {
+        Route::middleware('can:manage-projects')->group(function () {
             Route::get('project-codes', [ProjectCodeController::class, 'index'])->name('master.project.codes.index');
             Route::get('project-codes/create', [ProjectCodeController::class, 'create'])->name('master.project.codes.create');
             Route::post('project-codes', [ProjectCodeController::class, 'store'])->name('master.project.codes.store');

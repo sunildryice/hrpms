@@ -1,18 +1,23 @@
 @extends('layouts.container')
 
-@section('title', __('label.activity-areas'))
+@section('title', __('label.activity-stages'))
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#activity-areas-menu').addClass('active');
 
-            var oTable = $('#activityAreaTable').DataTable({
+            var oTable = $('#activityStageTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('master.activity.areas.index') }}",
-                columns: [{
+                columns: [
+                    {
+                        data: 'project',
+                        name: 'project'
+                    },
+                    {
                         data: 'title',
                         name: 'title'
                     },
@@ -34,7 +39,7 @@
                 ]
             });
 
-            $('#activityAreaTable').on('click', '.delete-record', function(e) {
+            $('#activityStageTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
                 var $url = $object.attr('data-href');
@@ -57,13 +62,13 @@
                         width: '100%',
                         dropdownAutoWidth: true
                     });
-                    const form = document.getElementById('activityAreaForm');
+                    const form = document.getElementById('activityStageForm');
                     const fv = FormValidation.formValidation(form, {
                         fields: {
                             title: {
                                 validators: {
                                     notEmpty: {
-                                        message: 'Activity area is required',
+                                        message: 'Stage is required',
                                     },
                                 },
                             },
@@ -126,10 +131,11 @@
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="activityAreaTable">
+                        <table class="table" id="activityStageTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th scope="col">{{ __('label.activity-area') }}</th>
+                                    <th scope="col">{{ __('label.project') }}</th>
+                                    <th scope="col">{{ __('label.stage') }}</th>
                                     <th scope="col">{{ __('label.created-by') }}</th>
                                     <th scope="col">{{ __('label.updated-on') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>

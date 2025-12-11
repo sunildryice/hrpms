@@ -8,10 +8,13 @@ use App\Http\Controllers\Controller;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\TravelModeRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
+use Modules\TravelRequest\Requests\Claim\LocalTravelClaim\StoreRequest;
+use Modules\TravelRequest\Requests\Claim\LocalTravelClaim\UpdateRequest;
 use Modules\TravelRequest\Repositories\TravelClaimLocalTravelRepository;
 
 class ClaimLocalTravelController extends Controller
 {
+    protected $destinationPath;
     /**
      * Create a new controller instance.
      *
@@ -84,7 +87,6 @@ class ClaimLocalTravelController extends Controller
         $travelClaim = $this->travelClaims->find($id);
 
         return view('TravelRequest::TravelClaim.LocalTravel.create')
-            ->withTravelModes($this->travelModes->get())
             ->withTravelClaim($travelClaim);
     }
 
@@ -137,8 +139,7 @@ class ClaimLocalTravelController extends Controller
         $this->authorize('update', $travelClaim);
 
         return view('TravelRequest::TravelClaim.LocalTravel.edit')
-            ->withTravelModes($this->travelModes->get())
-            ->withTravelDsaClaim($localTravel)
+            ->withLocalTravelClaim($localTravel)
             ->withTravelClaim($travelClaim);
     }
 

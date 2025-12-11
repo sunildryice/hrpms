@@ -129,12 +129,13 @@ class ClaimController extends Controller
         $travelClaim = $this->travelClaim->find($claimId);
         $this->authorize('update', $travelClaim);
         $reviewers = $this->user->permissionBasedUsers('finance-review-travel-claim');
-        $supervisors = $this->user->getSupervisors($authUser);
+        $approvers = $this->user->permissionBasedUsers('approve-travel-claim');
+        // $approvers = $this->user->getSupervisors($authUser);
 
         return view('TravelRequest::TravelClaim.edit')
             ->withAuthUser($authUser)
             ->withReviewers($reviewers)
-            ->withSupervisors($supervisors)
+            ->withApprovers($approvers)
             ->withTravelClaim($travelClaim)
             ->withTravelRequest($travelClaim->travelRequest);
     }
@@ -236,47 +237,47 @@ class ClaimController extends Controller
         $authUser = auth()->user();
         $travelClaim = $this->travelClaim->find($id);
         $this->authorize('print', $travelClaim);
-        $itineraries = $travelClaim->itineraries()->with(['travelRequestItinerary.activityCode', 'travelRequestItinerary.donorCode', 'office'])
-            ->select(['travel_claim_itineraries.*', 'i2.activity_code_id'])
-            ->join('travel_request_itineraries as i2', 'i2.id', '=', 'travel_claim_itineraries.travel_itinerary_id')
-            ->get();
+        // $itineraries = $travelClaim->itineraries()->with(['travelRequestItinerary.activityCode', 'travelRequestItinerary.donorCode', 'office'])
+        //     ->select(['travel_claim_itineraries.*', 'i2.activity_code_id'])
+        //     ->join('travel_request_itineraries as i2', 'i2.id', '=', 'travel_claim_itineraries.travel_itinerary_id')
+        //     ->get();
 
-        $itineraries = $itineraries->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
-            ->map(function ($itinerary) {
-                $dsa = collect();
-                foreach ($itinerary as $index => $value) {
-                    if ($index == 0) {
-                        $dsa = $value;
+        // $itineraries = $itineraries->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
+        //     ->map(function ($itinerary) {
+        //         $dsa = collect();
+        //         foreach ($itinerary as $index => $value) {
+        //             if ($index == 0) {
+        //                 $dsa = $value;
 
-                        continue;
-                    }
-                    $dsa->total_amount += $value->total_amount;
-                }
-                $dsa->subledger = 'DSA';
+        //                 continue;
+        //             }
+        //             $dsa->total_amount += $value->total_amount;
+        //         }
+        //         $dsa->subledger = 'DSA';
 
-                return $dsa;
-            });
-        $expenses = $travelClaim->expenses()->with(['activityCode', 'donorCode', 'office'])->get();
+        //         return $dsa;
+        //     });
+        // $expenses = $travelClaim->expenses()->with(['activityCode', 'donorCode', 'office'])->get();
 
-        $expenses = $expenses->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
-            ->map(function ($expense) {
-                $travel = collect();
-                foreach ($expense as $index => $value) {
-                    if ($index == 0) {
-                        $travel = $value;
+        // $expenses = $expenses->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
+        //     ->map(function ($expense) {
+        //         $travel = collect();
+        //         foreach ($expense as $index => $value) {
+        //             if ($index == 0) {
+        //                 $travel = $value;
 
-                        continue;
-                    }
-                    $travel->expense_amount += $value->expense_amount;
-                }
-                $travel->subledger = 'Travel';
+        //                 continue;
+        //             }
+        //             $travel->expense_amount += $value->expense_amount;
+        //         }
+        //         $travel->subledger = 'Travel';
 
-                return $travel;
-            });
-        $summaries = $expenses->merge($itineraries)->groupBy('activity_code_id')->flatten(1);
+        //         return $travel;
+        //     });
+        // $summaries = $expenses->merge($itineraries)->groupBy('activity_code_id')->flatten(1);
 
         return view('TravelRequest::TravelClaim.print')
-            ->withSummaries($summaries)
+            // ->withSummaries($summaries)
             ->withTravelClaim($travelClaim);
     }
 }

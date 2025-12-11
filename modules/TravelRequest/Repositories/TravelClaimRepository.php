@@ -11,10 +11,9 @@ use Modules\TravelRequest\Models\TravelRequest;
 class TravelClaimRepository extends Repository
 {
     public function __construct(
-        TravelClaim   $travelClaim,
+        TravelClaim $travelClaim,
         protected TravelRequest $travelRequest
-    )
-    {
+    ) {
         $this->model = $travelClaim;
     }
 
@@ -61,32 +60,16 @@ class TravelClaimRepository extends Repository
         DB::beginTransaction();
         try {
             $travelRequest = $this->travelRequest->find($travelRequestId);
+
+            $advanceAmount = $travelRequest->travelRequestEstimate?->total_amount
+                ?? 0;
+
             $travelClaim = $this->model->create([
                 'travel_request_id' => $travelRequestId,
-                'advance_amount' => $travelRequest->received_advance_amount,
+                'advance_amount' => $advanceAmount,
                 'created_by' => $authId,
                 'status_id' => 1
             ]);
-            foreach ($travelRequest->travelRequestItineraries as $itinerary) {
-                $overnights = $itinerary->getOvernights();
-                $percentage =  100;
-                if(!$overnights){
-                    $percentage = ($itinerary->arrival_date == $itinerary->travelRequest->departure_date) ? 50 : 0;
-                }
-
-                $dsaTotalPrice =  $overnights ? $overnights*$itinerary->dsa_unit_price : $itinerary->dsa_unit_price;
-                $totalAmount =  $dsaTotalPrice*$percentage/100;
-
-                $travelClaim->itineraries()->create([
-                    'travel_itinerary_id' => $itinerary->id,
-                    'overnights' => $overnights,
-                    'percentage_charged' => $percentage,
-                    'total_amount' => $totalAmount,
-                    'office_id' => $itinerary->charging_office_id,
-                    'description' => $itinerary->description,
-                    'created_by' => $travelClaim->created_by,
-                ]);
-            }
             $this->updateTotalAmount($travelClaim->id);
             DB::commit();
             return $travelClaim;
@@ -104,7 +87,7 @@ class TravelClaimRepository extends Repository
             $travelClaim->logs()->delete();
             $travelClaim->attachments()->delete();
             $travelClaim->expenses()->delete();
-            $travelClaim->itineraries()->delete();
+            $travelClaim->dsaClaim()->delete();
             $travelClaim->delete();
             DB::commit();
             return true;
@@ -173,14 +156,18 @@ class TravelClaimRepository extends Repository
         DB::beginTransaction();
         try {
             $travelClaim = $this->model->find($claimId);
+
             $expenseAmount = $travelClaim->expenses->sum('expense_amount');
-            $itineraryAmount = $travelClaim->itineraries->sum('total_amount');
+            $dsaAmount = $travelClaim->dsaClaim->sum('total_amount');
+            $totalClaimed = $expenseAmount + $dsaAmount;
+
             $updateInputs = [
                 'total_expense_amount' => $expenseAmount,
-                'total_itinerary_amount' => $itineraryAmount,
-                'total_amount' => $expenseAmount + $itineraryAmount,
-                'refundable_amount' => $expenseAmount + $itineraryAmount - $travelClaim->advance_amount
+                'total_itinerary_amount' => $dsaAmount,
+                'total_amount' => $totalClaimed,
+                'refundable_amount' => $totalClaimed - $travelClaim->advance_amount,
             ];
+
             $travelClaim->update($updateInputs);
             DB::commit();
             return $travelClaim;

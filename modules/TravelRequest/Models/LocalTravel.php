@@ -3,13 +3,14 @@
 namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Employee\Models\Employee;
-use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\Office;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Modules\Employee\Models\Employee;
+use Modules\Master\Models\FiscalYear;
+use Modules\Master\Models\ProjectCode;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LocalTravel extends Model
 {
@@ -29,6 +30,7 @@ class LocalTravel extends Model
      */
     protected $fillable = [
         'travel_request_id',
+        'project_code_id',
         'employee_id',
         'requester_id',
         'reviewer_id',
@@ -72,6 +74,11 @@ class LocalTravel extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id')->withDefault();
+    }
+
+    public function projectCode()
+    {
+        return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
     }
 
     /**
@@ -179,9 +186,9 @@ class LocalTravel extends Model
 
     public function getLocalTravelNumber()
     {
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2) : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
-        return $this->prefix.$this->local_travel_number.$fiscalYear;
+        return $this->prefix . $this->local_travel_number . $fiscalYear;
     }
 
     public function getOfficeName()

@@ -727,7 +727,7 @@
                         autoApply: true,
                         autoUpdateInput: false,
                         minDate: '{!! $travelRequest->departure_date->format('Y-m-d H:i') !!}',
-                        maxDate: '{!! $travelRequest->return_date->format('Y-m-d H:i') !!}',
+                        maxDate: '{!! $travelRequest->return_date->format('Y-m-d') !!} 23:59',
                         locale: {
                             format: 'YYYY-MM-DD HH:mm'
                         }

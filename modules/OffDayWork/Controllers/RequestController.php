@@ -65,11 +65,11 @@ class RequestController extends Controller
                     <i class="bi bi-eye"></i> 
                     </a>';
 
-                    // if ($authUser->can('update', $row)) {
-                    $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('off.day.work.edit', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
+                    if ($authUser->can('update', $row)) {
+                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
+                        $btn .= route('off.day.work.edit', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-title="Edit Off Day Work Request"><i class="bi-pencil-square"></i></a>';
-                    // }
+                    }
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -87,59 +87,10 @@ class RequestController extends Controller
         $projects = $this->projects->pluck('title', 'id');
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
-        $december2025 = Carbon::create(2025, 12, 1);
-
-        $start  = $december2025->copy()->startOfMonth();
-        $end    = $december2025->copy()->endOfMonth();
-
-        $weekends = [];
-        while ($start->lte($end)) {
-            if ($start->isSunday() && $authUser->employee->office->weekend_type == config('constant.Saturday+Sunday')) {
-                $weekends[] = $start->toDateString();
-            }
-
-            if ($start->isSaturday()) {
-                $weekends[] = $start->toDateString();
-            }
-
-            $start->addDay();
-        }
-
-        $office = $authUser->employee->office;
-
-        $holidays = $office->holidays()
-            ->whereMonth('holiday_date', $december2025->month)
-            ->whereYear('holiday_date', $december2025->year)
-            ->when(
-                $authUser->employee->gender == config('constant.FEMALE'),
-                function ($query) {
-                    // female: all holidays (common + only_female)
-                    // nothing extra needed if common holidays have only_female = false
-                },
-                function ($query) {
-                    // non-female: exclude female-only holidays
-                    $query->where(function ($q) {
-                        $q->whereNull('only_female')
-                            ->orWhere('only_female', false);
-                    });
-                }
-            )
-            ->pluck('title', 'holiday_date')
-            ->toArray();
-
-
-
-        $enabledDates  = array_merge(array_keys($holidays), $weekends);
-
-        $holidayTitles = $holidays;
-
 
         return view('OffDayWork::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
-            'holidays' => $holidays,
-            'enabledDates'  => $enabledDates,
-            'holidayTitles' => $holidayTitles,
         ]);
     }
 

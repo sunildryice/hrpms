@@ -357,30 +357,30 @@
                                     <tr>
                                         <td colspan="3">{{ __('label.sub-total') }}</td>
                                         <td colspan="3" id="total_expense_amount">
-                                            {{ $travelClaim->total_expense_amount }}</td>
+                                            {{ number_format($travelClaim->total_expense_amount, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">Total Local Travel</td>
                                         <td colspan="3" id="total_local_travel_amount">
-                                            {{ sprintf('%.2f', $travelClaim->localTravels->sum('travel_fare')) }}
+                                            {{ number_format($travelClaim->localTravels->sum('travel_fare'), 2) }}
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3">Total DSA</td>
+                                        <td colspan="3">Total TADA</td>
                                         <td colspan="3" id="total_itinerary_amount">
-                                            {{ $travelClaim->total_itinerary_amount }}</td>
+                                            {{ number_format($travelClaim->total_itinerary_amount, 2) }}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">{{ __('label.grand-total') }}</td>
                                         <td colspan="3" id="total_amount">
-                                            {{ $travelClaim->total_amount }}
+                                            {{ number_format($travelClaim->total_amount, 2) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">{{ __('label.advance-amount') }}
                                         </td>
                                         <td colspan="3">
-                                            {{ $travelClaim->advance_amount }}
+                                            {{ number_format($travelClaim->advance_amount, 2) }}
                                         </td>
                                     </tr>
                                     <tr>

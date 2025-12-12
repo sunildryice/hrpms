@@ -53,6 +53,9 @@ class RequestController extends Controller
                 ->addColumn('project', function ($row) {
                     return $row->project->title ?? '-';
                 })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
                 ->addColumn('status', function ($row) {
 
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';

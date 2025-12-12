@@ -37,6 +37,12 @@ class WorkFromHome extends Model
         'deliverables' => 'array',
     ];
 
+    protected $dates = [
+        'start_date',
+        'end_date',
+        'request_date',
+    ];
+
 
     public function project()
     {
@@ -107,5 +113,11 @@ class WorkFromHome extends Model
         $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
         return $workFromHomeNumber . $fiscalYear;
+    }
+
+
+    public function getTotalDays()
+    {
+        return $this->end_date ? $this->end_date->diffInDays($this->start_date) + 1 : 1;
     }
 }

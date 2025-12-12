@@ -5,6 +5,13 @@
 <form action="{!! route('travel.claims.dsa.update', [$travelDsaClaim->travel_claim_id, $travelDsaClaim->id]) !!}" method="post" enctype="multipart/form-data" id="claimItineraryForm"
     autocomplete="off">
     <div class="modal-body">
+        <div class="row mb-3">
+            <div class="col-lg-9 offset-lg-3">
+                <small>
+                    <em>DSA Rates per day → Breakfast Rs.400 | Lunch Rs.500 | Dinner Rs.600 | Incidental Rs.300</em>
+                </small>
+            </div>
+        </div>
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

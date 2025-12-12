@@ -257,7 +257,6 @@ class LeaveRequestController extends Controller
         $authUser = auth()->user();
         $leaveRequest = $this->leaveRequests->find($id);
 
-
         $this->authorize('update', $leaveRequest);
 
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
@@ -265,8 +264,8 @@ class LeaveRequestController extends Controller
             ->first();
         $sql = 'SELECT u1.* FROM employee_leaves u1
             WHERE u1.employee_id=? AND u1.reported_date = (SELECT MAX(u2.reported_date)
-                                                           FROM employee_leaves u2 WHERE u2.employee_id=? AND u2.leave_type_id = u1.leave_type_id )';
-        $leaveIds = \DB::select($sql, [$authUser->employee_id, $authUser->employee_id]);
+                                                           FROM employee_leaves u2 WHERE u2.employee_id=? AND u2.leave_type_id = u1.leave_type_id AND u1.leave_type_id = ?)';
+        $leaveIds = \DB::select($sql, [$authUser->employee_id, $authUser->employee_id, $leaveRequest->leave_type_id]);
         $employee = $authUser->employee;
         $leaveTypes = $this->employeeLeaves->with(['leaveType'])
             ->whereIn('id', array_column($leaveIds, 'id'))

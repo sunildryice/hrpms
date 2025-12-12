@@ -12,30 +12,30 @@
             let rowIndex = 0;
             const form = document.getElementById('travelReportAddForm');
 
-            const subjectValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Day is required'
-                    }
-                }
-            };
-            const dateValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Date is required'
-                    }
-                }
-            };
-            const taskValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Activities are required'
-                    }
-                }
-            };
-            const remarkValidators = {
-                validators: {}
-            };
+            // const subjectValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Day is required'
+            //         }
+            //     }
+            // };
+            // const dateValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Date is required'
+            //         }
+            //     }
+            // };
+            // const taskValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Activities are required'
+            //         }
+            //     }
+            // };
+            // const remarkValidators = {
+            //     validators: {}
+            // };
 
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -68,10 +68,10 @@
                         }
                     },
 
-                    'recommendation[day_number][0]': subjectValidators,
-                    'recommendation[activity_date][0]': dateValidators,
-                    'recommendation[completed_tasks][0]': taskValidators,
-                    'recommendation[remarks][0]': remarkValidators,
+                    // 'recommendation[day_number][0]': subjectValidators,
+                    // 'recommendation[activity_date][0]': dateValidators,
+                    // 'recommendation[completed_tasks][0]': taskValidators,
+                    // 'recommendation[remarks][0]': remarkValidators,
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -85,6 +85,24 @@
                     }),
                 },
             });
+
+            document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
+                fv.addField(field.name, {
+                    validators: {
+                        notEmpty: {
+                            message: 'Activities are required'
+                        }
+                    }
+                });
+            });
+
+            @if ($errors->any())
+                @foreach ($dates as $index => $date)
+                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
+                        fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+                    @endif
+                @endforeach
+            @endif
 
         });
     </script>
@@ -232,21 +250,15 @@
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.{$index}") }}</textarea>
-
-                                                                @error("recommendation.completed_tasks.{$index}")
+                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3"
+                                                                    class="form-control @error('recommendation.completed_tasks.' . $index) is-invalid @enderror">{{ old('recommendation.completed_tasks.' . $index) }}</textarea>@error('recommendation.completed_tasks.' . $index)
                                                                     <div class="invalid-feedback d-block">{{ $message }}
                                                                     </div>
                                                                 @enderror
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.{$index}") }}</textarea>
-
-                                                                @error("recommendation.remarks.{$index}")
-                                                                    <div class="invalid-feedback d-block">{{ $message }}
-                                                                    </div>
-                                                                @enderror
+                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old('recommendation.remarks.' . $index) }}</textarea>
                                                             </td>
                                                         </tr>
                                                     @empty

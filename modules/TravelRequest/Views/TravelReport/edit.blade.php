@@ -14,30 +14,30 @@
             const form = document.getElementById('travelReportAddForm');
             const template = document.getElementById('template');
 
-            const subjectValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Day is required'
-                    }
-                }
-            };
-            const dateValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Date is required'
-                    }
-                }
-            };
-            const taskValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Activities are required'
-                    }
-                }
-            };
-            const remarkValidators = {
-                validators: {}
-            };
+            // const subjectValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Day is required'
+            //         }
+            //     }
+            // };
+            // const dateValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Date is required'
+            //         }
+            //     }
+            // };
+            // const taskValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Activities are required'
+            //         }
+            //     }
+            // };
+            // const remarkValidators = {
+            //     validators: {}
+            // };
 
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -87,11 +87,19 @@
                 fv.addField(field.name, {
                     validators: {
                         notEmpty: {
-                            message: 'Activities are required for this day'
+                            message: 'Activities are required'
                         }
                     }
                 });
             });
+
+            @if ($errors->any())
+                @foreach ($dates as $index => $date)
+                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
+                        fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+                    @endif
+                @endforeach
+            @endif
 
         });
     </script>

@@ -24,12 +24,13 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'activity_code_id' => 'required|exists:lkup_activity_codes,id',
             'activities' => 'required',
             'departure_date' => 'required|date_format:Y-m-d',
             'arrival_date' => 'required|date_format:Y-m-d',
             'departure_place' => 'required',
             'arrival_place' => 'required',
-            
+
             'breakfast' => 'required|numeric',
             'lunch' => 'required|numeric',
             'dinner' => 'required|numeric',

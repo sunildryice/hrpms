@@ -5,6 +5,7 @@ namespace Modules\TravelRequest\Models;
 use App\Traits\ModelEventLogger;
 use Modules\Master\Models\TravelMode;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\ActivityCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelDsaClaim extends Model
@@ -25,6 +26,7 @@ class TravelDsaClaim extends Model
      */
     protected $fillable = [
         'travel_claim_id',
+        'activity_code_id',
         'activities',
         'departure_date',
         'arrival_date',
@@ -66,6 +68,14 @@ class TravelDsaClaim extends Model
         return $this->belongsTo(TravelClaim::class, 'travel_claim_id');
     }
 
+    /**
+     * Get the activityCode of the travel dsa claim.
+     */
+    public function activityCode()
+    {
+        return $this->belongsTo(ActivityCode::class, 'activity_code_id')->withDefault();
+    }
+
     public function travelModes()
     {
         return $this->belongsToMany(
@@ -100,11 +110,11 @@ class TravelDsaClaim extends Model
     public function getDaySpents()
     {
         $daySpents = 0;
-        if($this->arrival_date && $this->departure_date){
-            if($this->arrival_date == $this->travelRequest->return_date){
+        if ($this->arrival_date && $this->departure_date) {
+            if ($this->arrival_date == $this->travelRequest->return_date) {
                 $daySpents = $this->arrival_date->diffInDays($this->departure_date);
             } else {
-                $daySpents = $this->arrival_date->diffInDays($this->departure_date)+1;
+                $daySpents = $this->arrival_date->diffInDays($this->departure_date) + 1;
             }
         }
         return $daySpents;

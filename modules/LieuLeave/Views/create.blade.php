@@ -18,6 +18,7 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+                startDate: new Date(),
             }).on('change', function() {
                 if (window.fv) {
                     // fv.revalidateField('leave_date');
@@ -94,8 +95,6 @@
                 fv.revalidateField('send_to');
             });
 
-            // Initialize remove buttons state on load
-            updateRemoveButtons();
         });
     </script>
 @endsection

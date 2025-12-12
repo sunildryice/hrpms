@@ -141,6 +141,9 @@
                 bPaginate: false,
                 bInfo: false,
                 columns: [{
+                        data: 'activity',
+                        name: 'activity'
+                    }, {
                         data: 'travel_date',
                         name: 'travel_date'
                     },
@@ -185,6 +188,9 @@
                 bPaginate: false,
                 bInfo: false,
                 columns: [{
+                        data: 'activity',
+                        name: 'activity'
+                    }, {
                         data: 'activities',
                         name: 'activities'
                     },
@@ -440,6 +446,13 @@
 
                     const fv = FormValidation.formValidation(claimLocalTravelForm, {
                         fields: {
+                            activity_code_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Activity is required',
+                                    },
+                                },
+                            },
                             travel_date: {
                                 validators: {
                                     notEmpty: {
@@ -569,6 +582,13 @@
 
                         const fv = FormValidation.formValidation(claimItineraryForm, {
                             fields: {
+                                activity_code_id: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Activity is required',
+                                        },
+                                    },
+                                },
                                 activities: {
                                     validators: {
                                         notEmpty: {
@@ -799,7 +819,8 @@
                                         <table class="table" id="itineraryTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" rowspan="2">Activities
+                                                    <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
+                                                    <th scope="col" rowspan="2">Activities/Tasks
                                                     </th>
                                                     <th scope="col" colspan="2" class="text-center">
                                                         {{ __('label.destination') }}</th>
@@ -864,6 +885,7 @@
                                         <table class="table" id="claimLocalTravelTable">
                                             <thead class="thead-light">
                                                 <tr>
+                                                    <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
                                                     <th scope="col" rowspan="2">{{ __('label.date') }}</th>
                                                     <th scope="col" rowspan="2">{{ __('label.purpose') }}</th>
                                                     <th scope="col" colspan="2" class="text-center">

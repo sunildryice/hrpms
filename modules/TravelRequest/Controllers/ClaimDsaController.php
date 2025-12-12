@@ -46,7 +46,7 @@ class ClaimDsaController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->travelDsaClaims->select(['*'])
+            $data = $this->travelDsaClaims->select(['*'])->with(['activityCode'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
@@ -58,6 +58,9 @@ class ClaimDsaController extends Controller
                 })
                 ->addColumn('mode_of_travel', function ($row) {
                     return $row->getTravelModes();
+                })
+                ->addColumn('activity', function ($row) {
+                    return $row->activityCode?->getActivityCodeDescription();
                 })
                 ->addColumn('attachment', function ($row) {
                     $attachment = '';

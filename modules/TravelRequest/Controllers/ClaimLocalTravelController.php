@@ -47,12 +47,15 @@ class ClaimLocalTravelController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->localTravels->select(['*'])
+            $data = $this->localTravels->select(['*'])->with(['activityCode'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('travel_date', function ($row) {
                     return $row->getTravelDate();
+                })
+                ->addColumn('activity', function ($row) {
+                    return $row->activityCode?->getActivityCodeDescription();
                 })
                 ->addColumn('attachment', function ($row) {
                     $attachment = '';

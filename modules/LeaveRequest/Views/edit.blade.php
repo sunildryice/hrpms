@@ -229,60 +229,7 @@
                 $('.submit-btn').attr('disabled', true)
             });
 
-            $(form).on('change', '[name="leave_type_id"]', function(e) {
-                $element = $(this);
-                var leaveTypeId = $element.val();
-                if (leaveTypeId) {
-                    var url = baseUrl + '/api/employee/' + employeeId + '/leaves/' + leaveTypeId + '/show';
-                    var successCallback = function(response) {
-                        var balance = 'Balance : ' + response.leave.balance + ' - ' + response
-                            .leaveBasis;
-                        $($element).closest('form').find('[name="balance"]').val(balance);
-                        $($element).closest('form').find('[name="leave_basis"]').val(response.leave
-                            .leave_type.leave_basis);
-                        $($element).closest('form').find('[name="include_weekends"]').val(response.leave
-                            .leave_type.include_weekends);
-                        generateLeaveTable($element);
-                    }
-                    var errorCallback = function(error) {
-                        console.log(error);
-                    }
-                    ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
-                } else {
-                    $($element).closest('form').find('[name="balance"]').val(0);
-                    $($element).closest('form').find('[name="leave_basis"]').val(1);
-                    generateLeaveTable(this);
-                }
-
-
-                var leaveType = $('[name="leave_type_id"] option:selected').text();
-                {{-- if(leaveType.includes('Sick')){ --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{-- } else { --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{-- } --}}
-                fv.revalidateField('leave_type_id');
-            }).on('change', '[name="approver_id"]', function(e) {
+            $(form).on('change', '[name="approver_id"]', function(e) {
                 fv.revalidateField('approver_id');
             });
             @if (!$leaveRequest->modification_leave_request_id)
@@ -367,7 +314,6 @@
                             <div class="col-lg-6">
                                 @php $selectedLeaveTypeId = old('leave_type_id') ?: $leaveRequest->leave_type_id; @endphp
                                 <select name="leave_type_id" class="select2 form-control" data-width="100%">
-                                    <option value="">Select a Leave Type</option>
                                     @foreach ($leaveTypes as $leave)
                                         <option value="{{ $leave->leave_type_id }}"
                                             {{ $leave->leave_type_id == $selectedLeaveTypeId ? 'selected' : '' }}>

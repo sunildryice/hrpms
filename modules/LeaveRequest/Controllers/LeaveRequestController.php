@@ -286,7 +286,6 @@ class LeaveRequestController extends Controller
             return $staff->id == $authUser->employee_id;
         });
 
-
         if (
             $leaveRequest->leave_type_id == config('constant.SICK_LEAVE') ||
             $leaveRequest->leave_type_id == config('constant.ANNUAL_LEAVE')
@@ -310,7 +309,7 @@ class LeaveRequestController extends Controller
             ->where('employee_id', $authUser->employee_id)
             ->where('fiscal_year_id', $fiscalYear->id)
             ->where('leave_type_id', $leaveRequest->leave_type_id)
-            ->first();
+            ->latest();
         $supervisors = $this->users->getSupervisors($authUser);
         $holidays = $this->offices->getHolidays($authUser->employee->office_id);
 

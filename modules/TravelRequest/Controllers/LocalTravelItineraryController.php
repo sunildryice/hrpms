@@ -19,6 +19,7 @@ use DataTables;
 
 class LocalTravelItineraryController extends Controller
 {
+    protected $destinationPath;
     /**
      * Create a new controller instance.
      *
@@ -29,18 +30,18 @@ class LocalTravelItineraryController extends Controller
      * @param TravelModeRepository $travelModes
      */
     public function __construct(
-        ActivityCodeRepository         $activityCodes,
-        DonorCodeRepository            $donorCodes,
-        LocalTravelRepository          $localTravels,
+        ActivityCodeRepository $activityCodes,
+        DonorCodeRepository $donorCodes,
+        LocalTravelRepository $localTravels,
         LocalTravelItineraryRepository $localTravelItineraries,
-        TravelModeRepository           $travelModes
-    )
-    {
+        TravelModeRepository $travelModes
+    ) {
         $this->activityCodes = $activityCodes;
         $this->donorCodes = $donorCodes;
         $this->localTravels = $localTravels;
         $this->localTravelItineraries = $localTravelItineraries;
         $this->travelModes = $travelModes;
+        $this->destinationPath = 'localTravel';
     }
 
     /**
@@ -55,7 +56,6 @@ class LocalTravelItineraryController extends Controller
             $authUser = auth()->user();
             $localTravel = $this->localTravels->find($localTravelId);
             $data = $this->localTravelItineraries->select(['*'])
-                ->with(['activityCode', 'accountCode'])
                 ->where('local_travel_reimbursement_id', $localTravelId);
             $datatable = DataTables::of($data)
                 ->addIndexColumn();
@@ -71,21 +71,17 @@ class LocalTravelItineraryController extends Controller
             }
             return $datatable->addColumn('travel_date', function ($row) {
                 return $row->getTravelDate();
-            })->addColumn('activity', function ($row) {
-                return $row->getActivityCode();
-            })->addColumn('account', function ($row) {
-                return $row->getAccountCode();
             })->addColumn('travel_mode', function ($row) {
                 return $row->travel_mode;
-            })
-            ->withQuery('sum_total_fare', function($filteredQuery) {
-                return $filteredQuery->sum('total_fare');
-            })
-            ->withQuery('sum_total_distance', function($filteredQuery) {
-                return $filteredQuery->sum('total_distance');
-            })
-            ->rawColumns(['action'])
-                ->make(true);
+            })->addColumn('attachment', function ($row) {
+                $attachment = '';
+                if (file_exists('storage/' . $row->attachment) && $row->attachment != '') {
+                    $attachment = '<a href = "' . asset('storage/' . $row->attachment) . '" target = "_blank" class="fs-5" ';
+                    $attachment .= 'title = "View Attachment" ><i class="bi bi-file-earmark-medical"></i></a>';
+                }
+                return $attachment;
+            })->rawColumns(['action', 'attachment'])
+            ->make(true);
         }
         return true;
     }
@@ -127,17 +123,26 @@ class LocalTravelItineraryController extends Controller
         $this->authorize('update', $localTravel);
         $authUser = auth()->user();
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $localTravel->id, time() . '_reimbursement_itinerary.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['local_travel_reimbursement_id'] = $localTravel->id;
         $inputs['created_by'] = auth()->id();
         $localTravelItinerary = $this->localTravelItineraries->create($inputs);
 
         if ($localTravelItinerary) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'purchaseRequestItem' => $localTravelItinerary,
-                'message' => 'Local travel detail is successfully added.'], 200);
+                'message' => 'Local travel detail is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Local travel detail can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Local travel detail can not be added.'
+        ], 422);
     }
 
     /**
@@ -185,15 +190,24 @@ class LocalTravelItineraryController extends Controller
         $localTravelItinerary = $this->localTravelItineraries->find($id);
         $this->authorize('update', $localTravel);
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $localTravel->id, time() . '_reimbursement_itinerary.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['updated_by'] = auth()->id();
         $localTravelItinerary = $this->localTravelItineraries->update($id, $inputs);
         if ($localTravelItinerary) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'purchaseRequestItem' => $localTravelItinerary,
-                'message' => 'Local travel detail is successfully updated.'], 200);
+                'message' => 'Local travel detail is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Local travel detail can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Local travel detail can not be updated.'
+        ], 422);
     }
 
     /**

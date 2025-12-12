@@ -22,6 +22,7 @@ use Modules\TravelRequest\Controllers\TravelReportController;
 use Modules\TravelRequest\Controllers\ClaimApprovedController;
 use Modules\TravelRequest\Controllers\TravelRequestController;
 use Modules\TravelRequest\Controllers\ClaimItineraryController;
+use Modules\TravelRequest\Controllers\ClaimLocalTravelController;
 use Modules\TravelRequest\Controllers\LocalTravelApproveController;
 use Modules\TravelRequest\Controllers\LocalTravelPaymentController;
 use Modules\TravelRequest\Controllers\TravelReportReviewController;
@@ -135,6 +136,12 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::post('travel/claims/{travelClaim}/expenses/{expense}', [ClaimExpenseController::class, 'update'])->name('travel.claims.expenses.update');
         Route::delete('travel/claims/{travelClaim}/expenses/{expense}/destroy', [ClaimExpenseController::class, 'destroy'])->name('travel.claims.expenses.destroy');
 
+        Route::get('travel/claims/{travelClaim}/local/travel/create', [ClaimLocalTravelController::class, 'create'])->name('travel.claims.local.travel.create');
+        Route::post('travel/claims/{travelClaim}/local/travel', [ClaimLocalTravelController::class, 'store'])->name('travel.claims.local.travel.store');
+        Route::get('travel/claims/{travelClaim}/local/travel/{localTravel}/edit', [ClaimLocalTravelController::class, 'edit'])->name('travel.claims.local.travel.edit');
+        Route::post('travel/claims/{travelClaim}/local/travel/{localTravel}', [ClaimLocalTravelController::class, 'update'])->name('travel.claims.local.travel.update');
+        Route::delete('travel/claims/{travelClaim}/local/travel/{localTravel}/destroy', [ClaimLocalTravelController::class, 'destroy'])->name('travel.claims.local.travel.destroy');
+
         Route::get('travel/claims/{travelClaim}/dsa/create', [ClaimDsaController::class, 'create'])->name('travel.claims.dsa.create');
         Route::post('travel/claims/{travelClaim}/dsa', [ClaimDsaController::class, 'store'])->name('travel.claims.dsa.store');
         Route::get('travel/claims/{travelClaim}/dsa/{dsa}/edit', [ClaimDsaController::class, 'edit'])->name('travel.claims.dsa.edit');
@@ -145,6 +152,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::post('travel/claims/{travelClaim}/itineraries/{expense}', [ClaimItineraryController::class, 'update'])->name('travel.claims.itineraries.update');
     });
     Route::get('travel/claims/{travelClaim}/dsa', [ClaimDsaController::class, 'index'])->name('travel.claims.dsa.index');
+    Route::get('travel/claims/{travelClaim}/local/travel', [ClaimLocalTravelController::class, 'index'])->name('travel.claims.local.travel.index');
     Route::get('travel/claims/{travelClaim}/expenses', [ClaimExpenseController::class, 'index'])->name('travel.claims.expenses.index');
     Route::get('travel/claims/{travelClaim}/itineraries', [ClaimItineraryController::class, 'index'])->name('travel.claims.itineraries.index');
 

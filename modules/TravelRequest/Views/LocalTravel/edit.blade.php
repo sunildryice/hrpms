@@ -9,6 +9,13 @@
             const form = document.getElementById('localTravelEditForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
+                    project_code_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Project is required',
+                            },
+                        },
+                    },
                     title: {
                         validators: {
                             notEmpty: {
@@ -50,32 +57,20 @@
                     name: 'travel_date'
                 },
                 {
-                    data: 'purpose',
-                    name: 'purpose'
-                },
-                {
                     data: 'travel_mode',
                     name: 'travel_mode'
                 },
                 {
-                    data: 'total_distance',
-                    name: 'total_distance'
-                },
-                {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'total_fare',
-                    name: 'total_fare'
+                    data: 'pickup_location',
+                    name: 'pickup_location'
                 },
                 {
                     data: 'remarks',
                     name: 'remarks'
+                },
+                {
+                    data: 'attachment',
+                    name: 'attachment',
                 },
                 {
                     data: 'action',
@@ -85,22 +80,6 @@
                     className: 'sticky-col'
                 }
             ],
-            drawCallback: function() {
-                let data = this.api().ajax.json();
-                let table = this[0];
-                let footer = table.getElementsByTagName('tfoot')[0];
-                if (!footer) {
-                    footer = document.createElement("tfoot");
-                    table.appendChild(footer);
-                }
-                footer.innerHTML = '';
-                footer.innerHTML = `<tr>
-                                        <td colspan=3 style="text-align:right">Total Distance :</td>
-                                        <td>${data.sum_total_distance}</td>
-                                        <td colspan=2 style="text-align:right">Total Amount :</td>
-                                        <td colspan=3>${data.sum_total_fare}</td>
-                                    </tr>`;
-            },
         });
 
         $('#localTravelItineraryTable').on('click', '.delete-record', function(e) {
@@ -132,20 +111,6 @@
                 });
                 const fv = FormValidation.formValidation(form, {
                     fields: {
-                        activity_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The activity code is required',
-                                },
-                            },
-                        },
-                        account_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The account code is required',
-                                },
-                            },
-                        },
                         travel_date: {
                             validators: {
                                 notEmpty: {
@@ -157,13 +122,6 @@
                                 },
                             },
                         },
-                        purpose: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Purpose is required',
-                                },
-                            },
-                        },
                         travel_mode: {
                             validators: {
                                 notEmpty: {
@@ -171,25 +129,16 @@
                                 },
                             },
                         },
-                        total_fare: {
+                        attachment: {
                             validators: {
-                                notEmpty: {
-                                    message: 'Total fare is required',
-                                },
-                                greaterThan: {
-                                    message: 'The value must be greater than or equal to 0.01',
-                                    min: 0.01,
-                                },
-                            },
-                        },
-                        total_distance: {
-                            validators: {
-                                greaterThan: {
-                                    message: 'The value must be greater than or equal to 0.01',
-                                    min: 0.01,
-                                },
-                            },
-                        },
+                                file: {
+                                    extension: 'jpeg,jpg,png,pdf',
+                                    type: 'image/jpeg,image/jpg,image/png,application/pdf',
+                                    maxSize: 5097152,
+                                    message: 'File must be jpeg, jpg, png or pdf and less than 2MB'
+                                }
+                            }
+                        }
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -201,19 +150,19 @@
                             validating: 'bi bi-arrow-repeat',
                         }),
                     },
-                }).on('core.form.valid', function(event) {
-                    $url = fv.form.action;
-                    $form = fv.form;
-                    data = $($form).serialize();
-                    var successCallback = function(response) {
+                }).on('core.form.valid', function() {
+                    const $url = fv.form.action;
+                    const formData = new FormData(form);
+
+                    const successCallback = function(response) {
                         $('#openModal').modal('hide');
-                        toastr.success(response.message, 'Success', {
-                            timeOut: 5000
-                        });
+                        toastr.success(response.message || 'Saved successfully');
                         oTable.ajax.reload();
-                    }
-                    ajaxSubmit($url, 'POST', data, successCallback);
+                    };
+
+                    ajaxSubmitFormData($url, 'POST', formData, successCallback);
                 });
+
                 $('[name="travel_date"]').datepicker({
                     language: 'en-GB',
                     autoHide: true,
@@ -224,37 +173,91 @@
                     fv.revalidateField('travel_date');
                 });
 
-                $(form).on('change', '[name="travel_mode_id"]', function(e) {
-                    fv.revalidateField('travel_mode_id');
-                }).on('change', '[name="activity_code_id"]', function(e) {
-                    $element = $(this);
-                    var activityCodeId = $element.val();
-                    var htmlToReplace = '<option value="">Select Account Code</option>';
-                    $($element).closest('form').find('[name="account_code_id"]').html(
-                    htmlToReplace);
-                    if (activityCodeId) {
-                        var url = baseUrl + '/api/master/activity-codes/' + activityCodeId;
-                        var successCallback = function(response) {
-                            response.accountCodes.forEach(function(accountCode) {
-                                htmlToReplace += '<option value="' + accountCode.id +
-                                    '">' +
-                                    accountCode.title + ' ' + accountCode.description +
-                                    '</option>';
-                            });
-                            $($element).closest('form').find('[name="account_code_id"]').html(
-                                    htmlToReplace)
-                                .trigger('change');
+                const $travelerContainer = $('#travelers-names-container');
+                const $numberInput = $('#number_of_travelers');
+
+                function renderTravelerRows() {
+                    const count = parseInt($numberInput.val()) || 0;
+                    const existing = window.currentTravelersData || [];
+
+                    $travelerContainer.empty();
+
+                    if (count <= 0) return;
+
+                    for (let i = 0; i < count; i++) {
+                        const name = existing[i]?.name || '';
+
+                        let rowHTML = `
+                        <div class="row mb-2 align-items-end traveler-row">
+                            <div class="col-lg-3"></div>
+                            <div class="col-lg-8 col-xl-6">
+                                <input type="text" 
+                                       name="names_of_travelers[${i}][name]" 
+                                       class="form-control" 
+                                       placeholder="Full Name *" 
+                                       value="${name}" 
+                                       required>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-danger btn-sm remove-traveler-row" title="Remove">
+                                        <i class="bi bi-trash"></i>
+                                    </button>`;
+
+                        if (i === count - 1) {
+                            rowHTML += `
+                                    <button type="button" class="btn btn-success btn-sm add-traveler-row ms-1" title="Add another traveler">
+                                        <i class="bi bi-plus-lg"></i>
+                                    </button>`;
                         }
-                        var errorCallback = function(error) {
-                            console.log(error);
-                        }
-                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                        rowHTML += `
+                                </div>
+                            </div>
+                        </div>`;
+
+                        $travelerContainer.append(rowHTML);
                     }
-                    fv.revalidateField('activity_code_id');
-                    fv.revalidateField('account_code_id');
-                }).on('change', '[name="account_code_id"]', function(e) {
-                    fv.revalidateField('account_code_id');
-                }).on('change', '[name="approver_id"]', function(e) {
+                }
+
+                // When number of travelers changes
+                $numberInput.on('input change', function() {
+                    let val = parseInt($(this).val()) || 0;
+                    if (val < 0) val = 0;
+                    if (val > 50) val = 50; // optional max
+                    $(this).val(val);
+                    renderTravelerRows();
+                });
+
+                // Click + button → increase count by 1
+                $travelerContainer.on('click', '.add-traveler-row', function() {
+                    const current = parseInt($numberInput.val()) || 0;
+                    $numberInput.val(current + 1).trigger('change');
+                });
+
+                // Click trash → remove that row and re-index
+                $travelerContainer.on('click', '.remove-traveler-row', function() {
+                    $(this).closest('.traveler-row').remove();
+
+                    // Rebuild with correct indexing
+                    const remainingCount = $travelerContainer.find('.traveler-row').length;
+                    $numberInput.val(remainingCount);
+
+                    // Re-render to fix indexes and + button position
+                    const tempData = [];
+                    $travelerContainer.find('input[name^="names_of_travelers"]').each(function() {
+                        tempData.push({
+                            name: $(this).val()
+                        });
+                    });
+                    window.currentTravelersData = tempData;
+
+                    renderTravelerRows();
+                });
+
+                // Initial render when modal opens
+                renderTravelerRows();
+
+                $(form).on('change', '[name="approver_id"]', function(e) {
                     fv.revalidateField('approver_id');
                 });
             });
@@ -297,6 +300,37 @@
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
+                                <label for="validationProject" class="form-label required-label">Project
+                                </label>
+                            </div>
+                        </div>
+                        @php $selectedProjectCodeId =  old('project_code_id') ?: $localTravel->project_code_id  @endphp
+                        <div class="col-lg-10">
+                            <select name="project_code_id"
+                                class="select2 form-control
+                                                    @if ($errors->has('project_code_id')) is-invalid @endif"
+                                data-width="100%">
+                                <option value="">Select a Project</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        {{ $project->id == $selectedProjectCodeId ? 'selected' : '' }}>
+                                        {{ $project->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('project_code_id'))
+                                <div class="fv-plugins-message-container invalid-feedback">
+                                    <div data-field="project_code_id">
+                                        {!! $errors->first('project_code_id') !!}
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+                        <div class="col-lg-2">
+                            <div class="d-flex align-items-start h-100">
                                 <label for="validationRemarks" class="form-label required-label">Purpose</label>
                             </div>
                         </div>
@@ -311,14 +345,13 @@
                         </div>
                     </div>
 
-                                        <div class="mb-2 row">
+                    {{-- <div class="mb-2 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationProject" class="form-label">Request For
                                 </label>
                             </div>
                         </div>
-
                         <div class="col-lg-10">
                             <select name="employee_id"
                                 class="select2 form-control
@@ -340,15 +373,14 @@
                                 </div>
                             @endif
                         </div>
-
-                    </div>
+                    </div> --}}
 
                     @php
                         $selectedTravelRequest = old('travel_request_id') ?: $localTravel->travel_request_id;
                         $selectedApproverId = old('approver_id') ?: $localTravel->approver_id;
                     @endphp
 
-                    <div class="row mb-2">
+                    {{-- <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
                                 <label for="validationpurchasetype" class="form-label">Travel Request (If
@@ -373,12 +405,12 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Remarks</label>
+                                <label for="validationRemarks" class="form-label">Reason For Travel</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -441,13 +473,10 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">{{ __('label.date') }}</th>
-                                    <th scope="col">{{ __('label.purpose') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
-                                    <th scope="col">{{ __('label.km') }}</th>
-                                    <th scope="col">{{ __('label.from') }}</th>
-                                    <th scope="col">{{ __('label.to') }}</th>
-                                    <th scope="col">{{ __('label.fare') }}</th>
-                                    <th scope="col">{{ __('label.remarks') }}</th>
+                                    <th scope="col">Pickup Location</th>
+                                    <th scope="col">{{ __('label.reason') }}</th>
+                                    <th scope="col">{{ __('label.attachment') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>

@@ -25,13 +25,14 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         $travelRequest = TravelRequest::find($this->travelRequest);
+        $maxDate = $travelRequest->return_date->copy()->endOfDay()->format('Y-m-d H:i');
 
         return [
             'activity_code_id' => 'required|exists:lkup_activity_codes,id',
             'travel_modes' => 'array',
             'travel_mode' => 'nullable',
-            'departure_date' => 'required|date_format:Y-m-d H:i|after_or_equal:' . $travelRequest->departure_date->format('Y-m-d H:i') . '|before_or_equal:arrival_date',//.$this->arrival_date,
-            'arrival_date' => 'required|date_format:Y-m-d H:i|before_or_equal: ' . $travelRequest->return_date->format('Y-m-d H:i') . '|after_or_equal:departure_date',//.$this->departure_date,
+            'departure_date' => 'required|date_format:Y-m-d H:i|after_or_equal:' . $travelRequest->departure_date->format('Y-m-d H:i') . '|before_or_equal:arrival_date',
+            'arrival_date' => 'required|date_format:Y-m-d H:i|before_or_equal:' . $maxDate . '|after_or_equal:departure_date',
             'departure_place' => 'required',
             'arrival_place' => 'required',
             'description' => 'required',

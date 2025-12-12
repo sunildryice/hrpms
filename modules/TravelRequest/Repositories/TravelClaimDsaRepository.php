@@ -24,11 +24,10 @@ class TravelClaimDsaRepository extends Repository
             if (array_key_exists('travel_modes', $inputs)) {
                 $claimDsa->travelModes()->sync($inputs['travel_modes']);
             }
-            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return $claimDsa;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e->getMessage());
             DB::rollback();
             return false;
         }
@@ -45,7 +44,7 @@ class TravelClaimDsaRepository extends Repository
             } else {
                 $claimDsa->travelModes()->sync([]);
             }
-            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return $claimDsa;
         } catch (\Illuminate\Database\QueryException $e) {
@@ -60,7 +59,7 @@ class TravelClaimDsaRepository extends Repository
             $claimDsa = $this->model->findOrFail($id);
             $claimDsa->travelModes()->detach();
             $claimDsa->delete();
-            // $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
+            $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return true;
         } catch (\Illuminate\Database\QueryException $e) {

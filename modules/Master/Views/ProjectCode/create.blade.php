@@ -8,11 +8,11 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Project Code </label>
+                    <label for="" class="form-label required-label">Project Name </label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="title" value="" placeholder="Project Code">
+                <input type="text" class="form-control" name="title" value="" placeholder="Project Name">
             </div>
         </div>
 

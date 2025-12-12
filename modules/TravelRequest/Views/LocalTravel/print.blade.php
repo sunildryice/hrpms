@@ -61,7 +61,7 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" style="width: 200px" alt="" class="align-self-end pe-5">
                             </div>
 
                         </div>
@@ -99,15 +99,6 @@
                                 <th scope="row">Phone:</th>
                                 <td>{{ $localTravel->getTravellerPhone() }}</td>
                             </tr>
-{{--                            <tr>--}}
-{{--                                <th scope="row">Activity Code:</th>--}}
-{{--                                <td>{{ $localTravel->getActivityCode() }}</td>--}}
-{{--                                <th scope="row">Account Code:</th>--}}
-{{--                                <td>{{ $localTravel->getAccountCode() }}</td>--}}
-{{--                            </tr>--}}
-                            <tr>
-{{--                                <th scope="row">Donor Code:</th>--}}
-{{--                                <td>{{ $localTravel->getDonorCode() }}</td>--}}
                                 <th scope="row">Date:</th>
                                 <td colspan="3">{{ $localTravel->submittedLog ? $localTravel->submittedLog->created_at->toFormattedDateString() : '' }}
                                 </td>
@@ -122,40 +113,19 @@
                     <table class="table border mb-4">
                         <tbody>
                             <tr>
-                                <th rowspan="2">Date</th>
-                                <th rowspan="2">Purpose</th>
-                                <th rowspan="2">Travel Mode</th>
-                                <th rowspan="2">KM</th>
-                                <th colspan="2">Destination</th>
-                                <th rowspan="2">Fare</th>
-                                <th rowspan="2">Activity</th>
-                                <th rowspan="2">Account</th>
-                                <th rowspan="2">Donor</th>
-                                <th rowspan="2">Remarks</th>
-                            </tr>
-                            <tr>
-                                <th>From</th>
-                                <th>To</th>
+                                <th>Date</th>
+                                <th>Travel Mode</th>
+                                <th>Pickup Location</th>
+                                <th>Reason</th>
                             </tr>
                             @foreach ($localTravel->localTravelItineraries as $itinerary)
                                 <tr>
                                     <td>{{ $itinerary->getTravelDate() }}</td>
-                                    <td>{{ $itinerary->purpose }}</td>
                                     <td>{{ $itinerary->getTravelMode() }}</td>
-                                    <td>{{ $itinerary->total_distance }}</td>
-                                    <td>{{ $itinerary->departure_place }}</td>
-                                    <td>{{ $itinerary->arrival_place }}</td>
-                                    <td>{{ $itinerary->total_fare }}</td>
-                                    <td>{{ $itinerary->activityCode->getActivityCode() }}</td>
-                                    <td>{{ $itinerary->accountCode->getAccountCode() }}</td>
-                                    <td>{{ $itinerary->getDonorDesc() }}</td>
+                                    <td>{{ $itinerary->pickup_location }}</td>
                                     <td>{{ $itinerary->remarks }}</td>
                                 </tr>
                             @endforeach
-                            <tr>
-                                <td colspan="6">Total Amount</td>
-                                <td>{{ $localTravel->localTravelItineraries->sum('total_fare') }}</td>
-                            </tr>
                         </tbody>
                     </table>
 

@@ -52,57 +52,81 @@
         var itineraryTable = $('#itineraryTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('travel.claims.itineraries.index', $travelClaim->id) }}",
+            ajax: "{{ route('travel.claims.dsa.index', $travelClaim->id) }}",
             bFilter: false,
             bPaginate: false,
             bInfo: false,
             columns: [{
-                    data: 'departure_date',
-                    name: 'departure_date'
+                    data: 'activities',
+                    name: 'activities'
                 },
                 {
                     data: 'departure_place',
                     name: 'departure_place'
                 },
                 {
-                    data: 'arrival_date',
-                    name: 'arrival_date'
-                },
-                {
                     data: 'arrival_place',
                     name: 'arrival_place'
                 },
                 {
-                    data: 'overnights',
-                    name: 'overnights'
+                    data: 'departure_date',
+                    name: 'departure_date'
                 },
                 {
-                    data: 'dsa_unit_price',
-                    name: 'dsa_unit_price'
+                    data: 'arrival_date',
+                    name: 'arrival_date'
                 },
                 {
-                    data: 'percentage_charged',
-                    name: 'percentage_charged'
+                    data: 'days_spent',
+                    name: 'days_spent'
                 },
                 {
-                    data: 'activity_code',
-                    name: 'activity_code'
+                    data: 'breakfast',
+                    name: 'breakfast'
+                },
+                {
+                    data: 'lunch',
+                    name: 'lunch'
+                },
+                {
+                    data: 'dinner',
+                    name: 'dinner'
+                },
+                {
+                    data: 'incident_cost',
+                    name: 'incident_cost'
+                },
+                {
+                    data: 'total_dsa',
+                    name: 'total_dsa'
+                },
+                {
+                    data: 'daily_allowance',
+                    name: 'daily_allowance'
+                },
+                {
+                    data: 'lodging_expense',
+                    name: 'lodging_expense'
+                },
+                {
+                    data: 'other_expense',
+                    name: 'other_expense'
                 },
                 {
                     data: 'total_amount',
                     name: 'total_amount'
                 },
-                // {
-                //     data: 'charging_office',
-                //     name: 'charging_office'
-                // },
                 {
-                    data: 'description',
-                    name: 'description'
+                    data: 'mode_of_travel',
+                    name: 'mode_of_travel'
+                },
+                {
+                    data: 'remarks',
+                    name: 'remarks'
                 },
                 {
                     data: 'attachment',
-                    name: 'attachment',
+                    name: 'attachment'
                 },
             ]
         });
@@ -210,20 +234,70 @@
             <div class="col-lg-9">
                 <div class="card">
                     <div class="card-header fw-bold">
-                        Travel Expenses
+                        TADA Claim
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table" id="expenseTable">
+                            <table class="table table-bordered" id="itineraryTable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" rowspan="2">Activities
+                                        </th>
+                                        <th scope="col" colspan="2" class="text-center">
+                                            {{ __('label.destination') }}</th>
+                                        <th scope="col" colspan="2" class="text-center">
+                                            {{ __('label.date') }}</th>
+                                        <th scope="col" rowspan="2">Days Spent
+                                        </th>
+                                        <th scope="col" colspan="4" class="text-center">
+                                            DSA per day</th>
+                                        <th scope="col" rowspan="2">Total DSA
+                                        </th>
+                                        <th scope="col" rowspan="2">Daily Allowance
+                                        </th>
+                                        <th scope="col" rowspan="2">Lodging Expense
+                                        </th>
+                                        <th scope="col" rowspan="2">Other Expense
+                                        </th>
+                                        <th scope="col" rowspan="2">Total Amount
+                                        </th>
+                                        <th scope="col" rowspan="2">{{ __('label.mode-of-travel') }}</th>
+                                        <th scope="col" rowspan="2">{{ __('label.remarks') }}
+                                        </th>
+                                        <th scope="col" rowspan="2">{{ __('label.attachment') }}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">{{ __('label.from') }}</th>
+                                        <th scope="col">{{ __('label.to') }}</th>
+                                        <th scope="col">{{ __('label.from') }}</th>
+                                        <th scope="col">{{ __('label.to') }}</th>
+                                        <th scope="col">Breakfast</th>
+                                        <th scope="col">Lunch</th>
+                                        <th scope="col">Dinner</th>
+                                        <th scope="col">Incidental</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Claim Expenses
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="expenseTable">
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">{{ __('label.activity') }}</th>
-                                        {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
                                         <th scope="col">{{ __('label.date') }}</th>
                                         <th scope="col">{{ __('label.description') }}</th>
                                         <th scope="col">{{ __('label.amount') }}</th>
                                         <th scope="col">{{ __('label.invoice-bill-number') }}</th>
-                                        {{-- <th scope="col">Charging Office</th> --}}
                                         <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>
                                 </thead>
@@ -232,81 +306,43 @@
                                 <tfoot>
                                     <tr>
                                         <td colspan="3">{{ __('label.sub-total') }}</td>
-                                        <td id="total_expense_amount">
+                                        <td colspan="3" id="total_expense_amount">
                                             {{ $travelClaim->total_expense_amount }}</td>
-                                        <td></td>
-                                        <td></td>
                                     </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        Travel Itineraries
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="itineraryTable">
-                                <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">{{ __('label.from-date') }}</th>
-                                        <th scope="col">{{ __('label.from') }}</th>
-                                        <th scope="col">{{ __('label.to-date') }}</th>
-                                        <th scope="col">{{ __('label.to') }}</th>
-                                        <th scope="col">{{ __('label.overnights') }}</th>
-                                        <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                        <th scope="col">{{ __('label.percentage') }}</th>
-                                        <th scope="col">{{ __('label.activity-code') }}</th>
-                                        <th scope="col">{{ __('label.total-dsa') }}</th>
-                                        {{-- <th scope="col">Charging Office</th> --}}
-                                        <th scope="col">{{ __('label.remarks') }}</th>
-                                        <th scope="col">{{ __('label.attachment') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="8">{{ __('label.sub-total') }}</td>
-                                        <td id="total_itinerary_amount">
+                                        <td colspan="3">Total DSA</td>
+                                        <td colspan="3" id="total_itinerary_amount">
                                             {{ $travelClaim->total_itinerary_amount }}</td>
-                                        <td></td>
-                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="8">{{ __('label.grand-total') }}</td>
-                                        <td id="grand_total_amount">
+                                        <td colspan="3">{{ __('label.grand-total') }}</td>
+                                        <td colspan="3" id="total_amount">
                                             {{ $travelClaim->total_amount }}
                                         </td>
-                                        <td></td>
-                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="8">{{ __('label.advance-amount') }}</td>
-                                        <td id="advance_amount">
+                                        <td colspan="3">{{ __('label.advance-amount') }}
+                                        </td>
+                                        <td colspan="3">
                                             {{ $travelClaim->advance_amount }}
                                         </td>
-                                        <td></td>
-                                        <td></td>
                                     </tr>
                                     <tr>
-                                        <td colspan="8">
-                                            {{ __('label.refundable-reimbursable-amount') }}</td>
-                                        <td id="refundable_amount">
-                                            {{ $travelClaim->refundable_amount }}
+                                        <td colspan="3">
+                                            {{ __('label.refundable-reimbursable-amount') }}
                                         </td>
-                                        <td></td>
-                                        <td></td>
+                                        <td colspan="3">
+                                            <input readonly class="form-control" name="refundable_amount"
+                                                value="{{ $travelClaim->refundable_amount }}" />
+                                        </td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>
                     </div>
                 </div>
-                @include('TravelRequest::Partials.summary')
+                
+                {{-- @include('TravelRequest::Partials.summary') --}}
 
                 <form action="{{ route('approve.travel.claims.store', $travelClaim->id) }}" id="travelClaimApproveForm"
                     method="post" enctype="multipart/form-data" autocomplete="off">

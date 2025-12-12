@@ -254,7 +254,7 @@
                                                         <th>Day</th>
                                                         <th>Date</th>
                                                         <th>Carried Activities / Completed Tasks</th>
-                                                        <th style="width: 40%">Remarks</th>
+                                                        <th style="width: 30%">Remarks</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>

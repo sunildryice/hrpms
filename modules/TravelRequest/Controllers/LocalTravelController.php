@@ -2,22 +2,23 @@
 
 namespace Modules\TravelRequest\Controllers;
 
-use App\Http\Controllers\Controller;
 use DataTables;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Master\Repositories\AccountCodeRepository;
-use Modules\Master\Repositories\ActivityCodeRepository;
-use Modules\Master\Repositories\DonorCodeRepository;
-use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\Master\Repositories\DonorCodeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Master\Repositories\FiscalYearRepository;
+use Modules\Master\Repositories\AccountCodeRepository;
+use Modules\Master\Repositories\ProjectCodeRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
+use Modules\TravelRequest\Requests\LocalTravel\StoreRequest;
 use Modules\TravelRequest\Notifications\LocalTravelSubmitted;
 use Modules\TravelRequest\Repositories\LocalTravelRepository;
-use Modules\TravelRequest\Repositories\TravelRequestRepository;
-use Modules\TravelRequest\Requests\LocalTravel\StoreRequest;
 use Modules\TravelRequest\Requests\LocalTravel\UpdateRequest;
+use Modules\TravelRequest\Repositories\TravelRequestRepository;
 
 class LocalTravelController extends Controller
 {
@@ -35,7 +36,8 @@ class LocalTravelController extends Controller
         protected LocalTravelRepository $localTravels,
         protected OfficeRepository $offices,
         protected TravelRequestRepository $travelRequests,
-        protected UserRepository $users
+        protected UserRepository $users,
+        protected ProjectCodeRepository $projectCodes,
     ) {
         $this->destinationPath = 'localTravel';
     }
@@ -105,6 +107,7 @@ class LocalTravelController extends Controller
      */
     public function create()
     {
+        $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $travelRequests = $this->travelRequests->select(['id', 'prefix', 'travel_number', 'modification_number', 'fiscal_year_id'])
             ->whereStatusId(config('constant.APPROVED_STATUS'))
             ->whereRequesterId(auth()->id())
@@ -117,6 +120,7 @@ class LocalTravelController extends Controller
             'consultants' => $this->employees->getActiveMembers(auth()->user()?->employee_id),
             'donorCodes' => ($donorCodes),
             'travelRequests' => ($travelRequests),
+            'projects' => ($projectCodes),
         ]);
     }
 
@@ -182,6 +186,7 @@ class LocalTravelController extends Controller
             ->whereNotNull('activated_at')->orderBy('title', 'asc')->get() : collect();
         $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $donorCodes = $this->donorCodes->getActiveDonorCodes();
+        $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
         return view('TravelRequest::LocalTravel.edit')
             ->with([
@@ -192,6 +197,7 @@ class LocalTravelController extends Controller
                 'donorCodes' => ($donorCodes),
                 'travelRequests' => ($travelRequests),
                 'localTravel' => ($localTravel),
+                'projects' => ($projectCodes),
             ]);
     }
 

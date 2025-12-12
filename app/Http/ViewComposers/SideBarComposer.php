@@ -19,9 +19,11 @@ use Modules\GoodRequest\Repositories\GoodRequestAssetRepository;
 use Modules\GoodRequest\Repositories\GoodRequestRepository;
 use Modules\LeaveRequest\Repositories\LeaveEncashRepository;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
+use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
 use Modules\MaintenanceRequest\Repositories\MaintenanceRequestRepository;
 use Modules\Memo\Repositories\MemoRepository;
 use Modules\Mfr\Repositories\TransactionRepository;
+use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 use Modules\PaymentSheet\Repositories\PaymentSheetRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Modules\Privilege\Repositories\UserRepository;
@@ -79,7 +81,9 @@ class SideBarComposer
         protected DispositionRequestRepository   $dispositionRequests,
         protected TravelAuthorizationRepository  $travelAuthorization,
         protected TransactionRepository          $transactions,
-        protected WorkFromHomeRepository         $workFromHomes
+        protected WorkFromHomeRepository         $workFromHomes,
+        protected OffDayWorkRepository            $offDayWorks,
+        protected LieuLeaveRequestRepository      $lieuLeaveRequests,
     ) {}
 
     /**
@@ -498,6 +502,16 @@ class SideBarComposer
             ->where('approver_id', '=', auth()->id())
             ->count();
 
+        $approveOffDayWorkCount = $this->offDayWorks
+            ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', '=', auth()->id())
+            ->count();
+
+        $approveLieuLeaveRequestCount = $this->lieuLeaveRequests
+            ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', '=', auth()->id())
+            ->count();
+
         $view->withUser($authUser)
             ->withApproveAdvanceRequestCount($approveAdvanceRequestCount)
             ->withApproveAssetHandoverCount($approveAssetHandoverCount)
@@ -568,7 +582,9 @@ class SideBarComposer
             ->withApproveTACount($approveTACount)
             ->withHrApproveLeaveCount($hrApproveLeaveCount)
             ->withVerifySettlementCount($verifySettlementCount)
-            ->withApproveWorkFromHomeRequestCount($approveWorkFromHomeRequestCount);
+            ->withApproveWorkFromHomeRequestCount($approveWorkFromHomeRequestCount)
+            ->withApproveOffDayWorkCount($approveOffDayWorkCount)
+            ->withApproveLieuLeaveRequestCount($approveLieuLeaveRequestCount);
 
         return $view;
     }

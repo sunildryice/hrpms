@@ -3,12 +3,13 @@
 namespace Modules\LieuLeave\Policies;
 
 
-use App\Models\User;
-use Modules\LieuLeave\Models\LieuLeave;
+
+use Modules\LieuLeave\Models\LieuLeaveRequest;
+use Modules\Privilege\Models\User;
 
 class LieuLeavePolicy
 {
-    public function view(User $user, LieuLeave $lieuLeave): bool
+    public function view(User $user, LieuLeaveRequest $lieuLeave): bool
     {
 
         return $user->id === $lieuLeave->employee_id || $user->hasRole('admin');
@@ -19,12 +20,16 @@ class LieuLeavePolicy
         return $user->hasPermissionTo('create lieu leave');
     }
 
-    public function update(User $user, LieuLeave $lieuLeave): bool
+    public function update(User $user, LieuLeaveRequest $lieuLeave)
     {
-        return $user->id === $lieuLeave->employee_id && !$lieuLeave->is_approved;
+        $leaveStatus = [
+            config('constant.CREATED_STATUS'),
+            config('constant.REJECTED_STATUS'),
+        ];
+        return in_array($lieuLeave->status_id, $leaveStatus) && in_array($user->id, [$lieuLeave->requester_id, $lieuLeave->created_by]);
     }
 
-    public function delete(User $user, LieuLeave $lieuLeave): bool
+    public function delete(User $user, LieuLeaveRequest $lieuLeave): bool
     {
         return $user->id === $lieuLeave->employee_id && !$lieuLeave->is_approved;
     }

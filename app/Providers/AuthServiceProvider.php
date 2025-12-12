@@ -45,6 +45,8 @@ use Modules\EmployeeAttendance\Models\Attendance;
 use Modules\EmployeeAttendance\Policies\AttendancePolicy;
 use Modules\EmployeeRequest\Models\EmployeeRequest;
 use Modules\EmployeeRequest\Policies\EmployeeRequestPolicy;
+use Modules\LieuLeave\Models\LieuLeaveRequest;
+use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
 
@@ -75,7 +77,8 @@ class AuthServiceProvider extends ServiceProvider
         ConstructionParty::class => ConstructionPartyPolicy::class,
         ConstructionInstallment::class => ConstructionInstallmentPolicy::class,
         EmployeeRequest::class => EmployeeRequestPolicy::class,
-        EventCompletion::class => EventCompletionPolicy::class
+        EventCompletion::class => EventCompletionPolicy::class,
+        LieuLeaveRequest::class => LieuLeavePolicy::class,
     ];
 
     /**

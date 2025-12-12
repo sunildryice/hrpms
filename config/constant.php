@@ -57,7 +57,7 @@ return [
     'HR_CLEARANCE' => 2,
     'FINANCE_CLEARANCE' => 3,
 
-    'NO_LEAVE'=> 15,
+    'NO_LEAVE' => 15,
 
     'GENDER_MALE' => 1,
     'GENDER_FEMALE' => 2,
@@ -80,4 +80,10 @@ return [
     'PURCHASE_ORDER' => \Modules\PurchaseOrder\Models\PurchaseOrder::class,
 
     'UNRESTRICTED_DONOR' => 4,
+
+    'Saturday' => 1,
+    'Saturday+Sunday' => 2,
+
+    'MALE' => 1,
+    'FEMALE' => 2,
 ];

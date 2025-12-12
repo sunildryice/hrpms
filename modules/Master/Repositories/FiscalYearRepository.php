@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Master\Repositories;
 
 use App\Repositories\Repository;
@@ -11,15 +12,16 @@ class FiscalYearRepository extends Repository
         $this->model = $fiscalYear;
     }
 
-    public function getFiscalYears() {
+    public function getFiscalYears()
+    {
         return $this->model->get();
     }
 
     public function getCurrentFiscalYear()
     {
         return $this->model->where('start_date', '<=', date('Y-m-d'))
-                            ->where('end_date', '>=', date('Y-m-d'))
-                            ->first();
+            ->where('end_date', '>=', date('Y-m-d'))
+            ->first();
     }
 
     public function getCurrentFiscalYearId()
@@ -46,5 +48,15 @@ class FiscalYearRepository extends Repository
     {
         $previousFY = $this->getCurrentFiscalYearTitle() - 1;
         return $this->model->where('title', $previousFY)->first();
+    }
+
+    public function getMinStartDate()
+    {
+        return $this->model->min('start_date');
+    }
+
+    public function getMaxEndDate()
+    {
+        return $this->model->max('end_date');
     }
 }

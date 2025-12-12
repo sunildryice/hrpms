@@ -211,6 +211,7 @@ return [
     'indicators' => 'Indicators',
     'ip-address' => 'IP Address',
     'km' => 'KM',
+    'leave-date' => 'Leave Date',
     'leave-number' => ' Number',
     'leave-type' => 'Type',
     'leave-types' => 'Leave Types',

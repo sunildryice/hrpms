@@ -12,4 +12,13 @@ class OffDayWorkRepository extends Repository
     {
         $this->model = $offDayWork;
     }
+
+    public function getOffDayWorkRequestNumber($fiscalYear)
+    {
+        $max = $this->model->select(['fiscal_year_id', 'off_day_work_number'])
+            ->where('fiscal_year_id', $fiscalYear->id)
+            ->max('off_day_work_number') + 1;
+
+        return $max;
+    }
 }

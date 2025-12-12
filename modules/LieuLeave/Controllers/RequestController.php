@@ -126,7 +126,6 @@ class RequestController extends Controller
             $inputs['requester_id'] = auth()->id();
             $inputs['approver_id'] = $inputs['send_to'];
             $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-            $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id'] = $authUser->employee->office_id;
             $inputs['department_id'] = $authUser->employee->department_id;
             $inputs['created_by'] = auth()->id();
@@ -169,6 +168,15 @@ class RequestController extends Controller
                 $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])->first();
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
+
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+
+                $inputs['lieu_leave_request_number'] = $this->lieuLeaveRequests->getLieuLeaveRequestNumber($fiscalYear);
+                $lieuLeaveRequest->lieu_leave_request_number = $inputs['lieu_leave_request_number'];
+                $lieuLeaveRequest->fiscal_year_id = $inputs['fiscal_year_id'];
+                $lieuLeaveRequest->save();
 
                 $lieuLeaveRequest->approver->notify(new LieuLeaveRequestSubmitted($lieuLeaveRequest));
             } else {
@@ -288,6 +296,17 @@ class RequestController extends Controller
                 $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])->first();
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
+
+
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+
+                $inputs['lieu_leave_request_number'] = $this->lieuLeaveRequests->getLieuLeaveRequestNumber($fiscalYear);
+                $lieuLeaveRequest->lieu_leave_request_number = $inputs['lieu_leave_request_number'];
+                $lieuLeaveRequest->fiscal_year_id = $inputs['fiscal_year_id'];
+                $lieuLeaveRequest->save();
+
 
                 $lieuLeaveRequest->approver->notify(new LieuLeaveRequestSubmitted($lieuLeaveRequest));
 

@@ -54,8 +54,8 @@ class ApproveController extends Controller
                 ->addColumn('action', function ($row) {
 
                     $authUser = auth()->user();
-                    $btn = '<a href="' . route('approve.off.day.work.show', $row->id) . '" class="btn btn-sm btn-primary">
-                    <i class="bi bi-eye"></i> 
+                    $btn = '<a href="' . route('approve.off.day.work.show', $row->id) . '" class="act-btns bt-primary">
+                     <i class="bi bi-box-arrow-in-up-right"></i>
                     </a>';
                     return $btn;
                 })

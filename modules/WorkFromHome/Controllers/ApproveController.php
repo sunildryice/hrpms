@@ -53,6 +53,9 @@ class ApproveController extends Controller
                 ->addColumn('employee', function ($row) {
                     return $row->requester->employee->full_name ?? $row->requester->full_name ?? '-';
                 })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
                 })

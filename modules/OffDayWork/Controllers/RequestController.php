@@ -106,7 +106,6 @@ class RequestController extends Controller
             $inputs['approver_id'] = $inputs['send_to'];
             $inputs['deliverables'] = $inputs['deliverables'];
             $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-            $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id'] = $authUser->employee->office_id;
             $inputs['department_id'] = $authUser->employee->department_id;
             $inputs['created_by'] = auth()->id();
@@ -127,6 +126,16 @@ class RequestController extends Controller
                     'status_id' => $offDayWorkRequest->status_id,
                     'off_day_work_id' => $offDayWorkRequest->id,
                 ];
+
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+
+                $inputs['off_day_work_number'] = $this->offDayWork->getOffDayWorkRequestNumber($fiscalYear);
+                $offDayWorkRequest->off_day_work_number = $inputs['off_day_work_number'];
+                $offDayWorkRequest->fiscal_year_id = $inputs['fiscal_year_id'];
+                $offDayWorkRequest->save();
 
                 $offDayWorkRequest->approver->notify(new OffDayWorkSubmitted($offDayWorkRequest));
             } else {
@@ -190,7 +199,6 @@ class RequestController extends Controller
             $inputs['requester_id']     = auth()->id();
             $inputs['approver_id']      = $inputs['send_to'];
             $inputs['original_user_id'] = session()->get('original_user');
-            $inputs['fiscal_year_id']   = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id']        = $authUser->employee->office_id;
             $inputs['department_id']    = $authUser->employee->department_id;
             $inputs['updated_by']       = auth()->id();
@@ -207,6 +215,15 @@ class RequestController extends Controller
                     'status_id'        => $offDayWork->status_id,
                     'off_day_work_id' => $offDayWork->id,
                 ];
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+
+                $inputs['off_day_work_number'] = $this->offDayWork->getOffDayWorkRequestNumber($fiscalYear);
+                $offDayWork->off_day_work_number = $inputs['off_day_work_number'];
+                $offDayWork->fiscal_year_id = $inputs['fiscal_year_id'];
+                $offDayWork->save();
 
                 $offDayWork->approver->notify(
                     new OffDayWorkSubmitted($offDayWork)

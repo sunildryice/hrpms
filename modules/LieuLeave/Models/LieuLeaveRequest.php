@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
@@ -41,6 +42,11 @@ class LieuLeaveRequest extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
     public function project()
@@ -93,19 +99,20 @@ class LieuLeaveRequest extends Model
 
     public function getRequestId()
     {
-        return 'LLR-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $lieuLeaveRequestNumber =  $this->lieu_leave_request_number ? 'LLR-' . $this->lieu_leave_request_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $lieuLeaveRequestNumber . $fiscalYear;
     }
 
-    /**
-     * Get all substitutes of leave request.
-     */
+
     public function substitutes()
     {
         return $this->belongsToMany(
-            Employee::class,                           // related model
-            'lieu_leave_request_substitutes',      // pivot table
-            'lieu_leave_request_id',               // this model FK
-            'substitute_id'                              // related model FK
+            Employee::class,
+            'lieu_leave_request_substitutes',
+            'lieu_leave_request_id',
+            'substitute_id'
         );
     }
 

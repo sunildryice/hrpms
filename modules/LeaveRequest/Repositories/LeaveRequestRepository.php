@@ -252,7 +252,12 @@ class LeaveRequestRepository extends Repository
             } else {
                 $inputs['status_id'] = config('constant.CREATED_STATUS');
             }
+
+
+
+
             $leaveRequest = $this->model->create($inputs);
+
 
 
             if (array_key_exists('substitutes', $inputs)) {

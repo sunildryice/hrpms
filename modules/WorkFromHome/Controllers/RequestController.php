@@ -50,6 +50,9 @@ class RequestController extends Controller
                 ->editColumn('end_date', function ($row) {
                     return $row->getEndDate();
                 })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
                 ->addColumn('project', function ($row) {
                     return $row->project->title ?? '-';
                 })
@@ -105,7 +108,6 @@ class RequestController extends Controller
             $inputs['approver_id'] = $inputs['send_to'];
             $inputs['deliverables'] = $inputs['deliverables'];
             $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-            $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id'] = $authUser->employee->office_id;
             $inputs['department_id'] = $authUser->employee->department_id;
             $inputs['created_by'] = auth()->id();
@@ -126,6 +128,14 @@ class RequestController extends Controller
                     'status_id' => $workFromHome->status_id,
                     'work_from_home_id' => $workFromHome->id,
                 ];
+
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
+                $workFromHome->save();
 
                 $workFromHome->approver->notify(new WorkFromHomeRequestSubmitted($workFromHome));
             } else {
@@ -189,7 +199,6 @@ class RequestController extends Controller
             $inputs['requester_id']     = auth()->id();
             $inputs['approver_id']      = $inputs['send_to'];
             $inputs['original_user_id'] = session()->get('original_user');
-            $inputs['fiscal_year_id']   = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id']        = $authUser->employee->office_id;
             $inputs['department_id']    = $authUser->employee->department_id;
             $inputs['updated_by']       = auth()->id();
@@ -206,6 +215,13 @@ class RequestController extends Controller
                     'status_id'        => $workFromHome->status_id,
                     'work_from_home_id' => $workFromHome->id,
                 ];
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
+                $workFromHome->save();
 
                 $workFromHome->approver->notify(
                     new WorkFromHomeRequestSubmitted($workFromHome)

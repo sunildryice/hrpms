@@ -23,8 +23,8 @@
         }
 
         /* =========================================
-                                                                   WEEKEND / HOLIDAY STYLING (SAT & SUN)
-                                                                   ========================================= */
+                                                                                                                                                                                                           WEEKEND / HOLIDAY STYLING (SAT & SUN)
+                                                                                                                                                                                                           ========================================= */
         .fc-day-sat,
         .fc-day-sun {
             background-color: var(--bg-weekend) !important;
@@ -48,8 +48,8 @@
         }
 
         /* =========================================
-                                                                   EVENT & LIST STYLING
-                                                                   ========================================= */
+                                                                                                                                                                                                           EVENT & LIST STYLING
+                                                                                                                                                                                                           ========================================= */
         .fc-event {
             border: none;
             border-radius: 3px;
@@ -174,10 +174,46 @@
             const m = String(today.getMonth() + 1).padStart(2, '0');
 
             let leaveRequests = @json($leaveRequests);
+            let travelRequests = @json($travelRequests);
+            let offDayWorks = @json($offDayWorks);
 
 
 
-            console.log(leaveRequests);
+            leaveRequests.forEach(lr => {
+                events.push({
+                    title: `Leave: ${lr.requester.full_name}`,
+                    start: lr.start_date,
+                    end: lr.end_date,
+                    type: 'leave',
+                    allDay: true,
+                    backgroundColor: 'var(--c-leave)',
+                    description: lr.remarks || 'No description.'
+                });
+            });
+
+            travelRequests.forEach(tr => {
+                events.push({
+                    title: `Travel: ${tr.requester.full_name}`,
+                    start: tr.departure_date,
+                    allDay: true,
+                    end: tr.return_date,
+                    type: 'travel',
+                    backgroundColor: 'var(--c-project)',
+                    description: tr.remarks || 'No description.'
+                });
+            });
+
+            offDayWorks.forEach(odw => {
+                events.push({
+                    title: `Off-day Work: ${odw.requester.full_name}`,
+                    start: odw.date,
+                    end: odw.date,
+                    type: 'work',
+                    allDay: true,
+                    backgroundColor: 'var(--c-work)',
+                    description: odw.description || 'No description.'
+                });
+            });
 
             // 2. High Density Day (30 events)
             for (let i = 1; i <= 30; i++) {
@@ -190,14 +226,14 @@
                 });
             }
 
-            // 3. Weekend Work (To show event on gray background)
-            events.push({
-                title: 'Overtime Maintenance',
-                start: `${y}-${m}-16`, // Likely a weekend depending on month
-                type: 'work',
-                backgroundColor: '#fd7e14', // Orange
-                description: 'Emergency server patching.'
-            });
+            // // 3. Weekend Work (To show event on gray background)
+            // events.push({
+            //     title: 'Overtime Maintenance',
+            //     start: `${y}-${m}-16`, // Likely a weekend depending on month
+            //     type: 'work',
+            //     backgroundColor: '#fd7e14', // Orange
+            //     description: 'Emergency server patching.'
+            // });
 
             return events;
         }

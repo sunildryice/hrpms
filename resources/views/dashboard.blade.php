@@ -549,6 +549,8 @@
                 </div>
             @endif
         </div>
+
+        <x-calender />
     </div>
 @stop
 

@@ -8,7 +8,23 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label">Activities</label>
+                    <label for="" class="form-label required-label">Activity</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select class="form-control select2" data-width="100%" name="activity_code_id">
+                    <option value="">Select Activity</option>
+                    @foreach ($activityCodes as $activityCode)
+                        <option value="{!! $activityCode->id !!}" @if ($travelDsaClaim->activity_code_id == $activityCode->id) selected @endif>
+                            {{ $activityCode->getActivityCodeDescription() }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label">Activities/Tasks</label>
                 </div>
             </div>
             <div class="col-lg-9">

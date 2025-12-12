@@ -61,7 +61,7 @@
                     {
                         data: 'total_days',
                         name: 'total_days',
-                        textAlign: 'center'
+                        className: 'dt-center'
                     },
                     {
                         data: 'status',

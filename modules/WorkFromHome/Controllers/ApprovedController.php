@@ -56,6 +56,9 @@ class ApprovedController extends Controller
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
                 })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
                 ->addColumn('status', function ($row) {
 
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';

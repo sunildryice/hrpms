@@ -50,11 +50,11 @@ class RequestController extends Controller
                 ->editColumn('end_date', function ($row) {
                     return $row->getEndDate();
                 })
-                ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
-                })
                 ->addColumn('total_days', function ($row) {
                     return $row->getTotalDays();
+                })
+                ->addColumn('project', function ($row) {
+                    return $row->project->title ?? '-';
                 })
                 ->addColumn('status', function ($row) {
 

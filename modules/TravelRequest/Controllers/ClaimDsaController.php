@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\TravelModeRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
 use Modules\TravelRequest\Requests\Claim\DsaClaim\StoreRequest;
 use Modules\TravelRequest\Repositories\TravelClaimDsaRepository;
@@ -25,6 +26,7 @@ class ClaimDsaController extends Controller
         protected TravelClaimRepository $travelClaims,
         protected TravelClaimDsaRepository $travelDsaClaims,
         protected TravelModeRepository $travelModes,
+        protected ActivityCodeRepository $activityCodes,
         protected OfficeRepository $offices
     ) {
         $this->travelClaims = $travelClaims;
@@ -90,9 +92,11 @@ class ClaimDsaController extends Controller
     public function create($id)
     {
         $travelClaim = $this->travelClaims->find($id);
+        $activityCodes = $this->activityCodes->getActiveActivityCodes();
 
         return view('TravelRequest::TravelClaim.DsaClaim.create')
             ->withTravelModes($this->travelModes->get())
+            ->withActivityCodes($activityCodes)
             ->withTravelClaim($travelClaim);
     }
 
@@ -142,11 +146,13 @@ class ClaimDsaController extends Controller
     {
         $travelClaim = $this->travelClaims->find($claimId);
         $travelDsaClaim = $this->travelDsaClaims->find($id);
+        $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $this->authorize('update', $travelClaim);
 
         return view('TravelRequest::TravelClaim.DsaClaim.edit')
             ->withTravelModes($this->travelModes->get())
             ->withTravelDsaClaim($travelDsaClaim)
+            ->withActivityCodes($activityCodes)
             ->withTravelClaim($travelClaim);
     }
 

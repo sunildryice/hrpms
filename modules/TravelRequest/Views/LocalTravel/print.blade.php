@@ -116,6 +116,7 @@
                                 <th>Date</th>
                                 <th>Travel Mode</th>
                                 <th>Pickup Location</th>
+                                <th>{{ __('label.fare') }}</th>
                                 <th>Reason</th>
                             </tr>
                             @foreach ($localTravel->localTravelItineraries as $itinerary)
@@ -123,6 +124,7 @@
                                     <td>{{ $itinerary->getTravelDate() }}</td>
                                     <td>{{ $itinerary->getTravelMode() }}</td>
                                     <td>{{ $itinerary->pickup_location }}</td>
+                                    <td>{{ $itinerary->total_fare }}</td>
                                     <td>{{ $itinerary->remarks }}</td>
                                 </tr>
                             @endforeach

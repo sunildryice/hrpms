@@ -26,10 +26,10 @@
                         data: 'local_travel_number',
                         name: 'local_travel_number'
                     },
-                    {
-                        data: 'travel_number',
-                        name: 'travel_number'
-                    },
+                    // {
+                    //     data: 'travel_number',
+                    //     name: 'travel_number'
+                    // },
                     {
                         data: 'requester',
                         name: 'requester'
@@ -145,7 +145,7 @@
                                 <th>{{ __('label.sn') }}</th>
                                 <th>{{ __('label.purpose') }}</th>
                                 <th>{{ __('label.local-travel-number') }}</th>
-                                <th>{{ __('label.travel-number') }}</th>
+                                {{-- <th>{{ __('label.travel-number') }}</th> --}}
                                 <th>{{ __('label.requester') }}</th>
                                 <th>Submitted Date</th>
                                 <th>{{ __('label.status') }}</th>

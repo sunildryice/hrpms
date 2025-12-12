@@ -928,7 +928,7 @@
                                                 <tr>
                                                     <td colspan="3">Total Local Travel</td>
                                                     <td colspan="4" id="total_local_travel_amount">
-                                                        {{ number_format($travelClaim->localTravels->sum('travel_fare'), 2) }}
+                                                        {{ sprintf('%.2f', $travelClaim->localTravels->sum('travel_fare')) }}
                                                     </td>
                                                 </tr>
                                                 <tr>

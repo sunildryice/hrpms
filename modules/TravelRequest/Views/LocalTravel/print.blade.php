@@ -82,7 +82,6 @@
         </div>
 
         <div class="print-body mb-5">
-
             <div class="row">
                 <div class="col-lg-12">
                     <table class="table border mb-4">
@@ -130,7 +129,6 @@
                             @endforeach
                         </tbody>
                     </table>
-
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
                             <div><strong>{{$localTravel->isConsultantTravel() ? "Prepared By: (On Belalf of Consultant)" : 'Requested By:'}}</strong></div>

@@ -284,7 +284,7 @@
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
                                                 <label for="" class="m-0">
-                                                    Send to
+                                                    {{ __('label.approval') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -294,7 +294,9 @@
                                                 class="select2 form-control
                                                 @if ($errors->has('approver_id')) is-invalid @endif"
                                                 data-width="100%">
-                                                <option value="">Select an Approver</option>
+                                                @if ($supervisors->count() !== 1)
+                                                    <option value="">Select an Approver</option>
+                                                @endif
                                                 @foreach ($supervisors as $approver)
                                                     <option value="{{ $approver->id }}"
                                                         {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>

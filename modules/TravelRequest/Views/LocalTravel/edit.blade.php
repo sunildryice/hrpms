@@ -440,12 +440,14 @@
                     <div class="row mb-2">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label class="form-label required-label">Approver</label>
+                                <label class="form-label required-label">{{ __('label.approval') }}</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
                             <select name="approver_id" class="select2 form-control" data-width="100%">
-                                <option value="">Select Approver</option>
+                                @if ($supervisors->count() !== 1)
+                                    <option value="">Select an Approver</option>
+                                @endif
                                 @foreach ($supervisors as $supervisor)
                                     <option value="{{ $supervisor->id }}" data-purchase="{{ $supervisor->id }}"
                                         {{ $supervisor->id == $selectedApproverId ? 'selected' : '' }}>
@@ -490,7 +492,7 @@
                                     <th scope="col">{{ __('label.date') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
                                     <th scope="col">Pickup Location</th>
-                                     <th scope="col">{{ __('label.fare') }}</th>
+                                    <th scope="col">{{ __('label.fare') }}</th>
                                     <th scope="col">{{ __('label.reason') }}</th>
                                     <th scope="col">{{ __('label.attachment') }}</th>
                                     <th style="width: 150px">{{ __('label.action') }}</th>

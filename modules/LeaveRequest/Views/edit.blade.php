@@ -232,6 +232,8 @@
             $(form).on('change', '[name="leave_type_id"]', function(e) {
                 $element = $(this);
                 var leaveTypeId = $element.val();
+                debugger;
+
                 if (leaveTypeId) {
                     var url = baseUrl + '/api/employee/' + employeeId + '/leaves/' + leaveTypeId + '/show';
                     var successCallback = function(response) {

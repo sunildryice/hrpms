@@ -46,6 +46,11 @@ class ApprovedController extends Controller
                     $btn = '<a href="' . route('approved.lieu.leave.requests.show', $row->id) . '" class="btn btn-sm btn-primary">
                       <i class="bi bi-eye"></i> 
                     </a>';
+
+                    $btn .= '<a href="' . route('lieu.leave.requests.print', $row->id) . '" class="act-btns bt-primary" target="_blank">
+                     <i class="bi bi-printer"></i>
+                    </a>';
+
                     return $btn;
                 })
                 ->rawColumns(['status', 'action'])

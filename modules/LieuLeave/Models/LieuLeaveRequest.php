@@ -10,6 +10,7 @@ use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Termwind\Components\Li;
 
 class LieuLeaveRequest extends Model
 {
@@ -90,6 +91,18 @@ class LieuLeaveRequest extends Model
         return $this->status->status_class;
     }
 
+    public function getOfficeName()
+    {
+        return $this->office ? $this->office->getOfficeName() : '';
+    }
+
+    public function getSubstitutes()
+    {
+        return $this->substitutes ? implode(', ', $this->substitutes->pluck('full_name')->map(function ($item) {
+            return ucwords($item);
+        })->toArray()) : '';
+    }
+
 
     public function getRequesterName()
     {
@@ -97,12 +110,36 @@ class LieuLeaveRequest extends Model
         return $this->requester->employee->getFullName();
     }
 
+
+
+    public function getApproverName()
+    {
+        return $this->approver->full_name ?? '-';
+    }
+
+
+    public function approvedLog()
+    {
+        return $this->hasOne(LieuLeaveRequestLog::class, 'lieu_leave_request_id')
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->latest();
+    }
+
+
     public function getRequestId()
     {
         $lieuLeaveRequestNumber =  $this->lieu_leave_request_number ? 'LLR-' . $this->lieu_leave_request_number : '';
         $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
         return $lieuLeaveRequestNumber . $fiscalYear;
+    }
+
+    public function submittedLog()
+    {
+        return $this->hasOne(LieuLeaveRequestLog::class, 'lieu_leave_request_id')
+            ->where('user_id', $this->requester_id)
+            ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
+            ->latest();
     }
 
 

@@ -330,4 +330,13 @@ class RequestController extends Controller
             return redirect()->back()->withInput()->with('error_message', 'Something went wrong! ' . $e->getMessage());
         }
     }
+
+    public function printLieuLeave($id)
+    {
+        $lieuLeaveRequest = $this->lieuLeaveRequests->with(['requester', 'approver', 'project', 'logs.user'])->findOrFail($id);
+
+        return view('LieuLeave::print', [
+            'lieuLeaveRequest' => $lieuLeaveRequest,
+        ]);
+    }
 }

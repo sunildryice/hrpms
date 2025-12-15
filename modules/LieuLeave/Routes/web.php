@@ -15,6 +15,8 @@ Route::middleware(['web', 'auth'])->prefix('lieu-leave')->group(function () {
     Route::get('requests/{lieuLeave}/show', [RequestController::class, 'show'])->name('lieu.leave.requests.show');
     Route::put('requests/{lieuLeave}/update', [RequestController::class, 'update'])->name('lieu.leave.requests.update');
     Route::delete('requests/{lieuLeave}/delete', [RequestController::class, 'destroy'])->name('lieu.leave.requests.delete');
+
+    Route::get('requests/{lieuLeave}/print', [RequestController::class, 'printLieuLeave'])->name('lieu.leave.requests.print');
 });
 
 Route::middleware(['web', 'auth'])->prefix('approve/lieu-leave')->group(function () {

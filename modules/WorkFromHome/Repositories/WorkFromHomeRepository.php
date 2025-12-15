@@ -12,4 +12,13 @@ class WorkFromHomeRepository extends Repository
     {
         $this->model = $workFromHome;
     }
+
+
+    public function getWorkFromHomeRequestNumber($fiscalYear)
+    {
+        $max = $this->model->select(['fiscal_year_id', 'work_from_home_number'])
+            ->where('fiscal_year_id', $fiscalYear->id)
+            ->max('work_from_home_number') + 1;
+        return $max;
+    }
 }

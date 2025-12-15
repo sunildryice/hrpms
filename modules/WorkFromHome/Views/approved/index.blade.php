@@ -60,6 +60,11 @@
                         name: 'end_date'
                     },
                     {
+                        data: 'total_days',
+                        name: 'total_days',
+                        className: 'dt-center'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -128,6 +133,7 @@
                             <th>{{ __('label.request-date') }}</th>
                             <th>{{ __('label.start-date') }}</th>
                             <th>{{ __('label.end-date') }}</th>
+                            <th>{{ __('label.total-days') }}</th>
                             <th style="width: 140px;">{{ __('label.action') }}</th>
                         </tr>
                     </thead>

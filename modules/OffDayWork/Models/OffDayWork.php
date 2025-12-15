@@ -5,6 +5,7 @@ namespace Modules\OffDayWork\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
@@ -62,6 +63,11 @@ class OffDayWork extends Model
         return Carbon::parse($this->request_date)->format('M j, Y');
     }
 
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
+    }
+
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
@@ -87,6 +93,9 @@ class OffDayWork extends Model
 
     public function getRequestId()
     {
-        return 'ODW-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $offDayWorkNumber = $this->off_day_work_number ? 'ODW-' . $this->off_day_work_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $offDayWorkNumber . $fiscalYear;
     }
 }

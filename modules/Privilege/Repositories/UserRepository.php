@@ -28,7 +28,8 @@ class UserRepository extends Repository
         if ($user->employee) {
             $latestTenure = $user->employee->latestTenure;
             $supervisors = $this->model->select(['id', 'full_name'])
-                ->whereIn('employee_id', [$latestTenure->supervisor_id, $latestTenure->cross_supervisor_id, $latestTenure->next_line_manager_id])
+//                ->whereIn('employee_id', [$latestTenure->supervisor_id, $latestTenure->cross_supervisor_id, $latestTenure->next_line_manager_id])
+                ->whereIn('employee_id', [$latestTenure->supervisor_id])
                 ->whereHas('employee', function ($q) {
                     $q->select(['id']);
                     $q->whereNotNull('activated_at');

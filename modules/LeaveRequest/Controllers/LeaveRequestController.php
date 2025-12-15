@@ -308,6 +308,7 @@ class LeaveRequestController extends Controller
             ->where('employee_id', $authUser->employee_id)
             ->where('fiscal_year_id', $fiscalYear->id)
             ->where('leave_type_id', $leaveRequest->leave_type_id)
+            ->orderBy('reported_date', 'desc')
             ->first();
 
         $supervisors = $this->users->getSupervisors($authUser);

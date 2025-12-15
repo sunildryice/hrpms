@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\TravelModeRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
 use Modules\TravelRequest\Requests\Claim\LocalTravelClaim\StoreRequest;
-use Modules\TravelRequest\Requests\Claim\LocalTravelClaim\UpdateRequest;
 use Modules\TravelRequest\Repositories\TravelClaimLocalTravelRepository;
+use Modules\TravelRequest\Requests\Claim\LocalTravelClaim\UpdateRequest;
 
 class ClaimLocalTravelController extends Controller
 {
@@ -26,6 +27,7 @@ class ClaimLocalTravelController extends Controller
         protected TravelClaimRepository $travelClaims,
         protected TravelClaimLocalTravelRepository $localTravels,
         protected TravelModeRepository $travelModes,
+        protected ActivityCodeRepository $activityCodes,
         protected OfficeRepository $offices
     ) {
         $this->travelClaims = $travelClaims;
@@ -45,12 +47,15 @@ class ClaimLocalTravelController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->localTravels->select(['*'])
+            $data = $this->localTravels->select(['*'])->with(['activityCode'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('travel_date', function ($row) {
                     return $row->getTravelDate();
+                })
+                ->addColumn('activity', function ($row) {
+                    return $row->activityCode?->getActivityCodeDescription();
                 })
                 ->addColumn('attachment', function ($row) {
                     $attachment = '';
@@ -85,8 +90,10 @@ class ClaimLocalTravelController extends Controller
     public function create($id)
     {
         $travelClaim = $this->travelClaims->find($id);
+        $activityCodes = $this->activityCodes->getActiveActivityCodes();
 
         return view('TravelRequest::TravelClaim.LocalTravelClaim.create')
+            ->withActivityCodes($activityCodes)
             ->withTravelClaim($travelClaim);
     }
 
@@ -135,11 +142,13 @@ class ClaimLocalTravelController extends Controller
     public function edit($claimId, $id)
     {
         $travelClaim = $this->travelClaims->find($claimId);
+        $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $localTravel = $this->localTravels->find($id);
         $this->authorize('update', $travelClaim);
 
         return view('TravelRequest::TravelClaim.LocalTravelClaim.edit')
             ->withLocalTravelClaim($localTravel)
+            ->withActivityCodes($activityCodes)
             ->withTravelClaim($travelClaim);
     }
 

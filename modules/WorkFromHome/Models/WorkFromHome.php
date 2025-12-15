@@ -5,6 +5,7 @@ namespace Modules\WorkFromHome\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
@@ -36,6 +37,12 @@ class WorkFromHome extends Model
         'deliverables' => 'array',
     ];
 
+    protected $dates = [
+        'start_date',
+        'end_date',
+        'request_date',
+    ];
+
 
     public function project()
     {
@@ -45,6 +52,11 @@ class WorkFromHome extends Model
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
 
@@ -94,8 +106,18 @@ class WorkFromHome extends Model
         return $this->requester->employee->getFullName();
     }
 
+
     public function getRequestId()
     {
-        return 'WFH-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $workFromHomeNumber = $this->work_from_home_number ? 'WFH-' . $this->work_from_home_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $workFromHomeNumber . $fiscalYear;
+    }
+
+
+    public function getTotalDays()
+    {
+        return $this->end_date ? $this->end_date->diffInDays($this->start_date) + 1 : 1;
     }
 }

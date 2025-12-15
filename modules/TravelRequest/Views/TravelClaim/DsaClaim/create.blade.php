@@ -5,10 +5,33 @@
 <form action="{!! route('travel.claims.dsa.store', $travelClaim->id) !!}" method="post" enctype="multipart/form-data" id="claimItineraryForm"
     autocomplete="off">
     <div class="modal-body">
+        <div class="row mb-3">
+            <div class="col-lg-9 offset-lg-3">
+                <small>
+                    <em>DSA Rates per day → Breakfast Rs.400 | Lunch Rs.500 | Dinner Rs.600 | Incidental Rs.300</em>
+                </small>
+            </div>
+        </div>
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Activities</label>
+                    <label for="" class="form-label required-label">Activity</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select class="form-control select2" data-width="100%" name="activity_code_id">
+                    <option value="">Select Activity</option>
+                    @foreach ($activityCodes as $activityCode)
+                        <option value="{!! $activityCode->id !!}">{{ $activityCode->getActivityCodeDescription() }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">Activities/Tasks</label>
                 </div>
             </div>
             <div class="col-lg-9">

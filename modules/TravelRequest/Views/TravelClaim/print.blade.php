@@ -120,7 +120,8 @@
                 <table class="table border">
                     <thead>
                         <tr>
-                            <th>Activities</th>
+                            <th>{{ __('label.activity') }}</th>
+                            <th>Activities/Tasks</th>
                             <th colspan="2">{{ __('label.destination') }}</th>
                             <th class="text-center">Date</th>
                             <th>Days Spent</th>
@@ -135,6 +136,8 @@
                     <tbody>
                         @foreach ($travelClaim->dsaClaim as $dsaClaim)
                             <tr>
+                                <td rowspan="2">
+                                    {{ $dsaClaim->activityCode?->getActivityCodeDescription() }}</td>
                                 <td rowspan="2">
                                     {{ $dsaClaim->activities }}</td>
                                 <td>DEP:</td>
@@ -190,6 +193,7 @@
                 <table class="table table-bordered">
                     <thead class="thead-light">
                         <tr>
+                            <th rowspan="2">{{ __('label.activity') }}</th>
                             <th rowspan="2">{{ __('label.date') }}</th>
                             <th rowspan="2">{{ __('label.purpose') }}</th>
                             <th colspan="2" class="text-center">{{ __('label.destination') }}</th>
@@ -204,6 +208,7 @@
                     <tbody>
                         @foreach ($travelClaim->localTravels as $lt)
                             <tr>
+                                <td>{{ $lt->activityCode?->getActivityCodeDescription() }}</td>
                                 <td>{{ $lt->getTravelDate() }}</td>
                                 <td>{{ $lt->purpose }}</td>
                                 <td>{{ $lt->departure_place }}</td>
@@ -266,7 +271,7 @@
                             <td colspan="3" class="text-end">{{ __('label.refundable-reimbursable-amount') }}</td>
                             <td colspan="2" class="text-end">{{ $travelClaim->refundable_amount }}</td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td colspan="5">
                                 I certify that the following information is correct and per the approved Travel
                                 authorization. I authorize HERDi to treat this as the final claim and I will repay any

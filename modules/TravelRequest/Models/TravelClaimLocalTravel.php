@@ -4,6 +4,7 @@ namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\ActivityCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelClaimLocalTravel extends Model
@@ -24,6 +25,7 @@ class TravelClaimLocalTravel extends Model
      */
     protected $fillable = [
         'travel_claim_id',
+        'activity_code_id',
         'purpose',
         'travel_date',
         'departure_place',
@@ -52,6 +54,13 @@ class TravelClaimLocalTravel extends Model
     public function travelClaim()
     {
         return $this->belongsTo(TravelClaim::class, 'travel_claim_id');
+    }
+    /**
+     * Get the activityCode of the travel claim local travel.
+     */
+    public function activityCode()
+    {
+        return $this->belongsTo(ActivityCode::class, 'activity_code_id')->withDefault();
     }
 
     public function getTravelDate()

@@ -84,7 +84,7 @@ class RequestController extends Controller
     {
         $authUser = User::find(auth()->id());
 
-        $projects = $this->projects->pluck('title', 'id');
+        $projects = $this->projects->pluck('short_name', 'id');
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
 

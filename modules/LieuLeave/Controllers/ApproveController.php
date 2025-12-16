@@ -54,6 +54,7 @@ class ApproveController extends Controller
                     $btn = '<a href="' . route('approve.lieu.leave.requests.show', $row->id) . '" class="act-btns bt-primary">
                      <i class="bi bi-box-arrow-in-up-right"></i>
                     </a>';
+
                     return $btn;
                 })
                 ->rawColumns(['status', 'action'])

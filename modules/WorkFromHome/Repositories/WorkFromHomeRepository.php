@@ -21,4 +21,13 @@ class WorkFromHomeRepository extends Repository
             ->max('work_from_home_number') + 1;
         return $max;
     }
+
+    public function getWorkFromHomeRequestsForApproval($authUser)
+    {
+        return $this->model->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
+            ->where('approver_id', '=', $authUser->id)
+            ->orderBy('request_date', 'desc')
+            ->take(5)
+            ->get();
+    }
 }

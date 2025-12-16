@@ -46,7 +46,7 @@ class RejectedController extends Controller
                     return $row->getEndDate();
                 })
                 ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
+                    return $row->getProjectNames() ?? '-';
                 })
                 ->addColumn('employee', function ($row) {
                     return $row->requester->employee->full_name ?? $row->requester->full_name ?? '-';

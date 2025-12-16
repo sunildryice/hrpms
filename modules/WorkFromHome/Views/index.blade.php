@@ -138,7 +138,7 @@
                         <tr>
                             <th>{{ __('label.sn') }}</th>
                             <th>{{ __('label.request-id') }}</th>
-                            <th>{{ __('label.project-name') }}</th>
+                            <th>{{ __('label.projects') }}</th>
                             <th>{{ __('label.request-date') }}</th>
                             <th>{{ __('label.start-date') }}</th>
                             <th>{{ __('label.end-date') }}</th>

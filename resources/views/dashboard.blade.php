@@ -274,6 +274,40 @@
                 @endif
             @endif
 
+            @if ($workFromHomeRequests->isNotEmpty())
+                @if ($authUser->can('approve-work-from-home'))
+                    <div class="mb-3 col-lg-4">
+                        <div class="mb-2 border-0 shadow-sm card">
+                            <div class="card-header fw-bold"> Work From Home Request </div>
+                            <div class="p-3 div-content-area">
+                                @foreach ($workFromHomeRequests as $workFromHomeRequest)
+                                    <div class="mb-3 row align-items-center">
+                                        <div class="col-auto">
+                                            <span
+                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-person-workspace"></i>
+                                            </span>
+                                        </div>
+                                        <div class="col">
+                                            <div class="request-title">
+                                                <a href="{{ route('approve.wfh.requests.show', $workFromHomeRequest->id) }}"
+                                                    style="text-decoration: none; color:unset">
+                                                    <strong>{{ $workFromHomeRequest->getRequestId() . ' (' . $workFromHomeRequest->getRequesterName() . ')' }}</strong>
+                                                </a>
+                                            </div>
+                                            <div class="text-muted">
+                                                <small>{{ $workFromHomeRequest->created_at->diffForHumans() }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
 
 
             @if ($purchaseOrders->isNotEmpty())

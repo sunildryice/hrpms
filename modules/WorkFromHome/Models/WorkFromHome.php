@@ -9,6 +9,7 @@ use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 
 class WorkFromHome extends Model
 {
@@ -22,10 +23,8 @@ class WorkFromHome extends Model
         'request_date',
         'requester_id',
         'approver_id',
-        'project_id',
         'fiscal_year_id',
         'reason',
-        'deliverables',
         'office_id',
         'department_id',
         'status_id',
@@ -44,9 +43,16 @@ class WorkFromHome extends Model
     ];
 
 
-    public function project()
+    public function projects()
     {
-        return $this->belongsTo(ProjectCode::class, 'project_id');
+        return $this->belongsToMany(ProjectCode::class, 'project_work_from_home', 'work_from_home_id', 'project_id')
+            ->withPivot('deliverables')
+            ->withTimestamps();
+    }
+
+    public function getProjectNames()
+    {
+        return $this->projects->pluck('short_name')->toArray();
     }
 
     public function status()

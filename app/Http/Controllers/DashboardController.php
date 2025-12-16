@@ -18,6 +18,7 @@ use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
 use Modules\TravelRequest\Repositories\LocalTravelRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
+use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
 use Rats\Zkteco\Lib\ZKTeco;
 
 class DashboardController extends Controller
@@ -54,8 +55,8 @@ class DashboardController extends Controller
         protected EventCompletionRepository       $eventCompletion,
         protected PerformanceReviewRepository $performanceReviews,
         protected StaffClearanceRepository $staffClearances,
-    ) {
-    }
+        protected WorkFromHomeRepository $workFromHomes,
+    ) {}
 
     /**
      * show dashboard page
@@ -70,6 +71,7 @@ class DashboardController extends Controller
             'travelRequests' => $this->travelRequests->getTravelRequestsForApproval($authUser),
             'vehicleRequests' => $this->vehicleRequests->getVehicleRequestsForApproval($authUser),
             'leaveRequests' => $this->leaveRequests->getLeaveRequestsForApproval($authUser),
+            'workFromHomeRequests' => $this->workFromHomes->getWorkFromHomeRequestsForApproval($authUser),
             'purchaseOrders' => $this->purchaseOrders->getPurchaseOrdersForReviewAndApproval($authUser),
             'purchaseRequests' => $this->purchaseRequests->getPurchaseRequestsForReviewAndApproval($authUser),
             'hallBookings' => $this->meetingHallBookings->getBookings(),
@@ -79,7 +81,7 @@ class DashboardController extends Controller
             'approvedTravels' => $this->travelRequests->getEmployeesOnTravel(),
             'upcomingTravels' => $this->travelRequests->getUpcomingTravels(),
             'localTravelRequests' => $this->localTravels->getLocalTravelsForReviewAndApproval($authUser),
-            'eventCompletionReports'=> $this->eventCompletion->getECRForApproval($authUser),
+            'eventCompletionReports' => $this->eventCompletion->getECRForApproval($authUser),
             'pendingPerformanceReviews' => $this->performanceReviews->getPendingPerformanceReview($authUser),
             'pendingStaffClearances' => $this->staffClearances->getPendingClearances()
         ];

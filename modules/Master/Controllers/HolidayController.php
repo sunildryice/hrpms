@@ -23,8 +23,7 @@ class HolidayController extends Controller
     public function __construct(
         HolidayRepository $holidays,
         OfficeRepository $offices,
-    )
-    {
+    ) {
         $this->holidays = $holidays;
         $this->offices = $offices;
     }
@@ -54,7 +53,13 @@ class HolidayController extends Controller
                     return $row->getHolidayDate();
                 })->addColumn('updated_at', function ($row) {
                     return $row->getUpdatedAt();
-                })->rawColumns(['action'])
+                })->addColumn('holiday_date', function ($row) {
+                    $displayDate = $row->getHolidayDate();
+                    $sortDate = $row->holiday_date->format('Y-m-d');
+
+                    return '<span data-order="' . $sortDate . '">' . $displayDate . '</span>';
+                })
+                ->rawColumns(['action', 'holiday_date'])
                 ->make(true);
         }
         return view('Master::Holiday.index')
@@ -87,12 +92,16 @@ class HolidayController extends Controller
         $inputs['created_by'] = auth()->id();
         $holiday = $this->holidays->create($inputs);
         if ($holiday) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'holiday' => $holiday,
-                'message' => 'Holiday is successfully added.'], 200);
+                'message' => 'Holiday is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Holiday can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Holiday can not be added.'
+        ], 422);
     }
 
     /**
@@ -137,12 +146,16 @@ class HolidayController extends Controller
         $inputs['updated_by'] = auth()->id();
         $holiday = $this->holidays->update($id, $inputs);
         if ($holiday) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'holiday' => $holiday,
-                'message' => 'Holiday is successfully updated.'], 200);
+                'message' => 'Holiday is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Holiday can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Holiday can not be updated.'
+        ], 422);
     }
 
     /**

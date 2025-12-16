@@ -11,6 +11,7 @@
                 scrollX: true,
                 processing: true,
                 serverSide: true,
+                order: [[1, 'asc']],
                 ajax: "{{ route('master.holidays.index') }}",
                 columns: [{
                         data: 'title',

@@ -82,7 +82,6 @@
         </div>
 
         <div class="print-body mb-5">
-
             <div class="row">
                 <div class="col-lg-12">
                     <table class="table border mb-4">
@@ -356,5 +355,4 @@
             </div>
         </div>
     </section>
-
 @endsection

@@ -42,6 +42,7 @@ return [
     'approved-amount' => 'Approved Amount',
     'approved-date' => 'Approved Date',
     'approver' => 'Approver',
+    'approval' => 'Approval',
     'arrival-date' => 'Arrival Date',
     'arrival-place' => 'Arrival Place',
     'asset-number' => 'Asset Number',

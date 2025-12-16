@@ -996,7 +996,7 @@
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
                                         <label for="Fdname" class="form-label required-label">
-                                            Approver
+                                            {{ __('label.approval') }}
                                         </label>
                                     </div>
                                 </div>
@@ -1007,7 +1007,9 @@
                                             class="select2 form-control
                                         @if ($errors->has('reviewer_id')) is-invalid @endif"
                                             data-width="100%">
-                                            <option value="">Select an Approver</option>
+                                            @if ($approvers->count() !== 1)
+                                                <option value="">Select an Approver</option>
+                                            @endif
                                             @foreach ($approvers as $approver)
                                                 <option value="{{ $approver->id }}" @selected($approver->id == (old('approver_id') ?: $travelClaim->approver_id))>
                                                     {{ $approver->full_name }}</option>

@@ -141,8 +141,8 @@
                                 <tr>
                                     <td class="text-center">{{ $weekday }}</td>
                                     <td class="text-nowrap">{{ $date->format('d M Y') }}</td>
-                                    <td>{!! $rec?->completed_tasks ? nl2br(e($rec->completed_tasks)) : '<em class="text-muted">—</em>' !!}</td>
-                                    <td>{!! $rec?->remarks ? nl2br(e($rec->remarks)) : '—' !!}</td>
+                                    <td>{!! $rec?->completed_tasks ? nl2br(e($rec->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
+                                    <td>{!! $rec?->remarks ? nl2br(e($rec->remarks)) : '' !!}</td>
                                 </tr>
                             @endforeach
                         </tbody>

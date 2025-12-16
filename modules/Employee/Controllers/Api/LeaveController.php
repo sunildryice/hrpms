@@ -43,6 +43,7 @@ class LeaveController extends Controller
     {
         $leave = $this->leaves->find($id);
         $employee = $this->employees->find($employeeId);
+
         return response()->json([
             'employee' => $employee,
             'leave' => $leave,

@@ -5,13 +5,11 @@
 @section('page_js')
     {{-- Styles for Deliverables table --}}
     <style>
-        /* Slightly stronger bottom border for project + task area */
         #deliverables-table td:first-child,
         #deliverables-table td:nth-child(2) {
             border-bottom: 1px solid #b2a6a6 !important;
         }
 
-        /* Normal borders elsewhere */
         #deliverables-table th,
         #deliverables-table td {
             border-color: #dee2e6;
@@ -27,9 +25,8 @@
     </style>
 
     <script type="text/javascript">
-        // Data passed from controller
-        const EXISTING_PROJECTS = @json($selectedProjectIds ?? []); // [1,2,...]
-        const EXISTING_DELIVERIES = @json($deliverables ?? []); // {projectId: ['task1','task2']}
+        const existingProjects = @json($selectedProjectIds ?? []);
+        const existingDeliveries = @json($deliverables ?? []);
 
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
@@ -52,15 +49,16 @@
             $('[name="start_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                startDate: new Date()
             });
             $('[name="end_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                startDate: new Date()
             });
 
-            // ---------- Helpers: one row per project, tasks as grid in Task cell ----------
 
             function buildTaskItem(projectId, value = '') {
                 return `
@@ -107,7 +105,6 @@
             }
 
             function refreshTaskButtons() {
-                // For each project, show Add only on last task; hide delete when single task
                 $('.task-list').each(function() {
                     const $items = $(this).find('.task-item');
 
@@ -122,26 +119,23 @@
                 });
             }
 
-            // ---------- Pre-populate for edit ----------
 
-            $('#project_ids').val(EXISTING_PROJECTS.map(String)).trigger('change');
+            $('#project_ids').val(existingProjects.map(String)).trigger('change');
 
-            EXISTING_PROJECTS.forEach(function(pid) {
+            existingProjects.forEach(function(pid) {
                 const projectId = String(pid);
                 const projectName = $('#project_ids option[value="' + projectId + '"]').text();
-                const tasks = EXISTING_DELIVERIES[projectId] || [];
+                const tasks = existingDeliveries[projectId] || [];
 
                 $tbody.append(buildProjectRow(projectId, projectName, tasks));
             });
 
             refreshTaskButtons();
 
-            // ---------- Sync on project change ----------
 
             $('#project_ids').on('change', function() {
                 const selectedIds = $(this).val() || [];
 
-                // remove rows of deselected projects
                 $tbody.find('tr').each(function() {
                     const pid = String($(this).data('project-id'));
                     if (!selectedIds.includes(pid)) {
@@ -169,7 +163,6 @@
                 }
             });
 
-            // ---------- Add / remove tasks inside Task cell ----------
 
             $(document).on('click', '.add-task-inline', function() {
                 const $item = $(this).closest('.task-item');
@@ -202,11 +195,10 @@
                 }
             });
 
-            // -------------------- FormValidation --------------------
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        project_ids: {
+                        'project_ids[]': {
                             validators: {
                                 notEmpty: {
                                     message: 'Project is required'

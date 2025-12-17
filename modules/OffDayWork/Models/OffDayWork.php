@@ -19,10 +19,8 @@ class OffDayWork extends Model
     protected $fillable = [
         'requester_id',
         'approver_id',
-        'project_id',
         'date',
         'fiscal_year_id',
-        'deliverables',
         'reason',
         'status_id',
     ];
@@ -42,9 +40,16 @@ class OffDayWork extends Model
         return $this->belongsTo(User::class, 'approver_id');
     }
 
-    public function project()
+    public function projects()
     {
-        return $this->belongsTo(ProjectCode::class, 'project_id', 'id',);
+        return $this->belongsToMany(ProjectCode::class, 'project_off_day_work', 'off_day_work_id', 'project_id')
+            ->withPivot('deliverables')
+            ->withTimestamps();
+    }
+
+    public function getProjectNames()
+    {
+        return $this->projects->pluck('short_name')->toArray();
     }
 
     public function logs()

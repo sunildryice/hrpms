@@ -108,7 +108,7 @@
                             <th>{{ __('label.sn') }}</th>
                             <th>{{ __('label.request-id') }}</th>
                             <th>{{ __('label.employee-name') }}</th>
-                            <th>{{ __('label.project-name') }}</th>
+                            <th>{{ __('label.projects') }}</th>
                             <th>{{ __('label.request-date') }}</th>
                             <th>{{ __('label.date') }}</th>
                             <th style="width: 140px;">{{ __('label.action') }}</th>

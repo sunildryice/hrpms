@@ -6,40 +6,53 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
     {
-        Schema::table('work_from_homes', function (Blueprint $table) {
-            if (Schema::hasColumn('work_from_homes', 'project_id')) {
+        Schema::table('off_day_works', function (Blueprint $table) {
+            if (Schema::hasColumn('off_day_works', 'project_id')) {
                 $table->dropForeign(['project_id']);
                 $table->dropColumn('project_id');
             }
 
-            if (Schema::hasColumn('work_from_homes', 'deliverables')) {
+            if (Schema::hasColumn('off_day_works', 'deliverables')) {
                 $table->dropColumn('deliverables');
             }
         });
 
-        Schema::create('project_work_from_home', function (Blueprint $table) {
+        Schema::create('project_off_day_work', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('work_from_home_id')
-                ->constrained('work_from_homes')
+
+            $table->foreignId('off_day_work_id')
+                ->constrained('off_day_works')
                 ->cascadeOnDelete();
+
             $table->foreignId('project_id')
                 ->constrained('lkup_project_codes')
                 ->cascadeOnDelete();
+
             $table->json('deliverables');
             $table->timestamps();
 
-            $table->unique(['work_from_home_id', 'project_id']);
+            $table->unique(['off_day_work_id', 'project_id']);
         });
     }
 
-    public function down(): void
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
     {
-        Schema::dropIfExists('project_work_from_home');
+        Schema::dropIfExists('project_off_day_work');
 
-        Schema::table('work_from_homes', function (Blueprint $table) {
-            if (! Schema::hasColumn('work_from_homes', 'project_id')) {
+        Schema::table('off_day_works', function (Blueprint $table) {
+            if (! Schema::hasColumn('off_day_works', 'project_id')) {
                 $table->unsignedBigInteger('project_id')->nullable();
 
                 $table->foreign('project_id')
@@ -48,7 +61,7 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (! Schema::hasColumn('work_from_homes', 'deliverables')) {
+            if (! Schema::hasColumn('off_day_works', 'deliverables')) {
                 $table->json('deliverables')->nullable();
             }
         });

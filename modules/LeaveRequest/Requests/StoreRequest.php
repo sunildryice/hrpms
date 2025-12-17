@@ -29,7 +29,7 @@ class StoreRequest extends FormRequest
             'end_date' => 'required|date|after_or_equal:end_date',
             'substitute_id' => 'nullable|exists:employees,id',
             'approver_id' => 'required|exists:users,id',
-            'remarks' => 'nullable',
+            'remarks' => 'required|string',
             'leave_days' => 'required|array',
             'leave_mode_id' => 'required|array',
             'leave_time' => 'nullable|array',

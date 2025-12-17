@@ -5,7 +5,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Consultant Code</label>
+                    <label for="" class="form-label required-label">Consultant/STE Code</label>
                 </div>
             </div>
             <div class="col-lg-9">

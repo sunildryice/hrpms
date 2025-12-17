@@ -21,7 +21,7 @@
                         <a class="nav-link" href="{{ route('consultant.index') }}" role="button" id="consultant-menu"
                             data-bs-toggle="tooltip" data-bs-placement="right" title="Consultants">
                             <i class="bi bi-person-lines-fill nav-icon"></i>
-                            <span class="nav-link-title">Consultants</span>
+                            <span class="nav-link-title">{{ __('label.consultant') }}</span>
                         </a>
                     </div>
 

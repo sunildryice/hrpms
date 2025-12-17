@@ -476,6 +476,38 @@
                             <div class="row mb-2">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
+                                        <label class="form-label">Pick Up </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-6 mb-2">
+                                            <div class="input-group">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">Time</span>
+                                                </div>
+                                                <input type="text" class="form-control" name="pickup_time"
+                                                    value="{{ old('pickup_time') }}" readonly aria-label="Pick Up time"
+                                                    aria-describedby="basic-addon2">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 mb-2">
+                                            <div class="input-group has-validation">
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2">Location</span>
+                                                </div>
+                                                <input type="text" class="form-control fv-plugins-icon-input"
+                                                    name="pickup_place" placeholder="Pick Up Location"
+                                                    value="{{ old('pickup_place') }}" aria-label="Pick Up Location"
+                                                    aria-describedby="basic-addon2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
                                         <label class="form-label">Remarks </label>
                                     </div>
                                 </div>

@@ -12,13 +12,24 @@
 
                 if ($(this).find(':selected').attr('data-hour') == 2) {
                     $(this).closest('tr').find('[name="leave_time[]"]').daterangepicker({
+                        singleDatePicker: true,
                         timePicker: true,
                         timePickerSeconds: false,
+                        autoUpdateInput: false,
                         locale: {
                             format: 'HH:mm:ss'
                         },
                     }).on('show.daterangepicker', function(ev, picker) {
                         picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+
+                        const start = picker.startDate.clone();
+                        const end = start.clone().add(2, 'hours'); // +2 hours
+
+                        const startStr = start.format('HH:mm:ss');
+                        const endStr = end.format('HH:mm:ss');
+
+                        $(this).val(startStr + ' - ' + endStr);
                     });
                 }
             })
@@ -28,13 +39,24 @@
                 let leaveMode = leaveModes.find(x => x.id == leaveModeId);
                 if (leaveMode?.hours == 2) {
                     $(this).closest('tr').find('[name="leave_time[]"]').daterangepicker({
+                        singleDatePicker: true,
                         timePicker: true,
                         timePickerSeconds: false,
+                        autoUpdateInput: false,
                         locale: {
                             format: 'HH:mm:ss'
                         },
                     }).on('show.daterangepicker', function(ev, picker) {
                         picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+
+                        const start = picker.startDate.clone();
+                        const end = start.clone().add(2, 'hours'); // +2 hours
+
+                        const startStr = start.format('HH:mm:ss');
+                        const endStr = end.format('HH:mm:ss');
+
+                        $(this).val(startStr + ' - ' + endStr);
                     });
                 } else {
                     $(this).closest('tr').find('[name="leave_time[]"]').val('').data('daterangepicker')
@@ -139,14 +161,25 @@
                     let leaveMode = leaveModes.find(x => x.id == leaveModeId);
                     if (leaveMode?.hours == 2) {
                         $(this).closest('tr').find('[name="leave_time[]"]').daterangepicker({
+                            singleDatePicker: true,
                             timePicker: true,
                             timePickerSeconds: false,
+                            autoUpdateInput: false,
                             locale: {
                                 format: 'HH:mm:ss'
                             },
-                            endDate: '00:00:00',
                         }).on('show.daterangepicker', function(ev, picker) {
                             picker.container.find(".calendar-table").hide();
+                        }).on('apply.daterangepicker', function(ev, picker) {
+                            // start time user selected
+                            const start = picker.startDate.clone();
+                            const end = start.clone().add(2,
+                                'hours');
+
+                            const startStr = start.format('HH:mm:ss');
+                            const endStr = end.format('HH:mm:ss');
+
+                            $(this).val(startStr + ' - ' + endStr);
                         });
                     } else {
                         $(this).closest('tr').find('[name="leave_time[]"]').val('').data('daterangepicker')
@@ -188,6 +221,13 @@
                         validators: {
                             notEmpty: {
                                 message: 'The end date is required',
+                            },
+                        },
+                    },
+                    remarks: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The reason for the leave is required',
                             },
                         },
                     },
@@ -600,7 +640,8 @@
                     <div class="mb-2 row">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Remarks</label>
+                                <label for="validationRemarks" class="form-label required-label">Reason For the
+                                    Leave</label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -615,8 +656,8 @@
                     <div class="mb-2 row">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label required-label">Send
-                                    To</label>
+                                <label for="validationRemarks"
+                                    class="form-label required-label">{{ __('label.approval') }}</label>
                             </div>
                         </div>
                         <div class="col-lg-9">

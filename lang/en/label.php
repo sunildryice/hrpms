@@ -81,6 +81,7 @@ return [
     'consignee' => 'Consignee',
     'consignee-address' => 'Consignee Address',
     'consignee-name' => 'Consignee Name',
+    'consultant' => 'Consultant/STE',
     'contact' => 'Contact',
     'contact-no' => 'Contact No.',
     'contact-name' => 'Contact Name',

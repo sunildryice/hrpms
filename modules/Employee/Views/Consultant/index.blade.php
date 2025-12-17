@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Consultants')
+@section('title', __('label.consultant'))
 @php
     $active = 0;
     $label = 'Inactive ';

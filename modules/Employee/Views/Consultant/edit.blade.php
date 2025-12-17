@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Update Consultant Profile')
+@section('title', 'Update Consultant/STE Profile')
 
 @section('page_js')
     <script type="text/javascript">
@@ -420,7 +420,7 @@
                                 </li>
                                 <li class="breadcrumb-item">
                                     <a href="{!! route('consultant.index') !!}"
-                                       class="text-decoration-none text-dark">Consultant</a>
+                                       class="text-decoration-none text-dark">{{ __('label.consultant') }}</a>
                                 </li>
                                 <li class="breadcrumb-item" aria-current="page">@yield('title')
                                     : {{ $employee->getFullNameWithCode() }}</li>

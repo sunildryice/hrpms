@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Consultant Profile')
+@section('title', 'Consultant/STE Profile')
 
 @section('page_css')
     <style>
@@ -213,7 +213,7 @@
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                 class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('consultant.index') }}"
-                                class="text-decoration-none text-dark">Consultant</a></li>
+                                class="text-decoration-none text-dark">{{ __('label.consultant') }}</a></li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>

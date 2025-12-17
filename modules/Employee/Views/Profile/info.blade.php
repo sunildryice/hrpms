@@ -58,7 +58,7 @@
         <div class="print-title fw-bold mb-3 translate-middle text-center">
             <div class="fs-5">HERD International</div>
             <div class="fs-8">
-                {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant' : 'Staff' }}
+                {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant/STE' : 'Staff' }}
                 Personal information</div>
         </div>
         <div class="print-header">
@@ -69,7 +69,7 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5" style="width: 200px">
                             </div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                 <thead>
                     <tr>
                         <th colspan="5">
-                            {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant' : 'Staff' }}
+                            {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant/STE' : 'Staff' }}
                             Personal Information </th>
                     </tr>
                 </thead>

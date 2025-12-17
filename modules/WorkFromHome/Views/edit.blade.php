@@ -49,12 +49,14 @@
             $('[name="start_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                startDate: new Date()
             });
             $('[name="end_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                startDate: new Date()
             });
 
 

@@ -70,6 +70,7 @@ class VehicleRequestController extends Controller
         $this->vehicleRequests = $vehicleRequests;
         $this->vehicleTypes = $vehicleTypes;
         $this->users = $users;
+        $this->projectCodes = $projectCodes;
         $this->destinationPath = 'vehicleRequest';
     }
 

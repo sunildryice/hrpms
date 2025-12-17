@@ -867,7 +867,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row mb-2">
+                            {{-- <div class="row mb-2">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
                                         <label class="form-label">Extra Travel from DHQ (in KM) </label>
@@ -884,7 +884,7 @@
                                         </div>
                                     @endif
                                 </div>
-                            </div>
+                            </div> --}}
                             <div class="row mb-2">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">

@@ -27,9 +27,8 @@
     </style>
 
     <script type="text/javascript">
-        // For create page: start with no pre-selected projects/deliveries
-        const EXISTING_PROJECTS = [];
-        const EXISTING_DELIVERIES = {};
+        const existingProjects = [];
+        const existingDeliveries = {};
 
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
@@ -39,7 +38,6 @@
                 width: '100%',
                 dropdownAutoWidth: true
             });
-            {{-- [web:12] --}}
             $('#send_to').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true
@@ -48,7 +46,7 @@
             const form = document.getElementById('wfhRequestCreateForm');
             const $tbody = $('#deliverables-table tbody');
 
-            // Datepickers
+
             $('[name="start_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
@@ -60,7 +58,6 @@
                 format: 'yyyy-mm-dd'
             });
 
-            // ---------- Helpers: one row per project, tasks as grid in Task cell ----------
 
             function buildTaskItem(projectId, value = '') {
                 return `
@@ -107,7 +104,6 @@
             }
 
             function refreshTaskButtons() {
-                // For each project, show Add only on last task; hide delete when single task
                 $('.task-list').each(function() {
                     const $items = $(this).find('.task-item');
 
@@ -122,15 +118,12 @@
                 });
             }
 
-            // ---------- Initial (no pre-populated rows) ----------
             refreshTaskButtons();
 
-            // ---------- Sync on project change ----------
 
             $('#project_ids').on('change', function() {
                 const selectedIds = $(this).val() || [];
 
-                // remove rows of deselected projects
                 $tbody.find('tr').each(function() {
                     const pid = String($(this).data('project-id'));
                     if (!selectedIds.includes(pid)) {
@@ -158,7 +151,6 @@
                 }
             });
 
-            // ---------- Add / remove tasks inside Task cell ----------
 
             $(document).on('click', '.add-task-inline', function() {
                 const $item = $(this).closest('.task-item');
@@ -191,11 +183,10 @@
                 }
             });
 
-            // -------------------- FormValidation --------------------
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        project_ids: {
+                        'project_ids[]': {
                             validators: {
                                 notEmpty: {
                                     message: 'Project is required'

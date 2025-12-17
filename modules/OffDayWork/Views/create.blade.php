@@ -210,7 +210,7 @@
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        project_ids: {
+                        'project_ids[]': {
                             validators: {
                                 notEmpty: {
                                     message: 'Project is required'

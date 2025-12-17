@@ -45,7 +45,7 @@ class ApproveController extends Controller
                     return $row->getOffDayWorkDate();
                 })
                 ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
+                    return $row->getProjectNames() ?? '-';
                 })
                 ->addColumn('status', function ($row) {
 

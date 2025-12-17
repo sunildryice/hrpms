@@ -15,12 +15,18 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id'   => 'required|exists:lkup_project_codes,id',
-            'date'   => 'required|date',
-            'deliverables' => 'required|array|min:1',
-            'reason'       => 'required|string',
-            'send_to'  => 'required|exists:users,id',
-            'btn' => 'nullable|string|in:save,submit'
+            'project_ids'      => ['required', 'array', 'min:1'],
+            'project_ids.*'    => ['required', 'integer', 'exists:lkup_project_codes,id'],
+
+            'date'             => ['required', 'date'],
+            'reason'           => ['required', 'string'],
+            'send_to'          => ['required', 'integer', 'exists:users,id'],
+
+            'deliverables'     => ['required', 'array', 'min:1'],
+            'deliverables.*'   => ['required', 'array', 'min:1'],
+            'deliverables.*.*' => ['required', 'string', 'max:255'],
+
+            'btn'              => ['nullable', 'string', 'in:save,submit'],
         ];
     }
 }

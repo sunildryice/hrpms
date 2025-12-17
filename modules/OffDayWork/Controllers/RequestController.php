@@ -52,7 +52,7 @@ class RequestController extends Controller
                     return $row->getOffDayWorkDate();
                 })
                 ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
+                    return $row->getProjectNames() ?? '-';
                 })
                 ->addColumn('status', function ($row) {
 
@@ -111,6 +111,9 @@ class RequestController extends Controller
             $inputs['created_by'] = auth()->id();
             $inputs['request_date'] = now();
 
+            $projectIds   = $inputs['project_ids'] ?? [];
+            $deliverables = $inputs['deliverables'] ?? [];
+
             DB::beginTransaction();
 
             if ($inputs['btn'] === 'submit') {
@@ -119,6 +122,16 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $offDayWorkRequest = $this->offDayWork->create($inputs);
+
+                $pivotData = [];
+                foreach ($projectIds as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
+                    ];
+                }
+
+                $offDayWorkRequest->projects()->sync($pivotData);
+
                 $logInputs = [
                     'user_id' => $authUser->id,
                     'log_remarks' => 'Off Day Work request is submitted.',
@@ -126,6 +139,9 @@ class RequestController extends Controller
                     'status_id' => $offDayWorkRequest->status_id,
                     'off_day_work_id' => $offDayWorkRequest->id,
                 ];
+
+
+                $this->offDayWorkLogs->create($logInputs);
 
 
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
@@ -143,16 +159,16 @@ class RequestController extends Controller
 
                 $offDayWorkRequest = $this->offDayWork->create($inputs);
 
-                $logInputs = [
-                    'user_id' => $authUser->id,
-                    'log_remarks' => 'Off Day Work request is created.',
-                    'original_user_id' => $inputs['original_user_id'],
-                    'status_id' => $offDayWorkRequest->status_id,
-                    'off_day_work_id' => $offDayWorkRequest->id,
-                ];
+                $pivotData = [];
+                foreach ($projectIds as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
+                    ];
+                }
+
+                $offDayWorkRequest->projects()->sync($pivotData);
             }
 
-            $this->offDayWorkLogs->create($logInputs);
             DB::commit();
 
             return redirect()->route('off.day.work.index')->with('success_message', 'Off Day Work request created successfully.');
@@ -166,7 +182,7 @@ class RequestController extends Controller
 
     public function show($id)
     {
-        $offDayWork = $this->offDayWork->with(['requester', 'approver', 'project', 'logs.user'])->findOrFail($id);
+        $offDayWork = $this->offDayWork->with(['requester', 'approver', 'projects', 'logs.user'])->findOrFail($id);
 
         // $this->authorize('view', $lieuLeaveRequest);
 
@@ -178,20 +194,37 @@ class RequestController extends Controller
     public function edit($id)
     {
         $offDayWork = $this->offDayWork
-            ->with('logs')->find($id);
+            ->with(['logs', 'projects'])
+            ->findOrFail($id);
 
+        $selectedProjectIds = $offDayWork->projects->pluck('id')->all();
+
+        $deliverables = [];
+        foreach ($offDayWork->projects as $project) {
+            $deliverables[$project->id] = $project->pivot && $project->pivot->deliverables
+                ? (json_decode($project->pivot->deliverables, true) ?: [])
+                : [];
+        };
 
         return view('OffDayWork::edit', [
-            'offDayWork' => $offDayWork,
-            'projects' => $this->projects->pluck('title', 'id'),
-            'supervisors' => $this->users->getSupervisors(auth()->user())->pluck('full_name', 'id'),
+            'offDayWork'         => $offDayWork,
+            'projects'           => $this->projects->pluck('short_name', 'id'),
+            'supervisors'        => $this->users
+                ->getSupervisors(auth()->user())
+                ->pluck('full_name', 'id'),
+            'selectedProjectIds' => $selectedProjectIds,
+            'deliverables'       => $deliverables,
         ]);
     }
+
 
     public function update(UpdateRequest $request, $id)
     {
         $authUser = auth()->user();
         $inputs   = $request->validated();
+
+        $projectIds   = $inputs['project_ids'] ?? [];
+        $deliverables = $inputs['deliverables'] ?? [];
 
         try {
             DB::beginTransaction();
@@ -208,6 +241,14 @@ class RequestController extends Controller
 
                 $offDayWork = $this->offDayWork->update($id, $inputs);
 
+                $pivotData = [];
+                foreach ($projectIds as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
+                    ];
+                }
+                $offDayWork->projects()->sync($pivotData);
+
                 $logInputs = [
                     'user_id'          => $authUser->id,
                     'log_remarks'      => 'Work From Home request is submitted.',
@@ -215,6 +256,8 @@ class RequestController extends Controller
                     'status_id'        => $offDayWork->status_id,
                     'off_day_work_id' => $offDayWork->id,
                 ];
+
+                $this->offDayWorkLogs->create($logInputs);
 
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
 
@@ -232,16 +275,15 @@ class RequestController extends Controller
 
                 $offDayWork = $this->offDayWork->update($id, $inputs);
 
-                $logInputs = [
-                    'user_id'          => $authUser->id,
-                    'log_remarks'      => 'Work From Home request is updated.',
-                    'original_user_id' => $inputs['original_user_id'],
-                    'status_id'        => $offDayWork->status_id,
-                    'off_day_work_id' => $offDayWork->id,
-                ];
-            }
+                $pivotData = [];
+                foreach ($projectIds as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
+                    ];
+                }
 
-            $this->offDayWorkLogs->create($logInputs);
+                $offDayWork->projects()->sync($pivotData);
+            }
 
             DB::commit();
 
@@ -250,7 +292,6 @@ class RequestController extends Controller
                 ->with('success_message', 'Off Day Work request updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-
             return redirect()
                 ->back()
                 ->withInput()

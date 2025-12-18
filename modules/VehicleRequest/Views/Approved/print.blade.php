@@ -207,7 +207,7 @@
                         </h4>
                     </div>
                 </div>
-                <div class="row mb-2">
+                {{-- <div class="row mb-2">
                     <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
                             <label for="" class="m-0 text-end flex-grow-1 fw-bold">Activity Code </label>
@@ -236,7 +236,7 @@
                     <div class="col-lg-9">
                         {{ $vehicleRequest->getDonorCode() }}
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="row mb-2">
                     <div class="col-lg-3">

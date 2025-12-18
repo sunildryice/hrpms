@@ -210,7 +210,7 @@
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        project_ids: {
+                        'project_ids[]': {
                             validators: {
                                 notEmpty: {
                                     message: 'Project is required'
@@ -260,7 +260,6 @@
                             eleInvalidClass: 'is-invalid',
                             eleValidClass: 'is-valid',
                         }),
-                        {{-- [web:38] --}}
                         submitButton: new FormValidation.plugins.SubmitButton(),
                         defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                         icon: new FormValidation.plugins.Icon({

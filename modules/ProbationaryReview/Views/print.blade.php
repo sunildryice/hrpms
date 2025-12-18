@@ -54,7 +54,7 @@
     <!-- CSS only -->
 
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
-        <div class="fs-5"> One Heart Worldwide</div>
+        <div class="fs-5"> HERD International</div>
         <div class="fs-8">{{$probationaryReview->createdBy->getOfficeName()}}</div>
         <div class="fs-8"> Probation Review</div>
     </div>

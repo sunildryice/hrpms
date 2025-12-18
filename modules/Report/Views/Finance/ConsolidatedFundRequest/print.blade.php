@@ -39,7 +39,7 @@
 @section('page-content')
 
 <div class="print-title fw-bold mb-5 translate-middle text-center ">
-    <div class="fs-5"> One Heart Worldwide</div>
+    <div class="fs-5"> HERD International</div>
     {{-- <div class="fs-8">{{ $filteredOffices->map(fn($office) => $office->office_name)->implode(', ') }}</div> --}}
     <div class="fs-8"> Consolidated Fund Request </div>
 </div>

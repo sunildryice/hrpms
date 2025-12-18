@@ -31,7 +31,6 @@ class DispositionRequestController extends Controller
     ) {
         $this->dispositionRequests = $dispositionRequests;
         $this->user = $user;
-
     }
 
     public function index(Request $request)
@@ -61,25 +60,24 @@ class DispositionRequestController extends Controller
                 })->addColumn('disposition_date', function ($row) {
                     return $row->getDispositionDate();
                 })->addColumn('status', function ($row) {
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
 
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('asset.disposition.show', $row->id).'" rel="tooltip" title="View Asset Disposition"><i class="bi-eye"></i></a>';
+                    $btn .= route('asset.disposition.show', $row->id) . '" rel="tooltip" title="View Asset Disposition"><i class="bi-eye"></i></a>';
                     if ($authUser->can('update', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('asset.disposition.edit', $row->id).'" rel="tooltip" title="Edit Disposition Request"><i class="bi-pencil-square"></i></a>';
+                        $btn .= route('asset.disposition.edit', $row->id) . '" rel="tooltip" title="Edit Disposition Request"><i class="bi-pencil-square"></i></a>';
                     }
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="'.route('asset.disposition.destroy', $row->id).'"  rel="tooltip" title="Delete Asset Disposition">';
+                        $btn .= 'data-href="' . route('asset.disposition.destroy', $row->id) . '"  rel="tooltip" title="Delete Asset Disposition">';
                         $btn .= '<i class="bi-trash3"></i></a>';
                     }
 
                     return $btn;
                 })->rawColumns(['action', 'status', 'assets'])
                 ->make(true);
-
         }
 
         return view('AssetDisposition::index');
@@ -122,7 +120,7 @@ class DispositionRequestController extends Controller
     {
         $dispositionRequest = $this->dispositionRequests->find($id);
         $this->authorize('update', $dispositionRequest);
-        $approvers = $this->user->permissionBasedUsers('approve-event-completion');
+        $approvers = $this->user->permissionBasedUsers('approve-asset-disposition');
         $dispositionTypes = $this->dispositionTypes->getDispositionTypes();
         $disposeAssets = $this->dispositionRequestAssets->where('disposition_request_id', $id)
             ->orderby('id', 'asc')
@@ -185,7 +183,6 @@ class DispositionRequestController extends Controller
                 $message = 'Asset Disposition Request is successfully updated.';
 
                 return redirect()->back()->withInput()->withSuccessMessage($message);
-
             }
 
             return redirect()->route('asset.disposition.index')

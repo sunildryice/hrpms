@@ -91,7 +91,8 @@
                     excluded: new FormValidation.plugins.Excluded({
                         excluded: function(field, ele, eles) {
                             const submitButton = $('[name="btn"]:focus').data('submit');
-                            return (field.startsWith('asset_dispose') || field == 'approver_id') && submitButton == 'save';
+                            return (field.startsWith('asset_dispose') || field ==
+                                'approver_id') && submitButton == 'save';
                         },
                     }),
                     icon: new FormValidation.plugins.Icon({
@@ -333,8 +334,8 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationApprover" class="form-label required-label">Send
-                                    to </label>
+                                <label for="validationApprover" class="form-label required-label">
+                                    {{ __('label.approval') }} </label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -348,7 +349,7 @@
                                 <option value="">Select an Approver</option>
                                 @foreach ($approvers as $approver)
                                     <option value="{{ $approver->id }}"
-                                        {{ $approver->id == $selected ? 'selected' : '' }}>
+                                        @if ($approver->id == $selected) selected @elseif($approvers->count() == 1) selected @endif>
                                         {{ $approver->getFullName() }}</option>
                                 @endforeach
                             </select>
@@ -361,7 +362,8 @@
                     </div>
 
                     <div class="justify-content-end d-flex gap-2 m-2" id="submitRequest">
-                        <button type="submit" value="save" class="btn btn-primary btn-sm" name="btn" data-submit="save">Update</button>
+                        <button type="submit" value="save" class="btn btn-primary btn-sm" name="btn"
+                            data-submit="save">Update</button>
                     </div>
                     <div class="row mb-2">
                         <div class="table-responsive">
@@ -378,7 +380,8 @@
                                         <tr data-row-index="{{ $index }}">
                                             <td>
                                                 @php
-                                                    $selected = old('asset_dispose[asset][' . $index . ']') ?? $asset->asset_id;
+                                                    $selected =
+                                                        old('asset_dispose[asset][' . $index . ']') ?? $asset->asset_id;
                                                 @endphp
                                                 <div class="row">
                                                     <div class="col">
@@ -396,7 +399,9 @@
                                             </td>
                                             <td>
                                                 <div class="row">
-                                                    <div class="col"><textarea name="asset_dispose[reason][{{ $index }}]" class="form-control" placeholder="">{!! $asset->disposition_reason !!} </textarea></div>
+                                                    <div class="col">
+                                                        <textarea name="asset_dispose[reason][{{ $index }}]" class="form-control" placeholder="">{!! $asset->disposition_reason !!} </textarea>
+                                                    </div>
                                                 </div>
                                             </td>
                                             <td>
@@ -405,13 +410,14 @@
                                                         id="addButton" rel="tooltip" title="Add Row">
                                                         +
                                                     </button>
-                                                &nbsp;
+                                                    &nbsp;
                                                     <button type="button" class="btn btn-danger btn-block"
                                                         id="clearButton" rel="tooltip" title="Clear Row">
                                                         x
                                                     </button>
                                                 @else
-                                                    <button class="btn btn-danger btn-block removeButton" type="button" rel="tooltip" title="Delete Row">
+                                                    <button class="btn btn-danger btn-block removeButton" type="button"
+                                                        rel="tooltip" title="Delete Row">
                                                         -
                                                     </button>
                                                 @endif
@@ -422,29 +428,33 @@
                                             <td>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <select class="form-control select2 asset-select" data-width="100%"
-                                                        name="asset_dispose[asset][0]">
-                                                        <option value="">Select Asset</option>
-                                                        @foreach ($assets as $asset)
-                                                            <option value="{!! $asset->id !!}"
-                                                                {{ $asset->id == $selected ? 'selected' : '' }}>
-                                                                {{ $asset->getAssetNumber() }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if ($errors->has('asset_dispose[asset][0]'))
-                                                        <div class="fv-plugins-message-container invalid-feedback">
-                                                            <div data-field="asset_dispose[asset][0]">
-                                                                {!! $errors->first('asset_dispose[asset][0]') !!}
+                                                        <select class="form-control select2 asset-select"
+                                                            data-width="100%" name="asset_dispose[asset][0]">
+                                                            <option value="">Select Asset</option>
+                                                            @foreach ($assets as $asset)
+                                                                <option value="{!! $asset->id !!}"
+                                                                    {{ $asset->id == $selected ? 'selected' : '' }}>
+                                                                    {{ $asset->getAssetNumber() }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if ($errors->has('asset_dispose[asset][0]'))
+                                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                                <div data-field="asset_dispose[asset][0]">
+                                                                    {!! $errors->first('asset_dispose[asset][0]') !!}
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    @endif
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="row">
                                                     <div class="col">
-                                                        <textarea name="asset_dispose[reason][0]" class="form-control" placeholder="">@if (old('asset_dispose[reason][0]')){{ old('asset_dispose[reason][0]') }}@endif</textarea>
+                                                        <textarea name="asset_dispose[reason][0]" class="form-control" placeholder="">
+@if (old('asset_dispose[reason][0]'))
+{{ old('asset_dispose[reason][0]') }}
+@endif
+</textarea>
                                                         @if ($errors->has('asset_dispose[reason][0]'))
                                                             <div class="fv-plugins-message-container invalid-feedback">
                                                                 <div data-field="asset_dispose[reason][0]">
@@ -457,11 +467,13 @@
                                             </td>
 
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-block" id="addButton" rel="tooltip" title="Add Row">
+                                                <button type="button" class="btn btn-primary btn-block" id="addButton"
+                                                    rel="tooltip" title="Add Row">
                                                     +
                                                 </button>
                                                 &nbsp;
-                                                <button type="button" class="btn btn-danger btn-block" id="clearButton" rel="tooltip" title="Clear Row">
+                                                <button type="button" class="btn btn-danger btn-block" id="clearButton"
+                                                    rel="tooltip" title="Clear Row">
                                                     x
                                                 </button>
                                             </td>
@@ -486,7 +498,9 @@
                                         </td>
                                         <td>
                                             <div class="row">
-                                                <div class="col"><textarea data-name="asset_dispose.reason" class="form-control" placeholder=""></textarea></div>
+                                                <div class="col">
+                                                    <textarea data-name="asset_dispose.reason" class="form-control" placeholder=""></textarea>
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
@@ -502,8 +516,8 @@
                     </div>
 
                     <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                        <button type="submit" value="submit" class="btn btn-success btn-sm"
-                            name="btn" data-submit="submit">Submit</button>
+                        <button type="submit" value="submit" class="btn btn-success btn-sm" name="btn"
+                            data-submit="submit">Submit</button>
                         <a href="{!! route('asset.disposition.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                     </div>
             </form>

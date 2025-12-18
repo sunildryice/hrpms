@@ -51,7 +51,7 @@
     <section class="p-3 bg-white print-info" id="print-info">
 
         <div class="mb-3 text-center print-title fw-bold translate-middle">
-            {{-- <div class="fs-5"> One Heart Worldwide</div> --}}
+            {{-- <div class="fs-5"> HERD International</div> --}}
             {{-- <div class="fs-8">{{ $requester->getOfficeName() }}</div> --}}
             <div class="fs-5"> Timesheet Worklog</div>
         </div>
@@ -61,7 +61,7 @@
                 <div class="col-lg-8">
                     <div class="my-3 print-header-info">
                         <ul class="p-0 m-0 list-unstyled fs-7">
-                            <li><strong>Organization Name: </strong> One Heart Worldwide </li>
+                            <li><strong>Organization Name: </strong> HERD International </li>
                             <li><strong>Name of Staff: </strong> {{ $attendance->getRequester() }} </li>
                             <li><strong>Designation: </strong> {{ $requester->getDesignationName() }}</li>
                             <li><strong>Duty Station: </strong> {{ $requester->latestTenure?->office?->getOfficeName() }}</li>

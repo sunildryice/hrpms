@@ -4,7 +4,7 @@
             <th colspan="4" style="text-align: center">Consolidated Fund Request</th>
         </tr>
         <tr>
-            <th colspan="4" style="text-align: center">One Heart Worldwide</th>
+            <th colspan="4" style="text-align: center">HERD International</th>
         </tr>
         <tr>
             <th>Year</th>

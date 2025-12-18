@@ -8,7 +8,7 @@
     </script>
 
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
-        <div class="fs-5"> One Heart Worldwide</div>
+        <div class="fs-5"> HERD International</div>
         <div class="fs-8">{{$settlement->advanceRequest->getOfficeName()}}</div>
         <div class="fs-8">Advance Settlement/Return/Expenses Reimbursement Form</div>
     </div>

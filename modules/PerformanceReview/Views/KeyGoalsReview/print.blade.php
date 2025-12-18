@@ -51,7 +51,7 @@
 
     <section class="print-info bg-white p-3" id="print-info">
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Key-Goals Review Form</div>
         </div>
 

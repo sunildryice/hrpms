@@ -46,7 +46,7 @@
 @section('page-content')
     <!-- CSS only -->
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
-        <div class="fs-5"> One Heart Worldwide</div>
+        <div class="fs-5"> HERD International</div>
         <div class="fs-8">{{$requester->office->getOfficeName()}}</div>
         <div class="fs-8"> Employee Requisition Form</div>
     </div>

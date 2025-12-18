@@ -112,6 +112,11 @@ class VehicleRequest extends Model
     {
         return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
     }
+    
+    public function getProjectCode()
+    {
+        return $this->projectCode->getProjectCodeWithDescription();
+    }
     /**
      * Get the approver of the vehicle request.
      */
@@ -318,7 +323,7 @@ class VehicleRequest extends Model
     {
         $vehicleRequestNumber = $this->prefix . '-' . $this->vehicle_request_number;
         $vehicleRequestNumber .= $this->modification_number ? '-' . $this->modification_number : '';
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2): '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
         return $vehicleRequestNumber . $fiscalYear;
     }
 
@@ -329,14 +334,14 @@ class VehicleRequest extends Model
 
     public function getVehicleTypes()
     {
-        return  implode(', ',array_map(function($id){
+        return implode(', ', array_map(function ($id) {
             if ($id == -1) {
                 return $this->other_remarks ?? 'Other';
             } else {
                 $vehicleType = VehicleType::select('title')->find($id);
-                return  $vehicleType ? $vehicleType->getVehicleType() : '';
+                return $vehicleType ? $vehicleType->getVehicleType() : '';
             }
-        },json_decode($this->vehicle_type_ids)));
+        }, json_decode($this->vehicle_type_ids)));
     }
 
     public function getRequestSubmissionDate()

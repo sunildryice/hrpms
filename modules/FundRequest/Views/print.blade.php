@@ -38,7 +38,7 @@
     <section class="p-3 bg-white print-info" id="print-info">
 
         <div class="mb-5 text-center print-title fw-bold translate-middle">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Fund Request
                 @if ($fundRequest->status_id == config('constant.CANCELLED_STATUS'))
                     <span class="text-danger">(Cancelled)<span>

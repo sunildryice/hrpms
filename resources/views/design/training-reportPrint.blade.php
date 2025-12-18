@@ -54,7 +54,7 @@
 
 
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Training Report Form</div>
         </div>
 
@@ -80,7 +80,7 @@
             <table class="table mb-3 border">
                 <thead>
                     <tr>
-                        <th colspan="2" class="text-center">One Heart Worldwide - Training Report Form <br>
+                        <th colspan="2" class="text-center">HERD International - Training Report Form <br>
                             (To be filled after the Training)
                         </th>
                     </tr>

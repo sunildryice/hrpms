@@ -18,15 +18,27 @@ class DispositionTypeSeeder extends Seeder
         $type = new DispositionType();
 
         $type->updateOrCreate([
-            'id'=>1,
-        ],[
+            'id' => 1,
+        ], [
             'title' => 'Dispose'
         ]);
 
         $type->updateOrCreate([
-            'id'=>2,
-        ],[
+            'id' => 2,
+        ], [
             'title' => 'Lost'
+        ]);
+
+        $type->updateOrCreate([
+            'id' => 3,
+        ], [
+            'title' => 'Handover of Assets'
+        ]);
+
+        $type->updateOrCreate([
+            'id' => 4,
+        ], [
+            'title' => 'Sell Asset Disposition'
         ]);
     }
 }

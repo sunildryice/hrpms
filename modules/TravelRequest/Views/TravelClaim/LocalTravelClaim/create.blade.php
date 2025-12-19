@@ -82,7 +82,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label">Travel Fare</label>
+                    <label for="" class="form-label required-label">Travel Fare</label>
                 </div>
             </div>
             <div class="col-lg-9">

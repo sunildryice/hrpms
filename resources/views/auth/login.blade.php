@@ -33,9 +33,9 @@
         class="form-signin rounded shadow bg-white flex-grow-1 gap-3 d-flex flex-column align-items-center justify-content-center"
         action="{{ route('auth.login') }}" method="POST" autocomplete="off">
         <div class="w-100 d-flex flex-column align-items-center justify-content-center pt-3 pb-1 ">
-{{--            <img src="{{ asset('img/logonp.png') }}" alt="LOGO">--}}
+            {{-- <img src="{{ asset('img/logonp.png') }}" alt="LOGO">--}}
         </div>
-        <h2 class="form-signin-heading owh-text-light fs-5 text-uppercase fw-bold mt-1 mb-2">sign in</h2>
+        <h2 class="form-signin-heading owh-text-light fs-5 text-uppercase fw-bold mt-1 mb-2 sign_in-l">sign in</h2>
 
         @if (session('warning_message'))
             <span class="badge bg-danger justify-content-start p-2 w-75 text-capitalize"><i
@@ -49,14 +49,14 @@
         <div class="login-wrap p-4 w-100 pt-1">
             <div class="form-group mb-3">
                 <input type="text" class="form-control" placeholder="User ID" autofocus name="username"
-                       value="{!! old('username') !!}">
+                    value="{!! old('username') !!}">
             </div>
             <div class="form-group mb-3 position-relative">
                 <input type="password" class="form-control" placeholder="Password" name="password" id="password">
                 <span class="t-eye">
-                <i class="bi-eye" id="eye" onclick="toggle()">
-                </i>
-            </span>
+                    <i class="bi-eye" id="eye" onclick="toggle()">
+                    </i>
+                </span>
             </div>
             <div class="mb-3">
                 <div class="row">
@@ -64,9 +64,9 @@
                         <label for="rememberme" class="fw-bold"><input type="checkbox" name="remember" id="remember">
                             Remember Me</label>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 forg-btn">
                         <a href="{!! route('forget.password.create') !!}"
-                           class="float-end text-decoration-none fw-bold">Forgot password</a>
+                            class="float-end text-decoration-none fw-bold">Forgot password</a>
                     </div>
                 </div>
             </div>

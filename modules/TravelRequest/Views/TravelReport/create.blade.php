@@ -53,13 +53,6 @@
                             }
                         }
                     },
-                    'not_completed_activities': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Not completed activities are required'
-                            }
-                        }
-                    },
                     'conclusion_recommendations': {
                         validators: {
                             notEmpty: {
@@ -277,7 +270,7 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="" class="form-label required-label">
+                                                <label for="" class="form-label">
                                                     Not Completed Activities & Reasons
                                                 </label>
                                             </div>

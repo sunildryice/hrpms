@@ -86,10 +86,11 @@ class VehicleRequestController extends Controller
         if ($request->ajax()) {
             $data = $this->vehicleRequests->with(['vehicleRequestType', 'requester', 'status', 'logs'])
                 ->whereRequesterId($authUser->id)
-                ->orWhereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                    $q->orWhere('original_user_id', $authUser->id);
-                })->orderBy('created_at', 'desc')->get();
+                // ->orWhereHas('logs', function ($q) use ($authUser) {
+                //     $q->where('user_id', $authUser->id);
+                //     $q->orWhere('original_user_id', $authUser->id);
+                // })
+                ->orderBy('created_at', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()

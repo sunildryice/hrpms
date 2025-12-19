@@ -31,17 +31,17 @@ class StoreRequest extends FormRequest
             'departure_place' => 'required',
             'arrival_place' => 'required',
 
-            'breakfast' => 'required|numeric',
-            'lunch' => 'required|numeric',
-            'dinner' => 'required|numeric',
-            'incident_cost' => 'required|numeric',
+            'breakfast' => 'nullable|numeric',
+            'lunch' => 'nullable|numeric',
+            'dinner' => 'nullable|numeric',
+            'incident_cost' => 'nullable|numeric',
 
             'days_spent' => 'nullable|numeric',
             'total_dsa' => 'nullable|numeric',
             'daily_allowance' => 'nullable|numeric',
 
-            'lodging_expense' => 'required|numeric',
-            'other_expense' => 'required|numeric',
+            'lodging_expense' => 'nullable|numeric',
+            'other_expense' => 'nullable|numeric',
             'total_amount' => 'nullable|numeric',
 
             'travel_modes' => 'array',

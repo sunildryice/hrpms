@@ -11,32 +11,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             let rowIndex = 0;
             const form = document.getElementById('travelReportAddForm');
-
-            // const subjectValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Day is required'
-            //         }
-            //     }
-            // };
-            // const dateValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Date is required'
-            //         }
-            //     }
-            // };
-            // const taskValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Activities are required'
-            //         }
-            //     }
-            // };
-            // const remarkValidators = {
-            //     validators: {}
-            // };
-
             const fv = FormValidation.formValidation(form, {
                 fields: {
                     'objectives': {
@@ -53,13 +27,6 @@
                             }
                         }
                     },
-                    'not_completed_activities': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Not completed activities are required'
-                            }
-                        }
-                    },
                     'conclusion_recommendations': {
                         validators: {
                             notEmpty: {
@@ -67,11 +34,31 @@
                             }
                         }
                     },
+                    'completed_tasks': {
+                        selector: '#activitiesErrorContainer',
+                        validators: {
+                            callback: {
+                                message: 'Activities are required',
+                                callback: function(input) {
+                                    const fields = form.querySelectorAll(
+                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                    let allFilled = true;
 
-                    // 'recommendation[day_number][0]': subjectValidators,
-                    // 'recommendation[activity_date][0]': dateValidators,
-                    // 'recommendation[completed_tasks][0]': taskValidators,
-                    // 'recommendation[remarks][0]': remarkValidators,
+                                    fields.forEach(function(field) {
+                                        if (field.value.trim() === '') {
+                                            allFilled = false;
+                                            field.closest('tr').classList.add('table-danger');
+                                        } else {
+                                            field.closest('tr').classList.remove(
+                                                'table-danger');
+                                        }
+                                    });
+
+                                    return allFilled;
+                                }
+                            }
+                        }
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -83,27 +70,34 @@
                         invalid: 'bi bi-x-lg',
                         validating: 'bi bi-arrow-repeat',
                     }),
+                    declarative: new FormValidation.plugins.Declarative({
+                        html5Input: false
+                    }),
+                    message: new FormValidation.plugins.Message({
+                        clazz: 'invalid-feedback',
+                        container: function(field, element) {
+                            if (field === 'completed_tasks') {
+                                return '#activitiesErrorContainer';
+                            }
+                            return FormValidation.plugins.Message.getParent(element);
+                        }
+                    })
                 },
             });
 
-            document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
-                fv.addField(field.name, {
-                    validators: {
-                        notEmpty: {
-                            message: 'Activities are required'
-                        }
-                    }
+            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
+                field.addEventListener('input', function() {
+                    fv.revalidateField('completed_tasks');
                 });
             });
 
             @if ($errors->any())
                 @foreach ($dates as $index => $date)
                     @if ($errors->has("recommendation.completed_tasks.{$index}"))
-                        fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+                        fv.revalidateField('completed_tasks');
                     @endif
                 @endforeach
             @endif
-
         });
     </script>
 @endsection
@@ -251,10 +245,7 @@
 
                                                             <td>
                                                                 <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3"
-                                                                    class="form-control @error('recommendation.completed_tasks.' . $index) is-invalid @enderror">{{ old('recommendation.completed_tasks.' . $index) }}</textarea>@error('recommendation.completed_tasks.' . $index)
-                                                                    <div class="invalid-feedback d-block">{{ $message }}
-                                                                    </div>
-                                                                @enderror
+                                                                    class="form-control @error('recommendation.completed_tasks.' . $index) is-invalid @enderror">{{ old('recommendation.completed_tasks.' . $index) }}</textarea>
                                                             </td>
 
                                                             <td>
@@ -271,26 +262,21 @@
                                                     @endforelse
                                                 </tbody>
                                             </table>
+                                            <div id="activitiesErrorContainer"
+                                                class="fv-plugins-message-container invalid-feedback d-block"></div>
                                         </div>
                                     </div>
 
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="" class="form-label required-label">
+                                                <label for="" class="form-label">
                                                     Not Completed Activities & Reasons
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
                                             <textarea name="not_completed_activities" class="form-control" rows="8" placeholder="">{{ old('not_completed_activities') }}</textarea>
-                                            @if ($errors->has('not_completed_activities'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="not_completed_activities">
-                                                        {!! $errors->first('not_completed_activities') !!}
-                                                    </div>
-                                                </div>
-                                            @endif
                                         </div>
                                     </div>
 

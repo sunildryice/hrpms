@@ -26,7 +26,7 @@ class StoreRequest extends FormRequest
         return [
             'objectives' => 'required|string',
             'major_achievement' => 'required|string',
-            'not_completed_activities' => 'required|string',
+            'not_completed_activities' => 'nullable|string',
             'conclusion_recommendations' => 'nullable',
             'total_travel_days' => 'nullable|integer|min:1',
 

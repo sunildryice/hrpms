@@ -59,7 +59,7 @@
         </div>
 
         <div class="mb-2 row">
-            <div class="col-lg-3"><label class="form-label">Travel Fare</label></div>
+            <div class="col-lg-3"><label class="form-label required-label">Travel Fare</label></div>
             <div class="col-lg-9">
                 <input type="number" class="form-control" name="travel_fare" id="edit_travel_fare"
                     value="{{ old('travel_fare', $localTravelClaim->travel_fare) }}">

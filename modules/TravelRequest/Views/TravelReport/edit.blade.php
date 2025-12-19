@@ -55,13 +55,6 @@
                             }
                         }
                     },
-                    'not_completed_activities': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Not completed activities are required'
-                            }
-                        }
-                    },
                     'conclusion_recommendations': {
                         validators: {
                             notEmpty: {
@@ -69,6 +62,31 @@
                             }
                         }
                     },
+                    'completed_tasks': {
+                        selector: '#activitiesErrorContainer',
+                        validators: {
+                            callback: {
+                                message: 'Activities are required',
+                                callback: function(input) {
+                                    const fields = form.querySelectorAll(
+                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                    let allFilled = true;
+
+                                    fields.forEach(function(field) {
+                                        if (field.value.trim() === '') {
+                                            allFilled = false;
+                                            field.closest('tr').classList.add('table-danger');
+                                        } else {
+                                            field.closest('tr').classList.remove(
+                                                'table-danger');
+                                        }
+                                    });
+
+                                    return allFilled;
+                                }
+                            }
+                        }
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -80,23 +98,49 @@
                         invalid: 'bi bi-x-lg',
                         validating: 'bi bi-arrow-repeat',
                     }),
+                    declarative: new FormValidation.plugins.Declarative({
+                        html5Input: false
+                    }),
+                    message: new FormValidation.plugins.Message({
+                        clazz: 'invalid-feedback',
+                        container: function(field, element) {
+                            if (field === 'completed_tasks') {
+                                return '#activitiesErrorContainer';
+                            }
+                            return FormValidation.plugins.Message.getParent(element);
+                        }
+                    })
                 },
             });
 
-            document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
-                fv.addField(field.name, {
-                    validators: {
-                        notEmpty: {
-                            message: 'Activities are required'
-                        }
-                    }
+            // document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
+            //     fv.addField(field.name, {
+            //         validators: {
+            //             notEmpty: {
+            //                 message: 'Activities are required'
+            //             }
+            //         }
+            //     });
+            // });
+
+            // @if ($errors->any())
+            //     @foreach ($dates as $index => $date)
+            //         @if ($errors->has("recommendation.completed_tasks.{$index}"))
+            //             fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+            //         @endif
+            //     @endforeach
+            // @endif
+
+            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
+                field.addEventListener('input', function() {
+                    fv.revalidateField('completed_tasks');
                 });
             });
 
             @if ($errors->any())
                 @foreach ($dates as $index => $date)
                     @if ($errors->has("recommendation.completed_tasks.{$index}"))
-                        fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+                        fv.revalidateField('completed_tasks');
                     @endif
                 @endforeach
             @endif
@@ -230,36 +274,35 @@
 
                                                             <td>
                                                                 <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.{$index}", $rec?->completed_tasks) }}</textarea>
-                                                                @error("recommendation.completed_tasks.{$index}")
+                                                                {{-- @error("recommendation.completed_tasks.{$index}")
                                                                     <div class="invalid-feedback d-block">{{ $message }}
                                                                     </div>
-                                                                @enderror
+                                                                @enderror --}}
                                                             </td>
 
                                                             <td>
                                                                 <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.{$index}", $rec?->remarks) }}</textarea>
-                                                                @error("recommendation.remarks.{$index}")
+                                                                {{-- @error("recommendation.remarks.{$index}")
                                                                     <div class="invalid-feedback d-block">{{ $message }}
                                                                     </div>
-                                                                @enderror
+                                                                @enderror --}}
                                                             </td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
                                             </table>
+                                            <div id="activitiesErrorContainer"
+                                                class="fv-plugins-message-container invalid-feedback d-block"></div>
                                         </div>
                                     </div>
 
                                     <div class="row mb-2">
                                         <div class="col-lg-3 d-flex align-items-start h-100">
-                                            <label class="form-label required-label">Not Completed Activities &
+                                            <label class="form-label">Not Completed Activities &
                                                 Reasons</label>
                                         </div>
                                         <div class="col-lg-9">
                                             <textarea name="not_completed_activities" class="form-control" rows="8">{{ old('not_completed_activities', $travelReport->not_completed_activities) }}</textarea>
-                                            @error('not_completed_activities')
-                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                            @enderror
                                         </div>
                                     </div>
 

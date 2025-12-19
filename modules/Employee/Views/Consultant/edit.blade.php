@@ -21,7 +21,7 @@
                     employee_code: {
                         validators: {
                             notEmpty: {
-                                message: 'Staff code is required',
+                                message: 'Consultant/STE code is required',
                             },
                             greaterThan: {
                                 message: 'The value must be greater than or equal to 1',
@@ -46,9 +46,9 @@
                     },
                     official_email_address: {
                         validators: {
-                            notEmpty: {
-                                message: 'The official email address is required',
-                            },
+                            // notEmpty: {
+                            //     message: 'The official email address is required',
+                            // },
                             emailAddress: {
                                 message: 'The input must be a email address',
                             },
@@ -89,14 +89,17 @@
                     },
                     citizenship_number: {
                         validators: {
-                            callback: {
-                                message: 'The citizenship number is required.',
-                                callback: function (input) {
-                                    const value = citizenshipAttachmentField.val();
-                                    return value === '' || employeeEditForm.querySelector(
-                                        '[name="citizenship_number"]').value !== '';
-                                },
+                             notEmpty: {
+                                message: 'The citizenship number is required',
                             },
+                            // callback: {
+                            //     message: 'The citizenship number is required.',
+                            //     callback: function (input) {
+                            //         const value = citizenshipAttachmentField.val();
+                            //         return value === '' || employeeEditForm.querySelector(
+                            //             '[name="citizenship_number"]').value !== '';
+                            //     },
+                            // },
                         },
                     },
                     citizenship_attachment: {

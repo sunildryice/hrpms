@@ -131,6 +131,11 @@ class ConsultantController extends Controller
                     ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
                 $inputs['pan_attachment'] = $filename;
             }
+            if ($request->file('passport_attachment')) {
+                $filename = $request->file('passport_attachment')
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
+                $inputs['passport_attachment'] = $filename;
+            }
             $this->employees->update($employee->id, $inputs);
 
             return redirect()->route('consultant.edit', $employee->id)
@@ -217,6 +222,12 @@ class ConsultantController extends Controller
             $filename = $request->file('pan_attachment')
                 ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
+        }
+
+        if ($request->file('passport_attachment')) {
+            $filename = $request->file('passport_attachment')
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
+            $inputs['passport_attachment'] = $filename;
         }
         $employee = $this->employees->update($id, $inputs);
         if ($employee) {

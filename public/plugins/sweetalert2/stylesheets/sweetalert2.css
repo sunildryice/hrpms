@@ -261,7 +261,7 @@
   border: none;
   border-radius: 5px;
   background: #fff;
-  color: #545454;
+  color: rgb(84.15, 84.15, 84.15);
   font-family: inherit;
   font-size: 1rem;
 }
@@ -469,7 +469,7 @@
   box-sizing: border-box;
   width: auto;
   transition: border-color 0.1s, box-shadow 0.1s;
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgb(216.75, 216.75, 216.75);
   border-radius: 0.1875em;
   background: transparent;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px transparent;
@@ -576,7 +576,7 @@
   margin: 1em 0 0;
   padding: 0.625em;
   overflow: hidden;
-  background: #f0f0f0;
+  background: rgb(239.7, 239.7, 239.7);
   color: #666666;
   font-size: 1em;
   font-weight: 300;
@@ -650,7 +650,7 @@
   animation: swal2-animate-error-x-mark 0.5s;
 }
 .swal2-icon.swal2-warning {
-  border-color: #facea8;
+  border-color: rgb(249.95234375, 205.965625, 167.74765625);
   color: #f8bb86;
 }
 .swal2-icon.swal2-warning.swal2-icon-show {
@@ -660,7 +660,7 @@
   animation: swal2-animate-i-mark 0.5s;
 }
 .swal2-icon.swal2-info {
-  border-color: #9de0f6;
+  border-color: rgb(156.7033492823, 224.2822966507, 246.2966507177);
   color: #3fc3ee;
 }
 .swal2-icon.swal2-info.swal2-icon-show {
@@ -670,7 +670,7 @@
   animation: swal2-animate-i-mark 0.8s;
 }
 .swal2-icon.swal2-question {
-  border-color: #c9dae1;
+  border-color: rgb(200.8064516129, 217.9677419355, 225.1935483871);
   color: #87adbd;
 }
 .swal2-icon.swal2-question.swal2-icon-show {
@@ -1199,4 +1199,4 @@ body.swal2-toast-shown .swal2-container.swal2-bottom-end, body.swal2-toast-shown
   right: 0;
   bottom: 0;
   left: auto;
-}
+}/*# sourceMappingURL=sweetalert2.css.map */

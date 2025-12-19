@@ -19,4 +19,33 @@ class LieuLeaveRequestRepository extends Repository
             ->max('lieu_leave_request_number') + 1;
         return $max;
     }
+
+    public function getLieuLeaveRequestsForApproval($authUser)
+    {
+        return $this->model->whereIn('status_id', [config('constant.SUBMITTED_STATUS'), config('constant.VERIFIED_STATUS'), config('constant.RECOMMENDED_STATUS')])
+            ->where('approver_id', '=', $authUser->id)
+            ->orderBy('request_date', 'desc')
+            ->take(5)
+            ->get();
+    }
+
+    public function getEmployeesOnLieuLeave()
+    {
+        return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->where('start_date', '<=', now()->format('Y-m-d'))
+            ->where('end_date', '>=', now()->format('Y-m-d'))->with(['requester'])
+            ->get();
+    }
+
+    public function getUpcomingLieuLeave()
+    {
+        $now = date('Y-m-d');
+        $futureDate = now()->addDays(7)->format('Y-m-d');
+
+        return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->where('start_date', '>', $now)
+            ->whereBetween('start_date', [$now, $futureDate])
+            ->with(['requester'])
+            ->get();
+    }
 }

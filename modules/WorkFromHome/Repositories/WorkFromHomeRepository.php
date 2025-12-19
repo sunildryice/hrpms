@@ -30,4 +30,23 @@ class WorkFromHomeRepository extends Repository
             ->take(5)
             ->get();
     }
+
+    public function getEmployeesOnWorkFromHome()
+    {
+        return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->where('start_date', '<=', now()->format('Y-m-d'))
+            ->where('end_date', '>=', now()->format('Y-m-d'))->with(['requester'])
+            ->get();
+    }
+
+    public function getUpcomingWorkFromHomes()
+    {
+        $now = date('Y-m-d');
+        $futureDate = now()->addDays(7)->format('Y-m-d');
+
+        return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->where('start_date', '>', $now)
+            ->whereBetween('start_date', [$now, $futureDate])->with(['requester'])
+            ->get();
+    }
 }

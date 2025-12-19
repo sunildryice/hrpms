@@ -134,6 +134,15 @@ class LieuLeaveRequest extends Model
         return $lieuLeaveRequestNumber . $fiscalYear;
     }
 
+    public function getLeaveNumber()
+    {
+        $lieuLeaveRequestNumber =  $this->lieu_leave_request_number ? 'LLR-' . $this->lieu_leave_request_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $lieuLeaveRequestNumber . $fiscalYear;
+    }
+
+
     public function submittedLog()
     {
         return $this->hasOne(LieuLeaveRequestLog::class, 'lieu_leave_request_id')
@@ -156,5 +165,10 @@ class LieuLeaveRequest extends Model
     public function leaveBalance()
     {
         return $this->hasOne(LieuLeaveBalance::class, 'lieu_leave_request_id');
+    }
+
+    public function getLeaveDuration()
+    {
+        return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
     }
 }

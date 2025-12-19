@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
             'employee_code'=>'required|unique:employees|min:1|max:10000',
             'employee_type_id'=>'nullable',
             'full_name'=>'required|string',
-            // 'official_email_address'=>'required|email|unique:employees',
+            'official_email_address'=>'nullable|email|unique:employees',
             'personal_email_address'=>'nullable|email|different:official_email_address',
             'telephone_number'=>'nullable|max:17',
             'mobile_number'=>'required|max:17',
@@ -42,6 +42,13 @@ class StoreRequest extends FormRequest
             'date_of_birth'=>'nullable|date',
             'religion_id'=>'nullable',
             'caste_id'=>'nullable',
+            
+            'nid_number' => 'nullable|string|max:50',
+            'passport_number' => 'nullable|string|max:20',
+            'passport_attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'vehicle_license_number' => 'nullable|string|max:50',
+            'vehicle_license_category' => 'nullable|array',
+            'vehicle_license_category.*' => 'string|in:A,B,C,D,E,F,G,H,K',
         ];
     }
 

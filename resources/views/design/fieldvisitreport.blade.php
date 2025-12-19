@@ -20,13 +20,13 @@
         }
 
         /* tbody,
-                td,
-                tfoot,
-                th,
-                thead,
-                tr {
-                    width:5%;
-                } */
+                    td,
+                    tfoot,
+                    th,
+                    thead,
+                    tr {
+                        width:5%;
+                    } */
 
 
         tbody,
@@ -66,7 +66,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -217,14 +218,14 @@
                     </table>
                     <div class="row mt-4">
                         <div class="col-lg-6 mb-4">
-                            <div><strong>Submitted  By:</strong></div>
+                            <div><strong>Submitted By:</strong></div>
                             <div><strong>Name:</strong> Ram Krishna Shrestha </div>
                             <div><strong>Position:</strong> Ram Krishna Shrestha </div>
                             <div><strong>Signature:</strong> Ram Krishna Shrestha </div>
                             <div><strong>Date:</strong> Ram Krishna Shrestha </div>
                         </div>
                         <div class="col-lg-6 mb-4">
-                            <div><strong>Approved  By:</strong></div>
+                            <div><strong>Approved By:</strong></div>
                             <div><strong>Name:</strong> Ram Krishna Shrestha </div>
                             <div><strong>Position:</strong> Ram Krishna Shrestha </div>
                             <div><strong>Signature:</strong> Ram Krishna Shrestha </div>

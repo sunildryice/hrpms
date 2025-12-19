@@ -6,8 +6,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-
-
         table {
             border: 1px solid;
         }
@@ -54,8 +52,8 @@
 
         <div class="print-title fw-bold mb-3 translate-middle text-center">
             <div class="fs-5"> HERD International</div>
-        <div class="fs-8">{{$requester->getOfficeName()}}</div>
-        <div class="fs-8"> Monthly Work Plan</div>
+            <div class="fs-8">{{ $requester->getOfficeName() }}</div>
+            <div class="fs-8"> Monthly Work Plan</div>
         </div>
 
         <div class="print-header">
@@ -76,7 +74,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -128,14 +127,14 @@
                 </tbody>
             </table>
             <div class="row">
-                @if($workPlan->status_id != config('constant.CREATED_STATUS'))
+                @if ($workPlan->status_id != config('constant.CREATED_STATUS'))
                     <div class="col-lg-6">Submitted by: {{ $workPlan->getRequester() }}</div>
                 @else
                     <div class="col-lg-6"></div>
                 @endif
                 <div class="col-lg-6">Approved by:
                     @if ($workPlan->status_id == config('constant.APPROVED_STATUS'))
-                        {{$workPlan->getApprover()}}
+                        {{ $workPlan->getApprover() }}
                     @endif
                 </div>
             </div>

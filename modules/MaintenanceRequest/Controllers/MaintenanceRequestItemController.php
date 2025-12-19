@@ -32,9 +32,7 @@ class MaintenanceRequestItemController extends Controller
         protected MaintenanceRequestItemRepository $maintenanceRequestItems,
         protected DonorCodeRepository               $donorCodes,
         protected ItemRepository                    $items
-    )
-    {
-    }
+    ) {}
 
     /**
      * Display a listing of the maintenance request items
@@ -69,7 +67,10 @@ class MaintenanceRequestItemController extends Controller
                 return $row->getDonorCode();
             })->addColumn('item_name', function ($row) {
                 return $row->getItemName();
-            })->rawColumns(['action'])
+            })->addColumn('replacement_good_needed', function ($row) {
+                return $row->replacement_good_needed ? 'Yes' : 'No';
+            })
+                ->rawColumns(['action'])
                 ->make(true);
         }
         return true;
@@ -111,14 +112,18 @@ class MaintenanceRequestItemController extends Controller
         $maintenanceRequestItem = $this->maintenanceRequestItems->create($inputs);
 
         if ($maintenanceRequestItem) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'maintenanceRequest' => $maintenanceRequestItem->maintenanceRequest,
                 'maintenanceRequestItem' => $maintenanceRequestItem,
                 'estimatedCost' => $maintenanceRequestItem->maintenanceRequest->estimated_cost,
-                'message' => 'Maintenance request item is successfully added.'], 200);
+                'message' => 'Maintenance request item is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Maintenance request item can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Maintenance request item can not be added.'
+        ], 422);
     }
 
     /**
@@ -164,14 +169,18 @@ class MaintenanceRequestItemController extends Controller
         $inputs = $request->validated();
         $maintenanceRequestItem = $this->maintenanceRequestItems->update($id, $inputs);
         if ($maintenanceRequestItem) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'maintenanceRequest' => $maintenanceRequestItem->maintenanceRequest,
                 'maintenanceRequestItem' => $maintenanceRequestItem,
                 'estimatedCost' => $maintenanceRequestItem->maintenanceRequest->estimated_cost,
-                'message' => 'Maintenance request item is successfully updated.'], 200);
+                'message' => 'Maintenance request item is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Maintenance request item can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Maintenance request item can not be updated.'
+        ], 422);
     }
 
     /**

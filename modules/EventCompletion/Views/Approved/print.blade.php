@@ -3,8 +3,6 @@
 @section('title', 'Event Completion Report')
 @section('page_css')
     <style>
-
-
         table {
             border: 1px solid;
         }
@@ -64,7 +62,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>

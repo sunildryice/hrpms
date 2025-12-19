@@ -49,7 +49,8 @@
             background: white !important;
         }
 
-        .print-header-info, .last-row {
+        .print-header-info,
+        .last-row {
             font-size: 0.65rem;
         }
 
@@ -59,8 +60,7 @@
                 size: auto
             }
 
-            small
-             {
+            small {
                 font-size: 0.675em;
             }
 
@@ -99,7 +99,7 @@
             <div class="col-lg-4">
                 <div class="d-flex flex-column justify-content-end brand-logo flex-grow-1">
                     <div class="d-flex flex-column justify-content-end float-right">
-                        <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                        <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                     </div>
                 </div>
 

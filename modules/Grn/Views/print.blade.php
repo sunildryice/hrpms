@@ -46,7 +46,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="mb-4 d-flex flex-column justify-content-end brand-logo flex-grow-1">
                             <div class="float-right d-flex flex-column justify-content-end">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -123,7 +124,8 @@
                         $grnAmount = $grn->grn_amount ?: $totalAmount - $tdsAmount;
                     @endphp
                     <tr>
-                        <th colspan="@if($assetFlag) 7 @else 6 @endif">{!! __('label.total-amount') !!} (Total of Bill)</th>
+                        <th colspan="@if ($assetFlag) 7 @else 6 @endif">{!! __('label.total-amount') !!} (Total of
+                            Bill)</th>
                         <th>{{ $subTotal }}</th>
                         <th>{{ $discountAmount }}</th>
                         <th>{{ $vatAmount }}</th>
@@ -131,7 +133,8 @@
                     </tr>
                     <tr>
                         {{-- <th colspan="8">{!! __('label.tds-amount-less') !!}</th> --}}
-                        <th colspan="@if($assetFlag) 10 @else 9 @endif">Less: 1.5% TDS on before VAT amount</th>
+                        <th colspan="@if ($assetFlag) 10 @else 9 @endif">Less: 1.5% TDS on before VAT
+                            amount</th>
                         <th>{{ $tdsAmount }}</th>
                     </tr>
                     {{-- <tr> --}}
@@ -139,7 +142,7 @@
                     {{-- <th>{{ $grn->other_charge_amount }}</th> --}}
                     {{-- </tr> --}}
                     <tr>
-                        <th colspan="@if($assetFlag) 10 @else 9 @endif">Net Payable Amount (NPR)</th>
+                        <th colspan="@if ($assetFlag) 10 @else 9 @endif">Net Payable Amount (NPR)</th>
                         <th>{{ $grnAmount }}</th>
                     </tr>
                 </tfoot>
@@ -150,59 +153,59 @@
 
             @php
                 if ($grn->grnable_type == config('constant.PURCHASE_ORDER')) {
-                $items = $grn
-                    ->grnItems()
-                    ->with([
-                        'grnitemable' => function ($q) {
-                            $q->select('id', 'purchase_request_item_id')->with([
-                                'purchaseRequestItem' => function ($q) {
-                                    $q->select(['id', 'office_id']);
-                                },
-                            ]);
-                        },
-                    ])
-                    ->get()
-                    ->map(function ($item) {
-                        $item->office_id = $item->grnitemable->purchaseRequestItem->office_id;
+                    $items = $grn
+                        ->grnItems()
+                        ->with([
+                            'grnitemable' => function ($q) {
+                                $q->select('id', 'purchase_request_item_id')->with([
+                                    'purchaseRequestItem' => function ($q) {
+                                        $q->select(['id', 'office_id']);
+                                    },
+                                ]);
+                            },
+                        ])
+                        ->get()
+                        ->map(function ($item) {
+                            $item->office_id = $item->grnitemable->purchaseRequestItem->office_id;
 
-                        return $item;
-                    });
-            } elseif ($grn->grnable_type == config('constant.PURCHASE_REQUEST')) {
-                $items = $grn
-                    ->grnItems()
-                    ->with([
-                        'grnitemable' => function ($q) {
-                            $q->select('id', 'office_id');
-                        },
-                    ])
-                    ->get()
-                    ->map(function ($item) {
-                        $item->office_id = $item->grnitemable->office_id;
+                            return $item;
+                        });
+                } elseif ($grn->grnable_type == config('constant.PURCHASE_REQUEST')) {
+                    $items = $grn
+                        ->grnItems()
+                        ->with([
+                            'grnitemable' => function ($q) {
+                                $q->select('id', 'office_id');
+                            },
+                        ])
+                        ->get()
+                        ->map(function ($item) {
+                            $item->office_id = $item->grnitemable->office_id;
 
-                        return $item;
-                    });
-            } else {
-                $items = $grn->grnItems;
-            }
+                            return $item;
+                        });
+                } else {
+                    $items = $grn->grnItems;
+                }
 
-            $summaries = $items
-                ->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])
-                ->flatten(2)
-                ->map(function ($grnItem) {
-                    $summary = (object)[];
-                    foreach ($grnItem as $index => $item) {
-                        if ($index == 0) {
-                            $summary = $item;
-                            continue;
+                $summaries = $items
+                    ->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])
+                    ->flatten(2)
+                    ->map(function ($grnItem) {
+                        $summary = (object) [];
+                        foreach ($grnItem as $index => $item) {
+                            if ($index == 0) {
+                                $summary = $item;
+                                continue;
+                            }
+                            $summary->total_price += $item->total_price;
+                            $summary->vat_amount += $item->vat_amount;
+                            $summary->discount_amount += $item->discount_amount;
+                            $summary->tds_amount += $item->tds_amount;
+                            $summary->total_amount += $item->total_amount;
                         }
-                        $summary->total_price += $item->total_price;
-                        $summary->vat_amount += $item->vat_amount;
-                        $summary->discount_amount += $item->discount_amount;
-                        $summary->tds_amount += $item->tds_amount;
-                        $summary->total_amount += $item->total_amount;
-                    }
-                    return $summary;
-                });
+                        return $summary;
+                    });
             @endphp
             <table class="table border">
                 <thead>
@@ -254,7 +257,7 @@
                         <li><strong class="me-2">Name:</strong>{{ $grn->getApproverName() }}</li>
                         <li><strong class="me-2">Title:</strong> {{ $grn->approvedLog?->getDesignation() }}
                         </li>
-                        {{--<li><strong class="me-2">Date:</strong> {{ $grn->approvedLog?->created_at }}</li>--}}
+                        {{-- <li><strong class="me-2">Date:</strong> {{ $grn->approvedLog?->created_at }}</li> --}}
                     </ul>
                 </div>
             </div>

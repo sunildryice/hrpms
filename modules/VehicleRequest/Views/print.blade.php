@@ -20,7 +20,7 @@
                 <div class="col-lg-8">
                     <div class="print-code fs-7 fw-bold mb-2">
                         Vehicle Request No: {!! $vehicleRequest->getVehicleRequestNumber() !!} <br>
-                        Print Date : <?=date('Y-m-d G:i:s')?>
+                        Print Date : <?= date('Y-m-d G:i:s') ?>
                     </div>
 
                     <div class="print-header-info mb-3 d-none">
@@ -35,7 +35,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
                         </div>
                     </div>
@@ -118,16 +119,16 @@
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-lg-6">
-                               <div class="d-inline-flex gap-2">
+                                <div class="d-inline-flex gap-2">
                                     <span> <strong> Time</strong></span>
                                     <span>{{ $vehicleRequest->pickup_time }}</span>
-                               </div>
+                                </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="d-inline-flex gap-2">
                                     <span> <strong> Point</strong></span>
                                     <span>{{ $vehicleRequest->pickup_place }}</span>
-                               </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -141,16 +142,16 @@
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-lg-6">
-                               <div class="d-inline-flex gap-2">
+                                <div class="d-inline-flex gap-2">
                                     <span> <strong> From</strong></span>
                                     <span>{{ $vehicleRequest->travel_from }}</span>
-                               </div>
+                                </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="d-inline-flex gap-2">
                                     <span> <strong> Destination</strong></span>
                                     <span>{{ $vehicleRequest->destination }}</span>
-                               </div>
+                                </div>
                             </div>
                         </div>
 
@@ -163,16 +164,16 @@
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-lg-6">
-                               <div class="d-inline-flex gap-2">
+                                <div class="d-inline-flex gap-2">
                                     <span> <strong> End Time</strong></span>
                                     <span>{{ $vehicleRequest->getEndDatetime() }}</span>
-                               </div>
+                                </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="d-inline-flex gap-2">
                                     <span> <strong> Number of Overnight Stay</strong></span>
-                                    <span>{{$vehicleRequest->getOvernights()}}</span>
-                               </div>
+                                    <span>{{ $vehicleRequest->getOvernights() }}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -181,7 +182,8 @@
                 <div class="row mb-2">
                     <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Extra Travel from DHQ (in KM) </label>
+                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Extra Travel from DHQ (in KM)
+                            </label>
                         </div>
                     </div>
                     <div class="col-lg-9">
@@ -308,7 +310,7 @@
     </section>
 
     <script>
-        window.onload=print;
+        window.onload = print;
     </script>
 
 

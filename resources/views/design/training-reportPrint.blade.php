@@ -67,7 +67,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -146,7 +147,7 @@
                         <td colspan="5"> Admin and Finance Director</td>
                     </tr>
                     <tr>
-                        <td colspan="5" > <strong>Note: Prepare an article of not more than 700 words about the training &
+                        <td colspan="5"> <strong>Note: Prepare an article of not more than 700 words about the training &
                                 learning achieved within 7 days of return from the training (Submit this to the
                                 HR).</strong>
                         </td>

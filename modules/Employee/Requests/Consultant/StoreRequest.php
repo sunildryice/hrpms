@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
             'employee_code'=>'required|unique:employees|min:1|max:10000',
             'employee_type_id'=>'nullable',
             'full_name'=>'required|string',
-            // 'official_email_address'=>'required|email|unique:employees',
+            'official_email_address'=>'nullable|email|unique:employees',
             'personal_email_address'=>'nullable|email|different:official_email_address',
             'telephone_number'=>'nullable|max:17',
             'mobile_number'=>'required|max:17',

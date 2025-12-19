@@ -37,12 +37,11 @@
 @endsection
 @section('page-content')
     <form
-        class="form-signin rounded shadow bg-white flex-grow-1 gap-3 d-flex flex-column align-items-center justify-content-center"
-        id="forgetPasswordForm" autocomplete="off" method="post"
-        action="{{ route('forget.password.store') }}">
+        class="form-signin p-3 rounded shadow bg-white flex-grow-1 gap-3 d-flex flex-column align-items-center justify-content-center"
+        id="forgetPasswordForm" autocomplete="off" method="post" action="{{ route('forget.password.store') }}">
 
         <div class="w-100 d-flex flex-column align-items-center justify-content-center pt-3 pb-1 ">
-            <img src="{{ asset('img/logonp.png') }}" alt="">
+            <img src="{{ asset('img/logonp.png') }}" alt="" class="img-fluid w-25">
 
         </div>
         <h2 class="form-signin-heading owh-text-light fs-5 text-uppercase fw-bold mt-1 mb-2">@yield('title')</h2>
@@ -52,11 +51,11 @@
         @endif
         <div class="login-wrap p-4 w-100 pt-1">
             <div class="form-group mb-3">
-                <input type="email" class="form-control  @if ($errors->has('email_address')) is-invalid @endif" name="email_address" placeholder="Email"/>
+                <input type="email" class="form-control  @if ($errors->has('email_address')) is-invalid @endif"
+                    name="email_address" placeholder="Email" />
                 @if ($errors->has('email_address'))
                     <div class="fv-plugins-message-container invalid-feedback">
-                        <div
-                            data-field="email_address">{!! $errors->first('email_address') !!}</div>
+                        <div data-field="email_address">{!! $errors->first('email_address') !!}</div>
                     </div>
                 @endif
             </div>
@@ -64,10 +63,10 @@
             {!! csrf_field() !!}
 
             <div class="mb-3 mt-3">
-                <div class="row">
-                    <div class="col-lg-12">
+                <div class="row text-center">
+                    <div class="col-lg-12 forget-btn">
                         Already have login and password? <a href="{!! route('signin') !!}"
-                                                            class="text-decoration-none fw-bold">Sign in</a>
+                            class="text-decoration-none fw-bold">Sign in</a>
                     </div>
                 </div>
             </div>

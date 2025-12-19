@@ -1276,4 +1276,12 @@ th.sticky-col {
   box-shadow: unset;
   border: var(--ohw--blue);
   border: 1px solid #ddd;
+}
+
+.forg-btn a {
+  color: #01aef0;
+}
+
+.sign_in-l {
+  color: #dc3545;
 }/*# sourceMappingURL=style.css.map */

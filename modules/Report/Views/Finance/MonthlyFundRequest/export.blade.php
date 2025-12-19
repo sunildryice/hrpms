@@ -4,7 +4,7 @@
         <th colspan="7"></th>
     </tr>
     <tr>
-        <th colspan="2" style="text-align: center">One Heart Worldwide</th>
+        <th colspan="2" style="text-align: center">HERD International</th>
         <th colspan="7"></th>
     </tr>
 

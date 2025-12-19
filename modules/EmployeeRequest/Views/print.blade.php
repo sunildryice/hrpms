@@ -6,13 +6,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-         
         table {
             border: 1px solid;
         }
+
         .table thead th {
             font-size: 0.94375rem;
         }
+
         tbody,
         td,
         tfoot,
@@ -21,6 +22,7 @@
         tr {
             width: 10%;
         }
+
         tbody,
         td,
         tfoot,
@@ -46,20 +48,20 @@
 @section('page-content')
     <!-- CSS only -->
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
-        <div class="fs-5"> One Heart Worldwide</div>
-        <div class="fs-8">{{$requester->office->getOfficeName()}}</div>
+        <div class="fs-5"> HERD International</div>
+        <div class="fs-8">{{ $requester->office->getOfficeName() }}</div>
         <div class="fs-8"> Employee Requisition Form</div>
     </div>
     <div class="print-header">
         <div class="row">
             <div class="col-lg-8">
-                <div class="print-code fs-6 fw-bold mb-3">  </div>
+                <div class="print-code fs-6 fw-bold mb-3"> </div>
             </div>
             <div class="col-lg-4">
                 <div class="d-flex flex-column justify-content-end">
                     <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                         <div class="d-flex flex-column justify-content-end float-right">
-                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                         </div>
                     </div>
                 </div>
@@ -68,7 +70,8 @@
     </div>
 
     <div class="print-body mb-5">
-        <p> <strong>INSTRUCTIONS: </strong> Kindly accomplish the form completely. Check the item that corresponds to your request and write
+        <p> <strong>INSTRUCTIONS: </strong> Kindly accomplish the form completely. Check the item that corresponds to your
+            request and write
             the details needed on the appropriate
             places. Thank you</p>
         <table class="table border mb-4">
@@ -80,15 +83,16 @@
             <tbody>
                 <tr>
                     <th scope="row">Position Title</th>
-                    <td>{{$employeeRequest->position_title}} </td>
+                    <td>{{ $employeeRequest->position_title }} </td>
                     <th scope="row">Requested Level</th>
-                    <td>{{$employeeRequest->position_level}}</td>
+                    <td>{{ $employeeRequest->position_level }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Work Station</th>
-                    <td>{{$employeeRequest->employee_type_id == '0'? $employeeRequest->employee_type_other:$employeeRequest->getDutyStation()}}</td>
+                    <td>{{ $employeeRequest->employee_type_id == '0' ? $employeeRequest->employee_type_other : $employeeRequest->getDutyStation() }}
+                    </td>
                     <th scope="row">Requested Date</th>
-                    <td>{{@array_key_exists('submitted_date', $dates)? $dates['submitted_date']: ''}}</td>
+                    <td>{{ @array_key_exists('submitted_date', $dates) ? $dates['submitted_date'] : '' }}</td>
                 </tr>
             </tbody>
 
@@ -97,9 +101,9 @@
             <tbody>
                 <tr>
                     <th scope="row">Types of Employment</th>
-                    <td>{{$employeeRequest->getEmployeeType()}}</td>
+                    <td>{{ $employeeRequest->getEmployeeType() }}</td>
                     <th scope="row">Date required from</th>
-                    <td>{{@array_key_exists('required_date', $dates)? $dates['required_date']: ''}}</td>
+                    <td>{{ @array_key_exists('required_date', $dates) ? $dates['required_date'] : '' }}</td>
 
                 </tr>
                 <tr>
@@ -122,7 +126,12 @@
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="4">Is this Position Budgeted ? @if($employeeRequest->budgeted == 1) Yes @else No @endif</td>
+                    <td colspan="4">Is this Position Budgeted ? @if ($employeeRequest->budgeted == 1)
+                            Yes
+                        @else
+                            No
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th scope="row">Account Code</th>
@@ -172,13 +181,14 @@
                 </tr>
                 <tr>
                     <th scope="column">TOR/JD submitted?</th>
-                    @if($employeeRequest->tor_jd_submitted == 1)
+                    @if ($employeeRequest->tor_jd_submitted == 1)
                         <td colspan="2"> YES <i class="bi bi-check"></i></br>NO
-                    @else
+                        @else
                         <td> YES </br> NO <i class="bi bi-check"></i></td>
-                        <td>If no, tentative date of submission: {{@array_key_exists('tentative_submission_date', $dates)? $dates['tentative_submission_date']: ''}}
+                        <td>If no, tentative date of submission:
+                            {{ @array_key_exists('tentative_submission_date', $dates) ? $dates['tentative_submission_date'] : '' }}
                     @endif
-                        </td>
+                    </td>
 
                 </tr>
             </tbody>

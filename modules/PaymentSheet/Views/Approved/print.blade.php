@@ -38,7 +38,7 @@
 
 
     <div class="mb-3 text-center print-title fw-bold translate-middle">
-        <div class="fs-5"> One Heart Worldwide</div>
+        <div class="fs-5"> HERD International</div>
         <div class="fs-8">{{ $paymentSheet->requester->getOfficeName() }}</div>
         <div class="fs-8"> Payment Sheet </div>
     </div>
@@ -76,7 +76,7 @@
                 <div class="d-flex flex-column justify-content-end">
                     <div class="mb-4 d-flex flex-column justify-content-end brand-logo flex-grow-1">
                         <div class="float-right d-flex flex-column justify-content-end">
-                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                         </div>
 
                     </div>

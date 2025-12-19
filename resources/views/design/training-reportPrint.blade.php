@@ -54,7 +54,7 @@
 
 
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Training Report Form</div>
         </div>
 
@@ -67,7 +67,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -80,7 +81,7 @@
             <table class="table mb-3 border">
                 <thead>
                     <tr>
-                        <th colspan="2" class="text-center">One Heart Worldwide - Training Report Form <br>
+                        <th colspan="2" class="text-center">HERD International - Training Report Form <br>
                             (To be filled after the Training)
                         </th>
                     </tr>
@@ -146,7 +147,7 @@
                         <td colspan="5"> Admin and Finance Director</td>
                     </tr>
                     <tr>
-                        <td colspan="5" > <strong>Note: Prepare an article of not more than 700 words about the training &
+                        <td colspan="5"> <strong>Note: Prepare an article of not more than 700 words about the training &
                                 learning achieved within 7 days of return from the training (Submit this to the
                                 HR).</strong>
                         </td>

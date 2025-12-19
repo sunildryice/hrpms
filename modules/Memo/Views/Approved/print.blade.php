@@ -6,11 +6,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-         
-
         .print-info {
-                font-size: 0.8rem;
-            }
+            font-size: 0.8rem;
+        }
 
         @media print {
             .print-info {
@@ -32,7 +30,7 @@
     <section class="print-info bg-white" id="print-info">
 
         <div class="print-title fw-bold mb-3 translate-middle text-center">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Memo</div>
         </div>
 
@@ -40,7 +38,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <div class="print-code">
-                         <strong>Date: </strong> {{ $memo->getMemoDate() }}
+                        <strong>Date: </strong> {{ $memo->getMemoDate() }}
                     </div>
 
                     <div class="print-header-info my-5 ">
@@ -57,7 +55,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -68,7 +67,7 @@
         <div class="print-body">
             <strong>Memo Descriptions</strong>
             <div>
-               {!! $memo->description !!}
+                {!! $memo->description !!}
             </div>
             <strong>Memo Enclosure</strong>
             <div>

@@ -1,6 +1,13 @@
 <div class="card-body">
     <div class="row">
         <div class="col-lg-6 mb-2">
+            <div class="d-flex align-items-start gap-2" rel="tooltip" title="Project">
+                <i class="bi-dash-square dropdown-item-icon"></i>
+                <span class="fw-bold col-auto"> Project :</span>
+                <span>{{ $vehicleRequest->getProjectCode() }}</span>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-2">
             <div class="d-flex align-items-start gap-2" rel="tooltip" title="Request Number">
                 <i class="bi-strava"></i>
                 <span class="fw-bold col-auto"> Vehicle Request No. :</span>
@@ -28,7 +35,7 @@
                 <span>{!! $vehicleRequest->getVehicleTypes() !!}</span>
             </div>
         </div>
-        @if($vehicleRequest->vehicle_request_type_id == 1)
+        @if ($vehicleRequest->vehicle_request_type_id == 1)
             <div class="col-lg-6 mb-2">
                 <div class="d-flex align-items-start gap-2" rel="tooltip" title="Office">
                     <i class="bi-bank"></i><span class="fw-bold col-auto"> Office :</span>
@@ -49,7 +56,7 @@
                     <span>{{ $vehicleRequest->travel_from }} - {{ $vehicleRequest->destination }}</span>
                 </div>
             </div>
-            @if($vehicleRequest->status_id == config('constant.ASSIGNED_STATUS'))
+            @if ($vehicleRequest->status_id == config('constant.ASSIGNED_STATUS'))
                 <div class="col-lg-6 mb-2">
                     <div class="d-flex align-items-start gap-2" rel="tooltip" title="Assigned Vehicle">
                         <i class="bi-calendar-range"></i><span class="fw-bold col-auto"> Assigned Vehicle :</span>
@@ -67,7 +74,8 @@
             <div class="col-lg-6 mb-2">
                 <div class="d-flex align-items-start gap-2" rel="tooltip" title="Travel Duration">
                     <i class="bi-calendar-range"></i><span class="fw-bold col-auto"> Travel Duration :</span>
-                    <span> {{ $vehicleRequest->start_datetime->format('j M, Y') }} - {{ $vehicleRequest->end_datetime->format('j M, Y') }}
+                    <span> {{ $vehicleRequest->start_datetime->format('j M, Y') }} -
+                        {{ $vehicleRequest->end_datetime->format('j M, Y') }}
                         <span class="badge bg-primary">{{ $vehicleRequest->getDifferenceInDays() }} days</span>
                     </span>
                 </div>
@@ -165,4 +173,3 @@
         @endisset
     </div>
 </div>
-

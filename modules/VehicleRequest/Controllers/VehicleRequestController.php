@@ -2,29 +2,30 @@
 
 namespace Modules\VehicleRequest\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-
-use Illuminate\Support\Facades\Storage;
-
-use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Master\Repositories\AccountCodeRepository;
-use Modules\Master\Repositories\ActivityCodeRepository;
-use Modules\Master\Repositories\DistrictRepository;
-use Modules\Master\Repositories\DonorCodeRepository;
-use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
-use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
-use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\VehicleTypeRepository;
-use Modules\Master\Repositories\VehicleRequestTypeRepository;
-
-use Modules\VehicleRequest\Requests\StoreRequest;
-use Modules\VehicleRequest\Requests\UpdateRequest;
-
 use DB;
 use DataTables;
+
+use Illuminate\Http\Request;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Modules\Master\Repositories\OfficeRepository;
+use Modules\VehicleRequest\Requests\StoreRequest;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\VehicleRequest\Requests\UpdateRequest;
+use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\DonorCodeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Master\Repositories\FiscalYearRepository;
+use Modules\Master\Repositories\AccountCodeRepository;
+
+use Modules\Master\Repositories\ProjectCodeRepository;
+use Modules\Master\Repositories\VehicleTypeRepository;
+
+use Modules\Master\Repositories\ActivityCodeRepository;
+use Modules\Master\Repositories\VehicleRequestTypeRepository;
+use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
+use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
 
 class VehicleRequestController extends Controller
 {
@@ -42,21 +43,22 @@ class VehicleRequestController extends Controller
      * @param VehicleRequestRepository $vehicleRequests
      * @param VehicleTypeRepository $vehicleTypes
      * @param UserRepository $users
+     * @param ProjectCodeRepository $projectCodes
      */
     public function __construct(
-        ActivityCodeRepository       $activityCodes,
-        AccountCodeRepository        $accountCodes,
-        DistrictRepository           $districts,
-        DonorCodeRepository          $donorCodes,
-        EmployeeRepository           $employees,
-        FiscalYearRepository         $fiscalYears,
-        OfficeRepository             $offices,
+        ActivityCodeRepository $activityCodes,
+        AccountCodeRepository $accountCodes,
+        DistrictRepository $districts,
+        DonorCodeRepository $donorCodes,
+        EmployeeRepository $employees,
+        FiscalYearRepository $fiscalYears,
+        OfficeRepository $offices,
         VehicleRequestTypeRepository $vehicleRequestTypes,
-        VehicleRequestRepository     $vehicleRequests,
-        VehicleTypeRepository        $vehicleTypes,
-        UserRepository               $users
-    )
-    {
+        VehicleRequestRepository $vehicleRequests,
+        VehicleTypeRepository $vehicleTypes,
+        UserRepository $users,
+        ProjectCodeRepository $projectCodes,
+    ) {
         $this->activityCodes = $activityCodes;
         $this->accountCodes = $accountCodes;
         $this->districts = $districts;
@@ -68,6 +70,7 @@ class VehicleRequestController extends Controller
         $this->vehicleRequests = $vehicleRequests;
         $this->vehicleTypes = $vehicleTypes;
         $this->users = $users;
+        $this->projectCodes = $projectCodes;
         $this->destinationPath = 'vehicleRequest';
     }
 
@@ -81,7 +84,7 @@ class VehicleRequestController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->vehicleRequests->with(['vehicleRequestType', 'requester','status', 'logs'])
+            $data = $this->vehicleRequests->with(['vehicleRequestType', 'requester', 'status', 'logs'])
                 ->whereRequesterId($authUser->id)
                 ->orWhereHas('logs', function ($q) use ($authUser) {
                     $q->where('user_id', $authUser->id);
@@ -119,7 +122,7 @@ class VehicleRequestController extends Controller
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
                         $btn .= 'data-href="' . route('vehicle.requests.destroy', $row->id) . '">';
                         $btn .= '<i class="bi-trash"></i></a>';
-                    }else if ($authUser->can('amend', $row)) {
+                    } else if ($authUser->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm amend-vehicle-request"';
                         $btn .= 'data-href = "' . route('vehicle.requests.amend.store', $row->id) . '" title="Amend Vehicle Request">';
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
@@ -153,15 +156,17 @@ class VehicleRequestController extends Controller
         $districts = $this->districts->getDistricts();
         $donorCodes = $this->donorCodes->getActiveDonorCodes();
         $approvers = $this->users->permissionBasedUsers('assign-office-vehicle');
-        $approvers = $approvers->reject(function($approver) use ($authUser){
-           return $approver->id == $authUser->id;
+        $approvers = $approvers->reject(function ($approver) use ($authUser) {
+            return $approver->id == $authUser->id;
         });
 
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
+        $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
         return view('VehicleRequest::create')
             ->withActivityCodes($activityCodes)
+            ->withProjects($projectCodes)
             ->withApprovers($approvers)
             ->withDistricts($districts)
             ->withDonorCodes($donorCodes)
@@ -182,14 +187,14 @@ class VehicleRequestController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        
+
         $authUser = auth()->user();
         $inputs = $request->validated();
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
             ->where('end_date', '>=', date('Y-m-d'))
             ->first();
         $vehicleType = 'hire-vehicle';
-        if($inputs['vehicle_request_type_id'] == 1){
+        if ($inputs['vehicle_request_type_id'] == 1) {
             $inputs['start_datetime'] = $inputs['office_start_datetime'];
             $inputs['end_datetime'] = $inputs['office_end_datetime'];
         }
@@ -237,15 +242,17 @@ class VehicleRequestController extends Controller
         $districts = $this->districts->getDistricts();
         $donorCodes = $this->donorCodes->getActiveDonorCodes();
         $approvers = $this->users->permissionBasedUsers('assign-office-vehicle');
-        $approvers = $approvers->reject(function($approver) use ($authUser){
+        $approvers = $approvers->reject(function ($approver) use ($authUser) {
             return $approver->id == $authUser->id;
         });
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
+        $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
         $view = $vehicleRequest->vehicle_request_type_id == 1 ? view('VehicleRequest::editoffice') : view('VehicleRequest::edithire');
         return $view->withActivityCodes($activityCodes)
             ->withAccountCodes($accountCodes)
+            ->withProjects($projectCodes)
             ->withApprovers($approvers)
             ->withDistricts($districts)
             ->withDonorCodes($donorCodes)
@@ -272,7 +279,7 @@ class VehicleRequestController extends Controller
         $vehicleRequest = $this->vehicleRequests->find($id);
         $this->authorize('update', $vehicleRequest);
         $inputs = $request->validated();
-        if($vehicleRequest->vehicle_request_type_id == 1){
+        if ($vehicleRequest->vehicle_request_type_id == 1) {
             $inputs['start_datetime'] = $inputs['office_start_datetime'];
             $inputs['end_datetime'] = $inputs['office_end_datetime'];
             $vehicleType = 'office-vehicle';
@@ -383,7 +390,7 @@ class VehicleRequestController extends Controller
     {
         $authUser = auth()->user();
         $vehicleRequest = $this->vehicleRequests->find($id);
-//        $this->authorize('print', $vehicleRequest);
+        //        $this->authorize('print', $vehicleRequest);
 
         return view('VehicleRequest::print')
             ->withVehicleRequest($vehicleRequest);

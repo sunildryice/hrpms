@@ -6,8 +6,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-         
-
         table {
             border: 1px solid;
         }
@@ -41,7 +39,6 @@
         .table tr td {
             padding: 0.25rem 0.75rem;
         }
-
     </style>
 @endsection
 @section('page_js')
@@ -56,7 +53,7 @@
     <section class="print-info bg-white p-3" id="print-info">
 
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8"> Exit Handover Note</div>
         </div>
 
@@ -65,13 +62,20 @@
                 <div class="col-lg-8">
                     <div class="print-header-info mb-4">
                         <ul class="list-unstyled m-0 p-0 fs-7">
-                            <li><span class="fw-bold me-2">Employee Name :</span><span>{{ $handOverNote->employee->getFullName() }}</span></li>
-                            <li><span class="fw-bold me-2">Designation:</span><span>{{ $handOverNote->employee->latestTenure->getDesignationName() }}</span>
+                            <li><span class="fw-bold me-2">Employee Name
+                                    :</span><span>{{ $handOverNote->employee->getFullName() }}</span></li>
+                            <li><span
+                                    class="fw-bold me-2">Designation:</span><span>{{ $handOverNote->employee->latestTenure->getDesignationName() }}</span>
                             </li>
-                            <li><span class="fw-bold me-2">Duty Station:</span><span>{{ $handOverNote->employee->latestTenure->getDutyStation() }}</span></li>
-                            <li><span class="fw-bold me-2">Joined Date :</span><span>{{ $handOverNote->employee->latestTenure->getJoinedDate() }}</span></li>
-                            <li><span class="fw-bold me-2">Resigned Date :</span><span> {{ $handOverNote->getLastDutyDate() }}</span></li>
-                            <li><span class="fw-bold me-2">Last Working Date :</span><span> {{ $handOverNote->getLastDutyDate() }}</span></li>
+                            <li><span class="fw-bold me-2">Duty
+                                    Station:</span><span>{{ $handOverNote->employee->latestTenure->getDutyStation() }}</span>
+                            </li>
+                            <li><span class="fw-bold me-2">Joined Date
+                                    :</span><span>{{ $handOverNote->employee->latestTenure->getJoinedDate() }}</span></li>
+                            <li><span class="fw-bold me-2">Resigned Date :</span><span>
+                                    {{ $handOverNote->getLastDutyDate() }}</span></li>
+                            <li><span class="fw-bold me-2">Last Working Date :</span><span>
+                                    {{ $handOverNote->getLastDutyDate() }}</span></li>
                         </ul>
                     </div>
 
@@ -80,7 +84,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -138,17 +143,18 @@
                     <div> <strong>Submitted By:</strong> {{ $handOverNote->employee->getFullName() }}</div>
                 </div>
                 <div class="col-lg-6">
-                    <div> <strong>Date:</strong> {{ $handOverNote->submittedLog ?->created_at }}</div>
+                    <div> <strong>Date:</strong> {{ $handOverNote->submittedLog?->created_at }}</div>
                 </div>
             </div>
-            <div> <strong>Supervisors clearance:</strong>  I hereby certify that Mr/Mrs/Ms {{ $handOverNote->employee->getFullName() }} has properly
+            <div> <strong>Supervisors clearance:</strong> I hereby certify that Mr/Mrs/Ms
+                {{ $handOverNote->employee->getFullName() }} has properly
                 handed-over the all documents/holding as per attached handover/takeover note:
             </div>
             <br>
             <div class="row mb-4">
                 <div class="col-lg-6">
                     <div> Supervisor's Name and Signature:{{ $handOverNote->getApproverName() }} /
-                        {{ $handOverNote->approvedLog ?->created_at }}</div>
+                        {{ $handOverNote->approvedLog?->created_at }}</div>
                 </div>
             </div>
 

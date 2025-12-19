@@ -363,7 +363,7 @@
                             </div>
                         </div>
                         <div class="col-lg-10">
-                            @php $selectedApproverId = old('reviewer_id') ?: $maintenanceRequest->reviewer_id; @endphp
+                            @php $selectedApproverId = old('approver_id') ?: $maintenanceRequest->approver_id; @endphp
                             <select name="approver_id"
                                 class="select2 form-control
                                             @if ($errors->has('approver_id')) is-invalid @endif"

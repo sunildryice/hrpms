@@ -51,7 +51,7 @@
     <section class="p-3 bg-white print-info" id="print-info">
 
         <div class="mb-3 text-center print-title fw-bold translate-middle">
-            {{-- <div class="fs-5"> One Heart Worldwide</div> --}}
+            {{-- <div class="fs-5"> HERD International</div> --}}
             {{-- <div class="fs-8">{{ $requester->getOfficeName() }}</div> --}}
             <div class="fs-5"> Timesheet Worklog</div>
         </div>
@@ -61,11 +61,13 @@
                 <div class="col-lg-8">
                     <div class="my-3 print-header-info">
                         <ul class="p-0 m-0 list-unstyled fs-7">
-                            <li><strong>Organization Name: </strong> One Heart Worldwide </li>
+                            <li><strong>Organization Name: </strong> HERD International </li>
                             <li><strong>Name of Staff: </strong> {{ $attendance->getRequester() }} </li>
                             <li><strong>Designation: </strong> {{ $requester->getDesignationName() }}</li>
-                            <li><strong>Duty Station: </strong> {{ $requester->latestTenure?->office?->getOfficeName() }}</li>
-                            <li><strong>Supervisor Name: </strong> {{ $requester->latestTenure?->supervisor?->getFullName() }}</li>
+                            <li><strong>Duty Station: </strong> {{ $requester->latestTenure?->office?->getOfficeName() }}
+                            </li>
+                            <li><strong>Supervisor Name: </strong>
+                                {{ $requester->latestTenure?->supervisor?->getFullName() }}</li>
                             <li><strong>Year: </strong> {{ $attendance->year }}</li>
                             <li><strong>Month: </strong> {{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</li>
 
@@ -76,7 +78,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="mb-4 d-flex flex-column justify-content-end brand-logo flex-grow-1">
                             <div class="float-right d-flex flex-column justify-content-end">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>

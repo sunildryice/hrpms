@@ -57,7 +57,7 @@
     <!-- CSS only -->
 
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
-        <div class="fs-5"> One Heart Worldwide</div>
+        <div class="fs-5"> HERD International</div>
         <div class="fs-8"> Employee Requistion Form </div>
     </div>
 
@@ -69,7 +69,7 @@
                 <div class="d-flex flex-column justify-content-end">
                     <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                         <div class="d-flex flex-column justify-content-end float-right">
-                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                         </div>
 
                     </div>

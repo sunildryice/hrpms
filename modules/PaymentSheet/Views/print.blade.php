@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-         
+
     </style>
 @endsection
 @section('page_js')
@@ -19,7 +19,7 @@
 
     <div class="print-title fw-bold mb-3 translate-middle text-center ">
         <div class="fs-5"> HERD International</div>
-        <div class="fs-8">{{$paymentSheet->requester->office->getOfficeName()}}</div>
+        <div class="fs-8">{{ $paymentSheet->requester->office->getOfficeName() }}</div>
         <div class="fs-8"> Payment Sheet</div>
     </div>
 
@@ -46,7 +46,7 @@
                 <div class="d-flex flex-column justify-content-end">
                     <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                         <div class="d-flex flex-column justify-content-end float-right">
-                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                         </div>
 
                     </div>
@@ -74,7 +74,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($paymentSheet->paymentSheetDetails as $detail)
+                @foreach ($paymentSheet->paymentSheetDetails as $detail)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $detail->item_description }}</td>

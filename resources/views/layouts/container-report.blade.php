@@ -28,10 +28,14 @@
             border-top: 1px solid currentColor;
         }
 
-        .print-title{
+        .print-title {
             position: absolute;
             top: 55px;
             left: 50%;
+        }
+
+        .logo-img {
+            width: 200px;
         }
     </style>
     @yield('page_css')

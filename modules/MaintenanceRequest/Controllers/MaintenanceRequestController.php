@@ -67,27 +67,26 @@ class MaintenanceRequestController extends Controller
                 })->addColumn('requester', function ($row) {
                     return $row->getRequesterName();
                 })->addColumn('status', function ($row) {
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('maintenance.requests.view', encrypt($row->id)).'" rel="tooltip" title="View Maintenance Request"><i class="bi-eye-fill"></i></a>';
+                    $btn .= route('maintenance.requests.view', encrypt($row->id)) . '" rel="tooltip" title="View Maintenance Request"><i class="bi-eye-fill"></i></a>';
                     if ($authUser->can('update', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('maintenance.requests.edit', $row->id).'" rel="tooltip" title="Edit Maintenance Request"><i class="bi-pencil-square"></i></a>';
+                        $btn .= route('maintenance.requests.edit', $row->id) . '" rel="tooltip" title="Edit Maintenance Request"><i class="bi-pencil-square"></i></a>';
                     }
                     if ($authUser->can('print', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
-                        $btn .= route('approved.maintenance.requests.print', $row->id).'" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
+                        $btn .= route('approved.maintenance.requests.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
                     }
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
-                        $btn .= 'data-href="'.route('maintenance.requests.destroy', $row->id).'" rel="tooltip" title="Delete Maintenance Request">';
+                        $btn .= 'data-href="' . route('maintenance.requests.destroy', $row->id) . '" rel="tooltip" title="Delete Maintenance Request">';
                         $btn .= '<i class="bi-trash3"></i></a>';
                     } elseif ($authUser->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-sm btn-danger amend-record"';
-                        $btn .= 'data-href = "'.route('maintenance.requests.amend', $row->id).'" data-number="'.$row->getMaintenanceRequestNumber().'" title="Reverse Maintenance Requset">';
+                        $btn .= 'data-href = "' . route('maintenance.requests.amend', $row->id) . '" data-number="' . $row->getMaintenanceRequestNumber() . '" title="Reverse Maintenance Requset">';
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
-
                     }
 
                     return $btn;
@@ -136,14 +135,18 @@ class MaintenanceRequestController extends Controller
         if ($maintenanceRequest) {
             $message = 'Maintenance request is successfully added.';
 
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'maintenanceRequest' => $maintenanceRequest,
                 'route' => route('maintenance.requests.edit', $maintenanceRequest->id),
-                'message' => $message], 200);
+                'message' => $message
+            ], 200);
         }
 
-        return response()->json(['status' => 'error',
-            'message' => 'Maintenance Request can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Maintenance Request can not be added.'
+        ], 422);
     }
 
     /**
@@ -205,7 +208,6 @@ class MaintenanceRequestController extends Controller
 
             return redirect()->back()->withInput()
                 ->withSuccessMessage($message);
-
         }
 
         return redirect()->back()->withInput()

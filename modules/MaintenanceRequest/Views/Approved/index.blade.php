@@ -9,12 +9,11 @@
         });
 
         var oTable = $('#maintenanceRequestReviewTable').DataTable({
-                scrollX: true,
+            scrollX: true,
             processing: true,
             serverSide: true,
             ajax: "{{ route('approved.maintenance.requests.index') }}",
-            columns: [
-                {
+            columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
                     orderable: false,
@@ -28,10 +27,10 @@
                     data: 'requester',
                     name: 'requester'
                 },
-                {
-                    data: 'estimated_cost',
-                    name: 'estimated_cost'
-                },
+                // {
+                //     data: 'estimated_cost',
+                //     name: 'estimated_cost'
+                // },
                 {
                     data: 'status',
                     name: 'status',
@@ -51,43 +50,44 @@
 @endsection
 @section('page-content')
 
-        <div class="page-header pb-3 mb-3 border-bottom">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
+    <div class="page-header pb-3 mb-3 border-bottom">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
             <div class="brd-crms flex-grow-1">
                 <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
-                            </li>
-                            <li class="breadcrumb-item" aria-current="page">Approved Maintenance Request</li>
-                        </ol>
-                    </nav>
-                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Approved Maintenance Request</h4>
-                </div>
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="{!! route('dashboard.index') !!}"
+                                class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">Approved Maintenance Request</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Approved Maintenance Request</h4>
             </div>
-
         </div>
-        <section class="registration">
-            <div class="card" id="maintenance-request-review-table">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-borderedless" id="maintenanceRequestReviewTable">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th style="width:45px;"></th>
-                                    <th>{{ __('label.maintenance-number') }}</th>
-                                    <th>{{ __('label.requester') }}</th>
-                                    <th>{{ __('label.estimate') }}</th>
-                                    <th style="width: 100px;">{{ __('label.status') }}</th>
-                                    <th style="width: 164px;">{{ __('label.action') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+
+    </div>
+    <section class="registration">
+        <div class="card" id="maintenance-request-review-table">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderedless" id="maintenanceRequestReviewTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th style="width:45px;"></th>
+                                <th>{{ __('label.maintenance-number') }}</th>
+                                <th>{{ __('label.requester') }}</th>
+                                {{-- <th>{{ __('label.estimate') }}</th> --}}
+                                <th style="width: 100px;">{{ __('label.status') }}</th>
+                                <th style="width: 164px;">{{ __('label.action') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
 
 @stop

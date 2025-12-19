@@ -46,11 +46,10 @@
         }
 
 
-        .staff-image  img{
+        .staff-image img {
             height: 100px;
             object-fit: contain;
         }
-
     </style>
 @endsection
 @section('page_js')
@@ -71,7 +70,7 @@
                 <div class="d-flex flex-column justify-content-end">
                     <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                         <div class="d-flex flex-column justify-content-end float-right">
-                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                            <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5 logo-img">
                         </div>
 
                     </div>
@@ -101,7 +100,7 @@
                     <th scope="row">Staff ID </th>
                     <td colspan="2"></td>
                     <td rowspan="5" class="staff-image text-center bg-white ">
-                            <img src="{{ asset('img/bill.jpg') }}" alt="" class="w-100 ">
+                        <img src="{{ asset('img/bill.jpg') }}" alt="" class="w-100 ">
                     </td>
                 </tr>
                 <tr>

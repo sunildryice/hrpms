@@ -3,8 +3,6 @@
 @section('title', 'Maintenance Request Print')
 @section('page_css')
     <style>
-
-
         table {
             border: 1px solid;
         }
@@ -61,7 +59,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -89,30 +88,33 @@
                 <div class="col-lg-12">
                     <table class="table border mb-4">
                         <tbody>
-                        <tr>
-                            <th>Item</th>
-                            <th>Purpose</th>
-                            <th>Activity</th>
-                            <th>Account</th>
-                            <th>Donor</th>
-                            <th>Estimated Cost</th>
-                            <th>Remarks</th>
-                        </tr>
-                        @foreach($maintenanceRequest->maintenanceRequestItems as $maintenanceRequestItem)
                             <tr>
-                                <td>{{ $maintenanceRequestItem->getItemName() }}</td>
-                                <td>{{ $maintenanceRequestItem->problem }}</td>
-                                <td>{{ $maintenanceRequestItem->getActivityCode() }}</td>
-                                <td>{{ $maintenanceRequestItem->getAccountCode() }}</td>
-                                <td>{{ $maintenanceRequestItem->getDonorCode() }}</td>
-                                <td>{{ $maintenanceRequestItem->estimated_cost }}</td>
-                                <td>{{ $maintenanceRequestItem->remarks }}</td>
+                                <th>Item</th>
+                                <th>Purpose</th>
+                                <th>Replacement Good Needed</th>
+                                {{-- <th>Activity</th>
+                                <th>Account</th>
+                                <th>Donor</th>
+                                <th>Estimated Cost</th> --}}
+                                <th>Remarks</th>
                             </tr>
-                        @endforeach
-                        <tr>
-                            <td colspan="5">Total Amount</td>
-                            <td>{{ $maintenanceRequest->estimated_cost }}</td>
-                        </tr>
+                            @foreach ($maintenanceRequest->maintenanceRequestItems as $maintenanceRequestItem)
+                                <tr>
+                                    <td>{{ $maintenanceRequestItem->getItemName() }}</td>
+                                    <td>{{ $maintenanceRequestItem->problem }}</td>
+
+                                    <td>{{ $maintenanceRequestItem->replacement_good_needed == 1 ? 'Yes' : 'No' }}</td>
+                                    {{-- <td>{{ $maintenanceRequestItem->getActivityCode() }}</td>
+                                    <td>{{ $maintenanceRequestItem->getAccountCode() }}</td>
+                                    <td>{{ $maintenanceRequestItem->getDonorCode() }}</td>
+                                    <td>{{ $maintenanceRequestItem->estimated_cost }}</td> --}}
+                                    <td>{{ $maintenanceRequestItem->remarks }}</td>
+                                </tr>
+                            @endforeach
+                            {{-- <tr>
+                                <td colspan="5">Total Amount</td>
+                                <td>{{ $maintenanceRequest->estimated_cost }}</td>
+                            </tr> --}}
                         </tbody>
                     </table>
                     <div class="row mt-4">
@@ -120,7 +122,8 @@
                             <div><strong>Requested By:</strong></div>
                             <div><strong>Name:</strong> {{ $maintenanceRequest->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
-                            <div><strong>Date:</strong> {{ $maintenanceRequest->submittedLog?->created_at?->format('Y-m-d') }}</div>
+                            <div><strong>Date:</strong>
+                                {{ $maintenanceRequest->submittedLog?->created_at?->format('Y-m-d') }}</div>
                         </div>
 
                         <div class="col-lg-4 mb-4">
@@ -131,7 +134,8 @@
                             <div><strong>Title:</strong>
                                 {{ $maintenanceRequest->reviewedLog ? $maintenanceRequest->reviewer->employee->getDesignationName() : '' }}
                             </div>
-                            <div><strong>Date:</strong> {{ $maintenanceRequest->reviewedLog?->created_at?->format('Y-m-d')}} </div>
+                            <div><strong>Date:</strong>
+                                {{ $maintenanceRequest->reviewedLog?->created_at?->format('Y-m-d') }} </div>
                         </div>
                         <div class="col-lg-4 mb-4">
                             <div><strong>Authorized By:</strong></div>
@@ -139,7 +143,8 @@
                             <div><strong>Title:</strong>
                                 {{ $maintenanceRequest->approvedLog ? $maintenanceRequest->approver->employee->getDesignationName() : '' }}
                             </div>
-                            <div><strong>Date:</strong> {{ $maintenanceRequest->approvedLog?->created_at?->format('Y-m-d') }} </div>
+                            <div><strong>Date:</strong>
+                                {{ $maintenanceRequest->approvedLog?->created_at?->format('Y-m-d') }} </div>
                         </div>
                     </div>
                 </div>

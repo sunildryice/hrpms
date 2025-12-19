@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-         
+
     </style>
 @endsection
 @section('page_js')
@@ -41,7 +41,7 @@
                                     :</span><span>{{ $transportationBill->consignee_name . ' ' . $transportationBill->consignee_address }}</span>
                             </li>
                             <li><span class="fw-bold me-2">Date
-                                :</span><span>{{ $transportationBill->getBillDate() }}</span>
+                                    :</span><span>{{ $transportationBill->getBillDate() }}</span>
                             </li>
 
                         </ul>
@@ -51,7 +51,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -65,22 +66,22 @@
         <div class="print-body">
             <table class="table mb-3">
                 <thead>
-                <tr>
-                    <th style="width: 30px;">SN.</th>
-                    <th style="width: 50%;">Description Item</th>
-                    <th>Qty.</th>
-                    <th>Remarks</th>
-                </tr>
+                    <tr>
+                        <th style="width: 30px;">SN.</th>
+                        <th style="width: 50%;">Description Item</th>
+                        <th>Qty.</th>
+                        <th>Remarks</th>
+                    </tr>
                 </thead>
                 <tbody>
-                @foreach ($transportationBill->transportationBillDetails as $detail)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $detail->item_description }}</td>
-                        <td>{{ $detail->quantity }}</td>
-                        <td>{{ $detail->remarks }}</td>
-                    </tr>
-                @endforeach
+                    @foreach ($transportationBill->transportationBillDetails as $detail)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $detail->item_description }}</td>
+                            <td>{{ $detail->quantity }}</td>
+                            <td>{{ $detail->remarks }}</td>
+                        </tr>
+                    @endforeach
                 </tbody>
 
             </table>
@@ -89,8 +90,7 @@
                 <ul class="list-unstyled w-100">
                     <li class="d-flex align-content-between flex-grow-1 justify-content-between">
                         <span><strong>Signature of transporter as confirmation of goods received in good condition before
-                                transportation:</strong> </span> <span class="d-flex"><strong
-                                class="me-2">Name:</strong>
+                                transportation:</strong> </span> <span class="d-flex"><strong class="me-2">Name:</strong>
                             <span style="width: 206px;">&nbsp;</span> </span>
                     </li>
                     <li class="d-flex align-content-between flex-grow-1 justify-content-between">
@@ -106,7 +106,8 @@
                                 style="width: 206px;">&nbsp;</span> </span>
                     </li>
                     <li class="d-flex align-content-between flex-grow-1 justify-content-between pt-5">
-                        <span><strong>Consignee Name & Signatures as receipt of all listed items in good condition :</strong> </span>
+                        <span><strong>Consignee Name & Signatures as receipt of all listed items in good condition
+                                :</strong> </span>
                         <span class="d-flex"><strong class="me-2">Name:</strong>
                             <span style="width: 206px;">{!! $transportationBill->receivedLog ? $transportationBill->receivedLog->getCreatedBy() : '' !!}</span> </span>
                     </li>
@@ -118,13 +119,13 @@
                             <span style="width: 206px;" class="d-flex">{!! $transportationBill->receivedLog ? $transportationBill->receivedLog->getCreatedAt() : '' !!}</span>
                         </span>
                     </li>
-{{--                    <li class="d-flex align-content-between flex-grow-1 justify-content-between">--}}
-{{--                        <span>&nbsp;</span>--}}
-{{--                        <span class="d-flex">--}}
-{{--                            <strong class="me-2">Signature:</strong>--}}
-{{--                            <span style="width: 206px;">&nbsp;</span>--}}
-{{--                        </span>--}}
-{{--                    </li>--}}
+                    {{--                    <li class="d-flex align-content-between flex-grow-1 justify-content-between"> --}}
+                    {{--                        <span>&nbsp;</span> --}}
+                    {{--                        <span class="d-flex"> --}}
+                    {{--                            <strong class="me-2">Signature:</strong> --}}
+                    {{--                            <span style="width: 206px;">&nbsp;</span> --}}
+                    {{--                        </span> --}}
+                    {{--                    </li> --}}
                 </ul>
                 <p><strong>Remarks:</strong> {{ $transportationBill->remarks }} </p>
                 <p><strong>Special Instruction to Transporter:</strong> {{ $transportationBill->instruction }} </p>

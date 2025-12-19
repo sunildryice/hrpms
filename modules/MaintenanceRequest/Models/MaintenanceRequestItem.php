@@ -31,13 +31,14 @@ class MaintenanceRequestItem extends Model
      */
     protected $fillable = [
         'maintenance_id',
-        'activity_code_id',
-        'account_code_id',
-        'donor_code_id',
+        // 'activity_code_id',
+        // 'account_code_id',
+        // 'donor_code_id',
         'item_id',
         'asset_id',
         'problem',
-        'estimated_cost',
+        'replacement_good_needed',
+        // 'estimated_cost',
         'remarks',
         'created_by',
         'updated_by',

@@ -234,7 +234,7 @@ a {
   text-decoration: underline;
 }
 a:hover {
-  color: #0a58ca;
+  color: rgb(10.4, 88, 202.4);
 }
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover {
@@ -476,4 +476,4 @@ progress {
 
 [hidden] {
   display: none !important;
-}
+}/*# sourceMappingURL=bootstrap-reboot.css.map */

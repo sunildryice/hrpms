@@ -17,8 +17,8 @@
             min-width: 300px;
             max-width: 350px;
             white-space: normal;
-            word-wrap:break-word;
-            overflow-wrap:break-word;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         tbody,
@@ -71,7 +71,8 @@
                         <div class="d-flex flex-column justify-content-end">
                             <div class="mb-4 d-flex flex-column justify-content-end brand-logo flex-grow-1">
                                 <div class="float-right d-flex flex-column justify-content-end">
-                                    <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                    <img src="{{ asset('img/logonp.png') }}" alt=""
+                                        class="align-self-end pe-5 logo-img">
                                 </div>
 
                             </div>
@@ -179,10 +180,7 @@
                             $totalQuestionedCost = number_format($totalExpense - $totalReimbursed, 2);
                             $advancePayable = number_format($totalRelease - $totalExpense, 2);
                             $fundTransferPercentage = round(($totalRelease / $agreement->getApprovedBudget()) * 100, 2);
-                            $fundUtilizationPercentage = round(
-                                ($totalReimbursed / $totalRelease) * 100,
-                                2,
-                            );
+                            $fundUtilizationPercentage = round(($totalReimbursed / $totalRelease) * 100, 2);
                             $totalRelease = number_format($totalRelease, 2);
                             $totalExpense = number_format($totalExpense, 2);
                             $totalReimbursed = number_format($totalReimbursed, 2);

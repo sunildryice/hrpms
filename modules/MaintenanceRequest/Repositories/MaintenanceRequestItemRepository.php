@@ -12,8 +12,7 @@ class MaintenanceRequestItemRepository extends Repository
     public function __construct(
         MaintenanceRequestRepository $maintenanceRequests,
         MaintenanceRequestItem       $maintenanceRequestItem
-    )
-    {
+    ) {
         $this->maintenanceRequests = $maintenanceRequests;
         $this->model = $maintenanceRequestItem;
     }
@@ -28,6 +27,7 @@ class MaintenanceRequestItemRepository extends Repository
             return $maintenanceRequestItem;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
+            dd($e->getMessage());
             return false;
         }
     }
@@ -53,11 +53,12 @@ class MaintenanceRequestItemRepository extends Repository
         try {
             $maintenanceRequestItem = $this->model->findOrFail($id);
             $maintenanceRequestItem->fill($inputs)->save();
-//            $maintenanceRequestItem = $this->model->findOrFail($id);
+            //            $maintenanceRequestItem = $this->model->findOrFail($id);
             $this->maintenanceRequests->updateTotalAmount($maintenanceRequestItem->maintenance_id);
             DB::commit();
             return $maintenanceRequestItem;
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e->getMessage());
             DB::rollback();
             return false;
         }

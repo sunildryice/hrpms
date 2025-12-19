@@ -71,7 +71,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo flex-grow-1">
                             <div class="float-right d-flex flex-column justify-content-end">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -200,7 +201,8 @@
 
                 @php
                     $fiscalYear = \Modules\Master\Models\FiscalYear::select(['id', 'title'])
-                        ->where('title', $staffClearance->handoverNote->resignation_date?->format('Y'))->first();
+                        ->where('title', $staffClearance->handoverNote->resignation_date?->format('Y'))
+                        ->first();
                     $leaves = app(\Modules\Employee\Repositories\LeaveRepository::class)
                         ->getEmployeeLeaves($staffClearance->employeeExitPayable->employee_id, $fiscalYear?->id)
                         ->where('leaveType.encashment', 1);

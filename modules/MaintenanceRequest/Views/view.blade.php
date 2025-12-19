@@ -3,6 +3,16 @@
 
 @section('title', 'Maintenance Request')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -17,27 +27,32 @@
                 bInfo: false,
                 columns: [{
                         data: 'item_name',
-                        name: 'item_name'
+                        name: 'item_name',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'problem',
                         name: 'problem'
                     },
+                    // {
+                    //     data: 'activity',
+                    //     name: 'activity'
+                    // },
+                    // {
+                    //     data: 'account',
+                    //     name: 'account'
+                    // },
+                    // {
+                    //     data: 'donor',
+                    //     name: 'donor'
+                    // },
+                    // {
+                    //     data: 'estimated_cost',
+                    //     name: 'estimated_cost'
+                    // },
                     {
-                        data: 'activity',
-                        name: 'activity'
-                    },
-                    {
-                        data: 'account',
-                        name: 'account'
-                    },
-                    {
-                        data: 'donor',
-                        name: 'donor'
-                    },
-                    {
-                        data: 'estimated_cost',
-                        name: 'estimated_cost'
+                        data: 'replacement_good_needed',
+                        name: 'replacement_good_needed'
                     },
                     {
                         data: 'remarks',
@@ -91,10 +106,11 @@
                                     <tr>
                                         <th scope="col">{{ __('label.item-name') }}</th>
                                         <th scope="col">{{ __('label.problem') }}</th>
-                                        <th scope="col">{{ __('label.activity') }}</th>
+                                        {{-- <th scope="col">{{ __('label.activity') }}</th>
                                         <th scope="col">{{ __('label.account') }}</th>
                                         <th scope="col">{{ __('label.donor') }}</th>
-                                        <th scope="col">{{ __('label.estimate') }}</th>
+                                        <th scope="col">{{ __('label.estimate') }}</th> --}}
+                                        <th scope="col">{{ __('label.replacement-good-needed') }}</th>
                                         <th scope="col">{{ __('label.remarks') }}</th>
                                     </tr>
                                 </thead>
@@ -123,7 +139,8 @@
                                                 <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
                                                 <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                             </div>
-                                            <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                            <small
+                                                title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                         </div>
                                         <p class="text-justify comment-text mb-0 mt-1">
                                             {{ $log->log_remarks }}

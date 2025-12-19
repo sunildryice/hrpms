@@ -25,13 +25,14 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'activity_code_id'=>'required',
-            'account_code_id'=>'required',
-            'donor_code_id'=>'nullable',
-            'item_id'=>'required',
-            'problem'=>'required',
-            'estimated_cost'=>'required|numeric|max:99999999|min:0',
-            'remarks'=>'required',
+            // 'activity_code_id'=>'required',
+            // 'account_code_id'=>'required',
+            // 'donor_code_id'=>'nullable',
+            'item_id' => 'required',
+            'problem' => 'required',
+            // 'estimated_cost' => 'required|numeric|max:99999999|min:0',
+            'replacement_good_needed' => 'required|boolean',
+            'remarks' => 'required',
         ];
     }
 }

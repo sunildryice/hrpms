@@ -28,10 +28,10 @@
                     data: 'requester',
                     name: 'requester'
                 },
-                {
-                    data: 'estimated_cost',
-                    name: 'estimated_cost'
-                },
+                // {
+                //     data: 'estimated_cost',
+                //     name: 'estimated_cost'
+                // },
                 {
                     data: 'remarks',
                     name: 'remarks'
@@ -205,7 +205,7 @@
                                 <th style="width:45px;"></th>
                                 <th>{{ __('label.maintenance-number') }}</th>
                                 <th>{{ __('label.requester') }}</th>
-                                <th>{{ __('label.estimate') }}</th>
+                                {{-- <th>{{ __('label.estimate') }}</th> --}}
                                 <th>{{ __('label.remarks') }}</th>
                                 <th style="width: 100px;">{{ __('label.status') }}</th>
                                 <th class="sticky-col">{{ __('label.action') }}</th>

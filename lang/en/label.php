@@ -348,6 +348,7 @@ return [
     'review-remarks' => 'If NO, what further action is required?',
     'review-date' => 'Review Date',
     'reviewer' => 'Reviewer',
+    'replacement-good-needed' => 'Replacement Good Needed',
     'role' => 'Role',
     'roles' => 'Roles',
     'role-name' => 'Role Name',

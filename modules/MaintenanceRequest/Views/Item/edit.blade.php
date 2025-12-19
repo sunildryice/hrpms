@@ -2,12 +2,13 @@
     <div class="modal-title fw-bold text-uppercase" id="openModalLabel">Edit Maintenance Item</div>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form
-    action="{!! route('maintenance.requests.items.update', [$maintenanceRequestItem->maintenance_id, $maintenanceRequestItem->id]) !!}"
-    method="post"
-    enctype="multipart/form-data" id="maintenanceRequestItemForm" autocomplete="off">
+<form action="{!! route('maintenance.requests.items.update', [
+    $maintenanceRequestItem->maintenance_id,
+    $maintenanceRequestItem->id,
+]) !!}" method="post" enctype="multipart/form-data" id="maintenanceRequestItemForm"
+    autocomplete="off">
     <div class="modal-body">
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="atvcde" class="form-label required-label">{{ __('label.activity-code') }}
@@ -16,17 +17,17 @@
             </div>
             <div class="col-lg-9">
                 <select name="activity_code_id"
-                        class="form-select select2 @if($errors->has('activity_code_id')) is-invalid @endif"
+                        class="form-select select2 @if ($errors->has('activity_code_id')) is-invalid @endif"
                         data-width="100%">
                     <option value="">Select an Activity Code</option>
-                    @foreach($activityCodes as $activityCode)
+                    @foreach ($activityCodes as $activityCode)
                         <option value="{{ $activityCode->id }}"
-                                @if($activityCode->id == $maintenanceRequestItem->activity_code_id)selected @endif>
+                                @if ($activityCode->id == $maintenanceRequestItem->activity_code_id)selected @endif>
                             {{ $activityCode->getActivityCodeWithDescription() }}
                         </option>
                     @endforeach
                 </select>
-                @if($errors->has('activity_code_id'))
+                @if ($errors->has('activity_code_id'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="activity_code_id">
                             {!! $errors->first('activity_code_id') !!}
@@ -44,17 +45,17 @@
             </div>
             <div class="col-lg-9">
                 <select name="account_code_id"
-                        class="form-select select2 @if($errors->has('account_code_id')) is-invalid @endif"
+                        class="form-select select2 @if ($errors->has('account_code_id')) is-invalid @endif"
                         data-width="100%">
                     <option value="">Select an Account Code</option>
-                    @foreach($accountCodes as $accountCode)
+                    @foreach ($accountCodes as $accountCode)
                         <option value="{{ $accountCode->id }}"
-                                @if($accountCode->id == $maintenanceRequestItem->account_code_id)selected @endif>
+                                @if ($accountCode->id == $maintenanceRequestItem->account_code_id)selected @endif>
                             {{ $accountCode->getAccountCodeWithDescription() }}
                         </option>
                     @endforeach
                 </select>
-                @if($errors->has('account_code_id'))
+                @if ($errors->has('account_code_id'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="account_code_id">
                             {!! $errors->first('account_code_id') !!}
@@ -72,17 +73,17 @@
             </div>
             <div class="col-lg-9">
                 <select name="donor_code_id"
-                        class="form-select select2 @if($errors->has('donor_code_id')) is-invalid @endif"
+                        class="form-select select2 @if ($errors->has('donor_code_id')) is-invalid @endif"
                         data-width="100%">
                     <option value="">Select a Donor Code</option>
-                    @foreach($donorCodes as $donorCode)
+                    @foreach ($donorCodes as $donorCode)
                         <option value="{{ $donorCode->id }}"
-                                @if($donorCode->id == $maintenanceRequestItem->donor_code_id)selected @endif>
+                                @if ($donorCode->id == $maintenanceRequestItem->donor_code_id)selected @endif>
                             {{ $donorCode->getDonorCodeWithDescription() }}
                         </option>
                     @endforeach
                 </select>
-                @if($errors->has('donor_code_id'))
+                @if ($errors->has('donor_code_id'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="donor_code_id">
                             {!! $errors->first('donor_code_id') !!}
@@ -90,7 +91,7 @@
                     </div>
                 @endif
             </div>
-        </div>
+        </div> --}}
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -99,17 +100,16 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="item_id" class="form-select select2 @if($errors->has('item_id')) is-invalid @endif"
-                        data-width="100%">
+                <select name="item_id" class="form-select select2 @if ($errors->has('item_id')) is-invalid @endif"
+                    data-width="100%">
                     <option value="">Select a Item Name</option>
-                    @foreach($items as $item)
-                        <option value="{{ $item->id }}"
-                                @if($item->id == $maintenanceRequestItem->item_id)selected @endif>
+                    @foreach ($items as $item)
+                        <option value="{{ $item->id }}" @if ($item->id == $maintenanceRequestItem->item_id) selected @endif>
                             {{ $item->title }}
                         </option>
                     @endforeach
                 </select>
-                @if($errors->has('item_id'))
+                @if ($errors->has('item_id'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="item_id">
                             {!! $errors->first('item_id') !!}
@@ -127,8 +127,12 @@
             </div>
             <div class="col-lg-9">
                 <textarea name="problem" id="prblmdsc" cols="30" rows="5"
-                          class="form-control @if($errors->has('problem')) is-invalid @endif">@if($maintenanceRequestItem->problem){{$maintenanceRequestItem->problem}}@endif</textarea>
-                @if($errors->has('problem'))
+                    class="form-control @if ($errors->has('problem')) is-invalid @endif">
+@if ($maintenanceRequestItem->problem)
+{{ $maintenanceRequestItem->problem }}
+@endif
+</textarea>
+                @if ($errors->has('problem'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="problem">
                             {!! $errors->first('problem') !!}
@@ -137,23 +141,54 @@
                 @endif
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="estcst" class="form-label required-label">{{ __('label.estimation-cost-for') }}</label>
+                    <label for="estcst"
+                        class="form-label required-label">{{ __('label.estimation-cost-for') }}</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="number" class="form-control @if($errors->has('estimated_cost')) is-invalid @endif"
-                       id="estcst" name="estimated_cost"
-                       value="@if($maintenanceRequestItem->estimated_cost){{$maintenanceRequestItem->estimated_cost}}@endif">
-                @if($errors->has('estimated_cost'))
+                <input type="number" class="form-control @if ($errors->has('estimated_cost')) is-invalid @endif"
+                    id="estcst" name="estimated_cost"
+                    value="@if ($maintenanceRequestItem->estimated_cost) {{ $maintenanceRequestItem->estimated_cost }} @endif">
+                @if ($errors->has('estimated_cost'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="estimated_cost">
                             {!! $errors->first('estimated_cost') !!}
                         </div>
                     </div>
                 @endif
+            </div>
+        </div> --}}
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label">
+                        Replacement Goods Needed for Maintenance
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="col-lg-9">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="replacement_good_needed"
+                        id="replacement_good_needed_yes" value="1"
+                        @if ($maintenanceRequestItem->replacement_good_needed) checked @endif>
+                    <label class="form-check-label" for="replacement_good_needed_yes">
+                        Yes
+                    </label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="replacement_good_needed"
+                        id="replacement_good_needed_no" value="0" @if (!$maintenanceRequestItem->replacement_good_needed) checked @endif>
+                    <label class="form-check-label" for="replacement_good_needed_no">
+                        No
+                    </label>
+                </div>
             </div>
         </div>
         <div class="row mb-2">
@@ -164,7 +199,11 @@
             </div>
             <div class="col-lg-9">
                 <textarea name="remarks" id="rmsks" cols="30" rows="5"
-                          class="form-control @if($errors->has('remarks')) is-invalid @endif">@if($maintenanceRequestItem->remarks){{$maintenanceRequestItem->remarks}}@endif</textarea>
+                    class="form-control @if ($errors->has('remarks')) is-invalid @endif">
+@if ($maintenanceRequestItem->remarks)
+{{ $maintenanceRequestItem->remarks }}
+@endif
+</textarea>
             </div>
         </div>
     </div>

@@ -102,7 +102,7 @@
                 <table class="table table-borderedless" id="employeeTable">
                     <thead class="bg-light">
                     <tr>
-                        <th class="" style="width:120px;">Consultant Code</th>
+                        <th class="" style="width:120px;">{{ __('label.consultant-code') }}</th>
                         <th>{{ __('label.name') }}</th>
                         <th>{{ __('label.email-address') }}</th>
                         <th>{{ __('label.position') }}</th>

@@ -240,7 +240,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label class="form-label required-label">Consultant Code</label>
+                                        <label class="form-label required-label">{{ __('label.consultant-code') }}</label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">

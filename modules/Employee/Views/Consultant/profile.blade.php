@@ -369,8 +369,8 @@
                                 <table class="table table-bordered" id="generalInformationTable">
                                     <tbody>
                                         <tr>
-                                            <th scope="row" width="10%">Staff ID</th>
-                                            <td colspan="3">{{ $employee->employee_code }}</td>
+                                            <th scope="row" width="10%">{{ __('label.consultant-code') }}</th>
+                                            <td colspan="3">{{ $employee->requestSTEId }}</td>
                                         </tr>
                                         <tr>
                                             <th scope="row">Full Name:</th>

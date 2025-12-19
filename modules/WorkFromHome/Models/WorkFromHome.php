@@ -126,4 +126,9 @@ class WorkFromHome extends Model
     {
         return $this->end_date ? $this->end_date->diffInDays($this->start_date) + 1 : 1;
     }
+
+    public function getWorkFromHomeDuration()
+    {
+        return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
+    }
 }

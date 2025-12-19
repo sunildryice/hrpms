@@ -106,6 +106,13 @@ class Employee extends Model
             get: fn() => 'HI-EMP-' . sprintf('%04d', $this->employee_code)
         );
     }
+    
+    public function requestSTEId(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => 'STE-' . sprintf('%04d', $this->employee_code)
+        );
+    }
 
     public function address()
     {

@@ -68,7 +68,9 @@ class ConsultantController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('official_email_address', function ($employee) {
+                ->addColumn('employee_code', function ($employee) {
+                    return $employee->requestSTEId;
+                })->addColumn('official_email_address', function ($employee) {
                     return $employee->user?->email_address;
                 })->addColumn('position', function ($employee) {
                     return $employee->getDesignationName();

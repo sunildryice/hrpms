@@ -44,7 +44,7 @@ class UpdateRequest extends FormRequest
             'employee_type_id'=>'nullable',
             'full_name'=>'required|string',
             'official_email_address'=>[
-                'required','email',
+                'nullable','email',
                 Rule::unique('employees')->ignore($this->employee),
             ],
             'personal_email_address'=>'nullable|email|different:official_email_address',
@@ -62,6 +62,13 @@ class UpdateRequest extends FormRequest
             'probation_complete_date'=>'nullable|date',
             'religion_id'=>'nullable',
             'caste_id'=>'nullable',
+            
+            'nid_number' => 'nullable|string|max:50',
+            'passport_number' => 'nullable|string|max:20',
+            'passport_attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
+            'vehicle_license_number' => 'nullable|string|max:50',
+            'vehicle_license_category' => 'nullable|array',
+            'vehicle_license_category.*' => 'string|in:A,B,C,D,E,F,G,H,K',
         ];
     }
 

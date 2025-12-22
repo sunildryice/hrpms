@@ -2,28 +2,29 @@
 
 namespace Modules\Employee\Controllers;
 
-use App\Http\Controllers\Controller;
 use DataTables;
 use Illuminate\Http\Request;
-use Modules\Employee\Repositories\EducationRepository;
-use Modules\Employee\Repositories\EmployeeRepository;
+use App\Http\Controllers\Controller;
+use Modules\Master\Models\VehicleLicenseCategory;
+use Modules\Master\Repositories\GenderRepository;
+use Modules\Master\Repositories\OfficeRepository;
 use Modules\Employee\Repositories\LeaveRepository;
-use Modules\Employee\Requests\Consultant\StoreRequest;
-use Modules\Employee\Requests\Consultant\UpdateRequest;
+use Modules\Privilege\Repositories\RoleRepository;
+use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\ProvinceRepository;
+use Modules\Master\Repositories\LeaveTypeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\BloodGroupRepository;
 use Modules\Master\Repositories\DepartmentRepository;
+use Modules\Master\Repositories\LocalLevelRepository;
+use Modules\Employee\Repositories\EducationRepository;
+use Modules\Employee\Requests\Consultant\StoreRequest;
 use Modules\Master\Repositories\DesignationRepository;
-use Modules\Master\Repositories\DistrictRepository;
+use Modules\Employee\Requests\Consultant\UpdateRequest;
+use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
-use Modules\Master\Repositories\GenderRepository;
-use Modules\Master\Repositories\LeaveTypeRepository;
-use Modules\Master\Repositories\LocalLevelRepository;
-use Modules\Master\Repositories\MaritalStatusRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\ProvinceRepository;
 use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
-use Modules\Privilege\Repositories\RoleRepository;
 
 class ConsultantController extends Controller
 {
@@ -68,7 +69,9 @@ class ConsultantController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('official_email_address', function ($employee) {
+                ->addColumn('employee_code', function ($employee) {
+                    return $employee->requestSTEId;
+                })->addColumn('official_email_address', function ($employee) {
                     return $employee->user?->email_address;
                 })->addColumn('position', function ($employee) {
                     return $employee->getDesignationName();
@@ -105,7 +108,8 @@ class ConsultantController extends Controller
     {
         return view('Employee::Consultant.create')
             ->withGenders($this->genders->get())
-            ->withMaritalStatus($this->maritalStatus->get());
+            ->withMaritalStatus($this->maritalStatus->get())
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     public function store(StoreRequest $request)
@@ -126,6 +130,11 @@ class ConsultantController extends Controller
                 $filename = $request->file('pan_attachment')
                     ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
                 $inputs['pan_attachment'] = $filename;
+            }
+            if ($request->file('passport_attachment')) {
+                $filename = $request->file('passport_attachment')
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
+                $inputs['passport_attachment'] = $filename;
             }
             $this->employees->update($employee->id, $inputs);
 
@@ -180,7 +189,8 @@ class ConsultantController extends Controller
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)
-            ->withTenure($employee->latestTenure);
+            ->withTenure($employee->latestTenure)
+            ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 
     /**
@@ -212,6 +222,12 @@ class ConsultantController extends Controller
             $filename = $request->file('pan_attachment')
                 ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_pan.' . $request->file('pan_attachment')->getClientOriginalExtension());
             $inputs['pan_attachment'] = $filename;
+        }
+
+        if ($request->file('passport_attachment')) {
+            $filename = $request->file('passport_attachment')
+                ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_passport.' . $request->file('passport_attachment')->getClientOriginalExtension());
+            $inputs['passport_attachment'] = $filename;
         }
         $employee = $this->employees->update($id, $inputs);
         if ($employee) {

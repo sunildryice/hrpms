@@ -14,7 +14,7 @@
                     employee_code: {
                         validators: {
                             notEmpty: {
-                                message: 'Staff code is required',
+                                message: 'Consultant/STE code is required',
                             },
                             greaterThan: {
                                 message: 'The value must be greater than or equal to 1',
@@ -39,9 +39,9 @@
                     },
                     official_email_address: {
                         validators: {
-                            notEmpty: {
-                                message: 'The official email address is required',
-                            },
+                            // notEmpty: {
+                            //     message: 'The official email address is required',
+                            // },
                             emailAddress: {
                                 message: 'The input must be a email address',
                             },
@@ -81,18 +81,24 @@
                     },
                     citizenship_number: {
                         validators: {
-                            callback: {
-                                message: 'The citizenship number is required.',
-                                callback: function(input) {
-                                    const value = citizenshipAttachmentField.val();
-                                    return value === '' || form.querySelector(
-                                        '[name="citizenship_number"]').value !== '';
-                                },
+                            notEmpty: {
+                                message: 'The citizenship number is required',
                             },
+                            // callback: {
+                            //     message: 'The citizenship number is required.',
+                            //     callback: function(input) {
+                            //         const value = citizenshipAttachmentField.val();
+                            //         return value === '' || form.querySelector(
+                            //             '[name="citizenship_number"]').value !== '';
+                            //     },
+                            // },
                         },
                     },
                     citizenship_attachment: {
                         validators: {
+                            notEmpty: {
+                                message: 'The citizenship attachment is required.'
+                            },
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',
@@ -127,6 +133,37 @@
                                 message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
+                    },
+                     nid_number: {
+                        validators: {
+                            stringLength: {
+                                max: 50
+                            }
+                        }
+                    },
+                    passport_number: {
+                        validators: {
+                            stringLength: {
+                                max: 20
+                            }
+                        }
+                    },
+                    vehicle_license_number: {
+                        validators: {
+                            stringLength: {
+                                max: 50
+                            }
+                        }
+                    },
+                    passport_attachment: {
+                        validators: {
+                            file: {
+                                extension: 'jpeg,jpg,png,pdf',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: 2097152,
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                            }
+                        }
                     },
                 },
                 plugins: {
@@ -240,7 +277,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label class="form-label required-label">Consultant Code</label>
+                                        <label class="form-label required-label">{{ __('label.consultant-code') }}</label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
@@ -271,24 +308,24 @@
                                     @endif
                                 </div>
                             </div>
-                            {{-- <div class="mb-2 row"> --}}
-                            {{--     <div class="col-lg-3"> --}}
-                            {{--         <div class="d-flex align-items-start h-100"> --}}
-                            {{--             <label class="form-label required-label">Official Email  </label> --}}
-                            {{--         </div> --}}
-                            {{--     </div> --}}
-                            {{--     <div class="col-lg-9"> --}}
-                            {{--         <input type="email" --}}
-                            {{--             class="form-control @if ($errors->has('official_email_address')) is-invalid @endif" --}}
-                            {{--             name="official_email_address" value="{{ old('official_email_address') }}" --}}
-                            {{--             placeholder="example@example.com"> --}}
-                            {{--         @if ($errors->has('official_email_address')) --}}
-                            {{--             <div class="fv-plugins-message-container invalid-feedback"> --}}
-                            {{--                 <div data-field="official_email_address">{!! $errors->first('official_email_address') !!}</div> --}}
-                            {{--             </div> --}}
-                            {{--         @endif --}}
-                            {{--     </div> --}}
-                            {{-- </div> --}}
+                            <div class="mb-2 row">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label class="form-label">Official Email  </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <input type="email"
+                                        class="form-control @if ($errors->has('official_email_address')) is-invalid @endif"
+                                        name="official_email_address" value="{{ old('official_email_address') }}"
+                                        placeholder="example@example.com">
+                                    @if ($errors->has('official_email_address'))
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <div data-field="official_email_address">{!! $errors->first('official_email_address') !!}</div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
@@ -316,7 +353,7 @@
                                 </div>
                                 <div class="col-lg-9">
                                     <div class="row">
-                                        <div class="col-lg-6">
+                                        <div class="col-lg-12">
                                             <div class="input-group">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text required-label"
@@ -336,7 +373,7 @@
                                                 @endif
                                             </div>
                                         </div>
-                                        <div class="col-lg-6">
+                                        {{-- <div class="col-lg-6">
                                             <div class="input-group">
                                                 <div class="input-group-append">
                                                     <span class="input-group-text" id="basic-addon2">Telephone</span>
@@ -346,7 +383,7 @@
                                                     aria-label="Recipient's username" aria-describedby="basic-addon2" />
 
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                     </div>
 
@@ -361,10 +398,9 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
-                                    <input type="text" class="form-control" readonly name="date_of_birth"
-                                        value="{{ old('date_of_birth') }}" />
-                                    <input type="hidden" value="{{ date('Y-m-d') }}" name="today"
-                                        class="form-control" />
+                                    <input type="text" class="form-control" name="date_of_birth"
+                                        value="{{ old('date_of_birth') }}" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
+                                    <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
                                 </div>
                             </div>
                             <div class="mb-2 row">
@@ -402,6 +438,13 @@
 
                                 </div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col-lg-3"><label class="form-label">NID Number</label></div>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" name="nid_number"
+                                        value="{{ old('nid_number') }}" placeholder="National ID Number (optional)" />
+                                </div>
+                            </div>
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
@@ -431,6 +474,47 @@
                                                     </div>
                                                 </div>
                                             @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-lg-3"><label class="form-label">Passport No.</label></div>
+                                <div class="col-lg-9">
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="passport_number"
+                                                value="{{ old('passport_number') }}"
+                                                placeholder="e.g. 12345678 (optional)" />
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <input type="file" class="form-control" name="passport_attachment"
+                                                accept=".jpg,.jpeg,.png,.pdf" />
+                                            <small class="text-muted">Scan/PDF of passport (optional)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-lg-3"><label class="form-label">Driving License No.</label></div>
+                                <div class="col-lg-9">
+                                    <div class="row g-3">
+                                        <div class="col-lg-4">
+                                            <input type="text" class="form-control" name="vehicle_license_number"
+                                                value="{{ old('vehicle_license_number') }}"
+                                                placeholder="License Number (optional)" />
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <select name="vehicle_license_category[]" class="select2 form-control"
+                                                multiple="multiple" data-placeholder="Select categories (optional)"
+                                                style="width: 100%">
+                                                @foreach ($vehicleLicenseCategories as $cat)
+                                                    <option value="{{ $cat->code }}"
+                                                        {{ is_array(old('vehicle_license_category')) && in_array($cat->code, old('vehicle_license_category')) ? 'selected' : '' }}>
+                                                        {{ $cat->code }} — {{ $cat->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

@@ -2,22 +2,23 @@
 
 namespace Modules\VehicleRequest\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
 use App\Traits\ModelEventLogger;
-use Modules\Employee\Models\Employee;
-use Modules\Master\Models\AccountCode;
-use Modules\Master\Models\ActivityCode;
+use Modules\Master\Models\Office;
+
+use Modules\Master\Models\Status;
+use Modules\Master\Models\Vehicle;
+use Modules\Privilege\Models\User;
 use Modules\Master\Models\District;
 use Modules\Master\Models\DonorCode;
+use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
-use Modules\Master\Models\Vehicle;
-use Modules\Master\Models\VehicleRequestType;
+use Modules\Master\Models\AccountCode;
+use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\VehicleType;
-use Modules\Master\Models\Office;
-use Modules\Master\Models\Status;
-use Modules\Privilege\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\ActivityCode;
+use Modules\Master\Models\VehicleRequestType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class VehicleRequest extends Model
 {
@@ -37,6 +38,7 @@ class VehicleRequest extends Model
      */
     protected $fillable = [
         'vehicle_request_type_id',
+        'project_code_id',
         'fiscal_year_id',
         'office_id',
         'prefix',
@@ -103,7 +105,18 @@ class VehicleRequest extends Model
     {
         return $this->belongsTo(ActivityCode::class, 'activity_code_id')->withDefault();
     }
-
+    /**
+     * Get the projectCode of the vehicle request.
+     */
+    public function projectCode()
+    {
+        return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
+    }
+    
+    public function getProjectCode()
+    {
+        return $this->projectCode->getProjectCodeWithDescription();
+    }
     /**
      * Get the approver of the vehicle request.
      */
@@ -310,7 +323,7 @@ class VehicleRequest extends Model
     {
         $vehicleRequestNumber = $this->prefix . '-' . $this->vehicle_request_number;
         $vehicleRequestNumber .= $this->modification_number ? '-' . $this->modification_number : '';
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2): '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
         return $vehicleRequestNumber . $fiscalYear;
     }
 
@@ -321,14 +334,14 @@ class VehicleRequest extends Model
 
     public function getVehicleTypes()
     {
-        return  implode(', ',array_map(function($id){
+        return implode(', ', array_map(function ($id) {
             if ($id == -1) {
                 return $this->other_remarks ?? 'Other';
             } else {
                 $vehicleType = VehicleType::select('title')->find($id);
-                return  $vehicleType ? $vehicleType->getVehicleType() : '';
+                return $vehicleType ? $vehicleType->getVehicleType() : '';
             }
-        },json_decode($this->vehicle_type_ids)));
+        }, json_decode($this->vehicle_type_ids)));
     }
 
     public function getRequestSubmissionDate()

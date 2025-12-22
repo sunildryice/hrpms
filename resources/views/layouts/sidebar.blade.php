@@ -21,7 +21,7 @@
                         <a class="nav-link" href="{{ route('consultant.index') }}" role="button" id="consultant-menu"
                             data-bs-toggle="tooltip" data-bs-placement="right" title="Consultants">
                             <i class="bi bi-person-lines-fill nav-icon"></i>
-                            <span class="nav-link-title">Consultants</span>
+                            <span class="nav-link-title">{{ __('label.consultant') }}</span>
                         </a>
                     </div>
 
@@ -502,10 +502,10 @@
                                         id="approve-travel-report-menu">Approve
                                         Travel Reports ({{ $approveTravelReportCount }})</a>
                                 @endif
-                                @if ($authUser->can('travel-request-advance'))
+                                {{-- @if ($authUser->can('travel-request-advance'))
                                     <a class="nav-link" href="{{ route('approve.travel.requests.advance.index') }}"
                                         id="approve-travel-advance-menu">Approve Travel Advance </a>
-                                @endif
+                                @endif --}}
                                 @if ($authUser->can('finance-review-travel-claim'))
                                     <a class="nav-link" href="{{ route('review.travel.claims.index') }}"
                                         id="review-travel-claims-menu">Review

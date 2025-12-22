@@ -6,6 +6,7 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
+use Modules\WorkFromHome\Models\WorkFromHome;
 
 class ProjectCode extends Model
 {
@@ -66,7 +67,7 @@ class ProjectCode extends Model
 
     public function getProjectCodeWithDescription()
     {
-        return $this->title.' : '.$this->description;
+        return $this->title . ' : ' . $this->description;
     }
 
     public function getUpdatedAt()
@@ -77,5 +78,12 @@ class ProjectCode extends Model
     public function getUpdatedBy()
     {
         return $this->updatedBy->getFullName();
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(WorkFromHome::class, 'project_work_from_home')
+            ->withPivot('deliverables')
+            ->withTimestamps();
     }
 }

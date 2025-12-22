@@ -3,14 +3,41 @@
 @section('title', 'Update Off Day Work Request')
 
 @section('page_js')
+    <style>
+        #deliverables-table td:first-child,
+        #deliverables-table td:nth-child(2) {
+            border-bottom: 1px solid #b2a6a6 !important;
+        }
+
+        #deliverables-table th,
+        #deliverables-table td {
+            border-color: #dee2e6;
+        }
+
+        .task-item+.task-item {
+            margin-top: .35rem;
+        }
+
+        .task-item .btn {
+            padding-inline: .35rem;
+        }
+    </style>
+
     <script type="text/javascript">
+        const existingProjects = @json($selectedProjectIds ?? []);
+        const existingDeliveries = @json($deliverables ?? []);
+
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#off-day-work-requests-index').addClass('active');
 
-            $('#project_id, #send_to').addClass('select2').select2({
+
+            $('#project_ids, #send_to').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true
             });
+
+            const form = document.getElementById('offDayWorkEditForm');
+            const $tbody = $('#deliverables-table tbody');
 
             let enabledDates = [];
             let holidayTitles = {};
@@ -43,90 +70,160 @@
                 return enabledDates.includes(formatted);
             }
 
-            // initial month load
             (function initFirstMonth() {
                 fetchHolidays();
             })();
 
-            const $input = $('[name="date"]');
-
-            // use your existing jQuery datepicker plugin
-            $input.datepicker({
+            const $dateInput = $('[name="date"]');
+            $dateInput.datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
                 filter: holidayFilter,
             });
 
-            // normal change for validation
-            $input.on('change', function() {
+            $dateInput.on('change', function() {
                 if (window.fv) {
                     fv.revalidateField('date');
                 }
             });
 
+            function buildTaskItem(projectId, value = '') {
+                return `
+                    <div class="row task-item" data-project-id="${projectId}">
+                        <div class="col-9">
+                            <input type="text" class="form-control"
+                                   name="deliverables[${projectId}][]"
+                                   value="${value}" required>
+                        </div>
+                        <div class="col-3 d-flex justify-content-start gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-task" title="Remove task">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm add-task-inline" title="Add task">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
 
-            const form = document.getElementById('offDayWorkEditForm');
-
-            $('[name="date"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd'
-            }).on('change', function() {
-                if (window.fv) {
-                    fv.revalidateField('date');
-                    fv.revalidateField('end_date');
+            function buildProjectRow(projectId, projectName, tasks = []) {
+                if (!tasks || tasks.length === 0) {
+                    tasks = [''];
                 }
-            });
 
-            $('[name="end_date"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd'
-            }).on('change', function() {
-                if (window.fv) {
-                    fv.revalidateField('date');
-                    fv.revalidateField('end_date');
-                }
-            });
+                let tasksHtml = '';
+                tasks.forEach(function(t) {
+                    tasksHtml += buildTaskItem(projectId, t);
+                });
 
-            function updateRemoveButtons() {
-                const $rows = $('#deliverables-table tbody tr');
-                $rows.each(function(index) {
-                    const $btn = $(this).find('.remove-row');
-                    if ($rows.length > 1 && index > 0) {
-                        $btn.removeClass('d-none');
+                return `
+                    <tr data-project-id="${projectId}">
+                        <td class="align-middle text-truncate" style="max-width: 150px;">
+                            ${projectName}
+                        </td>
+                        <td>
+                            <div class="task-list" data-project-id="${projectId}">
+                                ${tasksHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            function refreshTaskButtons() {
+                $('.task-list').each(function() {
+                    const $items = $(this).find('.task-item');
+
+                    $items.find('.add-task-inline').addClass('d-none');
+                    $items.last().find('.add-task-inline').removeClass('d-none');
+
+                    if ($items.length === 1) {
+                        $items.find('.remove-task').addClass('d-none');
                     } else {
-                        $btn.addClass('d-none');
+                        $items.find('.remove-task').removeClass('d-none');
                     }
                 });
             }
 
-            $(document).off('click', '#add-task').on('click', '#add-task', function() {
-                const newRow = `
-                <tr>
-                    <td><input type="text" class="form-control" name="deliverables[]" required></td>
-                    <td><button type="button" class="btn btn-danger btn-sm remove-row">Remove</button></td>
-                </tr>`;
-                $('#deliverables-table tbody').append(newRow);
-                if (window.fv) {
-                    fv.revalidateField('deliverables[]');
-                }
-                updateRemoveButtons();
+            $('#project_ids').val(existingProjects.map(String)).trigger('change');
+
+            existingProjects.forEach(function(pid) {
+                const projectId = String(pid);
+                const projectName = $('#project_ids option[value="' + projectId + '"]').text();
+                const tasks = existingDeliveries[projectId] || [];
+
+                $tbody.append(buildProjectRow(projectId, projectName, tasks));
             });
 
-            $(document).off('click', '.remove-row').on('click', '.remove-row', function() {
-                $(this).closest('tr').remove();
+            refreshTaskButtons();
+
+            $('#project_ids').on('change', function() {
+                const selectedIds = $(this).val() || [];
+
+                $tbody.find('tr').each(function() {
+                    const pid = String($(this).data('project-id'));
+                    if (!selectedIds.includes(pid)) {
+                        $(this).remove();
+                    }
+                });
+
+                const existingIds = $tbody.find('tr').map(function() {
+                    return String($(this).data('project-id'));
+                }).get();
+
+                $(this).find('option:selected').each(function() {
+                    const projectId = $(this).val();
+                    const projectName = $(this).text();
+                    if (!existingIds.includes(projectId)) {
+                        $tbody.append(buildProjectRow(projectId, projectName, []));
+                    }
+                });
+
+                refreshTaskButtons();
+
                 if (window.fv) {
-                    fv.revalidateField('deliverables[]');
+                    fv.revalidateField('project_ids[]');
+                    fv.revalidateField('deliverables');
                 }
-                updateRemoveButtons();
+            });
+
+            $(document).on('click', '.add-task-inline', function() {
+                const $item = $(this).closest('.task-item');
+                const projectId = $item.data('project-id');
+                const $list = $('.task-list[data-project-id="' + projectId + '"]');
+
+                $list.append(buildTaskItem(projectId, ''));
+                refreshTaskButtons();
+
+                if (window.fv) {
+                    fv.revalidateField('deliverables');
+                }
+            });
+
+            $(document).on('click', '.remove-task', function() {
+                const $item = $(this).closest('.task-item');
+                const projectId = $item.data('project-id');
+                const $list = $('.task-list[data-project-id="' + projectId + '"]');
+
+                $item.remove();
+
+                if ($list.find('.task-item').length === 0) {
+                    $list.append(buildTaskItem(projectId, ''));
+                }
+
+                refreshTaskButtons();
+
+                if (window.fv) {
+                    fv.revalidateField('deliverables');
+                }
             });
 
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        project_id: {
+                        'project_ids[]': {
                             validators: {
                                 notEmpty: {
                                     message: 'Project is required'
@@ -143,14 +240,7 @@
                         date: {
                             validators: {
                                 notEmpty: {
-                                    message: 'The start date is required'
-                                }
-                            }
-                        },
-                        end_date: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The end date is required'
+                                    message: 'The date is required'
                                 }
                             }
                         },
@@ -161,25 +251,20 @@
                                 }
                             }
                         },
-                        'deliverables[]': {
+                        deliverables: {
                             validators: {
-                                notEmpty: {
-                                    message: 'Deliverable task is required'
-                                },
                                 callback: {
-                                    message: 'Add at least one deliverable',
+                                    message: 'Add at least one deliverable and fill all tasks',
                                     callback: function() {
                                         const items = $(
-                                            '#deliverables-table tbody input[name="deliverables[]"]'
-                                        );
-                                        const filledItems = items.filter(function() {
+                                            '#deliverables-table tbody input[name^="deliverables"]');
+                                        return items.length > 0 && items.filter(function() {
                                             return $(this).val().trim() !== '';
-                                        });
-                                        return filledItems.length > 0;
+                                        }).length === items.length;
                                     }
                                 }
                             }
-                        }
+                        },
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -188,6 +273,7 @@
                             eleInvalidClass: 'is-invalid',
                             eleValidClass: 'is-valid',
                         }),
+                        {{-- [web:38] --}}
                         submitButton: new FormValidation.plugins.SubmitButton(),
                         defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                         icon: new FormValidation.plugins.Icon({
@@ -195,31 +281,16 @@
                             invalid: 'bi bi-x-lg',
                             validating: 'bi bi-arrow-repeat',
                         }),
-                        startEndDate: new FormValidation.plugins.StartEndDate({
-                            format: 'YYYY-MM-DD',
-                            startDate: {
-                                field: 'date',
-                                message: 'Start date must be earlier than end date.'
-                            },
-                            endDate: {
-                                field: 'end_date',
-                                message: 'End date must be later than start date.'
-                            },
-                        }),
                     },
                 });
             }
 
-            // Revalidate selects on change
-            $(form).on('change', '#project_id', function() {
-                fv.revalidateField('project_id');
+            $(form).on('change', '#project_ids', function() {
+                fv.revalidateField('project_ids[]');
             });
             $(form).on('change', '#send_to', function() {
                 fv.revalidateField('send_to');
             });
-
-            // Initialize remove buttons state on load
-            updateRemoveButtons();
         });
     </script>
 @endsection
@@ -256,76 +327,42 @@
                 @method('PUT')
 
                 <div class="row">
-                    <div class="mb-3 col-8">
-                        <label for="project_id" class="form-label required-label">Project</label>
-                        <select class="form-control" id="project_id" name="project_id" required>
-                            <option value="">Select Project</option>
-                            @foreach ($projects as $id => $title)
-                                <option value="{{ $id }}" @if ($offDayWork->project_id == $id) selected @endif>
-                                    {{ $title }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                     <div class="mb-3 col-4">
                         <label for="date" class="form-label required-label">Date</label>
-                        <input type="date" class="form-control" id="date" name="date" readonly
+                        <input type="date" class="form-control" id="date" name="date"
                             value="{{ $offDayWork->date->format('Y-m-d') }}" required>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="reason" class="form-label required-label">Reason</label>
-                    <textarea class="form-control" id="reason" name="reason" rows="3" required>{{ $offDayWork->reason_for_work ?? $offDayWork->reason }}</textarea>
+                    <textarea class="form-control" id="reason" name="reason" rows="3" required>{{ $offDayWork->reason }}</textarea>
+                </div>
+
+                <div class="mb-3 col-12">
+                    <label for="project_ids" class="form-label required-label">Projects</label>
+                    <select class="form-control" id="project_ids" multiple name="project_ids[]" required>
+                        <option value="" disabled>Select Project</option>
+                        @foreach ($projects as $id => $title)
+                            <option value="{{ $id }}" @if (in_array($id, $selectedProjectIds ?? [])) selected @endif>
+                                {{ $title }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="mb-3">
-                    <label for="deliverables" class="form-label required-label">Deliverables</label>
+                    <label class="form-label required-label">Deliverables</label>
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
+                                <th style="width: 15%;">Project</th>
                                 <th>Task</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $items = is_array($offDayWork->deliverables)
-                                    ? $offDayWork->deliverables
-                                    : (json_decode($offDayWork->deliverables, true) ?:
-                                    []);
-                            @endphp
-
-                            @if (empty($items))
-                                <tr>
-                                    <td>
-                                        <input type="text" class="form-control" name="deliverables[]" required>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-sm remove-row d-none">
-                                            Remove
-                                        </button>
-                                    </td>
-                                </tr>
-                            @else
-                                @foreach ($items as $idx => $task)
-                                    <tr>
-                                        <td>
-                                            <input type="text" class="form-control" name="deliverables[]"
-                                                value="{{ $task }}" required>
-                                        </td>
-                                        <td>
-                                            <button type="button"
-                                                class="btn btn-danger btn-sm remove-row @if ($loop->first) d-none @endif">
-                                                Remove
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
                         </tbody>
                     </table>
-                    <button type="button" class="btn btn-primary btn-sm" id="add-task">Add Task</button>
                 </div>
 
                 <div class="mb-3">
@@ -343,9 +380,7 @@
                 <div class="gap-2 border-0 card-footer justify-content-end d-flex off-day-work-form-actions">
                     <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Update</button>
                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">Submit</button>
-                    <a href="{{ route('off.day.work.index') }}" class="btn btn-danger btn-sm">
-                        Cancel
-                    </a>
+                    <a href="{{ route('off.day.work.index') }}" class="btn btn-danger btn-sm">Cancel</a>
                 </div>
             </form>
         </div>

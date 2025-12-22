@@ -8,6 +8,7 @@ use Modules\Announcement\Repositories\AnnouncementRepository;
 use Modules\EventCompletion\Repositories\EventCompletionRepository;
 use Modules\ExitStaffClearance\Repositories\StaffClearanceRepository;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
+use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\MeetingHallBooking\Repositories\MeetingHallBookingRepository;
@@ -18,6 +19,7 @@ use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
 use Modules\TravelRequest\Repositories\LocalTravelRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
+use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
 use Rats\Zkteco\Lib\ZKTeco;
 
 class DashboardController extends Controller
@@ -54,8 +56,9 @@ class DashboardController extends Controller
         protected EventCompletionRepository       $eventCompletion,
         protected PerformanceReviewRepository $performanceReviews,
         protected StaffClearanceRepository $staffClearances,
-    ) {
-    }
+        protected WorkFromHomeRepository $workFromHomes,
+        protected LieuLeaveRequestRepository $lieuLeaveRequests,
+    ) {}
 
     /**
      * show dashboard page
@@ -64,22 +67,37 @@ class DashboardController extends Controller
      */
     public function index()
     {
+
         $authUser = auth()->user();
+        $lieuLeaveRequests = $this->lieuLeaveRequests->getLieuLeaveRequestsForApproval($authUser);
+        $leaveRequests = $this->leaveRequests->getLeaveRequestsForApproval($authUser);
+
+        $allLeaveRequests = $lieuLeaveRequests->concat($leaveRequests)->sortByDesc('request_date')->take(5);
+
+        $upcomingLieuLeaves = $this->lieuLeaveRequests->getUpcomingLieuLeave();
+        $upcomingLeaves = $this->leaveRequests->getUpcomingLeaves()->concat($upcomingLieuLeaves)->sortBy('start_date');
+
         $array = [
             'authUser' => $authUser,
             'travelRequests' => $this->travelRequests->getTravelRequestsForApproval($authUser),
             'vehicleRequests' => $this->vehicleRequests->getVehicleRequestsForApproval($authUser),
             'leaveRequests' => $this->leaveRequests->getLeaveRequestsForApproval($authUser),
+            'allLeaveRequests' => $allLeaveRequests,
+            'workFromHomeRequests' => $this->workFromHomes->getWorkFromHomeRequestsForApproval($authUser),
             'purchaseOrders' => $this->purchaseOrders->getPurchaseOrdersForReviewAndApproval($authUser),
             'purchaseRequests' => $this->purchaseRequests->getPurchaseRequestsForReviewAndApproval($authUser),
             'hallBookings' => $this->meetingHallBookings->getBookings(),
             'approvedLeaves' => $this->leaveRequests->getEmployeesOnLeave(),
-            'upcomingLeaves' => $this->leaveRequests->getUpcomingLeaves(),
+            'upcomingLeaves' => $upcomingLeaves,
+            'approvedLieuLeaves' => $this->lieuLeaveRequests->getEmployeesOnLieuLeave(),
+            'upcomingLieuLeaves' => $upcomingLieuLeaves,
+            'approvedWorkFromHomes' => $this->workFromHomes->getEmployeesOnWorkFromHome(),
+            'upcomingWorkFromHomes' => $this->workFromHomes->getUpcomingWorkFromHomes(),
             'announcements' => $this->announcements->getActiveAnnouncements(),
             'approvedTravels' => $this->travelRequests->getEmployeesOnTravel(),
             'upcomingTravels' => $this->travelRequests->getUpcomingTravels(),
             'localTravelRequests' => $this->localTravels->getLocalTravelsForReviewAndApproval($authUser),
-            'eventCompletionReports'=> $this->eventCompletion->getECRForApproval($authUser),
+            'eventCompletionReports' => $this->eventCompletion->getECRForApproval($authUser),
             'pendingPerformanceReviews' => $this->performanceReviews->getPendingPerformanceReview($authUser),
             'pendingStaffClearances' => $this->staffClearances->getPendingClearances()
         ];

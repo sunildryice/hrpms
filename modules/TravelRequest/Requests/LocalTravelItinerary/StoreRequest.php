@@ -29,6 +29,7 @@ class StoreRequest extends FormRequest
             'number_of_travelers' => 'nullable|integer|min:0',
             'names_of_travelers.*.name' => 'required_if:number_of_travelers,>,0|string|max:255',
             'pickup_location' => 'nullable|string|max:255',
+            'total_fare'=>'required|numeric|min:0.01',
             'remarks' => 'nullable',
             'attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
 
@@ -39,7 +40,6 @@ class StoreRequest extends FormRequest
             // 'departure_place'=>'nullable|string|max:255',
             // 'arrival_place'=>'nullable|string|max:255',
             // 'total_distance'=>'nullable|numeric|min:0.01',
-            // 'total_fare'=>'required|numeric|min:0.01',
         ];
     }
 

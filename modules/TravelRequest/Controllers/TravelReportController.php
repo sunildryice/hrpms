@@ -73,10 +73,11 @@ class TravelReportController extends Controller
             $data = $this->travelReport->with(['travelRequest', 'logs'])
                 ->where(function ($q) use ($authUser) {
                     $q->where('created_by', $authUser->id);
-                })->orWhereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                    $q->orWhere('original_user_id', $authUser->id);
                 })
+                // ->orWhereHas('logs', function ($q) use ($authUser) {
+                //     $q->where('user_id', $authUser->id);
+                //     $q->orWhere('original_user_id', $authUser->id);
+                // })
                 ->orderBy('created_at', 'desc')
                 ->get();
 

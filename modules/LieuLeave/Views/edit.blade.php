@@ -17,7 +17,8 @@
             $('[name="leave_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
-                format: 'yyyy-mm-dd'
+                format: 'yyyy-mm-dd',
+                startDate: new Date(),
             }).on('change', function() {
                 if (window.fv) {
                     // fv.revalidateField('leave_date');
@@ -94,9 +95,6 @@
             $(form).on('change', '#send_to', function() {
                 fv.revalidateField('send_to');
             });
-
-            // Initialize remove buttons state on load
-            updateRemoveButtons();
         });
     </script>
 @endsection

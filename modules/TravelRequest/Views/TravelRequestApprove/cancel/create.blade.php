@@ -260,89 +260,91 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card">
-                <div class="card-header fw-bold"></div>
-                <div class="card-body">
-                    <div class="c-b">
-                        @foreach ($travelRequest->logs as $log)
-                            <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
-                                <div width="40" height="40" class="rounded-circle mr-3 user-icon">
-                                    <i class="bi-person-circle fs-5"></i>
-                                </div>
-                                <div class="w-100">
-                                    <div
-                                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                <div class="card">
+                    <div class="card-header fw-bold"></div>
+                    <div class="card-body">
+                        <div class="c-b">
+                            @foreach ($travelRequest->logs as $log)
+                                <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
+                                    <div width="40" height="40" class="rounded-circle mr-3 user-icon">
+                                        <i class="bi-person-circle fs-5"></i>
+                                    </div>
+                                    <div class="w-100">
                                         <div
-                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
-                                            <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
-                                            <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
+                                            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                            <div
+                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                                <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
+                                                <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
+                                            </div>
+                                            <small
+                                                title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                         </div>
-                                        <small
-                                            title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                        <p class="text-justify comment-text mb-0 mt-1">
+                                            {{ $log->log_remarks }}
+                                        </p>
                                     </div>
-                                    <p class="text-justify comment-text mb-0 mt-1">
-                                        {{ $log->log_remarks }}
-                                    </p>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="border-top pt-4">
-                        <form action="{{ route('approve.travel.requests.cancel.store', $travelRequest->id) }}"
-                            id="travelRequestAddForm" method="post" enctype="multipart/form-data" autocomplete="off">
-                            <div class="card-body">
-                                <div class="row mb-2">
-                                    <div class="col-lg-3">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="validationleavetype"
-                                                class="form-label required-label">Status</label>
+                            @endforeach
+                        </div>
+                        <div class="border-top pt-4">
+                            <form action="{{ route('approve.travel.requests.cancel.store', $travelRequest->id) }}"
+                                id="travelRequestAddForm" method="post" enctype="multipart/form-data" autocomplete="off">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="validationleavetype"
+                                                    class="form-label required-label">Status</label>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <select name="status_id" class="select2 form-control" data-width="100%">
-                                            <option value="">Select a Status</option>
-                                            <option value="8" @if (old('status_id') == '8') selected @endif>Reject
-                                            </option>
-                                            <option value="{{ config('constant.CANCELLED_STATUS') }}"
-                                                @if (old('status_id') == config('constant.CANCELLED_STATUS')) selected @endif>
-                                                Cancel
-                                            </option>
-                                        </select>
-                                        @if ($errors->has('status_id'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="status_id">
-                                                    {!! $errors->first('status_id') !!}
+                                        <div class="col-lg-9">
+                                            <select name="status_id" class="select2 form-control" data-width="100%">
+                                                <option value="">Select a Status</option>
+                                                <option value="8" @if (old('status_id') == '8') selected @endif>
+                                                    Reject
+                                                </option>
+                                                <option value="{{ config('constant.CANCELLED_STATUS') }}"
+                                                    @if (old('status_id') == config('constant.CANCELLED_STATUS')) selected @endif>
+                                                    Cancel
+                                                </option>
+                                            </select>
+                                            @if ($errors->has('status_id'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="status_id">
+                                                        {!! $errors->first('status_id') !!}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-lg-3">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="col-lg-9">
-                                        <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
-                                        @if ($errors->has('log_remarks'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="validationRemarks"
+                                                    class="form-label required-label">Remarks</label>
                                             </div>
-                                        @endif
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                            @if ($errors->has('log_remarks'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
+                                    {!! csrf_field() !!}
                                 </div>
-                                {!! csrf_field() !!}
-                            </div>
-                            <div class=" justify-content-end d-flex gap-2">
-                                <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                                    Submit
-                                </button>
-                                <a href="{!! route('approve.travel.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                            </div>
-                        </form>
+                                <div class=" justify-content-end d-flex gap-2">
+                                    <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                                        Submit
+                                    </button>
+                                    <a href="{!! route('approve.travel.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

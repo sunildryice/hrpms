@@ -62,6 +62,7 @@
                                                     <label class="form-label mb-0">
                                                         {{ $log->createdBy->full_name ?? 'User' }}
                                                     </label>
+                                                    <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                                 </div>
 
                                                 <small title="{{ $log->created_at }}">
@@ -73,9 +74,6 @@
                                                 <p class="text-justify comment-text mb-0 mt-1">
                                                     {{ $log->log_remarks ?? '' }}
                                                 </p>
-                                                <div class="badge {{ $log->getStatusClass() ?? 'bg-secondary' }}">
-                                                    {{ $log->getStatus() }}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

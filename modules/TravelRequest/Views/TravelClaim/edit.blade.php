@@ -141,6 +141,9 @@
                 bPaginate: false,
                 bInfo: false,
                 columns: [{
+                        data: 'activity',
+                        name: 'activity'
+                    }, {
                         data: 'travel_date',
                         name: 'travel_date'
                     },
@@ -185,6 +188,9 @@
                 bPaginate: false,
                 bInfo: false,
                 columns: [{
+                        data: 'activity',
+                        name: 'activity'
+                    }, {
                         data: 'activities',
                         name: 'activities'
                     },
@@ -440,6 +446,13 @@
 
                     const fv = FormValidation.formValidation(claimLocalTravelForm, {
                         fields: {
+                            activity_code_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Activity is required',
+                                    },
+                                },
+                            },
                             travel_date: {
                                 validators: {
                                     notEmpty: {
@@ -569,6 +582,13 @@
 
                         const fv = FormValidation.formValidation(claimItineraryForm, {
                             fields: {
+                                activity_code_id: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Activity is required',
+                                        },
+                                    },
+                                },
                                 activities: {
                                     validators: {
                                         notEmpty: {
@@ -799,7 +819,8 @@
                                         <table class="table" id="itineraryTable">
                                             <thead class="thead-light">
                                                 <tr>
-                                                    <th scope="col" rowspan="2">Activities
+                                                    <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
+                                                    <th scope="col" rowspan="2">Activities/Tasks
                                                     </th>
                                                     <th scope="col" colspan="2" class="text-center">
                                                         {{ __('label.destination') }}</th>
@@ -864,6 +885,7 @@
                                         <table class="table" id="claimLocalTravelTable">
                                             <thead class="thead-light">
                                                 <tr>
+                                                    <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
                                                     <th scope="col" rowspan="2">{{ __('label.date') }}</th>
                                                     <th scope="col" rowspan="2">{{ __('label.purpose') }}</th>
                                                     <th scope="col" colspan="2" class="text-center">
@@ -923,30 +945,30 @@
                                                 <tr>
                                                     <td colspan="3">{{ __('label.sub-total') }}</td>
                                                     <td colspan="4" id="total_expense_amount">
-                                                        {{ $travelClaim->total_expense_amount }}</td>
+                                                        {{ number_format($travelClaim->total_expense_amount, 2) }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">Total Local Travel</td>
                                                     <td colspan="4" id="total_local_travel_amount">
-                                                        {{ sprintf('%.2f', $travelClaim->localTravels->sum('travel_fare')) }}
+                                                        {{ number_format($travelClaim->localTravels->sum('travel_fare'), 2) }}
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="3">Total DSA</td>
+                                                    <td colspan="3">Total TADA</td>
                                                     <td colspan="4" id="total_itinerary_amount">
-                                                        {{ $travelClaim->total_itinerary_amount }}</td>
+                                                        {{ number_format($travelClaim->total_itinerary_amount, 2) }}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">{{ __('label.grand-total') }}</td>
                                                     <td colspan="4" id="total_amount">
-                                                        {{ $travelClaim->total_amount }}
+                                                        {{ number_format($travelClaim->total_amount, 2) }}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="3">{{ __('label.advance-amount') }}
                                                     </td>
                                                     <td colspan="4">
-                                                        {{ $travelClaim->advance_amount }}
+                                                        {{ number_format($travelClaim->advance_amount, 2) }}
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -974,7 +996,7 @@
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
                                         <label for="Fdname" class="form-label required-label">
-                                            Approver
+                                            {{ __('label.approval') }}
                                         </label>
                                     </div>
                                 </div>
@@ -985,7 +1007,9 @@
                                             class="select2 form-control
                                         @if ($errors->has('reviewer_id')) is-invalid @endif"
                                             data-width="100%">
-                                            <option value="">Select an Approver</option>
+                                            @if ($approvers->count() !== 1)
+                                                <option value="">Select an Approver</option>
+                                            @endif
                                             @foreach ($approvers as $approver)
                                                 <option value="{{ $approver->id }}" @selected($approver->id == (old('approver_id') ?: $travelClaim->approver_id))>
                                                     {{ $approver->full_name }}</option>

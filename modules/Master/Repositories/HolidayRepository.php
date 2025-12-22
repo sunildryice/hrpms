@@ -13,12 +13,17 @@ class HolidayRepository extends Repository
         $this->model = $holiday;
     }
 
+    public function getHolidaysByDate()
+    {
+        return $this->model->orderBy('holiday_date', 'desc')->get();
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();
         try {
             $holiday = $this->model->create($inputs);
-            if(array_key_exists('office_ids', $inputs)){
+            if (array_key_exists('office_ids', $inputs)) {
                 $holiday->offices()->sync($inputs['office_ids']);
             }
             DB::commit();
@@ -36,7 +41,7 @@ class HolidayRepository extends Repository
             $holiday = $this->model->findOrFail($id);
             $holiday->fill($inputs)->save();
             $holiday->offices()->detach();
-            if(array_key_exists('office_ids', $inputs)){
+            if (array_key_exists('office_ids', $inputs)) {
                 $holiday->offices()->sync($inputs['office_ids']);
             }
             DB::commit();

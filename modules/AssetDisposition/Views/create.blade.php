@@ -10,11 +10,11 @@
             console.log(errors);
         });
         document.addEventListener('DOMContentLoaded', function(e) {
-            
+
             const form = document.getElementById('assetDispositionCreateForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
-                    office_id:{
+                    office_id: {
                         validators: {
                             notEmpty: {
                                 message: 'Office is required',
@@ -54,7 +54,7 @@
                 },
             });
 
-            
+
 
             $(form.querySelector('[name="disposition_date"]')).datepicker({
                 language: 'en-GB',
@@ -93,10 +93,10 @@
                                 class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('asset.disposition.index') }}"
                                 class="text-decoration-none text-dark">Asset Disposition</a></li>
-                        <li class="breadcrumb-item" aria-current="page">Create Asest Disposition Request</li>
+                        <li class="breadcrumb-item" aria-current="page">Create Asset Disposition Request</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Asest Disposition Request</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Asset Disposition Request</h4>
             </div>
         </div>
     </div>
@@ -157,7 +157,7 @@
                             @endif
                         </div>
                     </div>
-                   
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">

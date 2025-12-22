@@ -54,6 +54,7 @@
                                                     class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2">
                                                     <label
                                                         class="form-label mb-0">{{ $log->createdBy->full_name ?? 'User' }}</label>
+                                                    <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                                 </div>
 
 
@@ -65,9 +66,6 @@
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}
                                                 </p>
-                                                <div class="badge {{ $log->getStatusClass() ?? 'bg-secondary' }}">
-                                                    {{ $log->getStatus() }}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

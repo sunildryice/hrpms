@@ -151,14 +151,25 @@
                     let leaveMode = leaveModes.find(x => x.id == leaveModeId);
                     if (leaveMode?.hours == 2) {
                         $(this).closest('tr').find('[name="leave_time[]"]').daterangepicker({
+                            singleDatePicker: true,
                             timePicker: true,
                             timePickerSeconds: false,
+                            autoUpdateInput: false,
                             locale: {
                                 format: 'HH:mm:ss'
                             },
-                            endDate: '00:00:00',
                         }).on('show.daterangepicker', function(ev, picker) {
                             picker.container.find(".calendar-table").hide();
+                        }).on('apply.daterangepicker', function(ev, picker) {
+                            // start time user selected
+                            const start = picker.startDate.clone();
+                            const end = start.clone().add(2,
+                                'hours');
+
+                            const startStr = start.format('HH:mm:ss');
+                            const endStr = end.format('HH:mm:ss');
+
+                            $(this).val(startStr + ' - ' + endStr);
                         });
                     } else {
                         $(this).closest('tr').find('[name="leave_time[]"]').val('').data('daterangepicker')
@@ -231,6 +242,13 @@
                         validators: {
                             notEmpty: {
                                 message: 'The end date is required',
+                            },
+                        },
+                    },
+                    remarks: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The reason for the leave is required',
                             },
                         },
                     },
@@ -527,7 +545,8 @@
                     <div class="mb-3 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Reason For the Leave</label>
+                                <label for="validationRemarks" class="form-label required-label">Reason For the
+                                    Leave</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -542,8 +561,8 @@
                     <div class="mb-3 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label required-label">Send
-                                    To</label>
+                                <label for="validationRemarks"
+                                    class="form-label required-label">{{ __('label.approval') }}</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -554,7 +573,7 @@
                                 <option value="">Select an Approver</option>
                                 @foreach ($supervisors as $approver)
                                     <option value="{{ $approver->id }}"
-                                        {{ $approver->id == old('approver_id') ? 'selected' : '' }}>
+                                        @if ($approver->id == old('approver_id')) selected @elseif($supervisors->count() == 1) selected @endif>
                                         {{ $approver->getFullName() }}</option>
                                 @endforeach
                             </select>

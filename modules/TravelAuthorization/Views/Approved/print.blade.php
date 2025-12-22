@@ -50,7 +50,7 @@
 
     <section class="p-3 bg-white print-info" id="print-info">
         <div class="mb-3 text-center print-title fw-bold translate-middle">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             {{-- <div class="fs-8">{{ $travel->office->getOfficeName() }}</div> --}}
             <div class="fs-8"> Travel Authorization Request</div>
         </div>
@@ -64,7 +64,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="mb-4 d-flex flex-column justify-content-end brand-logo flex-grow-1">
                             <div class="float-right d-flex flex-column justify-content-end">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -80,8 +81,8 @@
                                     <span class="text-danger"><strong>({{ $travel->getStatus() }})</strong></span>
                                 @endif
                             </li>
-                             <li><span class="fw-bold me-2">Office:
-                               </span><span>{{ $travel->office->getOfficeName() }}</span>
+                            <li><span class="fw-bold me-2">Office:
+                                </span><span>{{ $travel->office->getOfficeName() }}</span>
                                 @if ($travel->status_id == config('constant.CANCELLED_STATUS'))
                                     <span class="text-danger"><strong>({{ $travel->getStatus() }})</strong></span>
                                 @endif

@@ -6,8 +6,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@200;500;600;800&display=swap" rel="stylesheet">
     <style>
-
-
         @media print {
 
             .table th,
@@ -28,7 +26,7 @@
             }
 
             .table tfoot th,
-                {}
+            {}
         }
     </style>
 @endsection
@@ -44,7 +42,7 @@
     <section class="print-info bg-white p-3" id="print-info">
 
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $purchaseOrder->getOfficeName() }}</div>
             <div class="fs-8"> Purchase Order</div>
         </div>
@@ -63,7 +61,8 @@
 
                     <div class="print-header-info my-3">
                         <ul class="list-unstyled m-0 p-0 fs-7">
-                            <li><span class="fw-bold me-2"> District : {{$purchaseOrder->getDistrictNames()}}</span><span></span></li>
+                            <li><span class="fw-bold me-2"> District :
+                                    {{ $purchaseOrder->getDistrictNames() }}</span><span></span></li>
                             <li><span class="fw-bold me-2">Vendor's / Suppliers' Name
                                     :</span><span>{!! $purchaseOrder->getSupplierName() !!}</span>
                             </li>
@@ -77,7 +76,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -145,7 +145,9 @@
             <p>(In words <span
                     class="border-bottom text-capitalize">{{ \App\Helper::convertNumberToWords($purchaseOrder->total_amount) }}</span>
                 Only )</p>
-            <p> <strong>Note:</strong> Please deliver by <span class="border-bottom text-capitalize">{{ $purchaseOrder->getDeliveryDate() }}</span> at {!! $purchaseOrder->delivery_location ?: "OHW Office Bagdol-4, Lalitpur" !!} </p>
+            <p> <strong>Note:</strong> Please deliver by <span
+                    class="border-bottom text-capitalize">{{ $purchaseOrder->getDeliveryDate() }}</span> at
+                {!! $purchaseOrder->delivery_location ?: 'OHW Office Bagdol-4, Lalitpur' !!} </p>
             <p class="text-decoration-underline mb-1">In case of Delay (Unless the delay is due to force
                 majeure)
                 following penality wil be charged.</p>

@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Termwind\Components\Li;
 
 class LieuLeaveRequest extends Model
 {
@@ -41,6 +43,11 @@ class LieuLeaveRequest extends Model
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id');
+    }
+
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
     public function project()
@@ -84,6 +91,18 @@ class LieuLeaveRequest extends Model
         return $this->status->status_class;
     }
 
+    public function getOfficeName()
+    {
+        return $this->office ? $this->office->getOfficeName() : '';
+    }
+
+    public function getSubstitutes()
+    {
+        return $this->substitutes ? implode(', ', $this->substitutes->pluck('full_name')->map(function ($item) {
+            return ucwords($item);
+        })->toArray()) : '';
+    }
+
 
     public function getRequesterName()
     {
@@ -91,26 +110,65 @@ class LieuLeaveRequest extends Model
         return $this->requester->employee->getFullName();
     }
 
-    public function getRequestId()
+
+
+    public function getApproverName()
     {
-        return 'LLR-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        return $this->approver->full_name ?? '-';
     }
 
-    /**
-     * Get all substitutes of leave request.
-     */
+
+    public function approvedLog()
+    {
+        return $this->hasOne(LieuLeaveRequestLog::class, 'lieu_leave_request_id')
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->latest();
+    }
+
+
+    public function getRequestId()
+    {
+        $lieuLeaveRequestNumber =  $this->lieu_leave_request_number ? 'LLR-' . $this->lieu_leave_request_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $lieuLeaveRequestNumber . $fiscalYear;
+    }
+
+    public function getLeaveNumber()
+    {
+        $lieuLeaveRequestNumber =  $this->lieu_leave_request_number ? 'LLR-' . $this->lieu_leave_request_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $lieuLeaveRequestNumber . $fiscalYear;
+    }
+
+
+    public function submittedLog()
+    {
+        return $this->hasOne(LieuLeaveRequestLog::class, 'lieu_leave_request_id')
+            ->where('user_id', $this->requester_id)
+            ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
+            ->latest();
+    }
+
+
     public function substitutes()
     {
         return $this->belongsToMany(
-            Employee::class,                           // related model
-            'lieu_leave_request_substitutes',      // pivot table
-            'lieu_leave_request_id',               // this model FK
-            'substitute_id'                              // related model FK
+            Employee::class,
+            'lieu_leave_request_substitutes',
+            'lieu_leave_request_id',
+            'substitute_id'
         );
     }
 
     public function leaveBalance()
     {
         return $this->hasOne(LieuLeaveBalance::class, 'lieu_leave_request_id');
+    }
+
+    public function getLeaveDuration()
+    {
+        return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
     }
 }

@@ -56,10 +56,12 @@ class LocalTravelController extends Controller
             $data = $this->localTravels->with(['travelRequest', 'status', 'logs', 'requester'])->select(['*'])
                 ->where(function ($q) use ($authUser) {
                     $q->where('requester_id', $authUser->id);
-                })->orWhereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                    $q->orWhere('original_user_id', $authUser->id);
-                })->orderBy('created_at', 'desc')
+                })
+                // ->orWhereHas('logs', function ($q) use ($authUser) {
+                //     $q->where('user_id', $authUser->id);
+                //     $q->orWhere('original_user_id', $authUser->id);
+                // })
+                ->orderBy('created_at', 'desc')
                 ->get();
 
             return DataTables::of($data)

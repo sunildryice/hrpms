@@ -14,30 +14,30 @@
             const form = document.getElementById('travelReportAddForm');
             const template = document.getElementById('template');
 
-            const subjectValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Day is required'
-                    }
-                }
-            };
-            const dateValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Date is required'
-                    }
-                }
-            };
-            const taskValidators = {
-                validators: {
-                    notEmpty: {
-                        message: 'Activities are required'
-                    }
-                }
-            };
-            const remarkValidators = {
-                validators: {}
-            };
+            // const subjectValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Day is required'
+            //         }
+            //     }
+            // };
+            // const dateValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Date is required'
+            //         }
+            //     }
+            // };
+            // const taskValidators = {
+            //     validators: {
+            //         notEmpty: {
+            //             message: 'Activities are required'
+            //         }
+            //     }
+            // };
+            // const remarkValidators = {
+            //     validators: {}
+            // };
 
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -55,13 +55,6 @@
                             }
                         }
                     },
-                    'not_completed_activities': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Not completed activities are required'
-                            }
-                        }
-                    },
                     'conclusion_recommendations': {
                         validators: {
                             notEmpty: {
@@ -69,6 +62,31 @@
                             }
                         }
                     },
+                    'completed_tasks': {
+                        selector: '#activitiesErrorContainer',
+                        validators: {
+                            callback: {
+                                message: 'Activities are required',
+                                callback: function(input) {
+                                    const fields = form.querySelectorAll(
+                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                    let allFilled = true;
+
+                                    fields.forEach(function(field) {
+                                        if (field.value.trim() === '') {
+                                            allFilled = false;
+                                            field.closest('tr').classList.add('table-danger');
+                                        } else {
+                                            field.closest('tr').classList.remove(
+                                                'table-danger');
+                                        }
+                                    });
+
+                                    return allFilled;
+                                }
+                            }
+                        }
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -80,100 +98,53 @@
                         invalid: 'bi bi-x-lg',
                         validating: 'bi bi-arrow-repeat',
                     }),
+                    declarative: new FormValidation.plugins.Declarative({
+                        html5Input: false
+                    }),
+                    message: new FormValidation.plugins.Message({
+                        clazz: 'invalid-feedback',
+                        container: function(field, element) {
+                            if (field === 'completed_tasks') {
+                                return '#activitiesErrorContainer';
+                            }
+                            return FormValidation.plugins.Message.getParent(element);
+                        }
+                    })
                 },
             });
 
-            $('input[name="recommendation[activity_date][0]"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd',
-                startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
-                endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
-            }).on('change', function() {
-                fv.revalidateField(this.name);
-            });
+            // document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
+            //     fv.addField(field.name, {
+            //         validators: {
+            //             notEmpty: {
+            //                 message: 'Activities are required'
+            //             }
+            //         }
+            //     });
+            // });
 
-            @foreach ($travelReport->travelReportRecommendations as $index => $rec)
-                fv.addField('recommendation[day_number][{{ $index }}]', subjectValidators)
-                    .addField('recommendation[activity_date][{{ $index }}]', dateValidators)
-                    .addField('recommendation[completed_tasks][{{ $index }}]', taskValidators)
-                    .addField('recommendation[remarks][{{ $index }}]', remarkValidators);
+            // @if ($errors->any())
+            //     @foreach ($dates as $index => $date)
+            //         @if ($errors->has("recommendation.completed_tasks.{$index}"))
+            //             fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
+            //         @endif
+            //     @endforeach
+            // @endif
 
-                $(document).ready(function() {
-                    const input = document.querySelector(
-                        'input[name="recommendation[activity_date][{{ $index }}]"]');
-                    if (input && !$(input).hasClass('hasDatepicker')) {
-                        $(input).datepicker({
-                            language: 'en-GB',
-                            autoHide: true,
-                            format: 'yyyy-mm-dd',
-                            startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
-                            endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
-                        }).on('change', function() {
-                            fv.revalidateField(this.name);
-                        });
-                    }
-                });
-            @endforeach
-
-            const removeRow = function(button) {
-                const row = button.closest('tr');
-                const index = row.dataset.rowIndex;
-
-                fv.removeField('recommendation[day_number][' + index + ']')
-                    .removeField('recommendation[activity_date][' + index + ']')
-                    .removeField('recommendation[completed_tasks][' + index + ']')
-                    .removeField('recommendation[remarks][' + index + ']');
-
-                row.remove();
-            };
-
-            document.querySelectorAll('.js-remove-button').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    removeRow(this);
+            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
+                field.addEventListener('input', function() {
+                    fv.revalidateField('completed_tasks');
                 });
             });
 
-            // Add new row
-            document.getElementById('addButton').addEventListener('click', function() {
-                const clone = template.cloneNode(true);
-                clone.removeAttribute('id');
-                clone.style.display = 'table-row';
-                clone.dataset.rowIndex = rowIndex;
+            @if ($errors->any())
+                @foreach ($dates as $index => $date)
+                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
+                        fv.revalidateField('completed_tasks');
+                    @endif
+                @endforeach
+            @endif
 
-                clone.querySelector('[data-name="recommendation.day_number"]').name =
-                    'recommendation[day_number][' + rowIndex + ']';
-                clone.querySelector('[data-name="recommendation.activity_date"]').name =
-                    'recommendation[activity_date][' + rowIndex + ']';
-                clone.querySelector('[data-name="recommendation.completed_tasks"]').name =
-                    'recommendation[completed_tasks][' + rowIndex + ']';
-                clone.querySelector('[data-name="recommendation.remarks"]').name =
-                    'recommendation[remarks][' + rowIndex + ']';
-
-                const dateInput = clone.querySelector('input[name="recommendation[activity_date][' +
-                    rowIndex + ']"]');
-                $(dateInput).datepicker({
-                    language: 'en-GB',
-                    autoHide: true,
-                    format: 'yyyy-mm-dd',
-                    startDate: '{{ $travelRequest->departure_date->format('Y-m-d') }}',
-                    endDate: '{{ $travelRequest->return_date->format('Y-m-d') }}'
-                }).on('change', function() {
-                    fv.revalidateField(this.name);
-                });
-
-                fv.addField('recommendation[day_number][' + rowIndex + ']', subjectValidators);
-                fv.addField('recommendation[activity_date][' + rowIndex + ']', dateValidators);
-                fv.addField('recommendation[completed_tasks][' + rowIndex + ']', taskValidators);
-                fv.addField('recommendation[remarks][' + rowIndex + ']', remarkValidators);
-
-                clone.querySelector('.js-remove-button').addEventListener('click', function() {
-                    removeRow(this);
-                });
-
-                template.before(clone);
-                rowIndex++;
-            });
         });
     </script>
 @endsection
@@ -246,107 +217,92 @@
                                     <div class="row mb-2">
                                         <div class="table-responsive">
                                             <table class="table table-bordered">
-                                                <thead>
+                                                <thead class="table-light">
                                                     <tr>
-                                                        <th colspan="5">Daily Carried Activities / Completed Tasks</th>
+                                                        <th colspan="4">Daily Carried Activities /
+                                                            Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        <th>Day</th>
-                                                        <th>Date</th>
+                                                        <th style="width: 10%">Day</th>
+                                                        <th style="width: 15%">Date</th>
                                                         <th>Carried Activities / Completed Tasks</th>
-                                                        <th style="width: 30%">Remarks</th>
-                                                        <th></th>
+                                                        <th style="width: 25%">Remarks</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @forelse($travelReport->travelReportRecommendations as $index => $rec)
-                                                        <tr data-row-index="{{ $index }}">
-                                                            <td>
-                                                                <input type="text"
-                                                                    name="recommendation[day_number][{{ $index }}]"
-                                                                    value="{{ old("recommendation.day_number.$index", $rec->day_number) }}"
-                                                                    class="form-control" rows="1">
-                                                            </td>
-                                                            <td>
-                                                                <input type="text"
-                                                                    name="recommendation[activity_date][{{ $index }}]"
-                                                                    data-name="recommendation.activity_date"
-                                                                    class="form-control form-control-sm"
-                                                                    placeholder="yyyy-mm-dd" onfocus="this.blur()"
-                                                                    value="{{ old("recommendation.activity_date.$index", $rec->activity_date?->format('Y-m-d')) }}">
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.$index", $rec->completed_tasks) }}</textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.$index", $rec->remarks) }}</textarea>
-                                                            </td>
-                                                            <td>
-                                                                @if ($loop->first)
-                                                                    <button type="button" id="addButton"
-                                                                        class="btn btn-primary btn-block">+</button>
-                                                                @else
-                                                                    <button type="button"
-                                                                        class="btn btn-danger btn-block js-remove-button"
-                                                                        data-row-index="{{ $index }}">−</button>
-                                                                @endif
-                                                            </td>
-                                                        </tr>
-                                                    @empty
-                                                        <tr data-row-index="0">
-                                                            <td>
-                                                                <input type="text" name="recommendation[day_number][0]"
-                                                                    class="form-control" rows="1">
-                                                            </td>
-                                                            <td><input type="text"
-                                                                    name="recommendation[activity_date][0]"
-                                                                    data-name="recommendation.activity_date"
-                                                                    class="form-control form-control-sm"
-                                                                    placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
-                                                            <td>
-                                                                <textarea name="recommendation[completed_tasks][0]" rows="3" class="form-control"></textarea>
-                                                            </td>
-                                                            <td>
-                                                                <textarea name="recommendation[remarks][0]" rows="3" class="form-control"></textarea>
-                                                            </td>
-                                                            <td><button type="button" id="addButton"
-                                                                    class="btn btn-primary btn-block">+</button></td>
-                                                        </tr>
-                                                    @endforelse
+                                                    @php
+                                                        $start = \Carbon\Carbon::parse($travelRequest->departure_date);
+                                                        $end = \Carbon\Carbon::parse($travelRequest->return_date);
+                                                        $dates = collect();
+                                                        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+                                                            $dates->push($d->copy());
+                                                        }
 
-                                                    <tr id="template" style="display: none">
-                                                        <td>
-                                                            <input type="text" data-name="recommendation.day_number"
-                                                                class="form-control" rows="1">
-                                                        </td>
-                                                        <td><input type="text" data-name="recommendation.activity_date"
-                                                                class="form-control form-control-sm"
-                                                                placeholder="yyyy-mm-dd" onfocus="this.blur()"></td>
-                                                        <td>
-                                                            <textarea data-name="recommendation.completed_tasks" rows="3" class="form-control"></textarea>
-                                                        </td>
-                                                        <td>
-                                                            <textarea data-name="recommendation.remarks" rows="3" class="form-control"></textarea>
-                                                        </td>
-                                                        <td><button type="button"
-                                                                class="btn btn-danger btn-block js-remove-button">−</button>
-                                                        </td>
-                                                    </tr>
+                                                        $existing = $travelReport->travelReportRecommendations->keyBy(
+                                                            function ($item) {
+                                                                return $item->activity_date?->format('Y-m-d');
+                                                            },
+                                                        );
+                                                    @endphp
+
+                                                    @foreach ($dates as $index => $date)
+                                                        @php
+                                                            $dateStr = $date->format('Y-m-d');
+                                                            $weekday = $date->format('l');
+                                                            $dayNum = $index + 1;
+
+                                                            $rec = $existing->get($dateStr);
+                                                        @endphp
+
+                                                        <tr>
+                                                            <td class="text-center">
+                                                                <input type="text"
+                                                                    class="form-control fw-bold text-center"
+                                                                    value="{{ $weekday }}" readonly>
+                                                                <input type="hidden"
+                                                                    name="recommendation[day_number][{{ $index }}]"
+                                                                    value="{{ $dayNum }}">
+                                                            </td>
+
+                                                            <td>
+                                                                <input type="text" class="form-control"
+                                                                    value="{{ $date->format('d M Y') }}" readonly>
+                                                                <input type="hidden"
+                                                                    name="recommendation[activity_date][{{ $index }}]"
+                                                                    value="{{ $dateStr }}">
+                                                            </td>
+
+                                                            <td>
+                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.{$index}", $rec?->completed_tasks) }}</textarea>
+                                                                {{-- @error("recommendation.completed_tasks.{$index}")
+                                                                    <div class="invalid-feedback d-block">{{ $message }}
+                                                                    </div>
+                                                                @enderror --}}
+                                                            </td>
+
+                                                            <td>
+                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.{$index}", $rec?->remarks) }}</textarea>
+                                                                {{-- @error("recommendation.remarks.{$index}")
+                                                                    <div class="invalid-feedback d-block">{{ $message }}
+                                                                    </div>
+                                                                @enderror --}}
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
                                                 </tbody>
                                             </table>
+                                            <div id="activitiesErrorContainer"
+                                                class="fv-plugins-message-container invalid-feedback d-block"></div>
                                         </div>
                                     </div>
 
                                     <div class="row mb-2">
                                         <div class="col-lg-3 d-flex align-items-start h-100">
-                                            <label class="form-label required-label">Not Completed Activities &
+                                            <label class="form-label">Not Completed Activities &
                                                 Reasons</label>
                                         </div>
                                         <div class="col-lg-9">
                                             <textarea name="not_completed_activities" class="form-control" rows="8">{{ old('not_completed_activities', $travelReport->not_completed_activities) }}</textarea>
-                                            @error('not_completed_activities')
-                                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                            @enderror
                                         </div>
                                     </div>
 
@@ -371,7 +327,7 @@
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
                                                 <label for="" class="m-0">
-                                                    Send to
+                                                    {{ __('label.approval') }}
                                                 </label>
                                             </div>
                                         </div>
@@ -381,7 +337,9 @@
                                                 class="select2 form-control
                                                 @if ($errors->has('approver_id')) is-invalid @endif"
                                                 data-width="100%">
-                                                <option value="">Select an Approver</option>
+                                                @if ($supervisors->count() !== 1)
+                                                    <option value="">Select an Approver</option>
+                                                @endif
                                                 @foreach ($supervisors as $approver)
                                                     <option value="{{ $approver->id }}"
                                                         {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>

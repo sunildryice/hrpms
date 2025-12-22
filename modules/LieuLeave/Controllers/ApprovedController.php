@@ -43,9 +43,15 @@ class ApprovedController extends Controller
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . route('approved.lieu.leave.requests.show', $row->id) . '" class="btn btn-sm btn-primary">
-                      <i class="bi bi-eye"></i> 
+                    $btn = '<a href="' . route('approved.lieu.leave.requests.show', $row->id) . '" class="btn btn-sm btn-outline-primary"
+                     title="View Lieu Leave Request">
+                    <i class="bi bi-eye"></i> 
                     </a>';
+
+                    $btn .= '&emsp;<a href="' . route('lieu.leave.requests.print', $row->id) . '" class="btn btn-sm btn-outline-primary" target="_blank">
+                     <i class="bi bi-printer"></i>
+                    </a>';
+
                     return $btn;
                 })
                 ->rawColumns(['status', 'action'])
@@ -53,7 +59,6 @@ class ApprovedController extends Controller
         }
         return view('LieuLeave::approved.index');
     }
-
 
     public function show($id)
     {

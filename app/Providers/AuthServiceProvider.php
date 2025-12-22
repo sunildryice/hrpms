@@ -49,6 +49,8 @@ use Modules\LieuLeave\Models\LieuLeaveRequest;
 use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
+use Modules\WorkFromHome\Models\WorkFromHome;
+use Modules\WorkFromHome\Policies\WorkFromHomePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -78,6 +80,7 @@ class AuthServiceProvider extends ServiceProvider
         ConstructionInstallment::class => ConstructionInstallmentPolicy::class,
         EmployeeRequest::class => EmployeeRequestPolicy::class,
         EventCompletion::class => EventCompletionPolicy::class,
+        WorkFromHome::class => WorkFromHomePolicy::class,
         LieuLeaveRequest::class => LieuLeavePolicy::class,
     ];
 

@@ -5,6 +5,23 @@
 <form action="{!! route('travel.claims.local.travel.store', $travelClaim->id) !!}" method="post" enctype="multipart/form-data" id="claimLocalTravelForm"
     autocomplete="off">
     <div class="modal-body">
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">Activity</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select class="form-control select2" data-width="100%" name="activity_code_id">
+                    <option value="">Select Activity</option>
+                    @foreach ($activityCodes as $activityCode)
+                        <option value="{!! $activityCode->id !!}">{{ $activityCode->getActivityCodeDescription() }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -65,7 +82,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label">Travel Fare</label>
+                    <label for="" class="form-label required-label">Travel Fare</label>
                 </div>
             </div>
             <div class="col-lg-9">

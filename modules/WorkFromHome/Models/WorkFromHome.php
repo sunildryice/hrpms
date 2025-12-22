@@ -5,9 +5,11 @@ namespace Modules\WorkFromHome\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use SebastianBergmann\CodeCoverage\Report\Xml\Project;
 
 class WorkFromHome extends Model
 {
@@ -21,10 +23,8 @@ class WorkFromHome extends Model
         'request_date',
         'requester_id',
         'approver_id',
-        'project_id',
         'fiscal_year_id',
         'reason',
-        'deliverables',
         'office_id',
         'department_id',
         'status_id',
@@ -36,15 +36,33 @@ class WorkFromHome extends Model
         'deliverables' => 'array',
     ];
 
+    protected $dates = [
+        'start_date',
+        'end_date',
+        'request_date',
+    ];
 
-    public function project()
+
+    public function projects()
     {
-        return $this->belongsTo(ProjectCode::class, 'project_id');
+        return $this->belongsToMany(ProjectCode::class, 'project_work_from_home', 'work_from_home_id', 'project_id')
+            ->withPivot('deliverables')
+            ->withTimestamps();
+    }
+
+    public function getProjectNames()
+    {
+        return $this->projects->pluck('short_name')->toArray();
     }
 
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');
+    }
+
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
 
@@ -94,8 +112,23 @@ class WorkFromHome extends Model
         return $this->requester->employee->getFullName();
     }
 
+
     public function getRequestId()
     {
-        return 'WFH-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $workFromHomeNumber = $this->work_from_home_number ? 'WFH-' . $this->work_from_home_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $workFromHomeNumber . $fiscalYear;
+    }
+
+
+    public function getTotalDays()
+    {
+        return $this->end_date ? $this->end_date->diffInDays($this->start_date) + 1 : 1;
+    }
+
+    public function getWorkFromHomeDuration()
+    {
+        return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
     }
 }

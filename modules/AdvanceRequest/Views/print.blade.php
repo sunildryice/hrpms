@@ -9,7 +9,7 @@
 
     <section class="print-info bg-white p-3" id="print-info">
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $advanceRequest->office->getOfficeName() }}</div>
             <div class="fs-8">Cash Advance Request</div>
         </div>
@@ -40,7 +40,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt=""
+                                    class="align-self-end pe-5 logo-img">
                             </div>
 
                         </div>
@@ -106,7 +107,8 @@
             <table class="table border">
                 <tbody>
                     <tr>
-                        <th colspan="3" scope="row">Requested Amount in Figure: {{ $advanceRequest->getEstimatedAmount() }}</th>
+                        <th colspan="3" scope="row">Requested Amount in Figure:
+                            {{ $advanceRequest->getEstimatedAmount() }}</th>
                     </tr>
                     <tr>
                         <th colspan="3" scope="row" class="text-capitalize">Amount in Words: {{ $digit }}</th>
@@ -158,15 +160,20 @@
                     <div><strong>Name:</strong> {{ $advanceRequest->getVerifierName() }} </div>
                     <div><strong>Title:</strong> {{ $advanceRequest->verifier->employee->getDesignationName() }} </div>
                     <div>
-                        <strong>Date:</strong> {{ $advanceRequest->verifiedLog ? $advanceRequest->verifiedLog->created_at : '' }}
+                        <strong>Date:</strong>
+                        {{ $advanceRequest->verifiedLog ? $advanceRequest->verifiedLog->created_at : '' }}
                     </div>
                 </div>
                 <div class="col-lg-4 mb-4">
                     <div><strong>Recommended By:</strong></div>
-                    <div><strong>Name:</strong> {{ $advanceRequest->recommendedLog ? $advanceRequest->getReviewerName() : '' }} </div>
-                    <div><strong>Title:</strong> {{ $advanceRequest->recommendedLog ? $advanceRequest->reviewer->employee->getDesignationName() : '' }} </div>
+                    <div><strong>Name:</strong>
+                        {{ $advanceRequest->recommendedLog ? $advanceRequest->getReviewerName() : '' }} </div>
+                    <div><strong>Title:</strong>
+                        {{ $advanceRequest->recommendedLog ? $advanceRequest->reviewer->employee->getDesignationName() : '' }}
+                    </div>
                     <div>
-                        <strong>Date:</strong> {{ $advanceRequest->recommendedLog ? $advanceRequest->recommendedLog->created_at : '' }}
+                        <strong>Date:</strong>
+                        {{ $advanceRequest->recommendedLog ? $advanceRequest->recommendedLog->created_at : '' }}
                     </div>
                 </div>
                 {{-- <div class="col-lg-6 mb-4">
@@ -183,7 +190,8 @@
                     <div><strong>Name:</strong> {{ $advanceRequest->getApproverName() }} </div>
                     <div><strong>Title:</strong> {{ $advanceRequest->approver->employee->getDesignationName() }} </div>
                     <div>
-                        <strong>Date:</strong> {{ $advanceRequest->approvedLog ? $advanceRequest->approvedLog->created_at : '' }}
+                        <strong>Date:</strong>
+                        {{ $advanceRequest->approvedLog ? $advanceRequest->approvedLog->created_at : '' }}
                     </div>
                 </div>
             </div>

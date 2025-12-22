@@ -1178,8 +1178,7 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label required-label">Send
-                                    to </label>
+                                <label for="validationRemarks" class="form-label required-label">{{ __('label.approval') }} </label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -1188,7 +1187,9 @@
                                 class="select2 form-control
                                                 @if ($errors->has('approver_id')) is-invalid @endif"
                                 data-width="100%">
-                                <option value="">Select an Approver</option>
+                                @if ($supervisors->count() !== 1)
+                                    <option value="">Select an Approver</option>
+                                @endif
                                 @foreach ($supervisors as $approver)
                                     <option value="{{ $approver->id }}"
                                         {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>

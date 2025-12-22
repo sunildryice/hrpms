@@ -38,10 +38,10 @@
                 <div class="card mb-4">
                     <div class="card-header fw-bold">Process Logs</div>
                     <div class="card-body">
-
-                        @php $logs = $wfhRequest->logs; @endphp
-
-                        @if ($logs->count())
+                        @php
+                            $logs = $wfhRequest->logs;
+                        @endphp
+                        @if (count($logs))
                             <div class="c-b">
                                 @foreach ($logs as $log)
                                     <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom">
@@ -56,6 +56,7 @@
                                                     class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2">
                                                     <label
                                                         class="form-label mb-0">{{ $log->createdBy->full_name ?? 'User' }}</label>
+                                                    <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                                 </div>
 
 
@@ -67,9 +68,6 @@
                                             <div class="d-flex align-items-center justify-content-between">
                                                 <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}
                                                 </p>
-                                                <div class="badge {{ $log->getStatusClass() ?? 'bg-secondary' }}">
-                                                    {{ $log->getStatus() }}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -78,7 +76,6 @@
                         @else
                             <em>No process logs available.</em>
                         @endif
-
                     </div>
                 </div>
 

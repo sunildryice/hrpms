@@ -6,7 +6,7 @@
     <section class="print-info bg-white p-3" id="print-info">
 
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $vehicleRequest->getOfficeName() }}</div>
             <div class="fs-8"> Vehicle Request</div>
         </div>
@@ -36,7 +36,7 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5" style="width: 200px">
                             </div>
                         </div>
                     </div>
@@ -207,7 +207,7 @@
                         </h4>
                     </div>
                 </div>
-                <div class="row mb-2">
+                {{-- <div class="row mb-2">
                     <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
                             <label for="" class="m-0 text-end flex-grow-1 fw-bold">Activity Code </label>
@@ -236,7 +236,7 @@
                     <div class="col-lg-9">
                         {{ $vehicleRequest->getDonorCode() }}
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="row mb-2">
                     <div class="col-lg-3">

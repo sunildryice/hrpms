@@ -28,6 +28,10 @@
                         name: 'pickup_location'
                     },
                     {
+                        data: 'total_fare',
+                        name: 'total_fare'
+                    },
+                    {
                         data: 'remarks',
                         name: 'remarks'
                     },
@@ -106,6 +110,7 @@
                                         <th scope="col">{{ __('label.date') }}</th>
                                         <th scope="col">{{ __('label.mode') }}</th>
                                         <th scope="col">Pickup Location</th>
+                                        <th scope="col">{{ __('label.fare') }}</th>
                                         <th scope="col">{{ __('label.reason') }}</th>
                                         <th scope="col">{{ __('label.attachment') }}</th>
                                     </tr>

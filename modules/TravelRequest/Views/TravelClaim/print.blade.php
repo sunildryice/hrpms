@@ -93,7 +93,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        {{-- <tr>
                             <td>Date</td>
                             <td style="width: 50%">Description of Expenses (Other than DSA)</td>
                             <td>Amount</td>
@@ -106,39 +106,51 @@
                                 <td>{{ $expense->expense_amount }}</td>
                                 <td>{{ $expense->activityCode->getActivityCode() }}</td>
                             </tr>
-                        @endforeach
+                        @endforeach --}}
                     </tbody>
                     <tfoot>
-                        <tr>
+                        {{-- <tr>
                             <td colspan="2" class="text-end">Sub-Total (A)</td>
                             <td colspan="2">{{ $travelClaim->total_expense_amount }}</td>
-                        </tr>
+                        </tr> --}}
                     </tfoot>
                 </table>
 
+                <h6 class="fw-bold mt-4">TADA Claim</h6>
                 <table class="table border">
                     <thead>
                         <tr>
-                            <th colspan="2">Tada Claim</th>
+                            <th>{{ __('label.activity') }}</th>
+                            <th>Activities/Tasks</th>
+                            <th colspan="2">{{ __('label.destination') }}</th>
                             <th class="text-center">Date</th>
                             <th>Days Spent</th>
                             <th>Total DSA</th>
-                            <th>Activity</th>
+                            <th>Daily Allowance</th>
+                            <th>Lodging Expense</th>
+                            <th>Other Expense</th>
+                            <th>Total Amount</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($travelClaim->dsaClaim as $dsaClaim)
                             <tr>
+                                <td rowspan="2">
+                                    {{ $dsaClaim->activityCode?->getActivityCodeDescription() }}</td>
+                                <td rowspan="2">
+                                    {{ $dsaClaim->activities }}</td>
                                 <td>DEP:</td>
                                 <td>{{ $dsaClaim->departure_place }}</td>
                                 <td>{{ $dsaClaim->getDepartureDate() }}</td>
                                 <td rowspan="2">{{ $dsaClaim->days_spent }}</td>
+                                <td rowspan="2">{{ $dsaClaim?->total_dsa }}</td>
+                                <td rowspan="2">{{ $dsaClaim?->daily_allowance }}</td>
+                                <td rowspan="2">{{ $dsaClaim?->lodging_expense }}</td>
+                                <td rowspan="2">{{ $dsaClaim?->other_expense }}</td>
                                 <td rowspan="2">{{ $dsaClaim?->total_amount }}</td>
                                 <td rowspan="2">
-                                    {{ $dsaClaim->activities}}</td>
-                                <td rowspan="2">
-                                    {{ $dsaClaim?->remarks}}</td>
+                                    {{ $dsaClaim?->remarks }}</td>
                             </tr>
                             <tr>
                                 <td>ARR:</td>
@@ -146,7 +158,7 @@
                                 <td>{{ $dsaClaim?->getArrivalDate() }}</td>
                             </tr>
                         @endforeach
-                        <tr>
+                        {{-- <tr>
                             <td colspan="4" class="text-end">Sub-Total (B)</td>
                             <td>{{ $travelClaim->total_itinerary_amount }}</td>
                             <td colspan="2"></td>
@@ -173,8 +185,101 @@
                                 travel allowances to which I am not entitled. If office provides breakfast, lunch, dinner or
                                 accommodation, this must be deducted from claim, i.e. % change should be 100%-deducted %
                             </td>
-                        </tr>
+                        </tr> --}}
                     </tbody>
+                </table>
+
+                <h6 class="fw-bold mt-4">Local Travel Claim</h6>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th rowspan="2">{{ __('label.activity') }}</th>
+                            <th rowspan="2">{{ __('label.date') }}</th>
+                            <th rowspan="2">{{ __('label.purpose') }}</th>
+                            <th colspan="2" class="text-center">{{ __('label.destination') }}</th>
+                            <th rowspan="2">Total fare</th>
+                            <th rowspan="2">{{ __('label.remarks') }}</th>
+                        </tr>
+                        <tr>
+                            <th>{{ __('label.from') }}</th>
+                            <th>{{ __('label.to') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($travelClaim->localTravels as $lt)
+                            <tr>
+                                <td>{{ $lt->activityCode?->getActivityCodeDescription() }}</td>
+                                <td>{{ $lt->getTravelDate() }}</td>
+                                <td>{{ $lt->purpose }}</td>
+                                <td>{{ $lt->departure_place }}</td>
+                                <td>{{ $lt->arrival_place }}</td>
+                                <td class="text-end">{{ number_format($lt->travel_fare, 2) }}</td>
+                                <td>{{ $lt->remarks }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <h6 class="fw-bold mt-4">Claim Expenses</h6>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>{{ __('label.activity') }}</th>
+                            <th>{{ __('label.date') }}</th>
+                            <th>{{ __('label.description') }}</th>
+                            <th>{{ __('label.amount') }}</th>
+                            <th>{{ __('label.invoice-bill-number') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($travelClaim->expenses as $exp)
+                            <tr>
+                                <td>{{ $exp->activityCode?->getActivityCodeDescription() }}</td>
+                                <td>{{ $exp->getExpenseDate() }}</td>
+                                <td>{{ $exp->expense_description }}</td>
+                                <td class="text-end">{{ number_format($exp->expense_amount, 2) }}</td>
+                                <td>{{ $exp->invoice_bill_number }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">{{ __('label.sub-total') }}</td>
+                            <td colspan="2" class="text-end fw-bold">
+                                {{ number_format($travelClaim->total_expense_amount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">Total Local Travel</td>
+                            <td colspan="2" class="text-end">
+                                {{ number_format($travelClaim->localTravels->sum('travel_fare'), 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">Total TADA</td>
+                            <td colspan="2" class="text-end">
+                                {{ number_format($travelClaim->total_itinerary_amount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">{{ __('label.grand-total') }}</td>
+                            <td colspan="2" class="text-end fw-bold">{{ number_format($travelClaim->total_amount, 2) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">{{ __('label.advance-amount') }}</td>
+                            <td colspan="2" class="text-end">{{ number_format($travelClaim->advance_amount, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end">{{ __('label.refundable-reimbursable-amount') }}</td>
+                            <td colspan="2" class="text-end">{{ $travelClaim->refundable_amount }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5">
+                                I certify that the following information is correct and per the approved Travel
+                                authorization. I authorize HERDi to treat this as the final claim and I will repay any
+                                travel allowances to which I am not entitled. If office provides breakfast, lunch, dinner or
+                                accommodation, this must be deducted from claim, i.e. % change should be 100%-deducted %
+                            </td>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 {{-- <table class="table border">
@@ -259,10 +364,7 @@
                     </div>
                 </div>
 
-
             </div>
         </div>
-
     </section>
-
 @endsection

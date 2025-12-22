@@ -2,16 +2,16 @@
     <div class="modal-title text-uppercase fw-bold" id="openModalLabel">Add Maintenance Request</div>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('maintenance.requests.store') !!}" method="post"
-      enctype="multipart/form-data" id="maintenanceAddForm" autocomplete="off">
+<form action="{!! route('maintenance.requests.store') !!}" method="post" enctype="multipart/form-data" id="maintenanceAddForm"
+    autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
-                    <label class="form-label required-label">{{ __('label.request-date') }}
-                    </label>
+                <label class="form-label required-label">{{ __('label.request-date') }}
+                </label>
             </div>
             <div class="col-lg-9">
-                <input name="request_date" type="text" value="{{ date('Y-m-d') }}" class="form-control"/>
+                <input name="request_date" type="text" value="{{ date('Y-m-d') }}" class="form-control" />
             </div>
         </div>
     </div>

@@ -59,6 +59,11 @@
                         name: 'end_date'
                     },
                     {
+                        data: 'total_days',
+                        name: 'total_days',
+                        className: 'dt-center'
+                    },
+                    {
                         data: 'status',
                         name: 'status',
                         orderable: false,
@@ -133,10 +138,11 @@
                         <tr>
                             <th>{{ __('label.sn') }}</th>
                             <th>{{ __('label.request-id') }}</th>
-                            <th>{{ __('label.project-name') }}</th>
+                            <th>{{ __('label.projects') }}</th>
                             <th>{{ __('label.request-date') }}</th>
                             <th>{{ __('label.start-date') }}</th>
                             <th>{{ __('label.end-date') }}</th>
+                            <th>{{ __('label.total-days') }}</th>
                             <th>{{ __('label.status') }}</th>
                             <th style="width: 140px;">{{ __('label.action') }}</th>
                         </tr>

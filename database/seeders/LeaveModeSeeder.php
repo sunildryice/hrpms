@@ -28,10 +28,10 @@ class LeaveModeSeeder extends Seeder
             ['title' => 'Second Half'],
             ['hours' => 4],
         );
-        // $leaveMode->updateOrCreate(
-        //     ['title'=>'2 Hour'],
-        //     ['hours'=>2],
-        // );
+        $leaveMode->updateOrCreate(
+            ['title' => '2 Hour'],
+            ['hours' => 2],
+        );
         $leaveMode->updateOrCreate(
             ['title' => 'No Leave'],
             ['hours' => 0],

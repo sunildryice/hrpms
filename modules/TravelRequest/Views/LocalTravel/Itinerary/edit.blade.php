@@ -89,6 +89,19 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">Fare</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="number" class="form-control" name="total_fare"
+                    value="{{ $localTravelItinerary->total_fare }}" placeholder="Fare">
+            </div>
+        </div>
+
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label for="" class="m-0">Attachment </label>
                 </div>
             </div>

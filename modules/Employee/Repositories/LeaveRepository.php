@@ -198,7 +198,6 @@ class LeaveRepository extends Repository
             return true;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
-
             return false;
         }
     }

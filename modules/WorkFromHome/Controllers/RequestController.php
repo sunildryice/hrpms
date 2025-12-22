@@ -50,8 +50,11 @@ class RequestController extends Controller
                 ->editColumn('end_date', function ($row) {
                     return $row->getEndDate();
                 })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
                 ->addColumn('project', function ($row) {
-                    return $row->project->title ?? '-';
+                    return $row->getProjectNames() ?? '-';
                 })
                 ->addColumn('status', function ($row) {
 
@@ -85,7 +88,7 @@ class RequestController extends Controller
 
         $authUser = auth()->user();
 
-        $projects = $this->projects->pluck('title', 'id');
+        $projects = $this->projects->pluck('short_name', 'id');
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::create', [
@@ -105,7 +108,6 @@ class RequestController extends Controller
             $inputs['approver_id'] = $inputs['send_to'];
             $inputs['deliverables'] = $inputs['deliverables'];
             $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-            $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id'] = $authUser->employee->office_id;
             $inputs['department_id'] = $authUser->employee->department_id;
             $inputs['created_by'] = auth()->id();
@@ -119,6 +121,16 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $workFromHome = $this->workFromHomes->create($inputs);
+
+                $pivotData = [];
+                foreach ($inputs['project_ids'] as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($inputs['deliverables'][$projectId] ?? []),
+                    ];
+                }
+                $workFromHome->projects()->sync($pivotData);
+
+
                 $logInputs = [
                     'user_id' => $authUser->id,
                     'log_remarks' => 'Work From Home request is submitted.',
@@ -127,22 +139,32 @@ class RequestController extends Controller
                     'work_from_home_id' => $workFromHome->id,
                 ];
 
+
+
+                $this->workFromHomeLogs->create($logInputs);
+
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
+                $workFromHome->save();
+
                 $workFromHome->approver->notify(new WorkFromHomeRequestSubmitted($workFromHome));
             } else {
                 $inputs['status_id'] = config('constant.CREATED_STATUS');
 
                 $workFromHome = $this->workFromHomes->create($inputs);
 
-                $logInputs = [
-                    'user_id' => $authUser->id,
-                    'log_remarks' => 'Work From Home request is created.',
-                    'original_user_id' => $inputs['original_user_id'],
-                    'status_id' => $workFromHome->status_id,
-                    'work_from_home_id' => $workFromHome->id,
-                ];
+                $pivotData = [];
+                foreach ($inputs['project_ids'] as $projectId) {
+                    $pivotData[$projectId] = [
+                        'deliverables' => json_encode($inputs['deliverables'][$projectId] ?? []),
+                    ];
+                }
+                $workFromHome->projects()->sync($pivotData);
             }
-
-            $this->workFromHomeLogs->create($logInputs);
 
             DB::commit();
 
@@ -167,15 +189,25 @@ class RequestController extends Controller
 
     public function edit($id)
     {
-        $wfhRequest = $this->workFromHomes
-            ->with('logs')->find($id);
+        $workFromHome = $this->workFromHomes->with('projects')->findOrFail($id);
 
+        $selectedProjectIds = $workFromHome->projects->pluck('id')->toArray();
 
-        return view('WorkFromHome::edit', [
-            'wfhRequest' => $wfhRequest,
-            'projects' => $this->projects->pluck('title', 'id'),
-            'supervisors' => $this->users->getSupervisors(auth()->user())->pluck('full_name', 'id'),
-        ]);
+        $deliverables = [];
+        $projects = $workFromHome->projects->pluck('short_name', 'id');
+        $authUser = auth()->user();
+        $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
+
+        foreach ($workFromHome->projects as $project) {
+            $deliverables[$project->id] = json_decode($project->pivot->deliverables, true) ?? [];
+        }
+        return view('WorkFromHome::edit', compact(
+            'workFromHome',
+            'projects',
+            'supervisors',
+            'selectedProjectIds',
+            'deliverables'
+        ));
     }
 
     public function update(UpdateRequest $request, $id)
@@ -189,10 +221,11 @@ class RequestController extends Controller
             $inputs['requester_id']     = auth()->id();
             $inputs['approver_id']      = $inputs['send_to'];
             $inputs['original_user_id'] = session()->get('original_user');
-            $inputs['fiscal_year_id']   = $this->fiscalYears->getCurrentFiscalYearId();
             $inputs['office_id']        = $authUser->employee->office_id;
             $inputs['department_id']    = $authUser->employee->department_id;
             $inputs['updated_by']       = auth()->id();
+            $projectIds   = $inputs['project_ids'] ?? [];
+            $deliverables = $inputs['deliverables'] ?? [];
 
             if ($inputs['btn'] === 'submit') {
                 $inputs['status_id']    = config('constant.SUBMITTED_STATUS');
@@ -207,6 +240,16 @@ class RequestController extends Controller
                     'work_from_home_id' => $workFromHome->id,
                 ];
 
+
+                $this->workFromHomeLogs->create($logInputs);
+
+                $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
+
+                $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
+                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
+                $workFromHome->save();
+
                 $workFromHome->approver->notify(
                     new WorkFromHomeRequestSubmitted($workFromHome)
                 );
@@ -214,18 +257,15 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.CREATED_STATUS');
 
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
-
-                $logInputs = [
-                    'user_id'          => $authUser->id,
-                    'log_remarks'      => 'Work From Home request is updated.',
-                    'original_user_id' => $inputs['original_user_id'],
-                    'status_id'        => $workFromHome->status_id,
-                    'work_from_home_id' => $workFromHome->id,
-                ];
             }
 
-            // Create log
-            $this->workFromHomeLogs->create($logInputs);
+            $pivotData = [];
+            foreach ($projectIds as $projectId) {
+                $pivotData[$projectId] = [
+                    'deliverables' => json_encode($deliverables[$projectId] ?? []),
+                ];
+            }
+            $workFromHome->projects()->sync($pivotData);
 
             DB::commit();
 

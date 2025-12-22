@@ -44,7 +44,7 @@
                     <div class="p-business-area d-flex justify-content-between">
                         <div class="bs-info mb-3">
                             <img style="max-width: 100px;" src="">
-                            <h3 class="bs-title mb-0"> One Heart Worldwide </h3>
+                            <h3 class="bs-title mb-0"> HERD International </h3>
                             <span class="bs-subtext">Bagdol-4, Lalitpur, Nepal</span>
                         </div>
                         <div class="bs-m-info">

@@ -194,11 +194,11 @@ class LeaveRequestController extends Controller
         $leave = $this->employeeLeaves->find($request->leave_type_id);
         $checkLeaveExists = $this->leaveRequests->checkOverlapLeaveDays(array_combine($inputs['leave_days'], $inputs['leave_mode_id']), $authUser->employee->id);
 
-        if ($checkLeaveExists) {
-            return redirect()->back()
-                ->withInput()
-                ->withWarningMessage('There are overlapping leave days on requested date range.');
-        }
+        // if ($checkLeaveExists) {
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->withWarningMessage('There are overlapping leave days on requested date range.');
+        // }
 
         $inputs['requester_id'] = $inputs['created_by'] = $authUser->id;
         $inputs['office_id'] = $authUser->employee->office_id;
@@ -256,8 +256,6 @@ class LeaveRequestController extends Controller
     {
         $authUser = auth()->user();
         $leaveRequest = $this->leaveRequests->find($id);
-
-
         $this->authorize('update', $leaveRequest);
 
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
@@ -287,7 +285,6 @@ class LeaveRequestController extends Controller
             return $staff->id == $authUser->employee_id;
         });
 
-
         if (
             $leaveRequest->leave_type_id == config('constant.SICK_LEAVE') ||
             $leaveRequest->leave_type_id == config('constant.ANNUAL_LEAVE')
@@ -311,7 +308,9 @@ class LeaveRequestController extends Controller
             ->where('employee_id', $authUser->employee_id)
             ->where('fiscal_year_id', $fiscalYear->id)
             ->where('leave_type_id', $leaveRequest->leave_type_id)
+            ->orderBy('reported_date', 'desc')
             ->first();
+
         $supervisors = $this->users->getSupervisors($authUser);
         $holidays = $this->offices->getHolidays($authUser->employee->office_id);
 

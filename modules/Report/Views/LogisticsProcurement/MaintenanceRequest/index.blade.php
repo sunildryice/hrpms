@@ -4,11 +4,11 @@
 
 @section('page_js')
     <script type="text/javascript">
-        let start_date  = '';
-        let end_date    = '';
-        let rm_number   = '';
-        let office      = '';
-        let item        = '';
+        let start_date = '';
+        let end_date = '';
+        let rm_number = '';
+        let office = '';
+        let item = '';
 
         $(document).ready(function() {
 
@@ -23,11 +23,11 @@
                     url: "{{ route('report.maintenance.request.index') }}",
                     type: 'POST',
                     data: function(d) {
-                        d.start_date    = start_date;
-                        d.end_date      = end_date;
-                        d.rm_number     = rm_number;
-                        d.office        = office;
-                        d.item          = item;
+                        d.start_date = start_date;
+                        d.end_date = end_date;
+                        d.rm_number = rm_number;
+                        d.office = office;
+                        d.item = item;
                     }
                 },
                 columns: [{
@@ -131,18 +131,19 @@
 
                 $('#btn_export').attr('href', '');
                 $('#btn_export').attr('href', $('#btn_export').attr('href') +
-                    '/report/maintenance/request/export?start_date=' + start_date + '&end_date=' + end_date
-                    + '&rm_number=' + rm_number + '&office=' + office + '&item=' + item );
+                    '/report/maintenance/request/export?start_date=' + start_date + '&end_date=' +
+                    end_date +
+                    '&rm_number=' + rm_number + '&office=' + office + '&item=' + item);
 
                 oTable.ajax.reload();
             });
 
             $('#btn_reset').on('click', function(e) {
-                start_date  = '';
-                end_date    = '';
-                rm_number   = '';
-                office      = '';
-                item        = '';
+                start_date = '';
+                end_date = '';
+                rm_number = '';
+                office = '';
+                item = '';
                 $('#office').val('').trigger('change');
                 $('#item').val('').trigger('change');
             });
@@ -160,19 +161,18 @@
             format: 'yyyy-mm-dd'
         });
 
-        function resetValue(name){
+        function resetValue(name) {
             let value = null;
             eval(name + "=" + value + ";");
         }
-
     </script>
 @endsection
 @section('page-content')
     <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
+                <div class="brd-crms flex-grow-1">
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">Home</a></li>

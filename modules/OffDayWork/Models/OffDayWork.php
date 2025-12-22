@@ -5,6 +5,7 @@ namespace Modules\OffDayWork\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
@@ -18,10 +19,8 @@ class OffDayWork extends Model
     protected $fillable = [
         'requester_id',
         'approver_id',
-        'project_id',
         'date',
         'fiscal_year_id',
-        'deliverables',
         'reason',
         'status_id',
     ];
@@ -41,9 +40,16 @@ class OffDayWork extends Model
         return $this->belongsTo(User::class, 'approver_id');
     }
 
-    public function project()
+    public function projects()
     {
-        return $this->belongsTo(ProjectCode::class, 'project_id', 'id',);
+        return $this->belongsToMany(ProjectCode::class, 'project_off_day_work', 'off_day_work_id', 'project_id')
+            ->withPivot('deliverables')
+            ->withTimestamps();
+    }
+
+    public function getProjectNames()
+    {
+        return $this->projects->pluck('short_name')->toArray();
     }
 
     public function logs()
@@ -60,6 +66,11 @@ class OffDayWork extends Model
     public function getRequestDate()
     {
         return Carbon::parse($this->request_date)->format('M j, Y');
+    }
+
+    public function fiscalYear()
+    {
+        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
     public function status()
@@ -87,6 +98,9 @@ class OffDayWork extends Model
 
     public function getRequestId()
     {
-        return 'ODW-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+        $offDayWorkNumber = $this->off_day_work_number ? 'ODW-' . $this->off_day_work_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
+
+        return $offDayWorkNumber . $fiscalYear;
     }
 }

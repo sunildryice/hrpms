@@ -118,26 +118,43 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Day</th>
-                                                <th>Date</th>
+                                                <th style="width: 10%">Day</th>
+                                                <th style="width: 15%">Date</th>
                                                 <th>Carried Activities / Completed Tasks</th>
-                                                <th style="width: 40%">Remarks</th>
+                                                <th style="width: 25%">Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @forelse($travelReport->travelReportRecommendations as $rec)
+                                            @php
+                                                $start = \Carbon\Carbon::parse($travelRequest->departure_date);
+                                                $end = \Carbon\Carbon::parse($travelRequest->return_date);
+                                                $dates = collect();
+                                                for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
+                                                    $dates->push($d->copy());
+                                                }
+
+                                                $existing = $travelReport->travelReportRecommendations->keyBy(function (
+                                                    $item,
+                                                ) {
+                                                    return $item->activity_date?->format('Y-m-d');
+                                                });
+                                            @endphp
+
+                                            @foreach ($dates as $index => $date)
+                                                @php
+                                                    $dateStr = $date->format('Y-m-d');
+                                                    $weekday = $date->format('l');
+                                                    $dayNum = $index + 1;
+
+                                                    $rec = $existing->get($dateStr);
+                                                @endphp
                                                 <tr>
-                                                    <td>{{ nl2br(e($rec->day_number)) }}</td>
-                                                    <td>{{ $rec->activity_date?->format('d M Y') }}</td>
-                                                    <td>{{ nl2br(e($rec->completed_tasks)) }}</td>
-                                                    <td>{{ nl2br(e($rec->remarks)) }}</td>
+                                                    <td class="text-center fw-bold">{{ $weekday }}</td>
+                                                    <td class="text-nowrap">{{ $date->format('d M Y') }}</td>
+                                                    <td>{!! $rec?->completed_tasks ? nl2br(e($rec->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
+                                                    <td>{!! $rec?->remarks ? nl2br(e($rec->remarks)) : '' !!}</td>
                                                 </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="4" class="text-center text-muted">No activities recorded
-                                                    </td>
-                                                </tr>
-                                            @endforelse
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>

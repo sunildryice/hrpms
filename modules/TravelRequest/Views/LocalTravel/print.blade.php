@@ -47,7 +47,7 @@
 
     <section class="print-info bg-white p-3" id="print-info">
         <div class="print-title fw-bold mb-3 translate-middle text-center ">
-            <div class="fs-5"> One Heart Worldwide</div>
+            <div class="fs-5"> HERD International</div>
             <div class="fs-8">{{ $localTravel->getOfficeName() }}</div>
             <div class="fs-8"> Local Travel Reimbursement</div>
         </div>
@@ -82,7 +82,6 @@
         </div>
 
         <div class="print-body mb-5">
-
             <div class="row">
                 <div class="col-lg-12">
                     <table class="table border mb-4">
@@ -116,6 +115,7 @@
                                 <th>Date</th>
                                 <th>Travel Mode</th>
                                 <th>Pickup Location</th>
+                                <th>{{ __('label.fare') }}</th>
                                 <th>Reason</th>
                             </tr>
                             @foreach ($localTravel->localTravelItineraries as $itinerary)
@@ -123,12 +123,12 @@
                                     <td>{{ $itinerary->getTravelDate() }}</td>
                                     <td>{{ $itinerary->getTravelMode() }}</td>
                                     <td>{{ $itinerary->pickup_location }}</td>
+                                    <td>{{ $itinerary->total_fare }}</td>
                                     <td>{{ $itinerary->remarks }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
                             <div><strong>{{$localTravel->isConsultantTravel() ? "Prepared By: (On Belalf of Consultant)" : 'Requested By:'}}</strong></div>

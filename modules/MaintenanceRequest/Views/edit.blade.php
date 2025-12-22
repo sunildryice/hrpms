@@ -2,6 +2,16 @@
 
 @section('title', 'Edit Maintenance Request')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function(e) {
@@ -65,27 +75,36 @@
             bInfo: false,
             columns: [{
                     data: 'item_name',
-                    name: 'item_name'
+                    name: 'item_name',
+                    className: 'wrap-text'
                 },
                 {
                     data: 'problem',
                     name: 'problem'
                 },
+                // {
+                //     data: 'activity',
+                //     name: 'activity'
+                // },
+                // {
+                //     data: 'account',
+                //     name: 'account'
+                // },
+                // {
+                //     data: 'donor',
+                //     name: 'donor'
+                // },
+                // {
+                //     data: 'estimated_cost',
+                //     name: 'estimated_cost'
+                // },
                 {
-                    data: 'activity',
-                    name: 'activity'
+                    data: 'replacement_good_needed',
+                    name: 'replacement_good_needed',
                 },
                 {
-                    data: 'account',
-                    name: 'account'
-                },
-                {
-                    data: 'donor',
-                    name: 'donor'
-                },
-                {
-                    data: 'estimated_cost',
-                    name: 'estimated_cost'
+                    data: 'remarks',
+                    name: 'remarks',
                 },
                 {
                     data: 'action',
@@ -128,20 +147,20 @@
                 });
                 const fv = FormValidation.formValidation(form, {
                     fields: {
-                        activity_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Activity code is required',
-                                },
-                            },
-                        },
-                        account_code_id: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'Account code is required',
-                                },
-                            },
-                        },
+                        // activity_code_id: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Activity code is required',
+                        //         },
+                        //     },
+                        // },
+                        // account_code_id: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Account code is required',
+                        //         },
+                        //     },
+                        // },
                         problem: {
                             validators: {
                                 notEmpty: {
@@ -149,19 +168,27 @@
                                 },
                             },
                         },
-                        estimated_cost: {
+
+                        // estimated_cost: {
+                        //     validators: {
+                        //         notEmpty: {
+                        //             message: 'Estimated Cost field is required.',
+                        //         },
+                        //         numeric: {
+                        //             message: 'The Estimated Cost should be number.',
+                        //         },
+                        //         between: {
+                        //             inclusive: true,
+                        //             min: 1,
+                        //             max: 99999999,
+                        //             message: 'The value must be between 1 to 99999999',
+                        //         },
+                        //     },
+                        // },
+                        replacement_good_needed: {
                             validators: {
                                 notEmpty: {
-                                    message: 'Estimated Cost field is required.',
-                                },
-                                numeric: {
-                                    message: 'The Estimated Cost should be number.',
-                                },
-                                between: {
-                                    inclusive: true,
-                                    min: 1,
-                                    max: 99999999,
-                                    message: 'The value must be between 1 to 99999999',
+                                    message: 'Please select if replacement goods are needed.',
                                 },
                             },
                         },
@@ -287,7 +314,8 @@
                     <div class="mb-2 row">
                         <div class="col-lg-2">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationHealthFacility" class="form-label">Remarks</label>
+                                <label for="validationHealthFacility" class="form-label">Reason For Maintenance
+                                    Request</label>
                             </div>
                         </div>
                         <div class="col-lg-10">
@@ -335,7 +363,7 @@
                             </div>
                         </div>
                         <div class="col-lg-10">
-                            @php $selectedApproverId = old('reviewer_id') ?: $maintenanceRequest->reviewer_id; @endphp
+                            @php $selectedApproverId = old('approver_id') ?: $maintenanceRequest->approver_id; @endphp
                             <select name="approver_id"
                                 class="select2 form-control
                                             @if ($errors->has('approver_id')) is-invalid @endif"
@@ -396,22 +424,24 @@
                                 <tr>
                                     <th scope="col">{{ __('label.item-name') }}</th>
                                     <th scope="col">{{ __('label.problem') }}</th>
-                                    <th scope="col">{{ __('label.activity') }}</th>
+                                    {{-- <th scope="col">{{ __('label.activity') }}</th>
                                     <th scope="col">{{ __('label.account') }}</th>
                                     <th scope="col">{{ __('label.donor') }}</th>
-                                    <th scope="col">{{ __('label.estimate') }}</th>
+                                    <th scope="col">{{ __('label.estimate') }}</th> --}}
+                                    <th scope="col">{{ __('label.replacement-good-needed') }}</th>
+                                    <th scope="col">{{ __('label.remarks') }}</th>
                                     <th style="width: 150px" class="sticky-col">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                             </tbody>
-                            <tfoot>
+                            {{-- <tfoot>
                                 <tr>
-                                    <td colspan="5">Total Amount</td>
+                                    <td colspan="3">Total Amount</td>
                                     <td id="total_amount">{{ $maintenanceRequest->estimated_cost }}</td>
                                     <td colspan="1"></td>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
                     </div>
                 </div>

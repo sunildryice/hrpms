@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'project_code_id'=>'required|exists:lkup_project_codes,id',
             'office_id'=>'required_if:vehicle_request_type_id,1',
             'vehicle_request_type_id'=>'required',
             'office_start_datetime'=>'required_if:vehicle_request_type_id,1|date_format:Y-m-d H:i',

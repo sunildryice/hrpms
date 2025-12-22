@@ -3,15 +3,6 @@
 
 @section('title', 'Maintenance Request')
 
-@section('page_css')
-    <style>
-        .wrap-text {
-            white-space: normal !important;
-            word-wrap: break-word;
-            word-break: break-word;
-        }
-    </style>
-@endsection
 
 @section('page_js')
     <script type="text/javascript">
@@ -28,7 +19,6 @@
                 columns: [{
                         data: 'item_name',
                         name: 'item_name',
-                        className: 'wrap-text'
                     },
                     {
                         data: 'problem',
@@ -104,7 +94,7 @@
                             <table class="table" id="maintenanceRequestItemTable">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">{{ __('label.item-name') }}</th>
+                                        <th scope="col" width="30%">{{ __('label.item-name') }}</th>
                                         <th scope="col">{{ __('label.problem') }}</th>
                                         {{-- <th scope="col">{{ __('label.activity') }}</th>
                                         <th scope="col">{{ __('label.account') }}</th>

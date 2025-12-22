@@ -76,7 +76,7 @@
             columns: [{
                     data: 'item_name',
                     name: 'item_name',
-                    className: 'wrap-text'
+                    // className: 'wrap-text'
                 },
                 {
                     data: 'problem',

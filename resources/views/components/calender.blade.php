@@ -90,9 +90,9 @@
         }
 
         /* .fc .fc-daygrid-body .fc-daygrid-day {
-                                                                                                                                        height: 50px;
-                                                                                                                                        max-height: 50px;
-                                                                                                                                    } */
+                                                                                                                                            height: 50px;
+                                                                                                                                            max-height: 50px;
+                                                                                                                                        } */
     </style>
 @endsection
 
@@ -312,7 +312,7 @@
         otherLeaves.forEach(ol => {
             const requester = ol.requester || {};
             events.push({
-                title: `Leave: ${requester.full_name ?? requester.name ?? 'Employee'}`,
+                title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Leave`,
                 start: normalizeDate(ol.start_date),
                 end: addOneDay(normalizeDate(ol.end_date)),
                 type: 'leave',

@@ -88,7 +88,7 @@ class RequestController extends Controller
 
         $authUser = auth()->user();
 
-        $projects = $this->projects->pluck('short_name', 'id');
+        $projects = $this->projects->pluck('short_name', 'id')->toArray();
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::create', [
@@ -194,7 +194,7 @@ class RequestController extends Controller
         $selectedProjectIds = $workFromHome->projects->pluck('id')->toArray();
 
         $deliverables = [];
-        $projects = $workFromHome->projects->pluck('short_name', 'id');
+        $projects = $this->projects->pluck('short_name', 'id')->toArray();
         $authUser = auth()->user();
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 

@@ -43,7 +43,6 @@
                     {
                         data: 'project',
                         name: 'project',
-                        className: 'wrap-text'
 
                     },
                     {

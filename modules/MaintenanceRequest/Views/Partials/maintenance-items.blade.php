@@ -21,7 +21,6 @@
                 columns: [{
                         data: 'item_name',
                         name: 'item_name',
-                        className: 'wrap-text'
                     },
                     {
                         data: 'problem',
@@ -30,7 +29,11 @@
                     {
                         data: 'replacement_good_needed',
                         name: 'replacement_good_needed'
-                    }
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
+                    },
                     // {
                     //     data: 'activity',
                     //     name: 'activity'
@@ -81,6 +84,7 @@
                 <th scope="col">{{ __('label.item-name') }}</th>
                 <th scope="col">{{ __('label.problem') }}</th>
                 <th scope="col">{{ __('label.replacement-good-needed') }}</th>
+                <th scope="col">{{ __('label.remarks') }}</th>
                 {{-- <th scope="col">{{ __('label.activity') }}</th>
                 <th scope="col">{{ __('label.account') }}</th>
                 <th scope="col">{{ __('label.donor') }}</th>

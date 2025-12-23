@@ -34,9 +34,11 @@
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
             // Select2
-            $('#project_ids').addClass('select2').select2({
-                width: '100%',
-                dropdownAutoWidth: true
+            $(document).ready(function() {
+                $('#project_ids').addClass('select2').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
             });
             $('#send_to').addClass('select2').select2({
                 width: '100%',
@@ -229,7 +231,8 @@
                                     message: 'Add at least one deliverable and fill all tasks',
                                     callback: function() {
                                         const items = $(
-                                            '#deliverables-table tbody input[name^="deliverables"]');
+                                            '#deliverables-table tbody input[name^="deliverables"]'
+                                        );
                                         return items.length > 0 && items.filter(function() {
                                             return $(this).val().trim() !== '';
                                         }).length === items.length;

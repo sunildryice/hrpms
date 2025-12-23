@@ -40,6 +40,7 @@ class MaintenanceRequestController extends Controller
         $authUser = auth()->user();
         $userId = auth()->id();
 
+
         if ($request->ajax()) {
             $data = $this->maintenanceRequest
                 ->select(['*'])
@@ -51,12 +52,10 @@ class MaintenanceRequestController extends Controller
                 ->where(function ($q) use ($userId) {
                     $q->where('created_by', $userId);
                 })
-                ->orWhere(function ($q) use ($userId) {
-                    $q->where('requester_id', $userId);
-                })
-                ->orWhere(function ($q) {
-                    $q->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.VERIFIED_STATUS')]);
-                })
+                ->where('requester_id', '=', $userId)
+                // ->orWhere(function ($q) {
+                //     $q->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.VERIFIED_STATUS')]);
+                // })
                 ->orderBy('created_at', 'desc')
                 ->get();
 

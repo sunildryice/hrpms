@@ -32,11 +32,12 @@
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
             // Select2
-            $('#project_ids').addClass('select2').select2({
-                width: '100%',
-                dropdownAutoWidth: true
+            $(document).ready(function() {
+                $('#project_ids').addClass('select2').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
             });
-            {{-- [web:12] --}}
             $('#send_to').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true

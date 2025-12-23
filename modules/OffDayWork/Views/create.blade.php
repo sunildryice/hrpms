@@ -79,9 +79,11 @@
             const form = document.getElementById('offDayWorkRequestAddForm');
             const $tbody = $('#deliverables-table tbody');
 
-            $('#project_ids, #send_to').addClass('select2').select2({
-                width: '100%',
-                dropdownAutoWidth: true
+            $(document).ready(function() {
+                $('#project_ids, #send_to').addClass('select2').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
             });
 
             function buildTaskItem(projectId, value = '') {

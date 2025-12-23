@@ -44,13 +44,74 @@
                 let url = $(this).attr('data-href');
                 let month = $(this).attr('data-month');
                 let year = $(this).attr('data-year');
-                let successCallback = function (response) {
+                let successCallback = function(response) {
                     toastr.success(response.message, 'Success', {
                         timeOut: 2000
                     });
                     oTable.ajax.reload();
                 };
-                ajaxTextSweetAlert(url, 'POST', `Amend attendance of ${month}, ${year}?`, 'Remarks', 'log_remarks',successCallback );
+                ajaxTextSweetAlert(url, 'POST', `Amend attendance of ${month}, ${year}?`, 'Remarks',
+                    'log_remarks', successCallback);
+            });
+
+            // Check In Today
+            $(document).on('click', '.checkin-today-btn', function() {
+                let date = $(this).data('date');
+                let btn = $(this);
+
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Checking in...');
+
+                $.ajax({
+                    url: "{{ route('attendance.checkin.today') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        date: date
+                    },
+                    success: function(response) {
+                        toastr.success('Checked in at ' + response.time);
+                        $('#today-attendance-action').html(`
+                <button class="btn btn-warning btn-sm checkout-today-btn" data-date="${date}">
+                    <i class="bi bi-box-arrow-in-left"></i> Check Out
+                </button>
+            `);
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html(
+                            '<i class="bi bi-box-arrow-in-right"></i> Check In Now');
+                        toastr.error(xhr.responseJSON?.message || 'Failed to check in');
+                    }
+                });
+            });
+
+            // Check Out Today
+            $(document).on('click', '.checkout-today-btn', function() {
+                let date = $(this).data('date');
+                let btn = $(this);
+
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Checking out...');
+
+                $.ajax({
+                    url: "{{ route('attendance.checkout.today') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        date: date
+                    },
+                    success: function(response) {
+                        toastr.success('Checked out at ' + response.time);
+                        $('#today-attendance-action').html(`
+                <button class="btn btn-success btn-sm" disabled>
+                    <i class="bi bi-check-circle-fill"></i> Completed Today
+                </button>
+            `);
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html(
+                            '<i class="bi bi-box-arrow-in-left"></i> Check Out Now');
+                        toastr.error(xhr.responseJSON?.message || 'Failed to check out');
+                    }
+                });
             });
         });
     </script>
@@ -74,7 +135,54 @@
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
             </div>
 
-            {{-- @if (auth()->user()->can('add-attendance')) --}}
+            <div class="add-info justify-content-end">
+                <div id="today-attendance-action">
+                    @php
+                        $today = now()->format('Y-m-d');
+                        $employeeId = auth()->user()->employee->id;
+
+                        // Get current month's attendance master
+                        $attendanceMaster = \Modules\EmployeeAttendance\Models\Attendance::where(
+                            'employee_id',
+                            $employeeId,
+                        )
+                            ->where('year', now()->year)
+                            ->where('month', now()->month)
+                            ->first();
+
+                        $todayDetail = null;
+                        $hasCheckIn = false;
+                        $hasCheckOut = false;
+
+                        if ($attendanceMaster) 
+                        {
+                            $todayDetail = $attendanceMaster
+                                ->attendanceDetails()
+                                ->where('attendance_date', $today)->first();
+                                $hasCheckIn = $todayDetail && $todayDetail->checkin;
+                                $hasCheckOut = $todayDetail && $todayDetail->checkout;
+                        }
+                    @endphp
+
+                    @if (!$attendanceMaster)
+                        <span class="text-muted small">Monthly attendance not yet created.</span>
+                    @elseif ($hasCheckOut)
+                        <button class="btn btn-success btn-sm" disabled>
+                            <i class="bi bi-check-circle-fill"></i> Completed Today
+                        </button>
+                    @elseif ($hasCheckIn)
+                        <button class="btn btn-warning btn-sm checkout-today-btn" data-date="{{ $today }}">
+                            <i class="bi bi-box-arrow-in-left"></i> Check Out
+                        </button>
+                    @else
+                        <button class="btn btn-primary btn-sm checkin-today-btn" data-date="{{ $today }}">
+                            <i class="bi bi-box-arrow-in-right"></i> Check In
+                        </button>
+                    @endif
+                </div>
+            </div>
+
+            {{-- @if (auth()->user()->can('add-attendance'))
             <div class="add-info justify-content-end">
                 <a type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#createAttendanceModal">
@@ -82,7 +190,7 @@
                 </a>
             </div>
             @include('EmployeeAttendance::Attendance.create')
-            {{-- @endif --}}
+            @endif --}}
         </div>
     </div>
     <div class="card">

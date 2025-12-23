@@ -22,6 +22,7 @@ use Modules\Master\Models\Office;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\TravelRequest\Models\TravelRequest;
+use Illuminate\Support\Str;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
@@ -58,6 +59,21 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $hidden = ['password', 'remember_token'];
+
+
+    public function routeNotificationFor($driver, $notification = null)
+    {
+        if (method_exists($this, $method = 'routeNotificationFor' . Str::studly($driver))) {
+            return $this->{$method}($notification);
+        }
+
+        return match ($driver) {
+            'database' => $this->notifications(),
+            'mail' => $this->email_address,
+            default => null,
+        };
+    }
+
 
     /*
      * Get activity logs of the user
@@ -305,5 +321,4 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         }
         return $hasPermission;
     }
-
 }

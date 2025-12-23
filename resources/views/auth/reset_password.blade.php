@@ -70,7 +70,7 @@
         action="{{ route('reset.password.store', $user->reset_token) }}">
 
         <div class="w-100 d-flex flex-column align-items-center justify-content-center pt-3 pb-1 ">
-            <img src="{{ asset('img/logonp.png') }}" alt="">
+            {{-- <img src="{{ asset('img/logonp.png') }}" alt=""> --}}
 
         </div>
         <h2 class="form-signin-heading owh-text-light fs-5 text-uppercase fw-bold mt-1 mb-2">@yield('title')</h2>

@@ -63,10 +63,12 @@ class LeaveRequestController extends Controller
                 ->select(['*'])
                 ->where(function ($q) use ($authUser) {
                     $q->where('requester_id', $authUser->id);
-                })->orWhereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                    $q->orWhere('original_user_id', $authUser->id);
-                })->orderBy('start_date', 'desc')
+                })
+                // ->orWhereHas('logs', function ($q) use ($authUser) {
+                //     $q->where('user_id', $authUser->id);
+                //     $q->orWhere('original_user_id', $authUser->id);
+                // })
+                ->orderBy('start_date', 'desc')
                 ->get();
 
             return DataTables::of($data)

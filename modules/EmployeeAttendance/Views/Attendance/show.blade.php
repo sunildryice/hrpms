@@ -141,7 +141,6 @@
                         $today = now()->format('Y-m-d');
                         $employeeId = auth()->user()->employee->id;
 
-                        // Get current month's attendance master
                         $attendanceMaster = \Modules\EmployeeAttendance\Models\Attendance::where(
                             'employee_id',
                             $employeeId,
@@ -150,23 +149,21 @@
                             ->where('month', now()->month)
                             ->first();
 
-                        $todayDetail = null;
                         $hasCheckIn = false;
                         $hasCheckOut = false;
 
-                        if ($attendanceMaster) 
-                        {
+                        if ($attendanceMaster) {
                             $todayDetail = $attendanceMaster
                                 ->attendanceDetails()
-                                ->where('attendance_date', $today)->first();
-                                $hasCheckIn = $todayDetail && $todayDetail->checkin;
-                                $hasCheckOut = $todayDetail && $todayDetail->checkout;
+                                ->where('attendance_date', $today)
+                                ->first();
+
+                            $hasCheckIn = $todayDetail && $todayDetail->checkin;
+                            $hasCheckOut = $todayDetail && $todayDetail->checkout;
                         }
                     @endphp
 
-                    @if (!$attendanceMaster)
-                        <span class="text-muted small">Monthly attendance not yet created.</span>
-                    @elseif ($hasCheckOut)
+                    @if ($hasCheckOut)
                         <button class="btn btn-success btn-sm" disabled>
                             <i class="bi bi-check-circle-fill"></i> Completed Today
                         </button>
@@ -176,7 +173,7 @@
                         </button>
                     @else
                         <button class="btn btn-primary btn-sm checkin-today-btn" data-date="{{ $today }}">
-                            <i class="bi bi-box-arrow-in-right"></i> Check In
+                            <i class="bi bi-box-arrow-in-right"></i> Check In Now
                         </button>
                     @endif
                 </div>

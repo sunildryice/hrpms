@@ -335,17 +335,30 @@ class AttendanceController extends Controller
         $employeeId = auth()->user()->employee->id;
 
         $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
-
         if (!$attendance) {
-            return response()->json(['message' => 'Monthly attendance record not found.'], 400);
+            $inputs = [
+                'employee_id' => $employeeId,
+                'department_id' => auth()->user()->employee->latestTenure->department_id,
+                'designation_id' => auth()->user()->employee->latestTenure->designation_id,
+                'office_id' => auth()->user()->employee->latestTenure->office_id,
+                'duty_station_id' => auth()->user()->employee->latestTenure->duty_station_id,
+                'year' => $now->year,
+                'month' => $now->month,
+                'requester_id' => auth()->id(),
+                'updated_by' => auth()->id(),
+                'status_id' => config('constant.CREATED_STATUS') ?? 1,
+                'donor_codes' => '', 
+            ];
+            $attendance = $this->attendance->create($inputs);
+            if (!$attendance) {
+                return response()->json(['message' => 'Failed to create monthly attendance record.'], 500);
+            }
         }
 
         $detail = $this->attendanceDetail->getDetail($attendance->id, $date);
-
         if ($detail && $detail->checkin) {
             return response()->json(['message' => 'Already checked in today.'], 400);
         }
-
         if (!$detail) {
             $this->attendanceDetail->create([
                 'attendance_master_id' => $attendance->id,

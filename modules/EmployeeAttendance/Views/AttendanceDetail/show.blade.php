@@ -54,6 +54,10 @@
             font-size: 0.65rem;
         }
 
+        /* Highlight today row - subtle light-dark effect */
+        .today-row {
+            background-color: #f5f5f5 !important;
+        }
 
         @media print {
             @page {
@@ -68,6 +72,12 @@
             .table tr td {
                 padding: 0.25rem 0.35rem !important;
             }
+
+            .today-row {
+                background-color: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 
@@ -76,17 +86,14 @@
 @section('page_js')
     <script type="text/javascript">
         $(function() {
-            // $('#navbarVerticalMenu').find('#attendance-index').addClass('active');
+            // Highlight today's row
+            const today = new Date().toISOString().slice(0, 10);
+            $(`tr[data-date="${today}"]`).addClass('today-row');
         });
     </script>
 @endsection
 
-
-
-
 @section('page-content')
-
-
     <div class="pb-3 mb-3 border-bottom">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
             <div class="brd-crms flex-grow-1">
@@ -108,9 +115,7 @@
         </div>
     </div>
 
-
-    <!-- CSS only -->
-
+    <!-- Header -->
     <div class="print-header">
         <div class="row">
             <div class="col-lg-8">
@@ -119,23 +124,16 @@
                 </div>
                 <div class="print-header-info mb-3">
                     <ul class="list-unstyled m-0 p-0">
-                        <li><span class="fw-bold me-2">Staff
-                                Name:</span><span>{{ $attendance->employee->getFullName() }}</span></li>
-                        <li><span
-                                class="fw-bold me-2">Title:</span><span>{{ $attendance->employee->latestTenure->getDesignationName() }}</span>
-                        </li>
-                        <li><span class="fw-bold me-2">Duty
-                                station:</span><span>{{ $attendance->employee->latestTenure->getDutyStation() }}</span></li>
-                        <li><span
-                                class="fw-bold me-2">Month:</span><span>{{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</span>
-                        </li>
+                        <li><span class="fw-bold me-2">Staff Name:</span><span>{{ $attendance->employee->getFullName() }}</span></li>
+                        <li><span class="fw-bold me-2">Title:</span><span>{{ $attendance->employee->latestTenure->getDesignationName() }}</span></li>
+                        <li><span class="fw-bold me-2">Duty station:</span><span>{{ $attendance->employee->latestTenure->getDutyStation() }}</span></li>
+                        <li><span class="fw-bold me-2">Month:</span><span>{{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</span></li>
                         <li><span class="fw-bold me-2">Year:</span><span>{{ $attendance->year }}</span></li>
                     </ul>
                 </div>
             </div>
             <div class="col">
-                <div class="print-header-info mb-3 mt-4"
-                    style="display: flex; flex-direction: column; align-items: center;">
+                <div class="print-header-info mb-3 mt-4" style="display: flex; flex-direction: column; align-items: center;">
                     <ul class="list-unstyled m-0 p-0">
                         <li><span class="fw-bold me-2">Reviewer:</span><span>{{ $attendance->getReviewer() }}</span></li>
                         <li><span class="fw-bold me-2">Approver:</span><span>{{ $attendance->getApprover() }}</span></li>
@@ -144,6 +142,7 @@
             </div>
         </div>
     </div>
+
     <div class="print-body">
         <div class="wrapper table-responsive mb-3">
             <table class="table table-bordered table-striped align-middle">
@@ -159,6 +158,10 @@
                 <tbody>
                     @foreach ($dates as $date)
                         @php
+                            $currentDate = $date->get('date');
+                            $isToday = $currentDate === now()->format('Y-m-d');
+                            $isFuture = \Carbon\Carbon::parse($currentDate)->isFuture();
+
                             $isHoliday = $date->get('holiday');
                             $isWeekend = $date->get('is_weekend');
                             $hasLeave = $date->has('leave');
@@ -176,14 +179,16 @@
                             if ($hasLeave) {
                                 $remarkParts[] = $date->get('leave')['leave_abbreviation'];
                             }
-                            if (!$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave) {
+
+                            // Only show "Absent" for past dates or today (not future dates)
+                            if (!$isFuture && !$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave && !$inTravel) {
                                 $remarkParts[] = 'Absent';
                             }
 
                             $remark = implode(' / ', array_filter($remarkParts));
                             $remark = $remark ?: ($hasCheckIn && $hasCheckOut ? 'Present' : '');
                         @endphp
-                        <tr data-date="{{ $date->get('date') }}">
+                        <tr data-date="{{ $currentDate }}" class="{{ $isToday ? 'today-row' : '' }}">
                             <td class="text-center fw-bold {{ $isHoliday ? 'holiday' : '' }}">
                                 {{ $date->get('date') }}<br>
                                 <small class="text-muted">{{ $date->get('day_name') }}</small>
@@ -199,8 +204,7 @@
                             </td>
                             <td>
                                 @if ($remark)
-                                    <span
-                                        class="{{ $isHoliday ? 'holiday' : ($hasLeave ? 'leave' : ($inTravel ? 'travel' : 'absent')) }}">
+                                    <span class="{{ $isHoliday ? 'holiday' : ($hasLeave ? 'leave' : ($inTravel ? 'travel' : 'absent')) }}">
                                         {{ $remark }}
                                     </span>
                                 @else
@@ -220,6 +224,7 @@
             </table>
         </div>
     </div>
+
     <div class="row my-3">
         <div class="col-lg-6">
             <div class="card">
@@ -230,18 +235,13 @@
                                 <i class="bi-person"></i>
                             </div>
                             <div class="w-100">
-                                <div
-                                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                    <div
-                                        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
                                         <span class="me-2">{{ $log->getCreatedBy() }}</span>
-                                        <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
-                                        </span>
+                                        <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                     </div>
-                                    <small
-                                        title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                    <small title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                 </div>
-                                {{-- <span class="{{$log->getStatusClass()}}">{{$log->getStatus()}}</span> --}}
                                 <p class="text-justify comment-text mb-0 mt-1">
                                     {{ $log->log_remarks }}
                                 </p>
@@ -251,7 +251,5 @@
                 </div>
             </div>
         </div>
-    </div>
-
     </div>
 @endsection

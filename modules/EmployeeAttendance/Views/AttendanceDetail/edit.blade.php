@@ -54,6 +54,11 @@
             font-size: 0.65rem;
         }
 
+        /* Highlight today row - subtle light-dark effect */
+        .today-row {
+            background-color: #f5f5f5 !important;
+        }
+
 
         @media print {
             @page {
@@ -67,6 +72,12 @@
             .table tr th,
             .table tr td {
                 padding: 0.25rem 0.35rem !important;
+            }
+
+            .today-row {
+                background-color: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
@@ -178,6 +189,10 @@
                     <tbody>
                         @foreach ($dates as $date)
                             @php
+                                $currentDate = $date->get('date');
+                                $isToday = $currentDate === now()->format('Y-m-d');
+                                $isFuture = \Carbon\Carbon::parse($currentDate)->isFuture();
+
                                 $isHoliday = $date->get('holiday');
                                 $isWeekend = $date->get('is_weekend');
                                 $hasLeave = $date->has('leave');
@@ -195,14 +210,16 @@
                                 if ($hasLeave) {
                                     $remarkParts[] = $date->get('leave')['leave_abbreviation'];
                                 }
-                                if (!$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave) {
+
+                                // Only show "Absent" for past dates or today (not future dates)
+                                if (!$isFuture && !$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave && !$inTravel) {
                                     $remarkParts[] = 'Absent';
                                 }
 
                                 $remark = implode(' / ', array_filter($remarkParts));
                                 $remark = $remark ?: ($hasCheckIn && $hasCheckOut ? 'Present' : '');
                             @endphp
-                            <tr data-date="{{ $date->get('date') }}">
+                            <tr data-date="{{ $currentDate }}" class="{{ $isToday ? 'today-row' : '' }}">
                                 <td class="text-center fw-bold {{ $isHoliday ? 'holiday' : '' }}">
                                     {{ $date->get('date') }}<br>
                                     <small class="text-muted">{{ $date->get('day_name') }}</small>

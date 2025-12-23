@@ -75,6 +75,7 @@
                     <i class="bi bi-box-arrow-in-left"></i> Check Out
                 </button>
             `);
+                        oTable.ajax.reload(null, false);
                     },
                     error: function(xhr) {
                         btn.prop('disabled', false).html(
@@ -84,32 +85,52 @@
                 });
             });
 
-            // Check Out Today
+            // Check Out Today with Confirmation
             $(document).on('click', '.checkout-today-btn', function() {
                 let date = $(this).data('date');
                 let btn = $(this);
 
-                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Checking out...');
+                Swal.fire({
+                    title: 'Confirm Check Out',
+                    text: 'Are you sure you want to check out now?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, Check Out',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        btn.prop('disabled', true).html(
+                            '<i class="bi bi-hourglass-split"></i> Checking out...');
 
-                $.ajax({
-                    url: "{{ route('attendance.checkout.today') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        date: date
-                    },
-                    success: function(response) {
-                        toastr.success('Checked out at ' + response.time);
-                        $('#today-attendance-action').html(`
-                <button class="btn btn-success btn-sm" disabled>
-                    <i class="bi bi-check-circle-fill"></i> Completed Today
-                </button>
-            `);
-                    },
-                    error: function(xhr) {
-                        btn.prop('disabled', false).html(
-                            '<i class="bi bi-box-arrow-in-left"></i> Check Out Now');
-                        toastr.error(xhr.responseJSON?.message || 'Failed to check out');
+                        $.ajax({
+                            url: "{{ route('attendance.checkout.today') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                date: date
+                            },
+                            success: function(response) {
+                                toastr.success('Checked out at ' + response.time +
+                                    ' on ' + response.worked_hours + ' hours worked'
+                                );
+                                $('#today-attendance-action').html(`
+                                    <button class="btn btn-success btn-sm" disabled>
+                                        <i class="bi bi-check-circle-fill"></i> Completed Today
+                                    </button>
+                                `);
+                                oTable.ajax.reload(null, false);
+                            },
+                            error: function(xhr) {
+                                btn.prop('disabled', false).html(
+                                    '<i class="bi bi-box-arrow-in-left"></i> Check Out'
+                                );
+                                toastr.error(xhr.responseJSON?.message ||
+                                    'Failed to check out');
+                            }
+                        });
                     }
                 });
             });

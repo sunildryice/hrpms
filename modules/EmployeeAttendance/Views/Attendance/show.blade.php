@@ -194,7 +194,7 @@
                         </button>
                     @else
                         <button class="btn btn-primary btn-sm checkin-today-btn" data-date="{{ $today }}">
-                            <i class="bi bi-box-arrow-in-right"></i> Check In Now
+                            <i class="bi bi-box-arrow-in-right"></i> Check In
                         </button>
                     @endif
                 </div>

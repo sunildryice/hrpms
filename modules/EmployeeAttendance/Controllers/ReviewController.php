@@ -53,7 +53,7 @@ class ReviewController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('attendance.review.create', $row->id).'" rel="tooltip" title="View Attendance Detail"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('attendance.review.create', $row->id).'" rel="tooltip" title="View Attendance Detail"><i class="bi bi-box-arrow-in-up-right"></i></a>';
 
                     return $btn;
                 })

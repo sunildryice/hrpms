@@ -49,8 +49,14 @@
             background: white !important;
         }
 
-        .print-header-info, .last-row {
+        .print-header-info,
+        .last-row {
             font-size: 0.65rem;
+        }
+
+        /* Highlight today row - subtle light-dark effect */
+        .today-row {
+            background-color: #f5f5f5 !important;
         }
 
 
@@ -59,8 +65,7 @@
                 size: auto
             }
 
-            small
-             {
+            small {
                 font-size: 0.675em;
             }
 
@@ -68,34 +73,36 @@
             .table tr td {
                 padding: 0.25rem 0.35rem !important;
             }
+
+            .today-row {
+                background-color: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
-
 @endsection
 
 @section('page_js')
     <script type="text/javascript">
-        $(function () {
+        $(function() {
             $('#navbarVerticalMenu').find('#attendance-approve-index').addClass('active');
         });
     </script>
 @endsection
 
-
-
-
 @section('page-content')
-
-
     <div class="pb-3 mb-3 border-bottom">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
             <div class="brd-crms flex-grow-1">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
-                            <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">{{ __('label.home') }}</a>
+                            <a href="{!! route('dashboard.index') !!}"
+                                class="text-decoration-none text-dark">{{ __('label.home') }}</a>
                         </li>
-                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-dark">{{ __('label.attendance') }}</a></li>
+                        <li class="breadcrumb-item"><a href="#"
+                                class="text-decoration-none text-dark">{{ __('label.attendance') }}</a></li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>
@@ -103,8 +110,6 @@
             </div>
         </div>
     </div>
-
-    <!-- CSS only -->
 
     <div class="print-header">
         <div class="row">
@@ -114,11 +119,17 @@
                 </div>
                 <div class="print-header-info mb-3">
                     <ul class="list-unstyled m-0 p-0">
-                        <li><span class="fw-bold me-2">Staff Name:</span><span>{{$attendance->employee->getFullName()}}</span></li>
-                        <li><span class="fw-bold me-2">Title:</span><span>{{$attendance->employee->latestTenure->getDesignationName()}}</span></li>
-                        <li><span class="fw-bold me-2">Duty station:</span><span>{{$attendance->employee->latestTenure->getDutyStation()}}</span></li>
-                        <li><span class="fw-bold me-2">Month:</span><span>{{date("F", mktime(0, 0, 0, $attendance->month, 10))}}</span></li>
-                        <li><span class="fw-bold me-2">Year:</span><span>{{$attendance->year}}</span></li>
+                        <li><span class="fw-bold me-2">Staff
+                                Name:</span><span>{{ $attendance->employee->getFullName() }}</span></li>
+                        <li><span
+                                class="fw-bold me-2">Title:</span><span>{{ $attendance->employee->latestTenure->getDesignationName() }}</span>
+                        </li>
+                        <li><span class="fw-bold me-2">Duty
+                                station:</span><span>{{ $attendance->employee->latestTenure->getDutyStation() }}</span></li>
+                        <li><span
+                                class="fw-bold me-2">Month:</span><span>{{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</span>
+                        </li>
+                        <li><span class="fw-bold me-2">Year:</span><span>{{ $attendance->year }}</span></li>
                     </ul>
                 </div>
             </div>
@@ -126,206 +137,108 @@
     </div>
     <div class="print-body">
         <div class="wrapper table-responsive mb-3">
-            <table class="table table-borderless table-bordered  border mb-0 ">
-                <thead>
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-light">
                     <tr>
-                        <th class="sticky-col first-col" scope="row">Days</th>
-                        @foreach ($dates as $date)
-                            @if ($date->get('holiday'))
-                                <th scope="column" class="holiday">{{$date->get('day_name')}}</th>
-                            @else
-                                <th scope="column">{{$date->get('day_name')}}</th>
-                            @endif
-                        @endforeach
-                        <th scope="column">Total</th>
-                        <th scope="column">Charge</th>
-                    </tr>
-
-                    <tr>
-                        <th class="sticky-col first-col">Date</th>
-                        @foreach ($dates as $date)
-                            @if ($date->get('holiday'))
-                                <th class="holiday">{{$date->get('day')}}</th>
-                            @else
-                                <th scope="column">{{$date->get('day')}}</th>
-                            @endif
-                        @endforeach
-                        <th scope="column">hh.mm</th>
-                        <th scope="column">%</th>
+                        <th>Date</th>
+                        <th>Time In (hh:mm)</th>
+                        <th>Time Out (hh:mm)</th>
+                        <th>Hours Worked (hh.hh)</th>
+                        <th style="width: 40%;">Remarks</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row" class="sticky-col first-col">Attendance</th>
-                        @foreach ($dates as $date)
-                            @if ($date->get('holiday'))
-                                @if ($date->get('is_annual_holiday'))
-                                    @if ($date->get('leave'))
-                                        {{-- <th class="holiday">H / {{$date->get('leave')['leave_abbreviation']}}</th> --}}
-                                        <th class="holiday"> {{$date->get('in_travel') ? 'H / '.$date->get('leave')['leave_abbreviation'].'/ T' : 'H / '.$date->get('leave')['leave_abbreviation']}}</th>
-                                    @else
-                                        <th class="holiday">{{$date->get('in_travel') ? 'H / T' : 'H'}}</th>
-                                    @endif
+                    @foreach ($dates as $date)
+                        @php
+                            $currentDate = $date->get('date');
+                            $isToday = $currentDate === now()->format('Y-m-d');
+                            $isFuture = \Carbon\Carbon::parse($currentDate)->isFuture();
+
+                            $isHoliday = $date->get('holiday');
+                            $isWeekend = $date->get('is_weekend');
+                            $hasLeave = $date->has('leave');
+                            $inTravel = $date->get('in_travel');
+                            $hasCheckIn = $date->get('check_in_time');
+                            $hasCheckOut = $date->get('check_out_time');
+
+                            $remarkParts = [];
+                            if ($isHoliday) {
+                                $remarkParts[] = $date->get('is_annual_holiday') ? 'Holiday' : 'Weekend';
+                            }
+                            if ($inTravel) {
+                                $remarkParts[] = 'Travel';
+                            }
+                            if ($hasLeave) {
+                                $remarkParts[] = $date->get('leave')['leave_abbreviation'];
+                            }
+
+                            // Only show "Absent" for past dates or today (not future dates)
+                            if (
+                                !$isFuture &&
+                                !$hasCheckIn &&
+                                !$hasCheckOut &&
+                                !$isHoliday &&
+                                !$hasLeave &&
+                                !$inTravel
+                            ) {
+                                $remarkParts[] = 'Absent';
+                            }
+
+                            $remark = implode(' / ', array_filter($remarkParts));
+                            $remark = $remark ?: ($hasCheckIn && $hasCheckOut ? 'Present' : '');
+                        @endphp
+                        <tr data-date="{{ $currentDate }}" class="{{ $isToday ? 'today-row' : '' }}">
+                            <td class="text-center fw-bold {{ $isHoliday ? 'holiday' : '' }}">
+                                {{ $date->get('date') }}<br>
+                                <small class="text-muted">{{ $date->get('day_name') }}</small>
+                            </td>
+                            <td class="text-center {{ $hasCheckIn ? 'present' : '' }}">
+                                {{ $date->get('check_in_time') ?: '-' }}
+                            </td>
+                            <td class="text-center {{ $hasCheckOut ? 'present' : '' }}">
+                                {{ $date->get('check_out_time') ?: '-' }}
+                            </td>
+                            <td class="text-center fw-bold">
+                                {{ $date->get('worked_hours') ?: '0.00' }}
+                            </td>
+                            <td>
+                                @if ($remark)
+                                    <span
+                                        class="{{ $isHoliday ? 'holiday' : ($hasLeave ? 'leave' : ($inTravel ? 'travel' : 'absent')) }}">
+                                        {{ $remark }}
+                                    </span>
                                 @else
-                                    @if ($date->get('leave'))
-                                        <th class="holiday"> {{$date->get('in_travel') ? 'X / '.$date->get('leave')['leave_abbreviation'].'/ T' : 'X / '.$date->get('leave')['leave_abbreviation']}}</th>
-                                    @else
-                                        <th class="holiday">{{$date->get('in_travel') ? 'X / T' : 'X'}}</th>
-                                    @endif
+                                    -
                                 @endif
-                            @else
-                                @if ($date->get('leave'))
-                                    <th>{{$date->get('leave')['leave_abbreviation']}}</th>
-                                @else
-                                    @if ($date->get('check_in_time') && $date->get('check_out_time'))
-                                        <th>{{$date->get('in_travel') ? 'T' : 'P'}}</th>
-                                    @else
-                                        <th>{{$date->get('in_travel') ? 'T' : ''}}</th>
-                                    @endif
-                                @endif
-                            @endif
-                        @endforeach
-                        <th scope="column"></th>
-                        <th scope="column"></th>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="sticky-col first-col">Time In (hh:mm) </th>
-                        @foreach ($dates as $date)
-                            <td>{{$date->get('check_in_time')}}</td>
-                        @endforeach
-                        <th scope="column"></th>
-                        <th scope="column"></th>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="sticky-col first-col">Time Out (hh:mm)</th>
-                        @foreach ($dates as $date)
-                            <td>{{$date->get('check_out_time')}}</td>
-                        @endforeach
-                        <th scope="column"></th>
-                        <th scope="column"></th>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="sticky-col first-col"> Hours Worked (hh.hh) </th>
-                        @foreach ($dates as $date)
-                            <td class="fw-bold">{{$date->get('worked_hours')}}</td>
-                        @endforeach
-                        <th scope="column">{{$total_worked_hours}}</th>
-                        <th scope="column"></th>
-                    </tr>
-
-                    <tr>
-                        <th scope="row" class="sticky-col first-col"><strong>Time Charge (hh.mm)</strong> </th>
-                    </tr>
-
-                    @foreach ($donors as $donor)
-                        @foreach ($donor_charges as $donor_charge)
-                            @if ($donor_charge['donor_id'] == $donor->id)
-                                <tr>
-                                    <th scope="row" class="sticky-col first-col text-wrap">{{$donor->description}}</th>
-                                    @foreach ($dates as $date)
-                                        @php
-                                            $donor_lists = $date->get('donor_list');
-                                            $hour_charged = '';
-                                            foreach($donor_lists as $donor_list) {
-                                                if ($donor_list['donor_id'] == $donor->id) {
-                                                    $hour_charged = $donor_list['worked_hours'];
-                                                    break;
-                                                }
-                                            }
-                                        @endphp
-                                        <td>{{$hour_charged}}</td>
-                                    @endforeach
-
-                                    <th scope="column">{{$donor_charge['charged_hours']}}</th>
-                                    <th scope="column">{{$donor_charge['charged_percentage']}} %</th>
-                                </tr>
-                            @endif
-                        @endforeach
-                    @endforeach
-
-                    <tr>
-                        <th scope="row" class="sticky-col first-col">{{$unrestrictedDonor->description ?: 'Unrestricted'}}</th>
-                        @foreach ($dates as $date)
-                            <td>{{$date->get('unrestricted_hours')}}</td>
-                        @endforeach
-                        <th scope="column">{{$total_unrestricted_hours}}</th>
-                        <th scope="column">{{$total_unrestricted_percentage}} %</th>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                    <tr class="total">
-                        <th scope="row" class="sticky-col first-col"> <strong>Hours Charged (hh.mm)</strong> </th>
-                        @foreach ($dates as $date)
-                            <td>{{$date->get('hours_charged')}}</td>
-                        @endforeach
-                        <th scope="column">{{$total_charged_hours}}</th>
-                        <th scope="column">{{$total_charged_percentage}} %</th>
-                    </tr>
-                </tfoot>
-
-            </table>
-        </div>
-        @include('EmployeeAttendance::Partials.abbreviation')
-    </div>
-    <div class="row my-3">
-        <div class="col-lg-6">
-            <table class="table table-borderless table-bordered  mb-0">
-                <thead>
-                    <tr>
-                        <th colspan="5" class="text-center">Summary of Leave Detail</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="column">Leave</th>
-                        <th scope="column">Carry over </th>
-                        <th scope="column">Earned</th>
-                        <th scope="column">Taken</th>
-                        <th scope="column">Balance</th>
-                    </tr>
-
-                    @foreach($leaves as $leave)
-                        <tr id="row_{!! $leave->id !!}">
-                            <th scope="row" class="leave_type">
-                                {{ $leave->getLeaveType() }} / {{ $leave->leaveType->getLeaveBasis() }}
-                            </th>
-                            @if ($leave->leaveType->maximum_carry_over > 0)
-                                <td class="opening_balance">{{ $leave->opening_balance }}</td>
-                                <td class="earned">{{ $leave->earned }}</td>
-                                <td class="taken">{{ $leave->taken }}</td>
-                                <td class="balance">{{ $leave->balance }}</td>
-                            @else
-                                <td class="opening_balance">-</td>
-                                <td class="earned">-</td>
-                                <td class="taken">{{ $leave->taken }}</td>
-                                <td class="balance">-</td>
-                            @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3" class="text-end">Total Hours Worked:</th>
+                        <th class="text-center">{{ $total_worked_hours }}</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     </div>
-
-    @include('EmployeeAttendance::Partials.sub-worklogs', ['attendance' => $attendance, 'enabledDonors' => $enabledDonors])
 
     <section>
         <div class="card">
             <div class="card-header fw-bold">
                 Attendance Approve Process
             </div>
-            <form action="{{route('attendance.approve.store', $attendance->id)}}"
-                  id="attendanceApproveProcessForm" method="post"
-                  enctype="multipart/form-data" autocomplete="off">
-                <input type="hidden" name="attendance_id" value="{{$attendance->id}}">
+            <form action="{{ route('attendance.approve.store', $attendance->id) }}" id="attendanceApproveProcessForm"
+                method="post" enctype="multipart/form-data" autocomplete="off">
+                <input type="hidden" name="attendance_id" value="{{ $attendance->id }}">
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-6">
-                            @foreach($attendance->logs as $log)
+                            @foreach ($attendance->logs as $log)
                                 <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
-                                    <div width="40" height="40"
-                                        class="rounded-circle mr-3 user-icon">
+                                    <div width="40" height="40" class="rounded-circle mr-3 user-icon">
                                         <i class="bi-person"></i>
                                     </div>
                                     <div class="w-100">
@@ -336,7 +249,8 @@
                                                     {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                 </span>
                                             </div>
-                                            <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                            <small
+                                                title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                         </div>
                                         <p class="text-justify comment-text mb-0 mt-1">
                                             {{ $log->log_remarks }}
@@ -355,7 +269,8 @@
                                 <div class="col-lg-9">
                                     <select name="status_id" class="select2 form-control" data-width="100%">
                                         <option value="">Select Status</option>
-                                        <option value="{{ config('constant.RETURNED_STATUS') }}">Return to Employee</option>
+                                        <option value="{{ config('constant.RETURNED_STATUS') }}">Return to Employee
+                                        </option>
                                         <option value="{{ config('constant.APPROVED_STATUS') }}">Approve</option>
                                     </select>
                                     @if ($errors->has('status_id'))
@@ -374,13 +289,10 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
-                                    <textarea type="text"
-                                              class="form-control @if ($errors->has('log_remarks')) is-invalid @endif"
-                                              name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
                                     @if ($errors->has('log_remarks'))
                                         <div class="fv-plugins-message-container invalid-feedback">
-                                            <div
-                                                data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                            <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
                                         </div>
                                     @endif
                                 </div>
@@ -393,8 +305,7 @@
                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
                         Submit
                     </button>
-                    <a href="{!! route('attendance.approve.index') !!}"
-                       class="btn btn-danger btn-sm">Cancel</a>
+                    <a href="{!! route('attendance.approve.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                 </div>
             </form>
         </div>

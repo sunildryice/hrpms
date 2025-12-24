@@ -2,21 +2,22 @@
 
 namespace Modules\EmployeeAttendance\Controllers;
 
-use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Modules\Employee\Models\Employee;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Modules\Privilege\Repositories\UserRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\EmployeeAttendance\Imports\AttendanceImport;
-use Modules\EmployeeAttendance\Notifications\AttendanceSubmitted;
-use Modules\EmployeeAttendance\Repositories\AttendanceDetailDonorRepository;
-use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
-use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
 use Modules\EmployeeAttendance\Requests\Attendance\StoreRequest;
+use Modules\EmployeeAttendance\Notifications\AttendanceSubmitted;
+use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
 use Modules\EmployeeAttendance\Requests\Attendance\SubmitRequest;
-use Modules\Privilege\Repositories\UserRepository;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Yajra\DataTables\DataTables;
+use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
+use Modules\EmployeeAttendance\Repositories\AttendanceDetailDonorRepository;
 
 class AttendanceController extends Controller
 {
@@ -26,7 +27,8 @@ class AttendanceController extends Controller
         protected AttendanceDetailDonorRepository $attendanceDonor,
         protected EmployeeRepository $employee,
         protected UserRepository $user
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -56,7 +58,7 @@ class AttendanceController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('attendance.view', $row->id).'" rel="tooltip" title="View Attendance"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('attendance.view', $row->id) . '" rel="tooltip" title="View Attendance"><i class="bi bi-eye"></i></a>';
 
                     return $btn;
                 })
@@ -112,9 +114,9 @@ class AttendanceController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-            // ->addColumn('employee_name', function ($row) {
-            //     return $row->employee->getFullName();
-            // })
+                // ->addColumn('employee_name', function ($row) {
+                //     return $row->employee->getFullName();
+                // })
                 ->addColumn('year', function ($row) {
                     return $row->year;
                 })
@@ -122,31 +124,31 @@ class AttendanceController extends Controller
                     return date('F', mktime(0, 0, 0, $row->month, 10));
                 })
                 ->addColumn('status', function ($row) {
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('attendance.detail.show', $row->id).'" rel="tooltip" title="View Attendance Detail"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('attendance.detail.show', $row->id) . '" rel="tooltip" title="View Attendance Detail"><i class="bi bi-eye"></i></a>';
 
                     $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('attendance.detail.print', $row->id).'" target="_blank" rel="tooltip" title="Print Attendance Detail"><i class="bi bi-printer"></i></a>';
+                    $btn .= route('attendance.detail.print', $row->id) . '" target="_blank" rel="tooltip" title="Print Attendance Detail"><i class="bi bi-printer"></i></a>';
 
                     if (auth()->user()->can('submit', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('attendance.detail.edit', $row->id).'" rel="tooltip" title="Edit Attendance Detail"><i class="bi bi-pencil-square"></i></a>';
+                        $btn .= route('attendance.detail.edit', $row->id) . '" rel="tooltip" title="Edit Attendance Detail"><i class="bi bi-pencil-square"></i></a>';
                     }
                     if (auth()->user()->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-sm btn-outline-danger amend-attendance"';
-                        $btn .= 'data-href = "'.route('attendance.amend', $row->id).'" data-month="'.$row->getMonth().'" data-year="'.$row->getYear().'"  title="Reverse Attendance">';
+                        $btn .= 'data-href = "' . route('attendance.amend', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Reverse Attendance">';
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
                     }
 
                     $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                    $btn .= 'href = "'.route('attendance.detail.worklogs', $row->id).'" data-month="'.$row->getMonth().'" data-year="'.$row->getYear().'"  title="View Worklogs">';
+                    $btn .= 'href = "' . route('attendance.detail.worklogs', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="View Worklogs">';
                     $btn .= '<i class="bi bi-file-ruled" ></i></a>';
 
                     $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                    $btn .= 'href = "'.route('attendance.detail.worklogs.print', $row->id).'" data-month="'.$row->getMonth().'" data-year="'.$row->getYear().'"  title="Print all Worklogs">';
+                    $btn .= 'href = "' . route('attendance.detail.worklogs.print', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Print all Worklogs">';
                     $btn .= '<i class="bi bi-printer-fill" ></i></a>';
 
                     return $btn;
@@ -166,9 +168,9 @@ class AttendanceController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-            // ->addColumn('employee_name', function ($row) {
-            //     return $row->employee->getFullName();
-            // })
+                // ->addColumn('employee_name', function ($row) {
+                //     return $row->employee->getFullName();
+                // })
                 ->addColumn('year', function ($row) {
                     return $row->year;
                 })
@@ -176,22 +178,22 @@ class AttendanceController extends Controller
                     return date('F', mktime(0, 0, 0, $row->month, 10));
                 })
                 ->addColumn('status', function ($row) {
-                    return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('attendance.detail.view', $row->id).'" rel="tooltip" title="View Attendance Detail"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('attendance.detail.view', $row->id) . '" rel="tooltip" title="View Attendance Detail"><i class="bi bi-eye"></i></a>';
 
                     if ($row->status_id == config('constant.APPROVED_STATUS')) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('attendance.detail.print', $row->id).'" target="_blank" rel="tooltip" title="Print Attendance Detail"><i class="bi bi-printer"></i></a>';
+                        $btn .= route('attendance.detail.print', $row->id) . '" target="_blank" rel="tooltip" title="Print Attendance Detail"><i class="bi bi-printer"></i></a>';
 
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                        $btn .= 'href = "'.route('attendance.detail.worklogs', $row->id).'" data-month="'.$row->getMonth().'" data-year="'.$row->getYear().'"  title="View Worklogs">';
+                        $btn .= 'href = "' . route('attendance.detail.worklogs', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="View Worklogs">';
                         $btn .= '<i class="bi bi-file-ruled" ></i></a>';
 
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                        $btn .= 'href = "'.route('attendance.detail.worklogs.print', $row->id).'" data-month="'.$row->getMonth().'" data-year="'.$row->getYear().'"  title="Print all Worklogs">';
+                        $btn .= 'href = "' . route('attendance.detail.worklogs.print', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Print all Worklogs">';
                         $btn .= '<i class="bi bi-printer" ></i></a>';
                     }
 
@@ -200,7 +202,7 @@ class AttendanceController extends Controller
                     //     $btn .= 'data-href="' . route('attendance.delete', $row->id) . '">';
                     //     $btn .= '<i class="bi-trash"></i></a>';
                     // }
-
+    
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -244,7 +246,7 @@ class AttendanceController extends Controller
         $log = [];
         $log['user_id'] = auth()->id();
         $log['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-        $log['log_remarks'] = 'Attendance submitted. '.$inputs['remarks'];
+        $log['log_remarks'] = 'Attendance submitted. ' . $inputs['remarks'];
         $log['status_id'] = config('constant.SUBMITTED_STATUS');
         $attendance->logs()->create($log);
 
@@ -262,7 +264,7 @@ class AttendanceController extends Controller
 
     public function import(Request $request)
     {
-        if (! $request->hasFile('attendance_file')) {
+        if (!$request->hasFile('attendance_file')) {
             return redirect()->back()->withWarningMessage('Please upload the file.');
         }
 
@@ -324,5 +326,108 @@ class AttendanceController extends Controller
             'status' => 'error',
             'message' => 'Attendance cannot be reversed.',
         ], 422);
+    }
+
+    public function checkInToday(Request $request)
+    {
+        $date = $request->date ?? now()->format('Y-m-d');
+        $now = now();
+        $employeeId = auth()->user()->employee->id;
+
+        $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
+        if (!$attendance) {
+            $inputs = [
+                'employee_id' => $employeeId,
+                'department_id' => auth()->user()->employee->latestTenure->department_id,
+                'designation_id' => auth()->user()->employee->latestTenure->designation_id,
+                'office_id' => auth()->user()->employee->latestTenure->office_id,
+                'duty_station_id' => auth()->user()->employee->latestTenure->duty_station_id,
+                'year' => $now->year,
+                'month' => $now->month,
+                'requester_id' => auth()->id(),
+                'updated_by' => auth()->id(),
+                'status_id' => config('constant.CREATED_STATUS') ?? 1,
+                'donor_codes' => '', 
+            ];
+            $attendance = $this->attendance->create($inputs);
+            if (!$attendance) {
+                return response()->json(['message' => 'Failed to create monthly attendance record.'], 500);
+            }
+        }
+
+        $detail = $this->attendanceDetail->getDetail($attendance->id, $date);
+        if ($detail && $detail->checkin) {
+            return response()->json(['message' => 'Already checked in today.'], 400);
+        }
+        if (!$detail) {
+            $this->attendanceDetail->create([
+                'attendance_master_id' => $attendance->id,
+                'attendance_date' => $date,
+                'checkin' => $now,
+                'created_by' => auth()->id(),
+                'updated_by' => auth()->id(),
+                'worked_hours' => 0,
+                'unrestricted_hours' => 0,
+                'charged_hours' => 0,
+            ]);
+        } else {
+            $this->attendanceDetail->update($detail->id, [
+                'checkin' => $now,
+                'updated_by' => auth()->id(),
+            ]);
+        }
+
+        return response()->json([
+            'time' => $now->format('h:i A'),
+            'message' => 'Checked in successfully.'
+        ]);
+    }
+
+    public function checkOutToday(Request $request)
+    {
+        $date = $request->date ?? now()->format('Y-m-d');
+        $now = now();
+        $employeeId = auth()->user()->employee->id;
+
+        $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
+
+        if (!$attendance) {
+            return response()->json(['message' => 'Attendance record not found.'], 400);
+        }
+
+        $detail = $this->attendanceDetail->getDetail($attendance->id, $date);
+
+        if (!$detail || !$detail->checkin) {
+            return response()->json(['message' => 'You must check in first.'], 400);
+        }
+
+        if ($detail->checkout) {
+            return response()->json(['message' => 'Already checked out today.'], 400);
+        }
+
+        $this->attendanceDetail->update($detail->id, [
+            'checkout' => $now,
+            'updated_by' => auth()->id(),
+        ]);
+
+        $checkIn = Carbon::parse($detail->checkin);
+        $checkOut = Carbon::parse($now);
+
+        $checkIn->startOfMinute();
+        $checkOut->startOfMinute();
+
+        $workedHours = round($checkIn->floatDiffInHours($checkOut), 2);
+
+        $this->attendanceDetail->update($detail->id, [
+            'worked_hours' => $workedHours,
+            'unrestricted_hours' => $workedHours,
+            'charged_hours' => 0,
+        ]);
+
+        return response()->json([
+            'time' => $now->format('h:i A'),
+            'worked_hours' => $workedHours,
+            'message' => 'Checked out successfully.'
+        ]);
     }
 }

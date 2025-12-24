@@ -33,6 +33,9 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendan
     Route::put('{attendanceId}', [AttendanceController::class, 'update'])->name('update');
     Route::post('{attendanceId}/amend', [AttendanceController::class, 'amend'])->name('amend');
 
+    Route::post('/attendance/checkin/today', [AttendanceController::class, 'checkInToday'])->name('checkin.today');
+    Route::post('/attendance/checkout/today', [AttendanceController::class, 'checkOutToday'])->name('checkout.today');
+
     Route::get('approved/index', [ApprovedController::class, 'index'])->name('approved.index');
 
     Route::get('pending/index', [PendingController::class, 'index'])->name('pending.index');
@@ -42,24 +45,24 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendan
 
 Route::middleware(['web', 'auth', 'logger'])
     ->prefix('attendance/detail')->as('attendance.detail.')->group(function () {
-    Route::get('', [AttendanceDetailController::class, 'index'])->name('index');
-    Route::get('create', [AttendanceDetailController::class, 'create'])->name('create');
-    Route::post('', [AttendanceDetailController::class, 'store'])->name('store');
-    Route::get('{attendenceId}/show', [AttendanceDetailController::class, 'show'])->name('show');
-    Route::get('{attendenceId}/view', [AttendanceDetailController::class, 'view'])->name('view');
-    Route::get('{attendanceId}/edit', [AttendanceDetailController::class, 'edit'])->name('edit');
-    Route::get('{attendanceId}/recalculate', [AttendanceDetailController::class, 'recalculate'])->name('recalculate');
-    // Route::get('{attendanceDetailId}/edit', [AttendanceDetailController::class, 'edit'])->name('edit');
-    Route::get('{attendanceDetailId}', [AttendanceDetailController::class, 'update'])->name('update');
-    Route::delete('{attendanceDetailId}', [AttendanceDetailController::class, 'destroy'])->name('delete');
+        Route::get('', [AttendanceDetailController::class, 'index'])->name('index');
+        Route::get('create', [AttendanceDetailController::class, 'create'])->name('create');
+        Route::post('', [AttendanceDetailController::class, 'store'])->name('store');
+        Route::get('{attendenceId}/show', [AttendanceDetailController::class, 'show'])->name('show');
+        Route::get('{attendenceId}/view', [AttendanceDetailController::class, 'view'])->name('view');
+        Route::get('{attendanceId}/edit', [AttendanceDetailController::class, 'edit'])->name('edit');
+        Route::get('{attendanceId}/recalculate', [AttendanceDetailController::class, 'recalculate'])->name('recalculate');
+        // Route::get('{attendanceDetailId}/edit', [AttendanceDetailController::class, 'edit'])->name('edit');
+        Route::get('{attendanceDetailId}', [AttendanceDetailController::class, 'update'])->name('update');
+        Route::delete('{attendanceDetailId}', [AttendanceDetailController::class, 'destroy'])->name('delete');
 
-    Route::get('{attendenceId}/print', [AttendanceDetailController::class, 'print'])->name('print');
+        Route::get('{attendenceId}/print', [AttendanceDetailController::class, 'print'])->name('print');
 
-    Route::get('{attendanceId}/worklogs', [AttendanceDetailDonorController::class, 'index'])->name('worklogs');
-    Route::any('{attendanceId}/worklogs/print', [AttendanceDetailDonorController::class, 'print'])->name('worklogs.print');
-    Route::get('{attendanceId}/donor/{donor}/create', [AttendanceDetailDonorController::class, 'create'])->name('donor.create');
-    // Route::post('{attendenceId}/donor/{donor}/store', [AttendanceDetailDonorController::class, 'store'])->name('donor.store');
-});
+        Route::get('{attendanceId}/worklogs', [AttendanceDetailDonorController::class, 'index'])->name('worklogs');
+        Route::any('{attendanceId}/worklogs/print', [AttendanceDetailDonorController::class, 'print'])->name('worklogs.print');
+        Route::get('{attendanceId}/donor/{donor}/create', [AttendanceDetailDonorController::class, 'create'])->name('donor.create');
+        // Route::post('{attendenceId}/donor/{donor}/store', [AttendanceDetailDonorController::class, 'store'])->name('donor.store');
+    });
 
 
 Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendance.')->group(function () {

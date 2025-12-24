@@ -416,7 +416,8 @@ class AttendanceController extends Controller
         $checkIn->startOfMinute();
         $checkOut->startOfMinute();
 
-        $workedHours = round($checkIn->floatDiffInHours($checkOut), 2);
+        // $workedHours = round($checkIn->floatDiffInHours($checkOut), 2);
+        $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
 
         $this->attendanceDetail->update($detail->id, [
             'worked_hours' => $workedHours,

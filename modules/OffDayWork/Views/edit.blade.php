@@ -349,7 +349,7 @@
 
                 <div class="row">
                     <div class="mb-3 col-4">
-                        <label for="date" class="form-label required-label">Date</label>
+                        <label for="date" class="form-label required-label">Off Day Work Date</label>
                         <input type="date" class="form-control" id="date" name="date"
                             value="{{ $offDayWork->date->format('Y-m-d') }}" required>
                     </div>

@@ -23,6 +23,14 @@
             display: flex;
             align-items: center;
         }
+
+        .ss-value {
+            background-color: var(--ohw-blue) !important;
+        }
+
+        .ss-option:hover {
+            background-color: var(--ohw-blue) !important;
+        }
     </style>
     @yield('page_css')
 </head>

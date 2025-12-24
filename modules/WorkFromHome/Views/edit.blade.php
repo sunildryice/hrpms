@@ -2,8 +2,10 @@
 
 @section('title', 'Edit Work From Home Request')
 
-@section('page_js')
+@section('page_css')
     {{-- Styles for Deliverables table --}}
+
+    <link href="{{ asset('plugins/slim-select/dist/slimselect.css') }}" rel="stylesheet">
     <style>
         #deliverables-table td:first-child,
         #deliverables-table td:nth-child(2) {
@@ -23,6 +25,17 @@
             padding-inline: .35rem;
         }
     </style>
+@endsection
+
+@section('page_js')
+    <script src="{{ asset('plugins/slim-select/dist/slimselect.min.js') }}"></script>
+    <script>
+        new SlimSelect({
+            select: '#project_ids',
+            placeholder: 'Select Project',
+            closeOnSelect: false,
+        });
+    </script>
 
     <script type="text/javascript">
         const existingProjects = @json($selectedProjectIds ?? []);
@@ -31,13 +44,6 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
-            // Select2
-            $(document).ready(function() {
-                $('#project_ids').addClass('select2').select2({
-                    width: '100%',
-                    dropdownAutoWidth: true
-                });
-            });
             $('#send_to').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true
@@ -340,7 +346,7 @@
 
                 <div class="mb-3">
                     <label for="project_ids" class="form-label required-label">Projects</label>
-                    <select class="form-control" id="project_ids" multiple name="project_ids[]" required>
+                    <select id="project_ids" multiple name="project_ids[]" required>
                         <option value="" disabled>Select Project</option>
                         @foreach ($projects as $id => $title)
                             <option value="{{ $id }}" @if (in_array($id, $selectedProjectIds ?? [])) selected @endif>

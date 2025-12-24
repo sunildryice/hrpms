@@ -38,8 +38,8 @@ class UpdateRequest extends FormRequest
             // 'account_code_id'=>'required|exists:lkup_account_codes,id',
             // 'donor_code_id'=>'nullable',
             // 'purpose'=>'required|string|max:255',
-            // 'departure_place'=>'nullable|string|max:255',
-            // 'arrival_place'=>'nullable|string|max:255',
+            'departure_place'=>'nullable|string|max:255',
+            'arrival_place'=>'nullable|string|max:255',
             // 'total_distance'=>'nullable|numeric|min:0.01',
         ];
     }

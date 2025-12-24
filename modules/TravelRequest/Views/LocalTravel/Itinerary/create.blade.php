@@ -17,6 +17,36 @@
             </div>
         </div>
 
+        {{-- <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">From Place</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="input-group has-validation">
+                        <input type="text" class="form-control" name="departure_place" autofocus="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="form-label required-label">To Place</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="row">
+                    <div class="input-group has-validation">
+                        <input type="text" class="form-control" name="arrival_place" autofocus="">
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

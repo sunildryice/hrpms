@@ -387,7 +387,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="send_to" class="form-label required-label">Send To</label>
+                    <label for="send_to" class="form-label required-label">{{ __('label.approval') }}</label>
                     <select class="form-control" id="send_to" name="send_to" required>
                         <option value="">Select Approver</option>
                         @foreach ($supervisors as $id => $fullName)

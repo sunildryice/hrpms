@@ -24,14 +24,6 @@
         .task-item .btn {
             padding-inline: .35rem;
         }
-
-        .ss-value {
-            background-color: var(--ohw-blue) !important;
-        }
-
-        .ss-option:hover {
-            background-color: var(--ohw-blue) !important;
-        }
     </style>
 @endsection
 

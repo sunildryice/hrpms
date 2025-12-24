@@ -43,4 +43,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function routeNotificationFor($driver, $notification = null)
+    {
+        if (method_exists($this, $method = 'routeNotificationFor' . Str::studly($driver))) {
+            return $this->{$method}($notification);
+        }
+
+        return match ($driver) {
+            'database' => $this->notifications(),
+            'mail' => $this->email_address,
+            default => null,
+        };
+    }
 }

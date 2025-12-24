@@ -145,7 +145,7 @@
                         <th>Date</th>
                         <th>Time In (hh:mm)</th>
                         <th>Time Out (hh:mm)</th>
-                        <th>Hours Worked (hh.hh)</th>
+                        <th>Hours Worked (hh.mm)</th>
                         <th style="width: 40%;">Remarks</th>
                     </tr>
                 </thead>
@@ -201,7 +201,7 @@
                                 {{ $date->get('check_out_time') ?: '-' }}
                             </td>
                             <td class="text-center fw-bold">
-                                {{ $date->get('worked_hours') ?: '0.00' }}
+                                {{ $date->get('worked_hours') ?: '00.00' }}
                             </td>
                             <td>
                                 @if ($remark)

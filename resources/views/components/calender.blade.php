@@ -37,7 +37,7 @@
             font-weight: bold;
         }
 
-        @if ($office->weekend_type == config('constant.WEEKEND_SUN'))
+        @if ($office->weekend_type == config('constant.Saturday+Sunday'))
             .fc-day-sun {
                 background-color: var(--bg-weekend) !important;
             }
@@ -55,6 +55,7 @@
                 font-weight: bold;
             }
         @endif
+
 
         .fc-event {
             border: none;
@@ -90,9 +91,9 @@
         }
 
         /* .fc .fc-daygrid-body .fc-daygrid-day {
-                                                                                                                                            height: 50px;
-                                                                                                                                            max-height: 50px;
-                                                                                                                                        } */
+                                                                                                                                                                                                                        height: 50px;
+                                                                                                                                                                                                                        max-height: 50px;
+                                                                                                                                                                                                                    } */
     </style>
 @endsection
 
@@ -100,7 +101,7 @@
     <div class="">
         <div class="row justify-content-center">
             <div class="col-10">
-                <div id="calendar"></div>
+                <div class="px-4 py-2" id="calendar"></div>
             </div>
         </div>
     </div>

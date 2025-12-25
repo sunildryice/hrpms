@@ -134,7 +134,7 @@
                             },
                         },
                     },
-                     nid_number: {
+                    nid_number: {
                         validators: {
                             stringLength: {
                                 max: 50
@@ -280,13 +280,40 @@
                                         <label class="form-label required-label">{{ __('label.consultant-code') }}</label>
                                     </div>
                                 </div>
-                                <div class="col-lg-9">
+                                <div class="col-lg-4">
                                     <input type="number" min="1"
                                         class="form-control @if ($errors->has('employee_code')) is-invalid @endif"
                                         name="employee_code" value="{!! old('employee_code') !!}" autofocus />
                                     @if ($errors->has('employee_code'))
                                         <div class="fv-plugins-message-container invalid-feedback">
                                             <div data-field="employee_code">{!! $errors->first('employee_code') !!}</div>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="validationProject" class="form-label required-label">STE Type
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <select name="employee_type_id"
+                                        class="select2 form-control
+                                        @if ($errors->has('employee_type_id')) is-invalid @endif"
+                                        data-width="100%">
+                                        <option value="">Select STE Type</option>
+                                        @foreach ($employeeTypes as $employeeType)
+                                            <option value="{{ $employeeType->id }}"
+                                                {{ $employeeType->id == old('employee_type_id') ? 'selected' : '' }}>
+                                                {{ $employeeType->title }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($errors->has('employee_type_id'))
+                                        <div class="fv-plugins-message-container invalid-feedback">
+                                            <div data-field="employee_type_id">
+                                                {!! $errors->first('employee_type_id') !!}
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
@@ -311,7 +338,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label class="form-label">Official Email  </label>
+                                        <label class="form-label">Official Email </label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
@@ -399,8 +426,10 @@
                                 </div>
                                 <div class="col-lg-9">
                                     <input type="text" class="form-control" name="date_of_birth"
-                                        value="{{ old('date_of_birth') }}" onfocus="this.blur()" placeholder="yyyy-mm-dd" />
-                                    <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
+                                        value="{{ old('date_of_birth') }}" onfocus="this.blur()"
+                                        placeholder="yyyy-mm-dd" />
+                                    <input type="hidden" value="{{ date('Y-m-d') }}" name="today"
+                                        class="form-control" />
                                 </div>
                             </div>
                             <div class="mb-2 row">

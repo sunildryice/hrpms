@@ -8,12 +8,40 @@
                     <label for="" class="form-label required-label">{{ __('label.consultant-code') }}</label>
                 </div>
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-4">
                 <input type="text" class="form-control @if ($errors->has('employee_code')) is-invalid @endif"
                     name="employee_code" value="{{ old('employee_code') ?: $employee->employee_code }}" />
                 @if ($errors->has('employee_code'))
                     <div class="fv-plugins-message-container text-danger">
                         <div data-field="employee_code">{!! $errors->first('employee_code') !!}</div>
+                    </div>
+                @endif
+            </div>
+            <div class="col-lg-2">
+                <div class="d-flex align-items-start h-100">
+                    <label for="validationProject" class="form-label required-label">STE Type
+                    </label>
+                </div>
+            </div>
+            @php $selectedEmployeeCodeId =  old('employee_type_id') ?: $employee->employee_type_id  @endphp
+            <div class="col-lg-3">
+                <select name="employee_type_id"
+                    class="select2 form-control
+                                        @if ($errors->has('employee_type_id')) is-invalid @endif"
+                    data-width="100%">
+                    <option value="">Select STE Type</option>
+                    @foreach ($employeeTypes as $employeeType)
+                        <option value="{{ $employeeType->id }}"
+                            {{ $employeeType->id == $selectedEmployeeCodeId ? 'selected' : '' }}>
+                            {{ $employeeType->title }}
+                        </option>
+                    @endforeach
+                </select>
+                @if ($errors->has('employee_type_id'))
+                    <div class="fv-plugins-message-container invalid-feedback">
+                        <div data-field="employee_type_id">
+                            {!! $errors->first('employee_type_id') !!}
+                        </div>
                     </div>
                 @endif
             </div>

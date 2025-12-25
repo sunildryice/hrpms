@@ -252,7 +252,7 @@
                         date: {
                             validators: {
                                 notEmpty: {
-                                    message: 'The date is required'
+                                    message: 'The Off Day Work Date is required'
                                 }
                             }
                         },
@@ -338,7 +338,7 @@
 
                 <div class="row">
                     <div class="mb-3 col-4">
-                        <label for="date" class="form-label required-label">Date</label>
+                        <label for="date" class="form-label required-label">Off Day Work Date</label>
                         <input type="date" class="form-control" id="date" name="date" value="{{ old('date') }}"
                             required>
                         <span class="text-sm text-muted">Only Holidays and Off Days are selectable</span>

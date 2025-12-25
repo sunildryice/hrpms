@@ -24,6 +24,10 @@
                     name: 'employee_code'
                 },
                     {
+                        data: 'employee_type_id',
+                        name: 'employee_type_id'
+                    },
+                    {
                         data: 'full_name',
                         name: 'full_name'
                     },
@@ -103,6 +107,7 @@
                     <thead class="bg-light">
                     <tr>
                         <th class="" style="width:120px;">{{ __('label.consultant-code') }}</th>
+                        <th>STE Type</th>
                         <th>{{ __('label.name') }}</th>
                         <th>{{ __('label.email-address') }}</th>
                         <th>{{ __('label.position') }}</th>

@@ -373,7 +373,8 @@
                                             <tbody>
                                                 <tr>
                                                     <th scope="row" width="10%">{{ __('label.consultant-code') }}</th>
-                                                    <td colspan="3">{{ $employee->requestSTEId }}</td>
+                                                    <td>{{ $employee->requestSTEId }}</td>
+                                                    <td>{{ $employee->employeeType?->title }}</td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row">Full Name:</th>

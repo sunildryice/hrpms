@@ -73,6 +73,8 @@ class ConsultantController extends Controller
                 ->addIndexColumn()
                 ->addColumn('employee_code', function ($employee) {
                     return $employee->requestSTEId;
+                })->addColumn('employee_type_id', function ($employee) {
+                    return $employee->employeeType?->title;
                 })->addColumn('official_email_address', function ($employee) {
                     return $employee->user?->email_address;
                 })->addColumn('position', function ($employee) {

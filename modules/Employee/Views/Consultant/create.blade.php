@@ -26,6 +26,13 @@
                             },
                         },
                     },
+                    employee_type_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'STE Type is required',
+                            },
+                        },
+                    },
                     full_name: {
                         validators: {
                             notEmpty: {

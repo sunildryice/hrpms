@@ -196,11 +196,11 @@ class LeaveRequestController extends Controller
         $leave = $this->employeeLeaves->find($request->leave_type_id);
         $checkLeaveExists = $this->leaveRequests->checkOverlapLeaveDays(array_combine($inputs['leave_days'], $inputs['leave_mode_id']), $authUser->employee->id);
 
-        // if ($checkLeaveExists) {
-        //     return redirect()->back()
-        //         ->withInput()
-        //         ->withWarningMessage('There are overlapping leave days on requested date range.');
-        // }
+        if ($checkLeaveExists) {
+            return redirect()->back()
+                ->withInput()
+                ->withWarningMessage('There are overlapping leave days on requested date range.');
+        }
 
         $inputs['requester_id'] = $inputs['created_by'] = $authUser->id;
         $inputs['office_id'] = $authUser->employee->office_id;

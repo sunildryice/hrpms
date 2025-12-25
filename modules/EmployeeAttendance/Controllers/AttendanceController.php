@@ -143,13 +143,13 @@ class AttendanceController extends Controller
                         $btn .= '<i class="bi bi-bootstrap-reboot" ></i></a>';
                     }
 
-                    $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                    $btn .= 'href = "' . route('attendance.detail.worklogs', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="View Worklogs">';
-                    $btn .= '<i class="bi bi-file-ruled" ></i></a>';
+                    // $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
+                    // $btn .= 'href = "' . route('attendance.detail.worklogs', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="View Worklogs">';
+                    // $btn .= '<i class="bi bi-file-ruled" ></i></a>';
 
-                    $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
-                    $btn .= 'href = "' . route('attendance.detail.worklogs.print', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Print all Worklogs">';
-                    $btn .= '<i class="bi bi-printer-fill" ></i></a>';
+                    // $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
+                    // $btn .= 'href = "' . route('attendance.detail.worklogs.print', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Print all Worklogs">';
+                    // $btn .= '<i class="bi bi-printer-fill" ></i></a>';
 
                     return $btn;
                 })

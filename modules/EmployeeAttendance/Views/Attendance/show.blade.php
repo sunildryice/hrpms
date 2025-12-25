@@ -54,33 +54,50 @@
                     'log_remarks', successCallback);
             });
 
-            // Check In Today
+            // Check In Today with Confirmation
             $(document).on('click', '.checkin-today-btn', function() {
                 let date = $(this).data('date');
                 let btn = $(this);
 
-                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Checking in...');
+                Swal.fire({
+                    title: 'Confirm Check In',
+                    text: 'Are you sure you want to check in now?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#01aef0', 
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, Check In',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        btn.prop('disabled', true).html(
+                            '<i class="bi bi-hourglass-split"></i> Checking in...');
 
-                $.ajax({
-                    url: "{{ route('attendance.checkin.today') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        date: date
-                    },
-                    success: function(response) {
-                        toastr.success('Checked in at ' + response.time);
-                        $('#today-attendance-action').html(`
-                <button class="btn btn-warning btn-sm checkout-today-btn" data-date="${date}">
-                    <i class="bi bi-box-arrow-in-left"></i> Check Out
-                </button>
-            `);
-                        oTable.ajax.reload(null, false);
-                    },
-                    error: function(xhr) {
-                        btn.prop('disabled', false).html(
-                            '<i class="bi bi-box-arrow-in-right"></i> Check In Now');
-                        toastr.error(xhr.responseJSON?.message || 'Failed to check in');
+                        $.ajax({
+                            url: "{{ route('attendance.checkin.today') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                date: date
+                            },
+                            success: function(response) {
+                                toastr.success('Checked in at ' + response.time);
+                                $('#today-attendance-action').html(`
+                        <button class="btn btn-warning btn-sm checkout-today-btn" data-date="${date}">
+                            <i class="bi bi-box-arrow-in-left"></i> Check Out
+                        </button>
+                    `);
+                                oTable.ajax.reload(null, false);
+                            },
+                            error: function(xhr) {
+                                btn.prop('disabled', false).html(
+                                    '<i class="bi bi-box-arrow-in-right"></i> Check In Now'
+                                );
+                                toastr.error(xhr.responseJSON?.message ||
+                                    'Failed to check in');
+                            }
+                        });
                     }
                 });
             });

@@ -56,14 +56,14 @@
                     data: 'travel_date',
                     name: 'travel_date'
                 },
-                // {
-                //     data: 'departure_place',
-                //     name: 'departure_place'
-                // },
-                // {
-                //     data: 'arrival_place',
-                //     name: 'arrival_place'
-                // },
+                {
+                    data: 'departure_place',
+                    name: 'departure_place'
+                },
+                {
+                    data: 'arrival_place',
+                    name: 'arrival_place'
+                },
                 {
                     data: 'travel_mode',
                     name: 'travel_mode'
@@ -134,20 +134,20 @@
                                 },
                             },
                         },
-                        // departure_place: {
-                        //     validators: {
-                        //         notEmpty: {
-                        //             message: 'From place is required',
-                        //         },
-                        //     },
-                        // },
-                        // arrival_place: {
-                        //     validators: {
-                        //         notEmpty: {
-                        //             message: 'To place is required',
-                        //         },
-                        //     },
-                        // },
+                        departure_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'From place is required',
+                                },
+                            },
+                        },
+                        arrival_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'To place is required',
+                                },
+                            },
+                        },
                         travel_mode: {
                             validators: {
                                 notEmpty: {
@@ -512,8 +512,8 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">{{ __('label.date') }}</th>
-                                    {{-- <th scope="col">{{ __('label.from-place') }}</th>
-                                    <th scope="col">{{ __('label.to-place') }}</th> --}}
+                                    <th scope="col">{{ __('label.from-place') }}</th>
+                                    <th scope="col">{{ __('label.to-place') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
                                     <th scope="col">Pickup Location</th>
                                     <th scope="col">{{ __('label.fare') }}</th>

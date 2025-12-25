@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        {{-- <div class="row mb-2">
+        <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">From Place</label>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div>
 
         <div class="row mb-2">
             <div class="col-lg-3">

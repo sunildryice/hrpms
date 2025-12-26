@@ -150,7 +150,7 @@ class LeaveRequestController extends Controller
             ->whereIn('id', array_column($leaveIds, 'id'))
             ->where('fiscal_year_id', $fiscalYear->id)
             ->whereHas('leaveType', function ($q) use ($employee) {
-                $q->when($employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT'), function ($q) {
+                $q->when($employee->employee_type_id == config('constant.SHORT_TERM_EMPLOYEE'), function ($q) {
                     $q->where('leave_frequency', 2);
                 });
                 $q->whereNotNull('activated_at');
@@ -272,7 +272,7 @@ class LeaveRequestController extends Controller
             ->whereIn('id', array_column($leaveIds, 'id'))
             ->where('fiscal_year_id', $fiscalYear->id)
             ->whereHas('leaveType', function ($q) use ($employee) {
-                $q->when($employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT'), function ($q) {
+                $q->when($employee->employee_type_id == config('constant.SHORT_TERM_EMPLOYEE'), function ($q) {
                     $q->where('leave_frequency', 2);
                 });
                 $q->whereNotNull('activated_at');

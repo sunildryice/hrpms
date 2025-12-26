@@ -54,7 +54,7 @@ class EmployeeRepository extends Repository
             ->with(['user'])
             ->whereNotNull('activated_at')
             ->where(function ($q) {
-                $q->whereNotIn('employee_type_id', [config('constant.FULL_TIME_CONSULTANT')]);
+                $q->whereIn('employee_type_id', [config('constant.FULL_TIME_EMPLOYEE')]);
                 $q->orWhereNull('employee_type_id');
             })->orderBy('full_name', 'asc')->get();
     }
@@ -63,7 +63,7 @@ class EmployeeRepository extends Repository
     {
         return $this->model->select(['id', 'full_name', 'employee_code'])
             ->with(['user'])->where(function ($q) {
-                $q->whereNotIn('employee_type_id', [config('constant.FULL_TIME_CONSULTANT')]);
+                $q->whereIn('employee_type_id', [config('constant.FULL_TIME_EMPLOYEE')]);
                 $q->orWhereNull('employee_type_id');
             })->orderBy('full_name', 'asc')->get();
     }
@@ -84,7 +84,7 @@ class EmployeeRepository extends Repository
         return $this->model->select(['id', 'full_name', 'employee_code'])
             ->with(['user'])
             ->whereNotNull('activated_at')
-            ->where('employee_type_id', config('constant.FULL_TIME_CONSULTANT'))
+            ->where('employee_type_id', '<>', config('constant.FULL_TIME_EMPLOYEE'))
             ->orderBy('full_name', 'asc')->get();
     }
 

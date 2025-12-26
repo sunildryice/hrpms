@@ -58,7 +58,7 @@
         <div class="print-title fw-bold mb-3 translate-middle text-center">
             <div class="fs-5">HERD International</div>
             <div class="fs-8">
-                {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant/STE' : 'Staff' }}
+                {{ $employee->employee_type_id == config('constant.FULL_TIME_EMPLOYEE') ? 'Staff' : 'Consultant/STE' }}
                 Personal information</div>
         </div>
         <div class="print-header">
@@ -82,7 +82,7 @@
                 <thead>
                     <tr>
                         <th colspan="5">
-                            {{ $employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') ? 'Consultant/STE' : 'Staff' }}
+                            {{ $employee->employee_type_id == config('constant.FULL_TIME_EMPLOYEE') ? 'Staff' : 'Consultant/STE' }}
                             Personal Information </th>
                     </tr>
                 </thead>

@@ -74,7 +74,8 @@ class ExitHandOverNotePolicy
         if($exitHandOverNote->employeeExitPayable){
             $payable = $exitHandOverNote->employeeExitPayable->updated_by == NULL;
         }
-        return in_array($exitHandOverNote->status_id, [config('constant.CREATED_STATUS')]) && 
+
+        return in_array($exitHandOverNote->status_id, [config('constant.CREATED_STATUS')]) &&
                 in_array($user->id, [$exitHandOverNote->requester_id, $exitHandOverNote->created_by])
                 && $exitHandOverNote->updated_by == NULL && $interview && $payable;
     }
@@ -89,23 +90,23 @@ class ExitHandOverNotePolicy
     public function print(User $user, ExitHandOverNote $exitHandOverNote)
     {
         return true;
-        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS')]) && 
-                in_array($user->id, [$exitHandOverNote->created_by]) && 
-                in_array($exitHandOverNote->exitInterview->status_id, [config('constant.APPROVED_STATUS')]) && 
+        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS')]) &&
+                in_array($user->id, [$exitHandOverNote->created_by]) &&
+                in_array($exitHandOverNote->exitInterview->status_id, [config('constant.APPROVED_STATUS')]) &&
                 in_array($exitHandOverNote->employeeExitPayable->status_id, [config('constant.APPROVED_STATUS')]);
     }
 
     public function printExitInterview(User $user, ExitHandOverNote $exitHandOverNote)
     {
-        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS')]) && 
-                in_array($user->id, [$exitHandOverNote->created_by]) && 
+        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS')]) &&
+                in_array($user->id, [$exitHandOverNote->created_by]) &&
                 in_array($exitHandOverNote->exitInterview->status_id, [config('constant.APPROVED_STATUS')]);
     }
 
     public function printExitPayable(User $user, ExitHandOverNote $exitHandOverNote)
     {
-        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS'), config('constant.CLOSED_STATUS')]) && 
-                in_array($user->id, [$exitHandOverNote->created_by]) && 
+        return in_array($exitHandOverNote->status_id, [config('constant.APPROVED_STATUS'), config('constant.CLOSED_STATUS')]) &&
+                in_array($user->id, [$exitHandOverNote->created_by]) &&
                 in_array($exitHandOverNote->employeeExitPayable->status_id, [config('constant.APPROVED_STATUS')]);
     }
 

@@ -211,9 +211,6 @@ class LeaveRepository extends Repository
                 ->whereNotNull('activated_at')->get();
 
             foreach ($leaveTypes as $leaveType) {
-                // if($employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT') && $leaveType->leave_frequency != 2){
-                //     continue;
-                // }
                 $insertFlag = true;
                 if ($leaveType->female) {
                     $insertFlag = $employee->gender == 2;

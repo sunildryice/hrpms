@@ -37,7 +37,7 @@ class LeaveSummaryController extends Controller
         $data->whereNotNull('activated_at')
         ->where(function($query) {
             $query->whereNull('employee_type_id')
-            ->orWhere('employee_type_id', '<>', config('constant.FULL_TIME_CONSULTANT'));
+            ->orWhere('employee_type_id', '=', config('constant.FULL_TIME_EMPLOYEE'));
         });
 
         if ($request->filled('employee')) {

@@ -73,8 +73,9 @@ return [
     'FUND_TRANSFERRED' => 1,
     'EXPENSE_SETTLED' => 2,
 
-    'FULL_TIME_CONSULTANT' => 6,
-    'PART_TIME_CONSULTANT' => 9,
+    'FULL_TIME_EMPLOYEE' => 3,
+    'SHORT_TERM_EMPLOYEE' => 6,
+    'FULL_TIME_CONSULTANT' => 9,
 
     'PURCHASE_REQUEST' => \Modules\PurchaseRequest\Models\PurchaseRequest::class,
     'PURCHASE_ORDER' => \Modules\PurchaseOrder\Models\PurchaseOrder::class,

@@ -217,6 +217,7 @@ class EmployeeExitController extends Controller
     {
         $exitHandOverNote = $this->exitHandOverNote->find($id);
         $this->authorize('delete', $exitHandOverNote);
+
         $flag = $this->exitHandOverNote->destroy($id);
         if ($flag) {
             return response()->json([

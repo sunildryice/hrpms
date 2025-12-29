@@ -792,12 +792,6 @@
                                                 <td colspan="3">{{ $tenure->getSupervisorName() }}
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <th scope="row">Reviewer Name:</th>
-                                                <td colspan="3">
-                                                    {{ $tenure->getNextLineManagerName() }}
-                                                </td>
-                                            </tr>
                                             </tbody>
                                         </table>
                                     @endforeach

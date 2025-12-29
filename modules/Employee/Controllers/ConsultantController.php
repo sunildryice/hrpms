@@ -21,6 +21,7 @@ use Modules\Employee\Repositories\EducationRepository;
 use Modules\Employee\Requests\Consultant\StoreRequest;
 use Modules\Master\Repositories\DesignationRepository;
 use Modules\Employee\Requests\Consultant\UpdateRequest;
+use Modules\Master\Repositories\EmployeeTypeRepository;
 use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
@@ -47,7 +48,8 @@ class ConsultantController extends Controller
         protected OfficeRepository            $offices,
         protected PayrollFiscalYearRepository $payrollFiscalYears,
         protected ProvinceRepository          $provinces,
-        protected RoleRepository              $roles
+        protected RoleRepository              $roles,
+        protected EmployeeTypeRepository      $employeeTypes
     )
     {
         $this->destinationPath = 'consultant';
@@ -59,7 +61,7 @@ class ConsultantController extends Controller
         if ($request->ajax()) {
             $query = $this->employees->with(['user', 'department', 'designation', 'office', 'latestTenure.dutyStation', 'latestTenure.supervisor'])
                 ->select(['*'])
-                ->whereIn('employee_type_id', [config('constant.FULL_TIME_CONSULTANT'), config('constant.PART_TIME_CONSULTANT')]);
+                ->where('employee_type_id', '<>',config('constant.FULL_TIME_EMPLOYEE'));
             if ($request->active) {
                 $query->whereNotNull('activated_at');
             } else {
@@ -71,6 +73,8 @@ class ConsultantController extends Controller
                 ->addIndexColumn()
                 ->addColumn('employee_code', function ($employee) {
                     return $employee->requestSTEId;
+                })->addColumn('employee_type_id', function ($employee) {
+                    return $employee->employeeType?->title;
                 })->addColumn('official_email_address', function ($employee) {
                     return $employee->user?->email_address;
                 })->addColumn('position', function ($employee) {
@@ -108,6 +112,7 @@ class ConsultantController extends Controller
     {
         return view('Employee::Consultant.create')
             ->withGenders($this->genders->get())
+            ->withEmployeeTypes($this->employeeTypes->getConsultantTypes())
             ->withMaritalStatus($this->maritalStatus->get())
             ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
@@ -117,7 +122,6 @@ class ConsultantController extends Controller
         $inputs = $request->validated();
         $inputs['created_by'] = auth()->id();
         $inputs['activated_at'] = date('Y-m-d H:i:s');
-        $inputs['employee_type_id'] = config('constant.FULL_TIME_CONSULTANT');
         $employee = $this->employees->create($inputs);
         if ($employee) {
             if ($request->file('citizenship_attachment')) {
@@ -190,6 +194,7 @@ class ConsultantController extends Controller
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)
             ->withTenure($employee->latestTenure)
+            ->withEmployeeTypes($this->employeeTypes->getConsultantTypes())
             ->withVehicleLicenseCategories(VehicleLicenseCategory::active()->orderBy('code')->get());
     }
 

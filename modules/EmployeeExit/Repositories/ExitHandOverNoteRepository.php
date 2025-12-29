@@ -109,6 +109,7 @@ class ExitHandOverNoteRepository extends Repository
             $exitHandOverNote->employeeExitPayable()->delete();
             $exitHandOverNote->exitInterview()->delete();
             $exitHandOverNote->exitAssetHandover()->delete();
+            $exitHandOverNote->staffClearance->logs()->delete();
             $exitHandOverNote->staffClearance()->delete();
             $exitHandOverNote->delete();
             return true;

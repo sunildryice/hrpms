@@ -57,6 +57,14 @@
                     name: 'travel_date'
                 },
                 {
+                    data: 'departure_place',
+                    name: 'departure_place'
+                },
+                {
+                    data: 'arrival_place',
+                    name: 'arrival_place'
+                },
+                {
                     data: 'travel_mode',
                     name: 'travel_mode'
                 },
@@ -123,6 +131,20 @@
                                 date: {
                                     format: 'YYYY-MM-DD',
                                     message: 'The value is not a valid date',
+                                },
+                            },
+                        },
+                        departure_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'From place is required',
+                                },
+                            },
+                        },
+                        arrival_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'To place is required',
                                 },
                             },
                         },
@@ -490,6 +512,8 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col">{{ __('label.date') }}</th>
+                                    <th scope="col">{{ __('label.from-place') }}</th>
+                                    <th scope="col">{{ __('label.to-place') }}</th>
                                     <th scope="col">{{ __('label.mode') }}</th>
                                     <th scope="col">Pickup Location</th>
                                     <th scope="col">{{ __('label.fare') }}</th>

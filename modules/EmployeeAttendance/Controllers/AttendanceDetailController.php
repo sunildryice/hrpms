@@ -166,7 +166,7 @@ class AttendanceDetailController extends Controller
             }
 
             if ($this->donor->getUnrestrictedDonor()?->id == $donorId) {
-                $chargedHours = '0'; // string 0
+                $chargedHours = '0';
             }
 
             if ($chargedHours != null && ((int) $chargedHours) >= 0) {

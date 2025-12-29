@@ -105,7 +105,7 @@
                                     <th>Name</th>
                                     <th>Designation</th>
                                     <th>Department</th>
-                                    <th>Supervisor</th>
+                                    <th>Line Manager</th>
                                     <th>Duty Station</th>
                                     <th style="width:95px;">{{ __('label.action') }}</th>
                                 </tr>

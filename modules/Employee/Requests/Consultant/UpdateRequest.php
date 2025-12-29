@@ -45,7 +45,7 @@ class UpdateRequest extends FormRequest
             'full_name'=>'required|string',
             'official_email_address'=>[
                 'nullable','email',
-                Rule::unique('employees')->ignore($this->employee),
+                // Rule::unique('employees')->ignore($this->employee),
             ],
             'personal_email_address'=>'nullable|email|different:official_email_address',
             'telephone_number'=>'nullable|max:17',

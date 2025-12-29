@@ -106,7 +106,7 @@ class Employee extends Model
             get: fn() => 'HI-EMP-' . sprintf('%04d', $this->employee_code)
         );
     }
-    
+
     public function requestSTEId(): Attribute
     {
         return Attribute::make(
@@ -539,10 +539,10 @@ class Employee extends Model
 
     public function isConsultant(): bool
     {
-        return $this->employee_type_id == config('constant.FULL_TIME_CONSULTANT');
+        return $this->employee_type_id != config('constant.FULL_TIME_EMPLOYEE');
     }
 
-    public function getGoodReqeustAssets(): Collection
+    public function getGoodRequestAssets(): Collection
     {
         return GoodRequestAsset::query()
             ->where('assigned_user_id', $this->getUserId())

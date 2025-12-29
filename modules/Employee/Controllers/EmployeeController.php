@@ -75,7 +75,7 @@ class EmployeeController extends Controller
         if ($request->ajax()) {
             $query = $this->employees->with(['department', 'designation', 'office', 'latestTenure.dutyStation', 'latestTenure.supervisor'])
                 ->select(['*'])->where(function ($q) {
-                    $q->whereNotIn('employee_type_id', [config('constant.FULL_TIME_CONSULTANT')]);
+                    $q->whereIn('employee_type_id', [config('constant.FULL_TIME_EMPLOYEE')]);
                     $q->orWhereNull('employee_type_id');
                 });
             if ($request->active) {

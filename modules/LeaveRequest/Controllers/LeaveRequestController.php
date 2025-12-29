@@ -150,7 +150,7 @@ class LeaveRequestController extends Controller
             ->whereIn('id', array_column($leaveIds, 'id'))
             ->where('fiscal_year_id', $fiscalYear->id)
             ->whereHas('leaveType', function ($q) use ($employee) {
-                $q->when($employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT'), function ($q) {
+                $q->when($employee->employee_type_id == config('constant.SHORT_TERM_EMPLOYEE'), function ($q) {
                     $q->where('leave_frequency', 2);
                 });
                 $q->whereNotNull('activated_at');
@@ -196,11 +196,11 @@ class LeaveRequestController extends Controller
         $leave = $this->employeeLeaves->find($request->leave_type_id);
         $checkLeaveExists = $this->leaveRequests->checkOverlapLeaveDays(array_combine($inputs['leave_days'], $inputs['leave_mode_id']), $authUser->employee->id);
 
-        // if ($checkLeaveExists) {
-        //     return redirect()->back()
-        //         ->withInput()
-        //         ->withWarningMessage('There are overlapping leave days on requested date range.');
-        // }
+        if ($checkLeaveExists) {
+            return redirect()->back()
+                ->withInput()
+                ->withWarningMessage('There are overlapping leave days on requested date range.');
+        }
 
         $inputs['requester_id'] = $inputs['created_by'] = $authUser->id;
         $inputs['office_id'] = $authUser->employee->office_id;
@@ -272,7 +272,7 @@ class LeaveRequestController extends Controller
             ->whereIn('id', array_column($leaveIds, 'id'))
             ->where('fiscal_year_id', $fiscalYear->id)
             ->whereHas('leaveType', function ($q) use ($employee) {
-                $q->when($employee->employee_type_id == config('constant.FULL_TIME_CONSULTANT'), function ($q) {
+                $q->when($employee->employee_type_id == config('constant.SHORT_TERM_EMPLOYEE'), function ($q) {
                     $q->where('leave_frequency', 2);
                 });
                 $q->whereNotNull('activated_at');

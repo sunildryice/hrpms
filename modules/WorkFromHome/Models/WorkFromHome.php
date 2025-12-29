@@ -25,6 +25,7 @@ class WorkFromHome extends Model
         'approver_id',
         'fiscal_year_id',
         'reason',
+        'deliverables',
         'office_id',
         'department_id',
         'status_id',
@@ -43,18 +44,43 @@ class WorkFromHome extends Model
     ];
 
 
-    public function projects()
+    public function getProjectNames(): array
     {
-        return $this->belongsToMany(ProjectCode::class, 'project_work_from_home', 'work_from_home_id', 'project_id')
-            ->withPivot('deliverables')
-            ->withTimestamps();
+
+        $deliverables = collect($this->deliverables ?? []);
+
+        $projectIds = $deliverables
+            ->pluck('project_id')
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($projectIds)) {
+            return [];
+        }
+
+        return ProjectCode::whereIn('id', $projectIds)
+            ->pluck('short_name')
+            ->values()
+            ->all();
     }
 
-    public function getProjectNames()
+    public function getDeliverablesWithProjectNames(): array
     {
-        return $this->projects->pluck('short_name')->toArray();
-    }
+        return collect($this->deliverables ?? [])
+            ->groupBy('project_id')
+            ->map(function ($items, $projectId) {
+                $project = ProjectCode::find($projectId);
 
+                return [
+                    'project_id'   => (int) $projectId,
+                    'project_name' => $project ? $project->short_name : 'N/A',
+                    'tasks'        => $items->pluck('task')->values()->all(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');

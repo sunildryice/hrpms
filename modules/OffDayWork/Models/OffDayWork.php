@@ -9,6 +9,8 @@ use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+
 
 class OffDayWork extends Model
 {
@@ -20,6 +22,7 @@ class OffDayWork extends Model
         'requester_id',
         'approver_id',
         'date',
+        'deliverables',
         'fiscal_year_id',
         'reason',
         'status_id',
@@ -40,16 +43,56 @@ class OffDayWork extends Model
         return $this->belongsTo(User::class, 'approver_id');
     }
 
-    public function projects()
+    // public function projects(): EloquentCollection
+    // {
+    //     $deliverables = collect($this->deliverables ?? []);
+
+    //     $projectIds = $deliverables
+    //         ->pluck('project_id')
+    //         ->unique()
+    //         ->values()
+    //         ->all();
+
+    //     return ProjectCode::whereIn('id', $projectIds)->get();
+    // }
+
+
+    public function getProjectNames(): array
     {
-        return $this->belongsToMany(ProjectCode::class, 'project_off_day_work', 'off_day_work_id', 'project_id')
-            ->withPivot('deliverables')
-            ->withTimestamps();
+
+        $deliverables = collect($this->deliverables ?? []);
+
+        $projectIds = $deliverables
+            ->pluck('project_id')
+            ->unique()
+            ->values()
+            ->all();
+
+        if (empty($projectIds)) {
+            return [];
+        }
+
+        return ProjectCode::whereIn('id', $projectIds)
+            ->pluck('short_name')
+            ->values()
+            ->all();
     }
 
-    public function getProjectNames()
+    public function getDeliverablesWithProjectNames(): array
     {
-        return $this->projects->pluck('short_name')->toArray();
+        return collect($this->deliverables ?? [])
+            ->groupBy('project_id')
+            ->map(function ($items, $projectId) {
+                $project = ProjectCode::find($projectId);
+
+                return [
+                    'project_id'   => (int) $projectId,
+                    'project_name' => $project ? $project->short_name : 'N/A',
+                    'tasks'        => $items->pluck('task')->values()->all(),
+                ];
+            })
+            ->values()
+            ->all();
     }
 
     public function logs()

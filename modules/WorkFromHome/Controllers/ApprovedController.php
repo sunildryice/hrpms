@@ -81,7 +81,8 @@ class ApprovedController extends Controller
         $wfhRequest = $this->workFromHomes
             ->with('logs')->find($id);
 
+        $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
-        return view('WorkFromHome::approved.show', compact('wfhRequest'));
+        return view('WorkFromHome::approved.show', compact('wfhRequest', 'deliverables'));
     }
 }

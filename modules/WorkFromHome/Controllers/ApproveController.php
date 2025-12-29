@@ -5,7 +5,6 @@ namespace Modules\WorkFromHome\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use Carbon\Carbon;
 use Modules\WorkFromHome\Requests\Approve\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
@@ -81,8 +80,10 @@ class ApproveController extends Controller
         $wfhRequest = $this->workFromHomes
             ->with('logs')->find($id);
 
+        $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
-        return view('WorkFromHome::approve.show', compact('wfhRequest'));
+
+        return view('WorkFromHome::approve.show', compact('wfhRequest', 'deliverables'));
     }
 
     public function update(UpdateRequest $request, $id)

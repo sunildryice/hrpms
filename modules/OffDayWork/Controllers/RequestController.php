@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Master\Models\Holiday;
+use Modules\Master\Models\ProjectCode;
 use Modules\OffDayWork\Notifications\OffDayWorkSubmitted;
 use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 use Modules\OffDayWork\Requests\StoreRequest;
@@ -98,7 +99,6 @@ class RequestController extends Controller
     {
         $authUser = auth()->user();
 
-
         $inputs = $request->validated();
 
         try {
@@ -111,8 +111,7 @@ class RequestController extends Controller
             $inputs['created_by'] = auth()->id();
             $inputs['request_date'] = now();
 
-            $projectIds   = $inputs['project_ids'] ?? [];
-            $deliverables = $inputs['deliverables'] ?? [];
+
 
             DB::beginTransaction();
 
@@ -123,14 +122,6 @@ class RequestController extends Controller
 
                 $offDayWorkRequest = $this->offDayWork->create($inputs);
 
-                $pivotData = [];
-                foreach ($projectIds as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
-                    ];
-                }
-
-                $offDayWorkRequest->projects()->sync($pivotData);
 
                 $logInputs = [
                     'user_id' => $authUser->id,
@@ -139,7 +130,6 @@ class RequestController extends Controller
                     'status_id' => $offDayWorkRequest->status_id,
                     'off_day_work_id' => $offDayWorkRequest->id,
                 ];
-
 
                 $this->offDayWorkLogs->create($logInputs);
 
@@ -158,15 +148,6 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.CREATED_STATUS');
 
                 $offDayWorkRequest = $this->offDayWork->create($inputs);
-
-                $pivotData = [];
-                foreach ($projectIds as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
-                    ];
-                }
-
-                $offDayWorkRequest->projects()->sync($pivotData);
             }
 
             DB::commit();
@@ -182,29 +163,25 @@ class RequestController extends Controller
 
     public function show($id)
     {
-        $offDayWork = $this->offDayWork->with(['requester', 'approver', 'projects', 'logs.user'])->findOrFail($id);
+        $offDayWork = $this->offDayWork->with(['requester', 'approver', 'logs.user'])->findOrFail($id);
 
+
+        $deliverables = $offDayWork->getDeliverablesWithProjectNames();
         // $this->authorize('view', $lieuLeaveRequest);
 
         return view('OffDayWork::show', [
             'offDayWork' => $offDayWork,
+            'deliverables' => $deliverables,
         ]);
     }
 
     public function edit($id)
     {
         $offDayWork = $this->offDayWork
-            ->with(['logs', 'projects'])
+            ->with(['logs'])
             ->findOrFail($id);
 
-        $selectedProjectIds = $offDayWork->projects->pluck('id')->all();
-
-        $deliverables = [];
-        foreach ($offDayWork->projects as $project) {
-            $deliverables[$project->id] = $project->pivot && $project->pivot->deliverables
-                ? (json_decode($project->pivot->deliverables, true) ?: [])
-                : [];
-        };
+        $deliverables = $offDayWork->getDeliverablesWithProjectNames();
 
         return view('OffDayWork::edit', [
             'offDayWork'         => $offDayWork,
@@ -212,7 +189,6 @@ class RequestController extends Controller
             'supervisors'        => $this->users
                 ->getSupervisors(auth()->user())
                 ->pluck('full_name', 'id'),
-            'selectedProjectIds' => $selectedProjectIds,
             'deliverables'       => $deliverables,
         ]);
     }
@@ -222,9 +198,6 @@ class RequestController extends Controller
     {
         $authUser = auth()->user();
         $inputs   = $request->validated();
-
-        $projectIds   = $inputs['project_ids'] ?? [];
-        $deliverables = $inputs['deliverables'] ?? [];
 
         try {
             DB::beginTransaction();
@@ -240,14 +213,6 @@ class RequestController extends Controller
                 $inputs['status_id']    = config('constant.SUBMITTED_STATUS');
 
                 $offDayWork = $this->offDayWork->update($id, $inputs);
-
-                $pivotData = [];
-                foreach ($projectIds as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
-                    ];
-                }
-                $offDayWork->projects()->sync($pivotData);
 
                 $logInputs = [
                     'user_id'          => $authUser->id,
@@ -272,17 +237,7 @@ class RequestController extends Controller
                     new OffDayWorkSubmitted($offDayWork)
                 );
             } else {
-
                 $offDayWork = $this->offDayWork->update($id, $inputs);
-
-                $pivotData = [];
-                foreach ($projectIds as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($deliverables[$projectId] ?? []),
-                    ];
-                }
-
-                $offDayWork->projects()->sync($pivotData);
             }
 
             DB::commit();

@@ -3,49 +3,19 @@
 @section('title', 'Create Off Day Work Request')
 
 @section('page_css')
-
-    <link href="{{ asset('plugins/slim-select/dist/slimselect.css') }}" rel="stylesheet">
     <style>
-        #deliverables-table td:first-child,
-        #deliverables-table td:nth-child(2) {
-            border-bottom: 1px solid #b2a6a6 !important;
-        }
-
         #deliverables-table th,
         #deliverables-table td {
             border-color: #dee2e6;
         }
 
-        .task-item+.task-item {
-            margin-top: .35rem;
-        }
-
-        .task-item .btn {
+        .deliverable-row .btn {
             padding-inline: .35rem;
-        }
-
-        .ss-value {
-            background-color: var(--ohw-blue) !important;
-        }
-
-        .ss-option:hover {
-            background-color: var(--ohw-blue) !important;
         }
     </style>
 @endsection
 
 @section('page_js')
-
-    <script src="{{ asset('plugins/slim-select/dist/slimselect.min.js') }}"></script>
-    <script>
-        new SlimSelect({
-            select: '#project_ids',
-            placeholder: 'Select Project',
-            closeOnSelect: false,
-        });
-    </script>
-    </style>
-
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#off-day-work-index').addClass('active');
@@ -99,146 +69,102 @@
                 }
             });
 
+            $('#send_to').addClass('select2').select2({
+                width: '100%',
+                dropdownAutoWidth: true
+            });
+
             const form = document.getElementById('offDayWorkRequestAddForm');
-            const $tbody = $('#deliverables-table tbody');
+            const $tbody = $('#deliverables-body');
 
-            $(document).ready(function() {
-                $('#send_to').addClass('select2').select2({
-                    width: '100%',
-                    dropdownAutoWidth: true
+            // Get last index from existing rows so JS continues from there
+            let rowIndex = (function() {
+                let maxIndex = 0;
+                $tbody.find('.deliverable-row').each(function() {
+                    const idx = parseInt($(this).data('row-index'), 10);
+                    if (!isNaN(idx) && idx > maxIndex) {
+                        maxIndex = idx;
+                    }
                 });
-            });
+                return maxIndex;
+            })();
 
-            function buildTaskItem(projectId, value = '') {
+            function buildDeliverableRow(idx) {
                 return `
-                    <div class="row task-item" data-project-id="${projectId}">
-                        <div class="col-9">
-                            <input type="text" class="form-control"
-                                   name="deliverables[${projectId}][]"
-                                   value="${value}" required>
-                        </div>
-                        <div class="col-3 d-flex justify-content-start gap-2">
-                            <button type="button" class="btn btn-outline-danger btn-sm remove-task" title="Remove task">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm add-task-inline" title="Add task">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
+                <tr class="deliverable-row" data-row-index="${idx}">
+                    <td style="width: 15%;">
+                        <select class="form-select project-select"
+                                name="deliverables[${idx}][project_id]" required>
+                            <option value="" disabled selected>Select Project</option>
+                            @foreach ($projects as $id => $title)
+                                <option value="{{ $id }}">{{ $title }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text"
+                               class="form-control"
+                               name="deliverables[${idx}][task]"
+                               required>
+                    </td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm add-row"
+                                title="Add deliverable row">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-danger btn-sm remove-row"
+                                title="Remove row">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
             }
 
-            function buildProjectRow(projectId, projectName, tasks = []) {
-                if (!tasks || tasks.length === 0) {
-                    tasks = [''];
-                }
-
-                let tasksHtml = '';
-                tasks.forEach(function(t) {
-                    tasksHtml += buildTaskItem(projectId, t);
-                });
-
-                return `
-                    <tr data-project-id="${projectId}">
-                        <td class="align-middle text-truncate" style="max-width: 150px;">
-                            ${projectName}
-                        </td>
-                        <td>
-                            <div class="task-list" data-project-id="${projectId}">
-                                ${tasksHtml}
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }
-
-            function refreshTaskButtons() {
-                $('.task-list').each(function() {
-                    const $items = $(this).find('.task-item');
-
-                    $items.find('.add-task-inline').addClass('d-none');
-                    $items.last().find('.add-task-inline').removeClass('d-none');
-
-                    if ($items.length === 1) {
-                        $items.find('.remove-task').addClass('d-none');
-                    } else {
-                        $items.find('.remove-task').removeClass('d-none');
-                    }
-                });
-            }
-
-            $('#project_ids').on('change', function() {
-                const selectedIds = $(this).val() || [];
-
-                $tbody.find('tr').each(function() {
-                    const pid = String($(this).data('project-id'));
-                    if (!selectedIds.includes(pid)) {
-                        $(this).remove();
-                    }
-                });
-
-                const existingIds = $tbody.find('tr').map(function() {
-                    return String($(this).data('project-id'));
-                }).get();
-
-                $(this).find('option:selected').each(function() {
-                    const projectId = $(this).val();
-                    const projectName = $(this).text();
-                    if (!existingIds.includes(projectId)) {
-                        $tbody.append(buildProjectRow(projectId, projectName, []));
-                    }
-                });
-
-                refreshTaskButtons();
-
-                if (window.fv) {
-                    fv.revalidateField('project_ids');
-                    fv.revalidateField('deliverables');
-                }
-            });
-
-            $(document).on('click', '.add-task-inline', function() {
-                const $item = $(this).closest('.task-item');
-                const projectId = $item.data('project-id');
-                const $list = $('.task-list[data-project-id="' + projectId + '"]');
-
-                $list.append(buildTaskItem(projectId, ''));
-                refreshTaskButtons();
+            $(document).on('click', '.add-row', function() {
+                rowIndex++;
+                $tbody.append(buildDeliverableRow(rowIndex));
 
                 if (window.fv) {
                     fv.revalidateField('deliverables');
                 }
             });
 
-            $(document).on('click', '.remove-task', function() {
-                const $item = $(this).closest('.task-item');
-                const projectId = $item.data('project-id');
-                const $list = $('.task-list[data-project-id="' + projectId + '"]');
-
-                $item.remove();
-
-                if ($list.find('.task-item').length === 0) {
-                    $list.append(buildTaskItem(projectId, ''));
-                }
-
-                refreshTaskButtons();
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('tr').remove();
 
                 if (window.fv) {
                     fv.revalidateField('deliverables');
                 }
             });
-
-            refreshTaskButtons();
-
 
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
-                        'project_ids[]': {
+                        'deliverables': {
                             validators: {
-                                notEmpty: {
-                                    message: 'Project is required'
+                                callback: {
+                                    message: 'Project and task are required for each deliverable',
+                                    callback: function() {
+                                        const projectSelects = $(
+                                            '#deliverables-body select[name*="[project_id]"]');
+                                        const taskInputs = $(
+                                            '#deliverables-body input[name*="[task]"]');
+
+                                        const allProjectsFilled = projectSelects.length > 0 &&
+                                            projectSelects.filter(function() {
+                                                return $(this).val() && $(this).val() !== '';
+                                            }).length === projectSelects.length;
+
+                                        const allTasksFilled = taskInputs.length > 0 &&
+                                            taskInputs.filter(function() {
+                                                return $(this).val().trim() !== '';
+                                            }).length === taskInputs.length;
+
+                                        return allProjectsFilled && allTasksFilled;
+                                    }
                                 }
                             }
                         },
@@ -263,20 +189,6 @@
                                 }
                             }
                         },
-                        deliverables: {
-                            validators: {
-                                callback: {
-                                    message: 'Add at least one deliverable and fill all tasks',
-                                    callback: function() {
-                                        const items = $(
-                                            '#deliverables-table tbody input[name^="deliverables"]');
-                                        return items.length > 0 && items.filter(function() {
-                                            return $(this).val().trim() !== '';
-                                        }).length === items.length;
-                                    }
-                                }
-                            }
-                        },
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -296,9 +208,6 @@
                 });
             }
 
-            $(form).on('change', '#project_ids', function() {
-                fv.revalidateField('project_ids');
-            });
             $(form).on('change', '#send_to', function() {
                 fv.revalidateField('send_to');
             });
@@ -350,18 +259,7 @@
                     <textarea class="form-control" id="reason" name="reason" rows="3" required>{{ old('reason') }}</textarea>
                 </div>
 
-                <div class="mb-3 col-12">
-                    <label for="project_ids" class="form-label required-label">Projects</label>
-                    <select id="project_ids" multiple name="project_ids[]" required>
-                        <option value="" disabled>Select Project</option>
-                        @foreach ($projects as $id => $title)
-                            <option value="{{ $id }}" @if (in_array($id, old('project_ids', []))) selected @endif>
-                                {{ $title }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
+                {{-- Deliverables --}}
                 <div class="mb-3">
                     <label class="form-label required-label">Deliverables</label>
                     <table class="table table-bordered" id="deliverables-table">
@@ -369,9 +267,58 @@
                             <tr>
                                 <th style="width: 15%;">Project</th>
                                 <th>Task</th>
+                                <th style="width: 12%;">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="deliverables-body">
+                            @php
+                                // old('deliverables') is an array: [idx => ['project_id' => ..., 'task' => ...], ...]
+                                $oldDeliverables = old('deliverables', [['project_id' => null, 'task' => null]]);
+                            @endphp
+
+                            @foreach ($oldDeliverables as $idx => $deliverable)
+                                <tr class="deliverable-row" data-row-index="{{ $idx }}">
+                                    <td style="width: 15%;">
+                                        <select class="form-select project-select"
+                                            name="deliverables[{{ $idx }}][project_id]" required>
+                                            <option value="" disabled
+                                                {{ empty($deliverable['project_id']) ? 'selected' : '' }}>
+                                                Select Project
+                                            </option>
+                                            @foreach ($projects as $id => $title)
+                                                <option value="{{ $id }}"
+                                                    {{ (string) $id === (string) ($deliverable['project_id'] ?? '') ? 'selected' : '' }}>
+                                                    {{ $title }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control"
+                                            name="deliverables[{{ $idx }}][task]"
+                                            value="{{ $deliverable['task'] ?? '' }}" required>
+                                    </td>
+                                    <td>
+                                        @if ($loop->first)
+                                            {{-- first row: only plus button --}}
+                                            <button type="button" class="btn btn-outline-primary btn-sm add-row"
+                                                title="Add deliverable row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                        @else
+                                            {{-- subsequent rows: plus + trash --}}
+                                            <button type="button" class="btn btn-outline-primary btn-sm add-row"
+                                                title="Add deliverable row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-row"
+                                                title="Remove row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -381,7 +328,10 @@
                     <select class="form-control" id="send_to" name="send_to" required>
                         <option value="">Select Approver</option>
                         @foreach ($supervisors as $id => $fullName)
-                            <option value="{{ $id }}" @if ($supervisors->count() == 1) selected @endif>
+                            <option value="{{ $id }}"
+                                @if (old('send_to')) {{ old('send_to') == $id ? 'selected' : '' }}
+                                @else
+                                    {{ $supervisors->count() == 1 ? 'selected' : '' }} @endif>
                                 {{ $fullName }}
                             </option>
                         @endforeach

@@ -11,7 +11,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--ohw-blue)!important;
+    background-color: var(--ohw-blue) !important;
     // outline: 1px solid slategrey;
 }
 
@@ -1707,4 +1707,23 @@ th.sticky-col {
 
 .forget-btn a {
     color: #01aef0;
+}
+
+
+
+
+.form-switch .form-check-input {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #01aef0;
+    border-color: #01aef0;
+}
+
+.form-switch .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25);
+    box-shadow: unset;
 }

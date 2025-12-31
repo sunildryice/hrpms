@@ -37,8 +37,12 @@
                             <i class="bi-diagram-3 dropdown-item-icon"></i>
                         </div>
                         <div class="d-content-section">
-                            {{ $offDayWork->projects->pluck('short_name')->join(', ') ?? '-' }}
+                            @php
+                                $names = $offDayWork->getProjectNames();
+                            @endphp
+                            {{ implode(', ', $names) }}
                         </div>
+
                     </div>
                     <span class="stretched-link" rel="tooltip" title="Project"></span>
                 </li>
@@ -77,7 +81,7 @@
                             <i class="bi-list-task dropdown-item-icon"></i>
                         </div>
                         <div class="d-content-section">
-                            @foreach ($offDayWork->projects as $project)
+                            {{-- @foreach ($offDayWork->projects as $project)
                                 <strong>{{ $project->short_name }}:</strong>
                                 @php $deliverables = is_array($project->pivot->deliverables) ? $project->pivot->deliverables : json_decode($project->pivot->deliverables, true); @endphp
                                 @if (!empty($deliverables))
@@ -89,7 +93,24 @@
                                 @else
                                     <em>No deliverables listed.</em>
                                 @endif
-                            @endforeach
+                            @endforeach --}}
+
+                            @if ($deliverables)
+                                @foreach ($deliverables as $item)
+                                    <strong>{{ $item['project_name'] ?? 'N/A' }}:</strong>
+                                    @if (!empty($item['tasks']))
+                                        <ul class="list-unstyled mb-2">
+                                            @foreach ($item['tasks'] as $task)
+                                                <li><i class="bi-dot"></i> {{ $task }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <em>No deliverables listed.</em>
+                                    @endif
+                                @endforeach
+                            @else
+                                <em>No deliverables listed.</em>
+                            @endif
                         </div>
                     </div>
                     <span class="stretched-link" rel="tooltip" title="Deliverables"></span>

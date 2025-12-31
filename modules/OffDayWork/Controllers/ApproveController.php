@@ -68,7 +68,8 @@ class ApproveController extends Controller
     public function show($offDayWork)
     {
         $offDayWork = $this->offDayWork->find($offDayWork);
-        return view('OffDayWork::approve.show', compact('offDayWork'));
+        $deliverables = $offDayWork->getDeliverablesWithProjectNames();
+        return view('OffDayWork::approve.show', compact('offDayWork', 'deliverables'));
     }
 
     public function update(UpdateRequest $request, $id)

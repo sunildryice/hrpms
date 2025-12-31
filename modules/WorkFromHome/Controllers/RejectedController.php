@@ -5,8 +5,6 @@ namespace Modules\WorkFromHome\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use Carbon\Carbon;
-use Modules\WorkFromHome\Requests\Approve\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
@@ -79,7 +77,9 @@ class RejectedController extends Controller
         $wfhRequest = $this->workFromHomes
             ->with('logs')->find($id);
 
+        $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
-        return view('WorkFromHome::rejected.show', compact('wfhRequest'));
+
+        return view('WorkFromHome::rejected.show', compact('wfhRequest', 'deliverables'));
     }
 }

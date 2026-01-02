@@ -64,13 +64,14 @@ class UpdateEmployeeLeave extends Command
 
         $this->info($fiscalYear->start_date);
         $this->info($fiscalYear->end_date);
-        $employees = $this->employees->select(['*'])
-            ->whereNotNull('activated_at')
-            ->whereIn('employee_type_id', [3,6])
-            ->whereHas('user')
-            ->get();
-        $leaveTypes = $this->leaveTypes->select('*')->whereNotNull('activated_at')->get();
+//        $employees = $this->employees->select(['*'])
+//            ->whereNotNull('activated_at')
+//            ->whereIn('employee_type_id', [3,6])
+//            ->whereHas('user')
+//            ->get();
 
+        $employees = $this->employees->getActiveEmployees();
+        $leaveTypes = $this->leaveTypes->select('*')->whereNotNull('activated_at')->get();
         foreach ($employees as $employee) {
             $this->call('dryice:reconcile:employee:leave', ['employee'=>$employee->employee_code]);
         }

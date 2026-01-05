@@ -16,8 +16,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
 
 
-    Route::post('/project/members/{id}/update', [ProjectMembersController::class, 'update'])->name('project.members.update');
-
 
     Route::get('/activity-stages', [ActivityStageController::class, 'index'])->name('activity-stages.index');
     Route::get('/activity-stages/create', [ActivityStageController::class, 'create'])->name('activity-stage.create');

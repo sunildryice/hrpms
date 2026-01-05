@@ -469,13 +469,6 @@
                     </div>
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('activity-stages.index') }}" role="button"
-                            id="activity-index" data-bs-toggle="tooltip" data-bs-placement="right" title="Activity">
-                            <i class="bi bi-activity nav-icon"></i>
-                            <span class="nav-link-title">Activity</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('activity-stages.index') }}" role="button"
                             id="activity-stages-index" data-bs-toggle="tooltip" data-bs-placement="right"
                             title="Activity Stages">
                             <i class="bi bi-list-stars nav-icon"></i>

@@ -368,6 +368,8 @@ return [
     'start-datetime' => 'Start Datetime',
     'start-time' => 'Start Time',
     'status' => 'Status',
+    'stages' => 'Stages',
+    'state' => 'State',
     'handover-status' => 'Handover Status',
     'subject' => 'Subject',
     'submit-date' => 'Submit Date',

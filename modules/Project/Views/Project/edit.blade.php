@@ -81,49 +81,191 @@
 
     <section class="registration">
         <div class="row">
-            <div class="col-lg-3">
-                <div class="rounded shadow-sm vertical-navigation sm-menu-vr pt-3 pb-3 bg-white">
-                    <ul class="m-0 list-unstyled">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="projectInformation">
-                                <i class="nav-icon bi-info-circle"></i> Project Information
-                            </a>
-                        </li>
+            <div class="c-tabs-content active" id="projectInformation">
+                {{-- <div class="card-header fw-bold">Project Information</div> --}}
+                <form action="{{ route('project.update', $project->id) }}" id="ProjectAddForm" method="post"
+                    enctype="multipart/form-data" autocomplete="off">
+                    <div class="card-body">
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.title') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text"
+                                    class="form-control @if ($errors->has('title')) is-invalid @endif" name="title"
+                                    value="{!! old('title', $project->title) !!}" autofocus />
+                                @if ($errors->has('title'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="title">{!! $errors->first('title') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="projectMembers">
-                                <i class="nav-icon bi-people"></i> Members
-                            </a>
-                        </li>
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.description') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea class="form-control @if ($errors->has('description')) is-invalid @endif" name="description" rows="4">{!! old('description', $project->description) !!}</textarea>
+                                @if ($errors->has('description'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="description">{!! $errors->first('description') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.start-date') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text" data-toggle="datepicker"
+                                    class="form-control @if ($errors->has('start_date')) is-invalid @endif"
+                                    name="start_date" value="{!! old('start_date', $project->start_date) !!}" placeholder="yyyy-mm-dd"
+                                    onfocus="this.blur()" />
+                                @if ($errors->has('start_date'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="start_date">{!! $errors->first('start_date') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.completion-date') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text" data-toggle="datepicker"
+                                    class="form-control @if ($errors->has('completion_date')) is-invalid @endif"
+                                    name="completion_date" value="{!! old('completion_date', $project->completion_date) !!}" placeholder="yyyy-mm-dd"
+                                    onfocus="this.blur()" />
+                                @if ($errors->has('completion_date'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="completion_date">{!! $errors->first('completion_date') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="projectActivities">
-                                <i class="nav-icon bi-activity"></i> Activities
-                            </a>
-                        </li>
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.members') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="members[]"
+                                    class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
+                                    multiple data-placeholder="Select Members" style="width: 100%">
+                                    @foreach ($users as $id => $name)
+                                        <option value="{{ $id }}"
+                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('members'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="members">{!! $errors->first('members') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
 
-                        <li class="nav-item">
-                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="projectExtensions">
-                                <i class="nav-icon bi-calendar-event"></i> Extensions
-                            </a>
-                        </li>
-                    </ul>
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.team-lead') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="team_lead_id"
+                                    class="select2 form-control @if ($errors->has('team_lead_id')) is-invalid @endif"
+                                    data-width="100%">
+                                    <option value="">Select Team Lead</option>
+                                    @foreach ($users as $id => $name)
+                                        <option value="{{ $id }}"
+                                            @if (old('team_lead_id', $project->team_lead_id) == $id) selected @endif>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('team_lead_id'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="team_lead_id">{!! $errors->first('team_lead_id') !!}</div>
+                                    </div>
+                                @endif
+                                <span class="form-text">Team Lead are selected from the selected member list.</span>
+                            </div>
+                        </div>
 
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <div class="c-tabs-content active" id="projectInformation">
-                    @include('Project::ProjectInformation.edit')
-                </div>
-                <div class="c-tabs-content" id="projectMembers">
-                    @include('Project::Members.edit')
-                </div>
-                <div class="c-tabs-content" id="projectActivities">
-                    @include('Project::Activities.edit')
-                </div>
-                <div class="c-tabs-content" id="projectExtensions">
-                    <!-- Extensions content goes here -->
-                </div>
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.focal-person') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="focal_person_id"
+                                    class="select2 form-control @if ($errors->has('focal_person_id')) is-invalid @endif"
+                                    data-width="100%">
+                                    <option value="">Select Focal Person</option>
+                                    @foreach ($users as $id => $name)
+                                        <option value="{{ $id }}"
+                                            @if (old('focal_person_id', $project->focal_person_id) == $id) selected @endif>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="form-text">Focal Person are selected from the selected member list.</span>
+                                @if ($errors->has('focal_person_id'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="focal_person_id">{!! $errors->first('focal_person_id') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.stages') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="stages[]"
+                                    class="select2 form-control @if ($errors->has('stages')) is-invalid @endif"
+                                    multiple data-placeholder="Select Stages" style="width: 100%">
+                                    @foreach ($stages as $stage)
+                                        <option value="{{ $stage->id }}"
+                                            @if (in_array($stage->id, old('stages', $project->stages->pluck('id')->toArray()))) selected @endif>
+                                            {{ $stage->title }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('stages'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="stages">{!! $errors->first('stages') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {!! csrf_field() !!}
+
+                    </div>
+                    <div class="card-footer border-0 justify-content-end d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                        {{-- <button class="btn btn-success btn-sm">Update</button> --}}
+                        <a href="{!! route('employees.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
+                </form>
+
             </div>
         </div>
     </section>

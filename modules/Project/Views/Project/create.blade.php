@@ -167,7 +167,6 @@
                                         <div data-field="team_lead_id">{!! $errors->first('team_lead_id') !!}</div>
                                     </div>
                                 @endif
-                                <span class="form-text">Team Lead are selected from the selected member list.</span>
                             </div>
                         </div>
 
@@ -187,7 +186,6 @@
                                             {{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <span class="form-text">Focal Person are selected from the selected member list.</span>
                                 @if ($errors->has('focal_person_id'))
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <div data-field="focal_person_id">{!! $errors->first('focal_person_id') !!}</div>

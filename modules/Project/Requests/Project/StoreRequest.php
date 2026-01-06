@@ -16,16 +16,16 @@ class StoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_date' => 'nullable|date',
-            'completion_date' => 'nullable|date|after_or_equal:start_date',
-            'team_lead_id' => 'nullable|exists:users,id',
-            'focal_person_id' => 'nullable|exists:users,id',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'completion_date' => 'required|date|after_or_equal:start_date',
+            'team_lead_id' => 'required|exists:users,id',
+            'focal_person_id' => 'required|exists:users,id',
             'members' => 'required|array',
             'members.*' => 'exists:users,id',
-            'focal_person_id' => 'nullable|exists:users,id',
-            'team_lead_id' => 'nullable|exists:users,id',
-            'stages' => 'nullable|array',
+            'focal_person_id' => 'required|exists:users,id',
+            'team_lead_id' => 'required|exists:users,id',
+            'stages' => 'required|array',
             'stages.*' => 'exists:lkup_activity_stages,id',
         ];
     }

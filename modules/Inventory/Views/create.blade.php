@@ -415,7 +415,7 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationdd" class="form-label required-label">Expiry
+                                                <label for="validationdd" class="form-label">Expiry
                                                     Date (If any)</label>
                                             </div>
                                         </div>
@@ -433,7 +433,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
+                                    {{-- <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
                                                 <label for="" class="m-0">Activity Code</label>
@@ -499,7 +499,7 @@
                                                 </div>
                                             @endif
                                         </div>
-                                    </div>
+                                    </div> --}}
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">

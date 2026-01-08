@@ -74,21 +74,21 @@
                         name: 'execution_type',
                         orderable: false
                     },
-                    {
-                        data: 'activity_code',
-                        name: 'activity_code',
-                        orderable: false
-                    },
-                    {
-                        data: 'account_code',
-                        name: 'account_code',
-                        orderable: false
-                    },
-                    {
-                        data: 'donor_code',
-                        name: 'donor_code',
-                        orderable: false
-                    },
+                    // {
+                    //     data: 'activity_code',
+                    //     name: 'activity_code',
+                    //     orderable: false
+                    // },
+                    // {
+                    //     data: 'account_code',
+                    //     name: 'account_code',
+                    //     orderable: false
+                    // },
+                    // {
+                    //     data: 'donor_code',
+                    //     name: 'donor_code',
+                    //     orderable: false
+                    // },
                     {
                         data: 'action',
                         name: 'action',
@@ -174,9 +174,9 @@
                                 <th scope="col">{{ __('label.available-quantity') }}</th>
                                 <th scope="col">{{ __('label.description') }}</th>
                                 <th scope="col">{{ __('label.execution-type') }}</th>
-                                <th scope="col">{{ __('label.activity-code') }}</th>
+                                {{-- <th scope="col">{{ __('label.activity-code') }}</th>
                                 <th scope="col">{{ __('label.account-code') }}</th>
-                                <th scope="col">{{ __('label.donor-code') }}</th>
+                                <th scope="col">{{ __('label.donor-code') }}</th> --}}
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

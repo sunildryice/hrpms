@@ -9,6 +9,155 @@
         });
 
         document.addEventListener('DOMContentLoaded', function(e) {
+
+            // NEW: Day-wise Itinerary Dynamic Rows
+            const dayItineraryContainer = document.getElementById('day-itinerary-container');
+
+            const departureDateStr =
+                '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
+            const returnDateStr =
+                '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
+
+            let itineraryData = [];
+
+            function generateDateRange(start, end) {
+                const dates = [];
+                let current = new Date(start);
+                const endDate = new Date(end);
+                while (current <= endDate) {
+                    dates.push(new Date(current).toISOString().split('T')[0]);
+                    current.setDate(current.getDate() + 1);
+                }
+                return dates;
+            }
+
+            function initializeItineraryData() {
+                if (!departureDateStr || !returnDateStr) {
+                    itineraryData = [];
+                    return;
+                }
+
+                const dates = generateDateRange(departureDateStr, returnDateStr);
+
+                // Load saved data if exists (uncomment when backend is ready)
+                // itineraryData = {!! $travelRequest->day_itinerary ?? '[]' !!};
+
+                if (itineraryData.length === 0) {
+                    itineraryData = dates.map(date => ({
+                        date: date,
+                        activities: '',
+                        accommodation: false,
+                        air_ticket: false,
+                        from: '',
+                        to: '',
+                        departure_time: ''
+                    }));
+                }
+            }
+
+            // Hide/show the three air ticket columns (header + all cells)
+            function updateAirTicketColumnsVisibility() {
+                const hasAirTicket = itineraryData.some(row => row.air_ticket);
+                document.querySelectorAll('.air-ticket-col').forEach(el => {
+                    el.style.display = hasAirTicket ? '' : 'none';
+                });
+            }
+
+            function renderDayItineraryRows() {
+                dayItineraryContainer.innerHTML = '';
+
+                itineraryData.forEach((row, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'day-itinerary-row';
+                    tr.dataset.index = index;
+
+                    tr.innerHTML = `
+            <td>${row.date}</td>
+            <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
+            <td class="text-center">
+                ${row.accommodation ? '<i class="bi bi-check-lg text-success"></i>' : '<i class="bi bi-x-lg text-muted"></i>'}
+            </td>
+            <td class="text-center">
+                ${row.air_ticket ? '<i class="bi bi-check-lg text-success"></i>' : '<i class="bi bi-x-lg text-muted"></i>'}
+            </td>
+            <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
+            <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
+            <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
+            <td class="text-center">
+                <button type="button" class="btn btn-warning btn-sm edit-row-btn" data-index="${index}">
+                    <i class="bi bi-pencil"></i> Edit
+                </button>
+            </td>
+        `;
+                    dayItineraryContainer.appendChild(tr);
+                });
+
+                updateAirTicketColumnsVisibility();
+                attachEditEvents();
+            }
+
+            function attachEditEvents() {
+                document.querySelectorAll('.edit-row-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.dataset.index);
+                        openEditModal(index);
+                    });
+                });
+            }
+
+            function openEditModal(index) {
+                const data = itineraryData[index];
+
+                document.getElementById('editRowIndex').value = index;
+                document.getElementById('editDate').textContent = data.date;
+                document.getElementById('editActivities').value = data.activities || '';
+                document.getElementById('editAccommodation').checked = data.accommodation;
+                document.getElementById('editAirTicket').checked = data.air_ticket;
+                document.getElementById('editFrom').value = data.from || '';
+                document.getElementById('editTo').value = data.to || '';
+                document.getElementById('editDepartureTime').value = data.departure_time || '';
+
+                toggleAirTicketFieldsInModal(data.air_ticket);
+
+                $('#editItineraryModal').modal('show');
+            }
+
+            function toggleAirTicketFieldsInModal(show) {
+                const fields = ['editFrom', 'editTo', 'editDepartureTime'];
+                fields.forEach(id => {
+                    const row = document.getElementById(id).closest('.row');
+                    row.style.display = show ? 'flex' : 'none';
+                });
+            }
+
+            document.getElementById('editAirTicket').addEventListener('change', function() {
+                toggleAirTicketFieldsInModal(this.checked);
+            });
+
+            document.getElementById('saveEditBtn').addEventListener('click', function() {
+                const index = parseInt(document.getElementById('editRowIndex').value);
+                const isAirTicket = document.getElementById('editAirTicket').checked;
+
+                itineraryData[index] = {
+                    date: itineraryData[index].date,
+                    activities: document.getElementById('editActivities').value.trim(),
+                    accommodation: document.getElementById('editAccommodation').checked,
+                    air_ticket: isAirTicket,
+                    from: isAirTicket ? document.getElementById('editFrom').value.trim() : '',
+                    to: isAirTicket ? document.getElementById('editTo').value.trim() : '',
+                    departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
+                        .trim() : ''
+                };
+
+                renderDayItineraryRows();
+                $('#editItineraryModal').modal('hide');
+            });
+
+            // Initial load
+            initializeItineraryData();
+            renderDayItineraryRows();
+
+
             // $("#substitutes").select2({
             //     width: '100%',
             //     dropdownAutoWidth: true
@@ -1178,7 +1327,8 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label required-label">{{ __('label.approval') }} </label>
+                                <label for="validationRemarks"
+                                    class="form-label required-label">{{ __('label.approval') }} </label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -1212,6 +1362,125 @@
                 {!! csrf_field() !!}
                 {!! method_field('PUT') !!}
             </div>
+
+            <!-- Day-wise Itinerary Section -->
+            <div class="card mt-4">
+                <div class="card-header fw-bold">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span>Day-wise Itinerary</span>
+                        <small class="text-muted">
+                            Auto-generated from {{ $travelRequest->departure_date?->format('d M Y') }} to
+                            {{ $travelRequest->return_date?->format('d M Y') }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 120px;">Date</th>
+                                    <th>Planned Activities</th>
+                                    <th class="text-center">Accommodation</th>
+                                    <th class="text-center">Air Ticket</th>
+                                    <th class="air-ticket-col">From</th>
+                                    <th class="air-ticket-col">To</th>
+                                    <th class="air-ticket-col">Departure Time</th>
+                                    <th style="width: 100px;" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="day-itinerary-container">
+                                <!-- Rows dynamically injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Click "Edit" to update details. Air travel columns appear only if any day requires an air ticket.
+                    </small>
+                </div>
+            </div>
+
+            <div class="modal fade" id="editItineraryModal" tabindex="-1" aria-labelledby="editItineraryModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editItineraryModalLabel">Edit Day Itinerary</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <input type="hidden" id="editRowIndex">
+
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3"><strong>Date:</strong></div>
+                                    <div class="col-md-9"><span id="editDate" class="fw-bold"></span></div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">Planned Activities</label>
+                                    <div class="col-md-9">
+                                        <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-9">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="editAccommodation">
+                                            <label class="form-check-label" for="editAccommodation">Accommodation
+                                                Required</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-9">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
+                                            <label class="form-check-label" for="editAirTicket">Air Ticket
+                                                Required</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">From</label>
+                                    <div class="col-md-9">
+                                        <input type="text" id="editFrom" class="form-control"
+                                            placeholder="Departure city/airport">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">To</label>
+                                    <div class="col-md-9">
+                                        <input type="text" id="editTo" class="form-control"
+                                            placeholder="Arrival city/airport">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">Departure Time</label>
+                                    <div class="col-md-9">
+                                        <input type="text" id="editDepartureTime" class="form-control"
+                                            placeholder="e.g. 14:30">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="saveEditBtn" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">

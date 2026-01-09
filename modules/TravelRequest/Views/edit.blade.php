@@ -158,6 +158,77 @@
             renderDayItineraryRows();
 
 
+            var savedDayTable = $('#savedDayItineraryTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}",
+                bFilter: false,
+                bPaginate: false,
+                bInfo: false,
+                columns: [{
+                        data: 'date',
+                        name: 'date'
+                    },
+                    {
+                        data: 'planned_activities',
+                        name: 'planned_activities'
+                    },
+                    {
+                        data: 'accommodation',
+                        name: 'accommodation',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return data ?
+                                '<i class="bi bi-check-lg text-success"></i>' :
+                                '<i class="bi bi-x-lg text-muted"></i>';
+                        }
+                    },
+                    {
+                        data: 'air_ticket',
+                        name: 'air_ticket',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            if (!data) {
+                                return '<i class="bi bi-x-lg text-muted"></i>';
+                            }
+                            var places = '';
+                            if (row.departure_place && row.arrival_place) {
+                                places = ' (' + row.departure_place + ' to ' + row.arrival_place +
+                                    ')';
+                            } else if (row.departure_place) {
+                                places = ' (' + row.departure_place + ')';
+                            } else if (row.arrival_place) {
+                                places = ' (to ' + row.arrival_place + ')';
+                            }
+                            var time = row.departure_time ? ' ' + row.departure_time : '';
+                            return '<i class="bi bi-check-lg text-success"></i>' + places + time;
+                        }
+                    },
+                    {
+                        data: 'departure_place',
+                        name: 'departure_place'
+                    },
+                    {
+                        data: 'arrival_place',
+                        name: 'arrival_place'
+                    },
+                    {
+                        data: 'departure_time',
+                        name: 'departure_time'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'sticky-col'
+                    }
+                ]
+            });
+
+
             // $("#substitutes").select2({
             //     width: '100%',
             //     dropdownAutoWidth: true
@@ -1375,7 +1446,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
+                    <!-- Dynamic JS Table - for adding/editing days -->
+                    <div class="table-responsive mb-4">
                         <table class="table table-bordered align-middle">
                             <thead class="thead-light">
                                 <tr>
@@ -1390,16 +1462,48 @@
                                 </tr>
                             </thead>
                             <tbody id="day-itinerary-container">
-                                <!-- Rows dynamically injected -->
+                                <!-- Dynamic rows injected by JS -->
                             </tbody>
                         </table>
                     </div>
-                    <small class="text-muted">
+
+                    <!-- NEW: Update button right below dynamic table -->
+                    <div class="text-end mb-4">
+                        <button type="button" id="updateDayItinerariesBtn" class="btn btn-success">
+                            <i class="bi bi-save"></i> Update Day Itineraries
+                        </button>
+                    </div>
+
+                    <!-- Saved Day-wise Itineraries from Database -->
+                    <h5 class="mt-4 mb-3">Saved Day-wise Entries</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle" id="savedDayItineraryTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th style="width: 120px;">Date</th>
+                                    <th>Planned Activities</th>
+                                    <th class="text-center">Accommodation</th>
+                                    <th class="text-center">Air Ticket</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Departure Time</th>
+                                    <th style="width: 150px;" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <small class="text-muted mt-3 d-block">
                         <i class="bi bi-info-circle"></i>
-                        Click "Edit" to update details. Air travel columns appear only if any day requires an air ticket.
+                        Add/edit days above. Click "Update Day Itineraries" to save. Changes appear in the table below after
+                        save.
                     </small>
                 </div>
             </div>
+
+            <!-- Keep your existing Travel Advance Request and Submit button at the bottom -->
+
 
             <div class="modal fade" id="editItineraryModal" tabindex="-1" aria-labelledby="editItineraryModalLabel"
                 aria-hidden="true">
@@ -1481,7 +1585,7 @@
                 </div>
             </div>
 
-            <div class="card">
+            {{-- <div class="card">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">
                         <span> Travel Itinerary</span>
@@ -1501,9 +1605,6 @@
                                     <th scope="col">{{ __('label.to-date') }}</th>
                                     <th scope="col">{{ __('label.to-place') }}</th>
                                     <th scope="col">{{ __('label.mode-of-travel') }}</th>
-                                    {{-- <th scope="col">{{ __('label.dsa-category') }}</th>
-                                    <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                    <th scope="col">{{ __('label.total-dsa') }}</th> --}}
                                     <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
@@ -1511,9 +1612,9 @@
                             </tbody>
                         </table>
                     </div>
-
                 </div>
-            </div>
+            </div> --}}
+
             <div class="card ">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">

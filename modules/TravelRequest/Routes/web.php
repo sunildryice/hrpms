@@ -34,6 +34,7 @@ use Modules\TravelRequest\Controllers\TravelRequestApproveController;
 use Modules\TravelRequest\Controllers\TravelRequestApprovedController;
 use Modules\TravelRequest\Controllers\TravelRequestEstimateController;
 use Modules\TravelRequest\Controllers\TravelRequestItineraryController;
+use Modules\TravelRequest\Controllers\TravelRequestDayItineraryController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::middleware('can:travel-request')->group(function () {
@@ -68,6 +69,19 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             ->name('travel.requests.estimate.update');
         Route::delete('travel/requests/{travelRequest}/estimate/{estimate}', [TravelRequestEstimateController::class, 'destroy'])
             ->name('travel.requests.estimate.destroy');
+
+        Route::get('travel/requests/{travelRequest}/day-itinerary/create', [TravelRequestDayItineraryController::class, 'create'])
+            ->name('travel.requests.day-itinerary.create');
+        Route::post('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'store'])
+            ->name('travel.requests.day-itinerary.store');
+        Route::get('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}/edit', [TravelRequestDayItineraryController::class, 'edit'])
+            ->name('travel.requests.day-itinerary.edit');
+        Route::put('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'update'])
+            ->name('travel.requests.day-itinerary.update');
+        Route::delete('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'destroy'])
+            ->name('travel.requests.day-itinerary.destroy');
+        Route::get('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'index'])
+            ->name('travel.requests.day-itinerary.index');
 
         Route::post('travel/requests/{travel}/amend', [TravelRequestController::class, 'amend'])->name('travel.requests.amend.store');
         Route::post('travel/requests/{travel}/advance', [TravelRequestController::class, 'advance'])->name('travel.requests.advance.store');

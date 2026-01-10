@@ -23,6 +23,7 @@ use Modules\Master\Repositories\OfficeRepository;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\TravelRequest\Models\TravelRequest;
 use Illuminate\Support\Str;
+use Modules\Project\Models\Project;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {

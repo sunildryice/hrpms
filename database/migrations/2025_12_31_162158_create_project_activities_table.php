@@ -13,6 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
+        Schema::table('lkup_activities', function (Blueprint $table) {
+            $table->dropForeign('lkup_activities_stage_id_foreign');
+        });
+        Schema::dropIfExists('lkup_activity_stages');
+
         Schema::create('lkup_activity_stages', function (Blueprint $table) {
             $table->id();
             $table->string('title');

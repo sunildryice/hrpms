@@ -34,7 +34,7 @@ class UpdateEmployeeLeave extends Command
     public function __construct(
         protected EmployeeRepository   $employees,
         protected FiscalYearRepository $fiscalYears,
-        protected LeaveRepository   $employeeLeaves,
+        protected LeaveRepository      $employeeLeaves,
         protected LeaveTypeRepository  $leaveTypes
     )
     {
@@ -49,13 +49,13 @@ class UpdateEmployeeLeave extends Command
     public function handle()
     {
         $month = $this->argument('month') ?: date('m');
-        $reportedDate = date('Y-'.$month.'-01');
+        $reportedDate = date('Y-' . $month . '-01');
         $this->info('Getting all employees.');
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
             ->where('end_date', '>=', date('Y-m-d'))
             ->first();
         $previousYear = collect();
-        if($month == '01'){
+        if ($month == '01') {
             $pyDate = date('Y-m-d', strtotime('-1 month'));
             $previousYear = $this->fiscalYears->where('start_date', '<=', $pyDate)
                 ->where('end_date', '>=', $pyDate)
@@ -73,7 +73,8 @@ class UpdateEmployeeLeave extends Command
         $employees = $this->employees->getActiveEmployees();
         $leaveTypes = $this->leaveTypes->select('*')->whereNotNull('activated_at')->get();
         foreach ($employees as $employee) {
-            $this->call('dryice:reconcile:employee:leave', ['employee'=>$employee->employee_code]);
+            $this->call('dryice:reconcile:employee:leave', ['employee' => $employee->employee_code]);
+            $this->info($employee->employee_code);
         }
         $this->info('Leave of all employees are updated.');
     }

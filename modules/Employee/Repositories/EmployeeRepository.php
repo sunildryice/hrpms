@@ -50,7 +50,7 @@ class EmployeeRepository extends Repository
     public function getActiveEmployees()
     {
         return $this->model->select(['id', 'full_name', 'employee_code'])
-            ->whereHas('user')
+//            ->whereHas('user')
             ->with(['user'])
             ->whereNotNull('activated_at')
             ->where(function ($q) {
@@ -61,8 +61,9 @@ class EmployeeRepository extends Repository
 
     public function getAllEmployees()
     {
-        return $this->model->select(['id', 'full_name', 'employee_code'])
-            ->with(['user'])->where(function ($q) {
+        return $this->model->select(['id', 'full_name', 'employee_code', 'official_email_address'])
+            ->with(['user'])
+            ->where(function ($q) {
                 $q->whereIn('employee_type_id', [config('constant.FULL_TIME_EMPLOYEE')]);
                 $q->orWhereNull('employee_type_id');
             })->orderBy('full_name', 'asc')->get();

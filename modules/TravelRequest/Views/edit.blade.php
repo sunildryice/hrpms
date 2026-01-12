@@ -151,11 +151,11 @@
                         // Now use 'url' for delete request
                         Swal.fire({
                             title: 'Are you sure?',
-                            text: "This day itinerary will be permanently deleted!",
-                            icon: 'warning',
+                            text: "You won't be able to revert this!",
+                            // icon: 'warning',
                             showCancelButton: true,
-                            confirmButtonColor: '#dc3545',
-                            cancelButtonColor: '#6c757d',
+                            confirmButtonColor: '#3085D6',
+                            cancelButtonColor: '#dc3545',
                             confirmButtonText: 'Yes, delete it!',
                             cancelButtonText: 'Cancel'
                         }).then((result) => {

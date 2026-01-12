@@ -82,35 +82,52 @@
 
             function renderDayItineraryRows() {
                 dayItineraryContainer.innerHTML = '';
-
                 itineraryData.forEach((row, index) => {
                     const tr = document.createElement('tr');
                     tr.className = 'day-itinerary-row';
                     tr.dataset.index = index;
 
+                    let actions = `
+                    <button type="button" class="btn btn-outline-primary btn-sm edit-row-btn me-1" data-index="${index}" title="Edit">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                `;
+
+                    // Only show delete if row has id (already saved)
+                    if (row.id) {
+                        actions += `
+                    <button type="button" class="btn btn-outline-danger btn-sm delete-day-itinerary"
+                            data-href="{{ route('travel.requests.day-itinerary.destroy', [$travelRequest->id, ':id']) }}"
+                            data-id="${row.id}"
+                            title="Delete">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                `;
+                    }
+
                     tr.innerHTML = `
-            <td>${row.date}</td>
-            <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
-            <td class="text-center">
-                ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
-            </td>
-            <td class="text-center">
-                ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
-            </td>
-            <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
-            <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
-            <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
-            <td class="text-center">
-                <button type="button" class="btn btn-outline-primary btn-sm edit-row-btn" data-index="${index}" title="Edit">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-            </td>
-        `;
+                    <td>${row.date}</td>
+                    <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
+                    <td class="text-center">
+                        ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                    </td>
+                    <td class="text-center">
+                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                    </td>
+                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
+                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
+                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
+                    <td class="text-center">
+                        ${actions}
+                    </td>
+                `;
+
                     dayItineraryContainer.appendChild(tr);
                 });
 
                 updateAirTicketColumnsVisibility();
                 attachEditEvents();
+                attachDeleteEvents();
             }
 
             function attachEditEvents() {
@@ -118,6 +135,58 @@
                     btn.addEventListener('click', function() {
                         const index = parseInt(this.dataset.index);
                         openEditModal(index);
+                    });
+                });
+            }
+
+            function attachDeleteEvents() {
+                document.querySelectorAll('.delete-day-itinerary').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+
+                        const baseUrl = this.getAttribute('data-href');
+                        const id = this.getAttribute('data-id');
+                        const url = baseUrl.replace(':id', id);
+
+                        // Now use 'url' for delete request
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This day itinerary will be permanently deleted!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: url,
+                                    type: 'DELETE',
+                                    data: {
+                                        _token: $('meta[name="csrf-token"]').attr(
+                                            'content')
+                                    },
+                                    success: function(response) {
+                                        if (response.success) {
+                                            toastr.success(response.message ||
+                                                'Deleted successfully!');
+                                            reloadItineraryDataFromServer();
+                                            renderDayItineraryRows();
+                                            $('#savedDayItineraryTable')
+                                                .DataTable().ajax.reload();
+                                        } else {
+                                            toastr.error(response.message ||
+                                                'Failed to delete.');
+                                        }
+                                    },
+                                    error: function(xhr) {
+                                        toastr.error('Error deleting record.');
+                                        console.error(xhr);
+                                    }
+                                });
+                            }
+                        });
                     });
                 });
             }
@@ -221,7 +290,7 @@
                 }
 
                 if (hasError) {
-                    return; 
+                    return;
                 }
 
                 const btn = this;

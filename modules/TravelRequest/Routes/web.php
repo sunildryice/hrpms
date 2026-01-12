@@ -72,10 +72,12 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
         Route::get('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'index'])
             ->name('travel.requests.day-itinerary.index');
-            Route::post('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'store'])
-    ->name('travel.requests.day-itinerary.store');
+        Route::post('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'store'])
+            ->name('travel.requests.day-itinerary.store');
         Route::put('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'update'])
             ->name('travel.requests.day-itinerary.update');
+        Route::delete('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'destroy'])
+            ->name('travel.requests.day-itinerary.destroy');
 
         Route::post('travel/requests/{travel}/amend', [TravelRequestController::class, 'amend'])->name('travel.requests.amend.store');
         Route::post('travel/requests/{travel}/advance', [TravelRequestController::class, 'advance'])->name('travel.requests.advance.store');

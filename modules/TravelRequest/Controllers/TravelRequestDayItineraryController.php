@@ -86,13 +86,13 @@ class TravelRequestDayItineraryController extends Controller
                     //            title="Edit Day Itinerary">
                     //            <i class="bi bi-pencil-square"></i>
                     //        </a>';
-    
+
                     // $btn .= ' <a href="javascript:;" class="btn btn-danger btn-sm delete-record" 
                     //              data-href="' . route('travel.requests.day-itinerary.destroy', [$travelRequestId, $row->id]) . '" 
                     //              title="Delete Day Itinerary">
                     //              <i class="bi bi-trash"></i>
                     //          </a>';
-    
+
                     // return $btn;
                 })
                 ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'action']);
@@ -171,4 +171,26 @@ class TravelRequestDayItineraryController extends Controller
         ], 422);
     }
 
+    /**
+     * Remove the specified day itinerary from storage.
+     */
+    public function destroy($travelRequestId, $id)
+    {
+        $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
+        $travelRequest = $dayItinerary->travelRequest;
+        // $this->authorize('delete', $travelRequest);  
+
+        $deleted = $dayItinerary->delete();
+        if ($deleted) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Day itinerary deleted successfully',
+                'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+            ]);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to delete day itinerary',
+        ], 422);
+    }
 }

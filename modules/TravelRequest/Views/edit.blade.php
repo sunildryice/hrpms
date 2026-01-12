@@ -155,7 +155,7 @@
                 const data = itineraryData[index];
 
                 document.getElementById('editRowIndex').value = index;
-                document.getElementById('editDate').textContent = data.date;
+                document.getElementById('editDate').value = data.date || '';
                 document.getElementById('editActivities').value = data.activities || '';
                 document.getElementById('editAccommodation').checked = data.accommodation;
                 document.getElementById('editAirTicket').checked = data.air_ticket;
@@ -206,46 +206,21 @@
                 // btn.innerHTML = 'Saving...';
 
                 try {
-                    // Find the real DB ID for this row (we'll add it later)
-                    const dbId = itineraryData[index].id;
+                    // Always use bulk sync now (simpler, safer for both new & existing)
+                    // Update local data first
+                    itineraryData[index] = updatedRow;
 
-                    if (!dbId) {
-                        toastr.success('Day saved successfully!');
-                        itineraryData[index] = updatedRow;
-                        await saveBulk();
-                    } else {
-                        // Existing row → single update
-                        const response = await fetch(
-                            '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':id']) }}'
-                            .replace(':id', dbId), {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                    'Accept': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    planned_activities: updatedRow.activities,
-                                    accommodation: updatedRow.accommodation,
-                                    air_ticket: updatedRow.air_ticket,
-                                    departure_place: updatedRow.from,
-                                    arrival_place: updatedRow.to,
-                                    departure_time: updatedRow.departure_time
-                                })
-                            }
-                        );
+                    // Save everything via bulk
+                    await saveBulk();
 
-                        const result = await response.json();
-
-                        if (!response.ok) throw new Error(result.message || 'Update failed');
-
-                        toastr.success('Day updated successfully!');
-                        itineraryData[index] = updatedRow;
-                    }
+                    // After save, reload full fresh data (new IDs!)
+                    await reloadItineraryDataFromServer();
 
                     renderDayItineraryRows();
                     $('#savedDayItineraryTable').DataTable().ajax.reload();
                     $('#editItineraryModal').modal('hide');
+
+                    toastr.success('Saved successfully!');
                 } catch (err) {
                     toastr.error(err.message || 'Failed to save');
                     console.error(err);
@@ -254,6 +229,55 @@
                     btn.innerHTML = 'Save';
                 }
             });
+
+            async function reloadItineraryDataFromServer() {
+                try {
+                    const response = await fetch(
+                        '{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}?all=true', {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                    if (!response.ok) throw new Error('Failed to reload');
+
+                    const json = await response.json();
+                    const freshSaved = json.data || json; // adjust depending on your response format
+
+                    // Rebuild savedMap
+                    const savedMap = {};
+                    freshSaved.forEach(item => {
+                        if (item.date) savedMap[item.date] = {
+                            id: item.id,
+                            date: item.date,
+                            activities: item.planned_activities || '',
+                            accommodation: !!item.accommodation,
+                            air_ticket: !!item.air_ticket,
+                            from: item.departure_place || '',
+                            to: item.arrival_place || '',
+                            departure_time: item.departure_time || ''
+                        };
+                    });
+
+                    // Re-merge with full range
+                    const dates = generateDateRange(departureDateStr, returnDateStr);
+                    itineraryData = dates.map(date => savedMap[date] || {
+                        date: date,
+                        activities: '',
+                        accommodation: false,
+                        air_ticket: false,
+                        from: '',
+                        to: '',
+                        departure_time: ''
+                    });
+
+                    console.log('Reloaded fresh data with correct IDs:', itineraryData);
+                    renderDayItineraryRows();
+                } catch (err) {
+                    console.error('Reload failed:', err);
+                    toastr.error('Failed to refresh data. Please reload page.');
+                }
+            }
 
             // Initial load
             initializeItineraryData();
@@ -1604,7 +1628,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                        <div class="table-responsive">
+                    <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="savedDayItineraryTable">
                             <thead class="thead-light">
                                 <tr>
@@ -1625,7 +1649,7 @@
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
-                        <div class="modal-header">
+                        <div class="modal-header bg-primary text-white">
                             <h5 class="modal-title" id="editItineraryModalLabel">Edit Travel Itinerary</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
@@ -1634,9 +1658,11 @@
                             <form>
                                 <input type="hidden" id="editRowIndex">
 
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-md-3"><strong>Date:</strong></div>
-                                    <div class="col-md-9"><span id="editDate" class="fw-bold"></span></div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">Date</label>
+                                    <div class="col-md-9">
+                                        <input type="date" id="editDate" class="form-control" readonly>
+                                    </div>
                                 </div>
 
                                 <div class="row mb-3">
@@ -1646,24 +1672,24 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-md-3"></div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-check-label" for="editAccommodation">Accommodation</label>
+                                    </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="editAccommodation">
-                                            <label class="form-check-label" for="editAccommodation">Accommodation
-                                                Required</label>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3 align-items-center">
-                                    <div class="col-md-3"></div>
+                                <div class="row mb-3 ">
+                                    <div class="col-md-3"> <label class="form-check-label" for="editAirTicket">Air
+                                            Ticket</label></div>
                                     <div class="col-md-9">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="editAirTicket">
-                                            <label class="form-check-label" for="editAirTicket">Air Ticket
-                                                Required</label>
+
                                         </div>
                                     </div>
                                 </div>

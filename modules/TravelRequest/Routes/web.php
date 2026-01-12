@@ -78,6 +78,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             ->name('travel.requests.day-itinerary.edit');
         Route::put('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'update'])
             ->name('travel.requests.day-itinerary.update');
+        Route::post('travel/requests/{travelRequest}/day-itineraries/sync', [TravelRequestDayItineraryController::class, 'sync'])
+            ->name('travel.requests.day-itinerary.sync');
         Route::delete('travel/requests/{travelRequest}/day-itinerary/{dayItinerary}', [TravelRequestDayItineraryController::class, 'destroy'])
             ->name('travel.requests.day-itinerary.destroy');
         Route::get('travel/requests/{travelRequest}/day-itinerary', [TravelRequestDayItineraryController::class, 'index'])

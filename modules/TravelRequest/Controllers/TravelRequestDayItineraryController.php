@@ -5,6 +5,7 @@ namespace Modules\TravelRequest\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 use Modules\TravelRequest\Models\TravelRequest;
 use Modules\TravelRequest\Models\TravelRequestDayItinerary;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
@@ -29,9 +30,9 @@ class TravelRequestDayItineraryController extends Controller
     public function index(Request $request, $travelRequestId)
     {
         if ($request->ajax()) {
-            $travelRequest = $this->travelRequest->findOrFail($travelRequestId);
+            $travelRequest = TravelRequest::find($travelRequestId);
 
-            $data = $travelRequest->dayItineraries();
+            $data = $travelRequest->travelRequestDayItineraries();
 
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
@@ -93,11 +94,11 @@ class TravelRequestDayItineraryController extends Controller
 
         $validated = $request->validate([
             'planned_activities' => 'nullable|string|max:2000',
-            'accommodation'      => 'boolean',
-            'air_ticket'         => 'boolean',
-            'departure_place'    => 'nullable|string|max:255|required_if:air_ticket,true',
-            'arrival_place'      => 'nullable|string|max:255|required_if:air_ticket,true',
-            'departure_time'     => 'nullable|string|max:50',
+            'accommodation' => 'boolean',
+            'air_ticket' => 'boolean',
+            'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'departure_time' => 'nullable|string|max:50',
         ]);
 
         $validated['updated_by'] = auth()->id();
@@ -116,6 +117,82 @@ class TravelRequestDayItineraryController extends Controller
             'success' => false,
             'message' => 'Failed to update day itinerary',
         ], 422);
+    }
+    
+    /**
+     * Bulk sync all day-wise itineraries (no full form validation)
+     * Only saves rows that have actual data (non-empty activities or other fields)
+     */
+    public function sync(Request $request, $travelRequestId)
+    {
+        $travelRequest = TravelRequest::findOrFail($travelRequestId);
+        $this->authorize('update', $travelRequest);
+
+        $request->validate([
+            'day_itineraries_json' => 'required|json',
+        ]);
+
+        $dayData = json_decode($request->day_itineraries_json, true) ?? [];
+
+        // Validate the structure of incoming data
+        $validator = Validator::make($dayData, [
+            '*.activities' => 'nullable|string|max:2000',
+            '*.accommodation' => 'boolean',
+            '*.air_ticket' => 'boolean',
+            '*.from' => 'nullable|string|max:255|required_if:*.air_ticket,true',
+            '*.to' => 'nullable|string|max:255|required_if:*.air_ticket,true',
+            '*.departure_time' => 'nullable|string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Clear existing entries (full replace)
+        $travelRequest->travelRequestDayItineraries()->delete();
+
+        $savedCount = 0;
+
+        foreach ($dayData as $day) {
+            // Skip completely empty rows
+            $hasData = !empty(trim($day['activities'] ?? ''))
+                || !empty($day['from'] ?? '')
+                || !empty($day['to'] ?? '')
+                || !empty($day['departure_time'] ?? '')
+                || ($day['accommodation'] ?? false)
+                || ($day['air_ticket'] ?? false);
+
+            if (!$hasData) {
+                continue; // Skip saving this empty row
+            }
+
+            $travelRequest->travelRequestDayItineraries()->create([
+                'date' => $day['date'],
+                'planned_activities' => $day['activities'] ?? null,
+                'accommodation' => $day['accommodation'] ?? false,
+                'air_ticket' => $day['air_ticket'] ?? false,
+                'departure_place' => $day['from'] ?? null,
+                'arrival_place' => $day['to'] ?? null,
+                'departure_time' => $day['departure_time'] ?? null,
+                'created_by' => auth()->id(),
+                'updated_by' => auth()->id(),
+            ]);
+
+            $savedCount++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $savedCount > 0
+                ? "$savedCount day-wise itineraries saved successfully!"
+                : "No valid data to save (all rows were empty).",
+            'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+            'saved' => $savedCount,
+        ]);
     }
 
     /**

@@ -34,15 +34,33 @@
             function initializeItineraryData() {
                 if (!departureDateStr || !returnDateStr) {
                     itineraryData = [];
+                    console.log('No date range → itineraryData empty');
                     return;
                 }
 
                 const dates = generateDateRange(departureDateStr, returnDateStr);
 
-                // Load saved data if exists (uncomment when backend is ready)
-                // itineraryData = {!! $travelRequest->day_itinerary ?? '[]' !!};
+                // Load REAL saved data from the database (this is the fix!)
+                // IMPORTANT: Use your actual relationship name from the model
+                itineraryData = {!! json_encode(
+                    $travelRequest->travelRequestDayItineraries->map(function ($item) {
+                        return [
+                            'date' => $item->date ? $item->date->format('Y-m-d') : null,
+                            'activities' => $item->planned_activities ?? '',
+                            'accommodation' => !!$item->accommodation,
+                            'air_ticket' => !!$item->air_ticket,
+                            'from' => $item->departure_place ?? '',
+                            'to' => $item->arrival_place ?? '',
+                            'departure_time' => $item->departure_time ?? '',
+                        ];
+                    }),
+                ) !!} ?? [];
 
+                console.log('Loaded REAL data from DB:', itineraryData);
+
+                // Only create empty rows IF no saved data exists
                 if (itineraryData.length === 0) {
+                    console.log('No saved records found → creating empty rows for dates:', dates);
                     itineraryData = dates.map(date => ({
                         date: date,
                         activities: '',
@@ -206,26 +224,65 @@
                             return '<i class="bi bi-check-lg text-success"></i>' + places + time;
                         }
                     },
-                    {
-                        data: 'departure_place',
-                        name: 'departure_place'
-                    },
-                    {
-                        data: 'arrival_place',
-                        name: 'arrival_place'
-                    },
-                    {
-                        data: 'departure_time',
-                        name: 'departure_time'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        orderable: false,
-                        searchable: false,
-                        className: 'sticky-col'
-                    }
+                    // {
+                    //     data: 'departure_place',
+                    //     name: 'departure_place'
+                    // },
+                    // {
+                    //     data: 'arrival_place',
+                    //     name: 'arrival_place'
+                    // },
+                    // {
+                    //     data: 'departure_time',
+                    //     name: 'departure_time'
+                    // },
+                    // {
+                    //     data: 'action',
+                    //     name: 'action',
+                    //     orderable: false,
+                    //     searchable: false,
+                    //     className: 'sticky-col'
+                    // }
                 ]
+            });
+
+            document.getElementById('updateDayItinerariesBtn').addEventListener('click', async function() {
+                const btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+
+                try {
+                    const response = await fetch(
+                        '{{ route('travel.requests.day-itinerary.sync', $travelRequest->id) }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                day_itineraries_json: JSON.stringify(itineraryData)
+                            })
+                        });
+
+                    const result = await response.json();
+
+                    if (!response.ok) throw new Error(result.message || 'Server error');
+
+                    toastr.success(result.message || 'Day-wise itinerary saved!');
+                    $('#savedDayItineraryTable').DataTable().ajax.reload();
+                } catch (err) {
+                    toastr.error(err.message || 'Failed to save itinerary');
+                    console.error(err);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-save"></i> Update';
+                }
+            });
+
+            document.getElementById('travelRequestEditForm').addEventListener('submit', function(e) {
+                // Make sure latest data is sent (especially important if user didn't click Update button)
+                document.getElementById('dayItinerariesJson').value = JSON.stringify(itineraryData);
             });
 
 
@@ -1429,6 +1486,7 @@
                     <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">
                         Update
                     </button>
+
                 </div>
                 {!! csrf_field() !!}
                 {!! method_field('PUT') !!}
@@ -1438,7 +1496,7 @@
             <div class="card mt-4">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center justify-content-between">
-                        <span>Day-wise Itinerary</span>
+                        <span>Travel Itinerary</span>
                         <small class="text-muted">
                             Auto-generated from {{ $travelRequest->departure_date?->format('d M Y') }} to
                             {{ $travelRequest->return_date?->format('d M Y') }}
@@ -1467,15 +1525,17 @@
                         </table>
                     </div>
 
+                    <input type="hidden" name="day_itineraries_json" id="dayItinerariesJson" value="[]">
+
                     <!-- NEW: Update button right below dynamic table -->
                     <div class="text-end mb-4">
-                        <button type="button" id="updateDayItinerariesBtn" class="btn btn-success">
-                            <i class="bi bi-save"></i> Update Day Itineraries
+                        <button type="button" id="updateDayItinerariesBtn" class="btn btn-primary btn-sm">
+                            <i class="bi bi-save"></i> Update
                         </button>
                     </div>
 
                     <!-- Saved Day-wise Itineraries from Database -->
-                    <h5 class="mt-4 mb-3">Saved Day-wise Entries</h5>
+                    <h5 class="mt-4 mb-3">Travel Itinerary</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="savedDayItineraryTable">
                             <thead class="thead-light">
@@ -1484,10 +1544,10 @@
                                     <th>Planned Activities</th>
                                     <th class="text-center">Accommodation</th>
                                     <th class="text-center">Air Ticket</th>
-                                    <th>From</th>
+                                    {{-- <th>From</th>
                                     <th>To</th>
                                     <th>Departure Time</th>
-                                    <th style="width: 150px;" class="text-center">Action</th>
+                                    <th style="width: 150px;" class="text-center">Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1496,13 +1556,11 @@
 
                     <small class="text-muted mt-3 d-block">
                         <i class="bi bi-info-circle"></i>
-                        Add/edit days above. Click "Update Day Itineraries" to save. Changes appear in the table below after
+                        Add/edit days above. Click "Update" to save. Changes appear in the table below after
                         save.
                     </small>
                 </div>
             </div>
-
-            <!-- Keep your existing Travel Advance Request and Submit button at the bottom -->
 
 
             <div class="modal fade" id="editItineraryModal" tabindex="-1" aria-labelledby="editItineraryModalLabel"
@@ -1510,7 +1568,7 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="editItineraryModalLabel">Edit Day Itinerary</h5>
+                            <h5 class="modal-title" id="editItineraryModalLabel">Edit Travel Itinerary</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -1579,7 +1637,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" id="saveEditBtn" class="btn btn-primary">Save Changes</button>
+                            <button type="button" id="saveEditBtn" class="btn btn-primary">Save</button>
                         </div>
                     </div>
                 </div>

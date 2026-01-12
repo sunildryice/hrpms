@@ -12,12 +12,10 @@
 
             // NEW: Day-wise Itinerary Dynamic Rows
             const dayItineraryContainer = document.getElementById('day-itinerary-container');
-
             const departureDateStr =
                 '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
             const returnDateStr =
                 '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
-
             let itineraryData = [];
 
             function generateDateRange(start, end) {
@@ -40,9 +38,8 @@
 
                 const dates = generateDateRange(departureDateStr, returnDateStr);
 
-                // Load REAL saved data from the database (this is the fix!)
-                // IMPORTANT: Use your actual relationship name from the model
-                itineraryData = {!! json_encode(
+                // 1. Load saved data from DB
+                const savedData = {!! json_encode(
                     $travelRequest->travelRequestDayItineraries->map(function ($item) {
                         return [
                             'date' => $item->date ? $item->date->format('Y-m-d') : null,
@@ -56,21 +53,34 @@
                     }),
                 ) !!} ?? [];
 
-                console.log('Loaded REAL data from DB:', itineraryData);
+                console.log('Loaded saved data from DB:', savedData);
 
-                // Only create empty rows IF no saved data exists
-                if (itineraryData.length === 0) {
-                    console.log('No saved records found → creating empty rows for dates:', dates);
-                    itineraryData = dates.map(date => ({
-                        date: date,
-                        activities: '',
-                        accommodation: false,
-                        air_ticket: false,
-                        from: '',
-                        to: '',
-                        departure_time: ''
-                    }));
-                }
+                // 2. Create a map of saved data by date for quick lookup
+                const savedMap = {};
+                savedData.forEach(item => {
+                    if (item.date) savedMap[item.date] = item;
+                });
+
+                // 3. Build final itineraryData: full range + merge saved where available
+                itineraryData = dates.map(date => {
+                    if (savedMap[date]) {
+                        // Use saved data if exists
+                        return savedMap[date];
+                    } else {
+                        // Create empty row for unsaved date
+                        return {
+                            date: date,
+                            activities: '',
+                            accommodation: false,
+                            air_ticket: false,
+                            from: '',
+                            to: '',
+                            departure_time: ''
+                        };
+                    }
+                });
+
+                console.log('Final merged itineraryData (full range + saved):', itineraryData);
             }
 
             // Hide/show the three air ticket columns (header + all cells)

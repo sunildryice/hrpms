@@ -38,41 +38,45 @@ class TravelRequestDayItineraryController extends Controller
                 ->addIndexColumn()
                 ->addColumn('date', fn($row) => $row->date?->format('d M Y'))
                 ->addColumn('planned_activities', fn($row) => $row->planned_activities ?: '<em class="text-muted">No activities</em>')
-                ->addColumn('accommodation', fn($row) => $row->accommodation
-                    ? '<i class="bi bi-check-lg text-success"></i>'
-                    : '<i class="bi bi-x-lg text-muted"></i>')
+                ->addColumn(
+                    'accommodation',
+                    fn($row) =>
+                    (int) $row->accommodation
+                    ? '<span class="text fw-bold">Yes</span>'
+                    : '<span class="text-muted fw-bold">No</span>'
+                )
                 ->addColumn('air_ticket', function ($row) {
-                    if (!$row->air_ticket) {
-                        return '<i class="bi bi-x-lg text-muted"></i>';
+                    if (!(int) $row->air_ticket) {
+                        return '<span class="text-muted fw-bold">No</span>';
                     }
 
                     $places = '';
                     if ($row->departure_place && $row->arrival_place) {
-                        $places = " ({$row->departure_place} to {$row->arrival_place})";
+                        $places = " ({$row->departure_place} To {$row->arrival_place})";
                     } elseif ($row->departure_place) {
-                        $places = " ({$row->departure_place})";
+                        $places = " (from {$row->departure_place})";
                     } elseif ($row->arrival_place) {
                         $places = " (to {$row->arrival_place})";
                     }
 
                     $time = $row->departure_time ? " {$row->departure_time}" : '';
 
-                    return '<i class="bi bi-check-lg text-success"></i>' . $places . $time;
+                    return '<span class="text fw-bold">Yes</span>' . $places . $time;
                 })
                 ->addColumn('action', function ($row) use ($travelRequestId) {
-                    $btn = '<a class="btn btn-outline-primary btn-sm open-day-itinerary-modal-form" 
-                               href="' . route('travel.requests.day-itinerary.edit', [$travelRequestId, $row->id]) . '" 
-                               title="Edit Day Itinerary">
-                               <i class="bi bi-pencil-square"></i>
-                           </a>';
-
-                    $btn .= ' <a href="javascript:;" class="btn btn-danger btn-sm delete-record" 
-                                 data-href="' . route('travel.requests.day-itinerary.destroy', [$travelRequestId, $row->id]) . '" 
-                                 title="Delete Day Itinerary">
-                                 <i class="bi bi-trash"></i>
-                             </a>';
-
-                    return $btn;
+                    // $btn = '<a class="btn btn-outline-primary btn-sm open-day-itinerary-modal-form" 
+                    //            href="' . route('travel.requests.day-itinerary.edit', [$travelRequestId, $row->id]) . '" 
+                    //            title="Edit Day Itinerary">
+                    //            <i class="bi bi-pencil-square"></i>
+                    //        </a>';
+    
+                    // $btn .= ' <a href="javascript:;" class="btn btn-danger btn-sm delete-record" 
+                    //              data-href="' . route('travel.requests.day-itinerary.destroy', [$travelRequestId, $row->id]) . '" 
+                    //              title="Delete Day Itinerary">
+                    //              <i class="bi bi-trash"></i>
+                    //          </a>';
+    
+                    // return $btn;
                 })
                 ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'action']);
 
@@ -109,7 +113,7 @@ class TravelRequestDayItineraryController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Day itinerary updated successfully',
-                'dayCount' => $travelRequest->dayItineraries()->count(),
+                'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
             ]);
         }
 
@@ -118,7 +122,7 @@ class TravelRequestDayItineraryController extends Controller
             'message' => 'Failed to update day itinerary',
         ], 422);
     }
-    
+
     /**
      * Bulk sync all day-wise itineraries (no full form validation)
      * Only saves rows that have actual data (non-empty activities or other fields)

@@ -42,6 +42,7 @@
                 const savedData = {!! json_encode(
                     $travelRequest->travelRequestDayItineraries->map(function ($item) {
                         return [
+                            'id' => $item->id,
                             'date' => $item->date ? $item->date->format('Y-m-d') : null,
                             'activities' => $item->planned_activities ?? '',
                             'accommodation' => !!$item->accommodation,
@@ -83,6 +84,28 @@
                 console.log('Final merged itineraryData (full range + saved):', itineraryData);
             }
 
+            async function saveBulk() {
+                const response = await fetch(
+                    '{{ route('travel.requests.day-itinerary.sync', $travelRequest->id) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            day_itineraries_json: JSON.stringify(itineraryData)
+                        })
+                    });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Bulk save failed');
+
+                // After bulk save → reload saved IDs into local data
+                $('#savedDayItineraryTable').DataTable().ajax.reload();
+                // Optionally reload page or re-fetch saved data
+            }
+
             // Hide/show the three air ticket columns (header + all cells)
             function updateAirTicketColumnsVisibility() {
                 const hasAirTicket = itineraryData.some(row => row.air_ticket);
@@ -112,7 +135,7 @@
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
             <td class="text-center">
-                <button type="button" class="btn btn-warning btn-sm edit-row-btn" data-index="${index}">
+                <button type="button" class="btn btn-primary btn-sm edit-row-btn" data-index="${index}">
                     <i class="bi bi-pencil"></i> Edit
                 </button>
             </td>
@@ -162,11 +185,11 @@
                 toggleAirTicketFieldsInModal(this.checked);
             });
 
-            document.getElementById('saveEditBtn').addEventListener('click', function() {
+            document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
 
-                itineraryData[index] = {
+                const updatedRow = {
                     date: itineraryData[index].date,
                     activities: document.getElementById('editActivities').value.trim(),
                     accommodation: document.getElementById('editAccommodation').checked,
@@ -177,8 +200,66 @@
                         .trim() : ''
                 };
 
-                renderDayItineraryRows();
-                $('#editItineraryModal').modal('hide');
+                // Basic client-side validation (optional but recommended)
+                if (!updatedRow.activities) {
+                    toastr.warning('Please add planned activities!');
+                    return;
+                }
+
+                const btn = this;
+                btn.disabled = true;
+                // btn.innerHTML = 'Saving...';
+
+                try {
+                    // Find the real DB ID for this row (we'll add it later)
+                    const dbId = itineraryData[index].id;
+
+                    if (!dbId) {
+                        // New row → bulk save
+                        // toastr.info('New row → saving via bulk sync');
+                        toastr.success('Day saved successfully!');
+                        itineraryData[index] = updatedRow;
+                        await saveBulk();
+                    } else {
+                        // Existing row → single update
+                        const response = await fetch(
+                            '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':id']) }}'
+                            .replace(':id', dbId), {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    planned_activities: updatedRow.activities,
+                                    accommodation: updatedRow.accommodation,
+                                    air_ticket: updatedRow.air_ticket,
+                                    departure_place: updatedRow.from,
+                                    arrival_place: updatedRow.to,
+                                    departure_time: updatedRow.departure_time
+                                })
+                            }
+                        );
+
+                        const result = await response.json();
+
+                        if (!response.ok) throw new Error(result.message || 'Update failed');
+
+                        toastr.success('Day updated successfully!');
+                        itineraryData[index] = updatedRow;
+                    }
+
+                    renderDayItineraryRows();
+                    $('#savedDayItineraryTable').DataTable().ajax.reload();
+                    $('#editItineraryModal').modal('hide');
+                } catch (err) {
+                    toastr.error(err.message || 'Failed to save');
+                    console.error(err);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Save';
+                }
             });
 
             // Initial load
@@ -206,33 +287,13 @@
                         name: 'accommodation',
                         orderable: false,
                         searchable: false,
-                        render: function(data) {
-                            return data ?
-                                '<i class="bi bi-check-lg text-success"></i>' :
-                                '<i class="bi bi-x-lg text-muted"></i>';
-                        }
                     },
+
                     {
                         data: 'air_ticket',
                         name: 'air_ticket',
                         orderable: false,
                         searchable: false,
-                        render: function(data, type, row) {
-                            if (!data) {
-                                return '<i class="bi bi-x-lg text-muted"></i>';
-                            }
-                            var places = '';
-                            if (row.departure_place && row.arrival_place) {
-                                places = ' (' + row.departure_place + ' to ' + row.arrival_place +
-                                    ')';
-                            } else if (row.departure_place) {
-                                places = ' (' + row.departure_place + ')';
-                            } else if (row.arrival_place) {
-                                places = ' (to ' + row.arrival_place + ')';
-                            }
-                            var time = row.departure_time ? ' ' + row.departure_time : '';
-                            return '<i class="bi bi-check-lg text-success"></i>' + places + time;
-                        }
                     },
                     // {
                     //     data: 'departure_place',
@@ -1538,11 +1599,11 @@
                     <input type="hidden" name="day_itineraries_json" id="dayItinerariesJson" value="[]">
 
                     <!-- NEW: Update button right below dynamic table -->
-                    <div class="text-end mb-4">
+                    {{-- <div class="text-end mb-4">
                         <button type="button" id="updateDayItinerariesBtn" class="btn btn-primary btn-sm">
                             <i class="bi bi-save"></i> Update
                         </button>
-                    </div>
+                    </div> --}}
 
                     <!-- Saved Day-wise Itineraries from Database -->
                     <h5 class="mt-4 mb-3">Travel Itinerary</h5>
@@ -1564,11 +1625,11 @@
                         </table>
                     </div>
 
-                    <small class="text-muted mt-3 d-block">
+                    {{-- <small class="text-muted mt-3 d-block">
                         <i class="bi bi-info-circle"></i>
                         Add/edit days above. Click "Update" to save. Changes appear in the table below after
                         save.
-                    </small>
+                    </small> --}}
                 </div>
             </div>
 

@@ -92,10 +92,10 @@
             <td>${row.date}</td>
             <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
             <td class="text-center">
-                ${row.accommodation ? '<i class="bi bi-check-lg text-success"></i>' : '<i class="bi bi-x-lg text-muted"></i>'}
+                ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
             </td>
             <td class="text-center">
-                ${row.air_ticket ? '<i class="bi bi-check-lg text-success"></i>' : '<i class="bi bi-x-lg text-muted"></i>'}
+                ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
             </td>
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
@@ -221,12 +221,12 @@
                 }
 
                 if (hasError) {
-                    return; // Stop here if client-side validation fails
+                    return; 
                 }
 
                 const btn = this;
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
+                // btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
 
                 try {
                     const currentRow = itineraryData[index];
@@ -1613,10 +1613,6 @@
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center justify-content-between">
                         <span>Travel Itinerary</span>
-                        <small class="text-muted">
-                            Auto-generated from {{ $travelRequest->departure_date?->format('d M Y') }} to
-                            {{ $travelRequest->return_date?->format('d M Y') }}
-                        </small>
                     </div>
                 </div>
                 <div class="card-body">

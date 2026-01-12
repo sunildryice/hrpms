@@ -35,7 +35,6 @@ class TravelRequestDayItineraryController extends Controller
             $query = $travelRequest->travelRequestDayItineraries();
 
             if ($request->boolean('all')) {
-                // Return simple JSON array for your fetch ?all=true
                 return response()->json([
                     'data' => $query->get()->map(function ($row) {
                         return [
@@ -101,7 +100,7 @@ class TravelRequestDayItineraryController extends Controller
             return $datatable->make(true);
         }
 
-        abort(403, 'This endpoint is only for AJAX/JSON requests');
+        abort(403);
     }
 
     /**
@@ -110,8 +109,6 @@ class TravelRequestDayItineraryController extends Controller
     public function store(Request $request, $travelRequestId)
     {
         $travelRequest = TravelRequest::findOrFail($travelRequestId);
-
-        // $this->authorize('update', $travelRequest); 
 
         $validated = $request->validate([
             'date' => 'required|date',

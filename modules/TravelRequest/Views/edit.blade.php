@@ -35,10 +35,7 @@
                     console.log('No date range → itineraryData empty');
                     return;
                 }
-
                 const dates = generateDateRange(departureDateStr, returnDateStr);
-
-                // 1. Load saved data from DB
                 const savedData = {!! json_encode(
                     $travelRequest->travelRequestDayItineraries->map(function ($item) {
                         return [
@@ -53,20 +50,14 @@
                         ];
                     }),
                 ) !!} ?? [];
-
-                // 2. Create a map of saved data by date for quick lookup
                 const savedMap = {};
                 savedData.forEach(item => {
                     if (item.date) savedMap[item.date] = item;
                 });
-
-                // 3. Build final itineraryData: full range + merge saved where available
                 itineraryData = dates.map(date => {
                     if (savedMap[date]) {
-                        // Use saved data if exists
                         return savedMap[date];
                     } else {
-                        // Create empty row for unsaved date
                         return {
                             date: date,
                             activities: '',
@@ -79,26 +70,6 @@
                     }
                 });
 
-            }
-
-            async function saveBulk() {
-                const response = await fetch(
-                    '{{ route('travel.requests.day-itinerary.sync', $travelRequest->id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            day_itineraries_json: JSON.stringify(itineraryData)
-                        })
-                    });
-
-                const result = await response.json();
-                if (!response.ok) throw new Error(result.message || 'Bulk save failed');
-
-                $('#savedDayItineraryTable').DataTable().ajax.reload();
             }
 
             // Hide/show the three air ticket columns (header + all cells)
@@ -152,19 +123,25 @@
             }
 
             function openEditModal(index) {
+                if (!itineraryData[index]) {
+                    console.warn('Trying to open modal with invalid index:', index);
+                    toastr.warning('Data not loaded yet. Please try again.');
+                    return;
+                }
+
                 const data = itineraryData[index];
+
 
                 document.getElementById('editRowIndex').value = index;
                 document.getElementById('editDate').value = data.date || '';
                 document.getElementById('editActivities').value = data.activities || '';
-                document.getElementById('editAccommodation').checked = data.accommodation;
-                document.getElementById('editAirTicket').checked = data.air_ticket;
+                document.getElementById('editAccommodation').checked = !!data.accommodation;
+                document.getElementById('editAirTicket').checked = !!data.air_ticket;
                 document.getElementById('editFrom').value = data.from || '';
                 document.getElementById('editTo').value = data.to || '';
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
 
-                toggleAirTicketFieldsInModal(data.air_ticket);
-
+                toggleAirTicketFieldsInModal(!!data.air_ticket);
                 $('#editItineraryModal').modal('show');
             }
 
@@ -186,44 +163,95 @@
 
                 const updatedRow = {
                     date: itineraryData[index].date,
-                    activities: document.getElementById('editActivities').value.trim(),
-                    accommodation: document.getElementById('editAccommodation').checked,
-                    air_ticket: isAirTicket,
-                    from: isAirTicket ? document.getElementById('editFrom').value.trim() : '',
-                    to: isAirTicket ? document.getElementById('editTo').value.trim() : '',
+                    planned_activities: document.getElementById('editActivities').value.trim(),
+                    accommodation: document.getElementById('editAccommodation').checked ? 1 : 0,
+                    air_ticket: isAirTicket ? 1 : 0,
+                    departure_place: isAirTicket ? document.getElementById('editFrom').value
+                        .trim() : '',
+                    arrival_place: isAirTicket ? document.getElementById('editTo').value.trim() :
+                        '',
                     departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
                         .trim() : ''
                 };
 
-                // Basic client-side validation (optional but recommended)
-                if (!updatedRow.activities) {
+                if (!updatedRow.planned_activities) {
                     toastr.warning('Please add planned activities!');
                     return;
                 }
 
                 const btn = this;
                 btn.disabled = true;
-                // btn.innerHTML = 'Saving...';
 
                 try {
-                    // Always use bulk sync now (simpler, safer for both new & existing)
-                    // Update local data first
-                    itineraryData[index] = updatedRow;
+                    const currentRow = itineraryData[index];
+                    const dayId = currentRow.id; // null/undefined if new
 
-                    // Save everything via bulk
-                    await saveBulk();
+                    let response;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                        'content');
 
-                    // After save, reload full fresh data (new IDs!)
+                    const payload = {
+                        date: updatedRow.date,
+                        planned_activities: updatedRow.planned_activities,
+                        accommodation: updatedRow.accommodation,
+                        air_ticket: updatedRow.air_ticket,
+                        departure_place: updatedRow.departure_place || null,
+                        arrival_place: updatedRow.arrival_place || null,
+                        departure_time: updatedRow.departure_time || null
+                    };
+
+                    if (dayId) {
+                        // === UPDATE ===
+                        const updateUrlTemplate =
+                            '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
+                        const updateUrl = updateUrlTemplate.replace(':dayItinerary', dayId);
+
+                        response = await fetch(updateUrl, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                    } else {
+                        // === CREATE ===
+                        const createUrl =
+                            '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
+
+                        response = await fetch(createUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                    }
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || (dayId ? 'Failed to update' :
+                            'Failed to create') + ' day itinerary');
+                    }
+
+                    const result = await response.json();
+
+                    if (!dayId && result.id) {
+                        itineraryData[index].id = result.id;
+                    }
+
                     await reloadItineraryDataFromServer();
-
                     renderDayItineraryRows();
                     $('#savedDayItineraryTable').DataTable().ajax.reload();
-                    $('#editItineraryModal').modal('hide');
 
+                    $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
                 } catch (err) {
-                    toastr.error(err.message || 'Failed to save');
-                    console.error(err);
+                    toastr.error(err.message || 'Error saving changes');
+                    console.error('Save error:', err);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = 'Save';
@@ -235,31 +263,35 @@
                     const response = await fetch(
                         '{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}?all=true', {
                             headers: {
-                                'Accept': 'application/json'
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest' // Helps Laravel detect AJAX
                             }
-                        });
+                        }
+                    );
 
-                    if (!response.ok) throw new Error('Failed to reload');
+                    if (!response.ok) {
+                        throw new Error(`Failed to reload: ${response.status} ${response.statusText}`);
+                    }
 
                     const json = await response.json();
-                    const freshSaved = json.data || json; // adjust depending on your response format
+                    const freshSaved = json.data || json; 
 
-                    // Rebuild savedMap
                     const savedMap = {};
                     freshSaved.forEach(item => {
-                        if (item.date) savedMap[item.date] = {
-                            id: item.id,
-                            date: item.date,
-                            activities: item.planned_activities || '',
-                            accommodation: !!item.accommodation,
-                            air_ticket: !!item.air_ticket,
-                            from: item.departure_place || '',
-                            to: item.arrival_place || '',
-                            departure_time: item.departure_time || ''
-                        };
+                        if (item.date) {
+                            savedMap[item.date] = {
+                                id: item.id,
+                                date: item.date,
+                                activities: item.planned_activities || '',
+                                accommodation: !!item.accommodation,
+                                air_ticket: !!item.air_ticket,
+                                from: item.departure_place || '',
+                                to: item.arrival_place || '',
+                                departure_time: item.departure_time || ''
+                            };
+                        }
                     });
 
-                    // Re-merge with full range
                     const dates = generateDateRange(departureDateStr, returnDateStr);
                     itineraryData = dates.map(date => savedMap[date] || {
                         date: date,
@@ -271,11 +303,15 @@
                         departure_time: ''
                     });
 
-                    console.log('Reloaded fresh data with correct IDs:', itineraryData);
+                    dayItineraryContainer.innerHTML = ''; 
+                    await new Promise(resolve => setTimeout(resolve, 10)); 
                     renderDayItineraryRows();
+
+                    return true;
                 } catch (err) {
                     console.error('Reload failed:', err);
-                    toastr.error('Failed to refresh data. Please reload page.');
+                    toastr.error('Failed to refresh itinerary. Please refresh page.');
+                    return false;
                 }
             }
 
@@ -312,60 +348,7 @@
                         orderable: false,
                         searchable: false,
                     },
-                    // {
-                    //     data: 'departure_place',
-                    //     name: 'departure_place'
-                    // },
-                    // {
-                    //     data: 'arrival_place',
-                    //     name: 'arrival_place'
-                    // },
-                    // {
-                    //     data: 'departure_time',
-                    //     name: 'departure_time'
-                    // },
-                    // {
-                    //     data: 'action',
-                    //     name: 'action',
-                    //     orderable: false,
-                    //     searchable: false,
-                    //     className: 'sticky-col'
-                    // }
                 ]
-            });
-
-            document.getElementById('updateDayItinerariesBtn').addEventListener('click', async function() {
-                const btn = this;
-                btn.disabled = true;
-                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
-
-                try {
-                    const response = await fetch(
-                        '{{ route('travel.requests.day-itinerary.sync', $travelRequest->id) }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                day_itineraries_json: JSON.stringify(itineraryData)
-                            })
-                        });
-
-                    const result = await response.json();
-
-                    if (!response.ok) throw new Error(result.message || 'Server error');
-
-                    toastr.success(result.message || 'Day-wise itinerary saved!');
-                    $('#savedDayItineraryTable').DataTable().ajax.reload();
-                } catch (err) {
-                    toastr.error(err.message || 'Failed to save itinerary');
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="bi bi-save"></i> Update';
-                }
             });
 
             document.getElementById('travelRequestEditForm').addEventListener('submit', function(e) {
@@ -644,20 +627,6 @@
                     orderable: false,
                     searchable: false
                 },
-                // {
-                //     data: 'dsa_category',
-                //     name: 'dsa_category',
-                //     orderable: false,
-                //     searchable: false
-                // },
-                // {
-                //     data: 'dsa_unit_price',
-                //     name: 'dsa_unit_price'
-                // },
-                // {
-                //     data: 'dsa_total_price',
-                //     name: 'dsa_total_price'
-                // },
                 {
                     data: 'action',
                     name: 'action',
@@ -1613,11 +1582,6 @@
 
                     <input type="hidden" name="day_itineraries_json" id="dayItinerariesJson" value="[]">
 
-                    {{-- <div class="text-end mb-4">
-                        <button type="button" id="updateDayItinerariesBtn" class="btn btn-primary btn-sm">
-                            <i class="bi bi-save"></i> Update
-                        </button>
-                    </div> --}}
                 </div>
             </div>
 

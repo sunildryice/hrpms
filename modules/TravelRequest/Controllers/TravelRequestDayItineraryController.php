@@ -29,12 +29,30 @@ class TravelRequestDayItineraryController extends Controller
      */
     public function index(Request $request, $travelRequestId)
     {
-        if ($request->ajax()) {
-            $travelRequest = TravelRequest::find($travelRequestId);
+        $travelRequest = TravelRequest::findOrFail($travelRequestId);
 
-            $data = $travelRequest->travelRequestDayItineraries();
+        if ($request->ajax() || $request->expectsJson()) {
+            $query = $travelRequest->travelRequestDayItineraries();
 
-            $datatable = DataTables::of($data)
+            if ($request->boolean('all')) {
+                // Return simple JSON array for your fetch ?all=true
+                return response()->json([
+                    'data' => $query->get()->map(function ($row) {
+                        return [
+                            'id' => $row->id,
+                            'date' => $row->date?->format('Y-m-d'),
+                            'planned_activities' => $row->planned_activities,
+                            'accommodation' => (bool) $row->accommodation,
+                            'air_ticket' => (bool) $row->air_ticket,
+                            'departure_place' => $row->departure_place,
+                            'arrival_place' => $row->arrival_place,
+                            'departure_time' => $row->departure_time,
+                        ];
+                    })->toArray()
+                ]);
+            }
+
+            $datatable = DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('date', fn($row) => $row->date?->format('d M Y'))
                 ->addColumn('planned_activities', fn($row) => $row->planned_activities ?: '<em class="text-muted">No activities</em>')
@@ -83,7 +101,40 @@ class TravelRequestDayItineraryController extends Controller
             return $datatable->make(true);
         }
 
-        abort(403);
+        abort(403, 'This endpoint is only for AJAX/JSON requests');
+    }
+
+    /**
+     * Store a newly created day itinerary
+     */
+    public function store(Request $request, $travelRequestId)
+    {
+        $travelRequest = TravelRequest::findOrFail($travelRequestId);
+
+        // $this->authorize('update', $travelRequest); 
+
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'planned_activities' => 'nullable|string|max:2000',
+            'accommodation' => 'boolean',
+            'air_ticket' => 'boolean',
+            'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'departure_time' => 'nullable|string|max:50',
+        ]);
+
+        $validated['travel_request_id'] = $travelRequest->id;
+        $validated['created_by'] = auth()->id();
+        $validated['updated_by'] = auth()->id();
+
+        $dayItinerary = $this->dayItinerary->create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Day itinerary created successfully',
+            'id' => $dayItinerary->id,
+            'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+        ]);
     }
 
     /**
@@ -94,7 +145,7 @@ class TravelRequestDayItineraryController extends Controller
         $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
         $travelRequest = $dayItinerary->travelRequest;
 
-        $this->authorize('update', $travelRequest);
+        // $this->authorize('update', $travelRequest);
 
         $validated = $request->validate([
             'planned_activities' => 'nullable|string|max:2000',
@@ -123,105 +174,4 @@ class TravelRequestDayItineraryController extends Controller
         ], 422);
     }
 
-    /**
-     * Bulk sync all day-wise itineraries (no full form validation)
-     * Only saves rows that have actual data (non-empty activities or other fields)
-     */
-    public function sync(Request $request, $travelRequestId)
-    {
-        $travelRequest = TravelRequest::findOrFail($travelRequestId);
-        $this->authorize('update', $travelRequest);
-
-        $request->validate([
-            'day_itineraries_json' => 'required|json',
-        ]);
-
-        $dayData = json_decode($request->day_itineraries_json, true) ?? [];
-
-        // Validate the structure of incoming data
-        $validator = Validator::make($dayData, [
-            '*.activities' => 'nullable|string|max:2000',
-            '*.accommodation' => 'boolean',
-            '*.air_ticket' => 'boolean',
-            '*.from' => 'nullable|string|max:255|required_if:*.air_ticket,true',
-            '*.to' => 'nullable|string|max:255|required_if:*.air_ticket,true',
-            '*.departure_time' => 'nullable|string|max:50',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        // Clear existing entries (full replace)
-        $travelRequest->travelRequestDayItineraries()->delete();
-
-        $savedCount = 0;
-
-        foreach ($dayData as $day) {
-            // Skip completely empty rows
-            $hasData = !empty(trim($day['activities'] ?? ''))
-                || !empty($day['from'] ?? '')
-                || !empty($day['to'] ?? '')
-                || !empty($day['departure_time'] ?? '')
-                || ($day['accommodation'] ?? false)
-                || ($day['air_ticket'] ?? false);
-
-            if (!$hasData) {
-                continue; // Skip saving this empty row
-            }
-
-            $travelRequest->travelRequestDayItineraries()->create([
-                'date' => $day['date'],
-                'planned_activities' => $day['activities'] ?? null,
-                'accommodation' => $day['accommodation'] ?? false,
-                'air_ticket' => $day['air_ticket'] ?? false,
-                'departure_place' => $day['from'] ?? null,
-                'arrival_place' => $day['to'] ?? null,
-                'departure_time' => $day['departure_time'] ?? null,
-                'created_by' => auth()->id(),
-                'updated_by' => auth()->id(),
-            ]);
-
-            $savedCount++;
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => $savedCount > 0
-                ? "$savedCount day-wise itineraries saved successfully!"
-                : "No valid data to save (all rows were empty).",
-            'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
-            'saved' => $savedCount,
-        ]);
-    }
-
-    /**
-     * Delete a single day itinerary entry
-     */
-    public function destroy($travelRequestId, $id)
-    {
-        $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
-        $travelRequest = $dayItinerary->travelRequest;
-
-        $this->authorize('delete', $travelRequest);
-
-        $deleted = $dayItinerary->delete();
-
-        if ($deleted) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Day itinerary deleted successfully',
-                'dayCount' => $travelRequest->dayItineraries()->count(),
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to delete day itinerary',
-        ], 422);
-    }
 }

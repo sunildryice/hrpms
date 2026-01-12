@@ -54,8 +54,6 @@
                     }),
                 ) !!} ?? [];
 
-                console.log('Loaded saved data from DB:', savedData);
-
                 // 2. Create a map of saved data by date for quick lookup
                 const savedMap = {};
                 savedData.forEach(item => {
@@ -81,7 +79,6 @@
                     }
                 });
 
-                console.log('Final merged itineraryData (full range + saved):', itineraryData);
             }
 
             async function saveBulk() {
@@ -101,9 +98,7 @@
                 const result = await response.json();
                 if (!response.ok) throw new Error(result.message || 'Bulk save failed');
 
-                // After bulk save → reload saved IDs into local data
                 $('#savedDayItineraryTable').DataTable().ajax.reload();
-                // Optionally reload page or re-fetch saved data
             }
 
             // Hide/show the three air ticket columns (header + all cells)
@@ -215,8 +210,6 @@
                     const dbId = itineraryData[index].id;
 
                     if (!dbId) {
-                        // New row → bulk save
-                        // toastr.info('New row → saving via bulk sync');
                         toastr.success('Day saved successfully!');
                         itineraryData[index] = updatedRow;
                         await saveBulk();
@@ -1563,7 +1556,6 @@
                 {!! method_field('PUT') !!}
             </div>
 
-            <!-- Day-wise Itinerary Section -->
             <div class="card mt-4">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center justify-content-between">
@@ -1575,7 +1567,6 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Dynamic JS Table - for adding/editing days -->
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered align-middle">
                             <thead class="thead-light">
@@ -1598,16 +1589,22 @@
 
                     <input type="hidden" name="day_itineraries_json" id="dayItinerariesJson" value="[]">
 
-                    <!-- NEW: Update button right below dynamic table -->
                     {{-- <div class="text-end mb-4">
                         <button type="button" id="updateDayItinerariesBtn" class="btn btn-primary btn-sm">
                             <i class="bi bi-save"></i> Update
                         </button>
                     </div> --}}
+                </div>
+            </div>
 
-                    <!-- Saved Day-wise Itineraries from Database -->
-                    <h5 class="mt-4 mb-3">Travel Itinerary</h5>
-                    <div class="table-responsive">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <div class="d-flex align-items-center add-info justify-content-between">
+                        <span> Travel Itinerary</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                        <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="savedDayItineraryTable">
                             <thead class="thead-light">
                                 <tr>
@@ -1615,21 +1612,11 @@
                                     <th>Planned Activities</th>
                                     <th class="text-center">Accommodation</th>
                                     <th class="text-center">Air Ticket</th>
-                                    {{-- <th>From</th>
-                                    <th>To</th>
-                                    <th>Departure Time</th>
-                                    <th style="width: 150px;" class="text-center">Action</th> --}}
                                 </tr>
                             </thead>
                             <tbody></tbody>
                         </table>
                     </div>
-
-                    {{-- <small class="text-muted mt-3 d-block">
-                        <i class="bi bi-info-circle"></i>
-                        Add/edit days above. Click "Update" to save. Changes appear in the table below after
-                        save.
-                    </small> --}}
                 </div>
             </div>
 

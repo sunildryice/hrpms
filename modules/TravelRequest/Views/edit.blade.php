@@ -101,8 +101,8 @@
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
             <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
             <td class="text-center">
-                <button type="button" class="btn btn-primary btn-sm edit-row-btn" data-index="${index}">
-                    <i class="bi bi-pencil"></i> Edit
+                <button type="button" class="btn btn-outline-primary btn-sm edit-row-btn" data-index="${index}" title="Edit">
+                    <i class="bi bi-pencil-square"></i>
                 </button>
             </td>
         `;

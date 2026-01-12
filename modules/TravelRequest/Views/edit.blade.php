@@ -146,9 +146,7 @@
             }
 
             function toggleAirTicketFieldsInModal(show) {
-                const fields = ['editFrom', 'editTo', 'editDepartureTime'];
-                fields.forEach(id => {
-                    const row = document.getElementById(id).closest('.row');
+                document.querySelectorAll('.air-ticket-fields').forEach(row => {
                     row.style.display = show ? 'flex' : 'none';
                 });
             }
@@ -157,9 +155,32 @@
                 toggleAirTicketFieldsInModal(this.checked);
             });
 
+            function showFieldError(fieldId, message) {
+                const errorEl = document.getElementById(`error-${fieldId}`);
+                const inputEl = document.getElementById(
+                    `edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`); // e.g. editActivities
+
+                if (errorEl && inputEl) {
+                    errorEl.textContent = message;
+                    inputEl.classList.add('is-invalid');
+                }
+            }
+
+            function clearAllErrors() {
+                document.querySelectorAll('.invalid-feedback').forEach(el => {
+                    el.textContent = '';
+                });
+                document.querySelectorAll('.form-control, .form-check-input').forEach(el => {
+                    el.classList.remove('is-invalid');
+                });
+            }
+
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
+
+                // Clear previous errors
+                clearAllErrors();
 
                 const updatedRow = {
                     date: itineraryData[index].date,
@@ -174,22 +195,46 @@
                         .trim() : ''
                 };
 
+                // Client-side validation
+                let hasError = false;
+
                 if (!updatedRow.planned_activities) {
-                    toastr.warning('Please add planned activities!');
-                    return;
+                    showFieldError('activities', 'Planned activities are required!');
+                    hasError = true;
+                }
+
+                if (isAirTicket) {
+                    if (!updatedRow.departure_place) {
+                        showFieldError('from',
+                            'Departure place is required when air ticket is selected!');
+                        hasError = true;
+                    }
+                    if (!updatedRow.arrival_place) {
+                        showFieldError('to', 'Arrival place is required when air ticket is selected!');
+                        hasError = true;
+                    }
+                    if (!updatedRow.departure_time) {
+                        showFieldError('departureTime',
+                            'Departure time is required when air ticket is selected!');
+                        hasError = true;
+                    }
+                }
+
+                if (hasError) {
+                    return; // Stop here if client-side validation fails
                 }
 
                 const btn = this;
                 btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
 
                 try {
                     const currentRow = itineraryData[index];
-                    const dayId = currentRow.id; // null/undefined if new
+                    const dayId = currentRow.id;
 
                     let response;
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
                         'content');
-
                     const payload = {
                         date: updatedRow.date,
                         planned_activities: updatedRow.planned_activities,
@@ -201,7 +246,6 @@
                     };
 
                     if (dayId) {
-                        // === UPDATE ===
                         const updateUrlTemplate =
                             '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
                         const updateUrl = updateUrlTemplate.replace(':dayItinerary', dayId);
@@ -216,7 +260,6 @@
                             body: JSON.stringify(payload)
                         });
                     } else {
-                        // === CREATE ===
                         const createUrl =
                             '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
 
@@ -233,6 +276,22 @@
 
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({}));
+
+                        // Show server-side validation errors inline
+                        if (errorData.errors) {
+                            Object.keys(errorData.errors).forEach(field => {
+                                const messages = errorData.errors[field];
+                                const friendlyField = field.replace('planned_activities',
+                                        'activities')
+                                    .replace('departure_place', 'from')
+                                    .replace('arrival_place', 'to')
+                                    .replace('departure_time', 'departureTime');
+
+                                showFieldError(friendlyField, messages[
+                                    0]); // Show first error message
+                            });
+                        }
+
                         throw new Error(errorData.message || (dayId ? 'Failed to update' :
                             'Failed to create') + ' day itinerary');
                     }
@@ -250,6 +309,7 @@
                     $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
                 } catch (err) {
+                    // Generic fallback error (only if not shown inline)
                     toastr.error(err.message || 'Error saving changes');
                     console.error('Save error:', err);
                 } finally {
@@ -264,7 +324,7 @@
                         '{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}?all=true', {
                             headers: {
                                 'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest' // Helps Laravel detect AJAX
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         }
                     );
@@ -274,7 +334,7 @@
                     }
 
                     const json = await response.json();
-                    const freshSaved = json.data || json; 
+                    const freshSaved = json.data || json;
 
                     const savedMap = {};
                     freshSaved.forEach(item => {
@@ -303,8 +363,8 @@
                         departure_time: ''
                     });
 
-                    dayItineraryContainer.innerHTML = ''; 
-                    await new Promise(resolve => setTimeout(resolve, 10)); 
+                    dayItineraryContainer.innerHTML = '';
+                    await new Promise(resolve => setTimeout(resolve, 10));
                     renderDayItineraryRows();
 
                     return true;
@@ -1619,7 +1679,7 @@
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form>
+                            <form id="editItineraryForm">
                                 <input type="hidden" id="editRowIndex">
 
                                 <div class="row mb-3">
@@ -1630,9 +1690,10 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Planned Activities</label>
+                                    <label class="col-md-3 col-form-label required-label">Planned Activities</label>
                                     <div class="col-md-9">
                                         <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
+                                        <div class="invalid-feedback" id="error-activities"></div>
                                     </div>
                                 </div>
 
@@ -1647,38 +1708,41 @@
                                     </div>
                                 </div>
 
-                                <div class="row mb-3 ">
-                                    <div class="col-md-3"> <label class="form-check-label" for="editAirTicket">Air
-                                            Ticket</label></div>
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-check-label" for="editAirTicket">Air Ticket</label>
+                                    </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="editAirTicket">
-
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">From</label>
+                                <div class="row mb-3 air-ticket-fields" style="display: none;">
+                                    <label class="col-md-3 col-form-label required-label">From</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editFrom" class="form-control"
                                             placeholder="Departure city/airport">
+                                        <div class="invalid-feedback" id="error-from"></div>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">To</label>
+                                <div class="row mb-3 air-ticket-fields" style="display: none;">
+                                    <label class="col-md-3 col-form-label required-label">To</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editTo" class="form-control"
                                             placeholder="Arrival city/airport">
+                                        <div class="invalid-feedback" id="error-to"></div>
                                     </div>
                                 </div>
 
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Departure Time</label>
+                                <div class="row mb-3 air-ticket-fields" style="display: none;">
+                                    <label class="col-md-3 col-form-label required-label">Departure Time</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">
+                                        <div class="invalid-feedback" id="error-departureTime"></div>
                                     </div>
                                 </div>
                             </form>

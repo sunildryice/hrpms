@@ -169,12 +169,15 @@
                                     },
                                     success: function(response) {
                                         if (response.success) {
-                                            toastr.success(response.message ||
-                                                'Deleted successfully!');
+                                            toastr.success(response.message || 'Deleted successfully!');
+                                            if (response.itineraryCount) {
+                                                $('.submit-record').show();
+                                            } else {
+                                                $('.submit-record').hide();
+                                            }
                                             reloadItineraryDataFromServer();
                                             renderDayItineraryRows();
-                                            $('#savedDayItineraryTable')
-                                                .DataTable().ajax.reload();
+                                            $('#savedDayItineraryTable').DataTable().ajax.reload();
                                         } else {
                                             toastr.error(response.message ||
                                                 'Failed to delete.');
@@ -263,10 +266,8 @@
                     departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
                         .trim() : ''
                 };
-
                 // Client-side validation
                 let hasError = false;
-
                 if (!updatedRow.planned_activities) {
                     showFieldError('activities', 'Planned activities are required!');
                     hasError = true;
@@ -288,11 +289,9 @@
                         hasError = true;
                     }
                 }
-
                 if (hasError) {
                     return;
                 }
-
                 const btn = this;
                 btn.disabled = true;
                 // btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
@@ -377,8 +376,14 @@
 
                     $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
+                    if (result.itineraryCount !== undefined) {
+                        if (result.itineraryCount > 0) {
+                            $('.submit-record').show();
+                        } else {
+                            $('.submit-record').hide();
+                        }
+                    }
                 } catch (err) {
-                    // Generic fallback error (only if not shown inline)
                     toastr.error(err.message || 'Error saving changes');
                     console.error('Save error:', err);
                 } finally {

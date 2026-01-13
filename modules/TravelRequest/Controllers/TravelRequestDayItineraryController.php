@@ -130,7 +130,7 @@ class TravelRequestDayItineraryController extends Controller
             'success' => true,
             'message' => 'Day itinerary created successfully',
             'id' => $dayItinerary->id,
-            'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+            'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
         ]);
     }
 
@@ -161,7 +161,7 @@ class TravelRequestDayItineraryController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Day itinerary updated successfully',
-                'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+                'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
             ]);
         }
 
@@ -185,7 +185,7 @@ class TravelRequestDayItineraryController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Day itinerary deleted successfully',
-                'dayCount' => $travelRequest->travelRequestDayItineraries()->count(),
+                'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
             ]);
         }
         return response()->json([

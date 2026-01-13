@@ -12,10 +12,8 @@
 
             // NEW: Day-wise Itinerary Dynamic Rows
             const dayItineraryContainer = document.getElementById('day-itinerary-container');
-            const departureDateStr =
-                '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
-            const returnDateStr =
-                '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
+            const departureDateStr = '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
+            const returnDateStr = '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
             let itineraryData = [];
 
             function generateDateRange(start, end) {
@@ -69,9 +67,7 @@
                         };
                     }
                 });
-
             }
-
             // Hide/show the three air ticket columns (header + all cells)
             function updateAirTicketColumnsVisibility() {
                 const hasAirTicket = itineraryData.some(row => row.air_ticket);
@@ -92,7 +88,6 @@
                         <i class="bi bi-pencil-square"></i>
                     </button>
                 `;
-
                     // Only show delete if row has id (already saved)
                     if (row.id) {
                         actions += `
@@ -121,10 +116,8 @@
                         ${actions}
                     </td>
                 `;
-
                     dayItineraryContainer.appendChild(tr);
                 });
-
                 updateAirTicketColumnsVisibility();
                 attachEditEvents();
                 attachDeleteEvents();
@@ -148,7 +141,6 @@
                         const id = this.getAttribute('data-id');
                         const url = baseUrl.replace(':id', id);
 
-                        // Now use 'url' for delete request
                         Swal.fire({
                             title: 'Are you sure?',
                             text: "You won't be able to revert this!",
@@ -200,9 +192,7 @@
                     toastr.warning('Data not loaded yet. Please try again.');
                     return;
                 }
-
                 const data = itineraryData[index];
-
 
                 document.getElementById('editRowIndex').value = index;
                 document.getElementById('editDate').value = data.date || '';
@@ -250,7 +240,6 @@
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
-
                 // Clear previous errors
                 clearAllErrors();
 
@@ -299,7 +288,6 @@
                 try {
                     const currentRow = itineraryData[index];
                     const dayId = currentRow.id;
-
                     let response;
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
                         'content');
@@ -344,7 +332,6 @@
 
                     if (!response.ok) {
                         const errorData = await response.json().catch(() => ({}));
-
                         // Show server-side validation errors inline
                         if (errorData.errors) {
                             Object.keys(errorData.errors).forEach(field => {
@@ -363,13 +350,11 @@
                         throw new Error(errorData.message || (dayId ? 'Failed to update' :
                             'Failed to create') + ' day itinerary');
                     }
-
                     const result = await response.json();
 
                     if (!dayId && result.id) {
                         itineraryData[index].id = result.id;
                     }
-
                     await reloadItineraryDataFromServer();
                     renderDayItineraryRows();
                     $('#savedDayItineraryTable').DataTable().ajax.reload();
@@ -402,11 +387,9 @@
                             }
                         }
                     );
-
                     if (!response.ok) {
                         throw new Error(`Failed to reload: ${response.status} ${response.statusText}`);
                     }
-
                     const json = await response.json();
                     const freshSaved = json.data || json;
 
@@ -425,7 +408,6 @@
                             };
                         }
                     });
-
                     const dates = generateDateRange(departureDateStr, returnDateStr);
                     itineraryData = dates.map(date => savedMap[date] || {
                         date: date,
@@ -436,7 +418,6 @@
                         to: '',
                         departure_time: ''
                     });
-
                     dayItineraryContainer.innerHTML = '';
                     await new Promise(resolve => setTimeout(resolve, 10));
                     renderDayItineraryRows();
@@ -452,7 +433,6 @@
             // Initial load
             initializeItineraryData();
             renderDayItineraryRows();
-
 
             var savedDayTable = $('#savedDayItineraryTable').DataTable({
                 processing: true,
@@ -1109,35 +1089,6 @@
                             </div>
                         @endif
                     </div>
-                    {{-- <div class="row mb-2">
-                        <div class="col-lg-3">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationProject" class="form-label">Request For
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-lg-9">
-                            <select name="employee_id"
-                                class="select2 form-control
-                                        @if ($errors->has('employee_id')) is-invalid @endif"
-                                data-width="100%">
-                                <option value="">Select Consultant</option>
-                                @foreach ($consultants as $consultant)
-                                    <option value="{{ $consultant->id }}"
-                                        {{ $consultant->id == (old('employee_id') ?? $travelRequest->employee_id) ? 'selected' : '' }}>
-                                        {{ $consultant->getFullName() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @if ($errors->has('employee_id'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="employee_id">
-                                        {!! $errors->first('employee_id') !!}
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div> --}}
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -1299,21 +1250,6 @@
                             @endif
                         </div>
                     </div>
-                    {{-- <div class="row mb-2">
-                        <div class="col-lg-3">
-                            <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="m-0">Remarks </label>
-                            </div>
-                        </div>
-                        <div class="col-lg-9">
-                            <textarea type="text" class="form-control @if ($errors->has('remarks')) is-invalid @endif" name="remarks">{!! old('remarks') ?: $travelRequest->remarks !!}</textarea>
-                            @if ($errors->has('remarks'))
-                                <div class="fv-plugins-message-container invalid-feedback">
-                                    <div data-field="remarks">{!! $errors->first('remarks') !!}</div>
-                                </div>
-                            @endif
-                        </div>
-                    </div> --}}
                     {{-- External Travelers (Outside Organization) --}}
                     <div class="row mb-3">
                         <div class="col-lg-3">

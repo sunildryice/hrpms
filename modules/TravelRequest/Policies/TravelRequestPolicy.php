@@ -125,7 +125,7 @@ class TravelRequestPolicy
      */
     public function submit(User $user, TravelRequest $travelRequest)
     {
-        return $travelRequest->travelRequestItineraries->count() != 0 && in_array($travelRequest->status_id, [1, 2]) && in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
+        return $travelRequest->travelRequestDayItineraries->count() != 0 && in_array($travelRequest->status_id, [1, 2]) && in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
     }
 
     /**

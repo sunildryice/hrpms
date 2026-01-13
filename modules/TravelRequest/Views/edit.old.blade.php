@@ -9,476 +9,10 @@
         });
 
         document.addEventListener('DOMContentLoaded', function(e) {
-
-            // NEW: Day-wise Itinerary Dynamic Rows
-            const dayItineraryContainer = document.getElementById('day-itinerary-container');
-            const departureDateStr =
-                '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
-            const returnDateStr =
-                '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
-            let itineraryData = [];
-
-            function generateDateRange(start, end) {
-                const dates = [];
-                let current = new Date(start);
-                const endDate = new Date(end);
-                while (current <= endDate) {
-                    dates.push(new Date(current).toISOString().split('T')[0]);
-                    current.setDate(current.getDate() + 1);
-                }
-                return dates;
-            }
-
-            function initializeItineraryData() {
-                if (!departureDateStr || !returnDateStr) {
-                    itineraryData = [];
-                    console.log('No date range → itineraryData empty');
-                    return;
-                }
-                const dates = generateDateRange(departureDateStr, returnDateStr);
-                const savedData = {!! json_encode(
-                    $travelRequest->travelRequestDayItineraries->map(function ($item) {
-                        return [
-                            'id' => $item->id,
-                            'date' => $item->date ? $item->date->format('Y-m-d') : null,
-                            'activities' => $item->planned_activities ?? '',
-                            'accommodation' => !!$item->accommodation,
-                            'air_ticket' => !!$item->air_ticket,
-                            'from' => $item->departure_place ?? '',
-                            'to' => $item->arrival_place ?? '',
-                            'departure_time' => $item->departure_time ?? '',
-                        ];
-                    }),
-                ) !!} ?? [];
-                const savedMap = {};
-                savedData.forEach(item => {
-                    if (item.date) savedMap[item.date] = item;
-                });
-                itineraryData = dates.map(date => {
-                    if (savedMap[date]) {
-                        return savedMap[date];
-                    } else {
-                        return {
-                            date: date,
-                            activities: '',
-                            accommodation: false,
-                            air_ticket: false,
-                            from: '',
-                            to: '',
-                            departure_time: ''
-                        };
-                    }
-                });
-
-            }
-
-            // Hide/show the three air ticket columns (header + all cells)
-            function updateAirTicketColumnsVisibility() {
-                const hasAirTicket = itineraryData.some(row => row.air_ticket);
-                document.querySelectorAll('.air-ticket-col').forEach(el => {
-                    el.style.display = hasAirTicket ? '' : 'none';
-                });
-            }
-
-            function renderDayItineraryRows() {
-                dayItineraryContainer.innerHTML = '';
-                itineraryData.forEach((row, index) => {
-                    const tr = document.createElement('tr');
-                    tr.className = 'day-itinerary-row';
-                    tr.dataset.index = index;
-
-                    let actions = `
-                    <button type="button" class="btn btn-outline-primary btn-sm edit-row-btn me-1" data-index="${index}" title="Edit">
-                        <i class="bi bi-pencil-square"></i>
-                    </button>
-                `;
-
-                    // Only show delete if row has id (already saved)
-                    if (row.id) {
-                        actions += `
-                    <button type="button" class="btn btn-outline-danger btn-sm delete-day-itinerary"
-                            data-href="{{ route('travel.requests.day-itinerary.destroy', [$travelRequest->id, ':id']) }}"
-                            data-id="${row.id}"
-                            title="Delete">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                `;
-                    }
-
-                    tr.innerHTML = `
-                    <td>${row.date}</td>
-                    <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
-                    <td class="text-center">
-                        ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
-                    </td>
-                    <td class="text-center">
-                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
-                    </td>
-                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
-                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
-                    <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
-                    <td class="text-center">
-                        ${actions}
-                    </td>
-                `;
-
-                    dayItineraryContainer.appendChild(tr);
-                });
-
-                updateAirTicketColumnsVisibility();
-                attachEditEvents();
-                attachDeleteEvents();
-            }
-
-            function attachEditEvents() {
-                document.querySelectorAll('.edit-row-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const index = parseInt(this.dataset.index);
-                        openEditModal(index);
-                    });
-                });
-            }
-
-            function attachDeleteEvents() {
-                document.querySelectorAll('.delete-day-itinerary').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.preventDefault();
-
-                        const baseUrl = this.getAttribute('data-href');
-                        const id = this.getAttribute('data-id');
-                        const url = baseUrl.replace(':id', id);
-
-                        // Now use 'url' for delete request
-                        Swal.fire({
-                            title: 'Are you sure?',
-                            text: "You won't be able to revert this!",
-                            // icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085D6',
-                            cancelButtonColor: '#dc3545',
-                            confirmButtonText: 'Yes, delete it!',
-                            cancelButtonText: 'Cancel'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: url,
-                                    type: 'DELETE',
-                                    data: {
-                                        _token: $('meta[name="csrf-token"]').attr(
-                                            'content')
-                                    },
-                                    success: function(response) {
-                                        if (response.success) {
-                                            toastr.success(response.message ||
-                                                'Deleted successfully!');
-                                            reloadItineraryDataFromServer();
-                                            renderDayItineraryRows();
-                                            $('#savedDayItineraryTable')
-                                                .DataTable().ajax.reload();
-                                        } else {
-                                            toastr.error(response.message ||
-                                                'Failed to delete.');
-                                        }
-                                    },
-                                    error: function(xhr) {
-                                        toastr.error('Error deleting record.');
-                                        console.error(xhr);
-                                    }
-                                });
-                            }
-                        });
-                    });
-                });
-            }
-
-            function openEditModal(index) {
-                if (!itineraryData[index]) {
-                    console.warn('Trying to open modal with invalid index:', index);
-                    toastr.warning('Data not loaded yet. Please try again.');
-                    return;
-                }
-
-                const data = itineraryData[index];
-
-
-                document.getElementById('editRowIndex').value = index;
-                document.getElementById('editDate').value = data.date || '';
-                document.getElementById('editActivities').value = data.activities || '';
-                document.getElementById('editAccommodation').checked = !!data.accommodation;
-                document.getElementById('editAirTicket').checked = !!data.air_ticket;
-                document.getElementById('editFrom').value = data.from || '';
-                document.getElementById('editTo').value = data.to || '';
-                document.getElementById('editDepartureTime').value = data.departure_time || '';
-
-                toggleAirTicketFieldsInModal(!!data.air_ticket);
-                $('#editItineraryModal').modal('show');
-            }
-
-            function toggleAirTicketFieldsInModal(show) {
-                document.querySelectorAll('.air-ticket-fields').forEach(row => {
-                    row.style.display = show ? 'flex' : 'none';
-                });
-            }
-
-            document.getElementById('editAirTicket').addEventListener('change', function() {
-                toggleAirTicketFieldsInModal(this.checked);
-            });
-
-            function showFieldError(fieldId, message) {
-                const errorEl = document.getElementById(`error-${fieldId}`);
-                const inputEl = document.getElementById(
-                    `edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`); // e.g. editActivities
-
-                if (errorEl && inputEl) {
-                    errorEl.textContent = message;
-                    inputEl.classList.add('is-invalid');
-                }
-            }
-
-            function clearAllErrors() {
-                document.querySelectorAll('.invalid-feedback').forEach(el => {
-                    el.textContent = '';
-                });
-                document.querySelectorAll('.form-control, .form-check-input').forEach(el => {
-                    el.classList.remove('is-invalid');
-                });
-            }
-
-            document.getElementById('saveEditBtn').addEventListener('click', async function() {
-                const index = parseInt(document.getElementById('editRowIndex').value);
-                const isAirTicket = document.getElementById('editAirTicket').checked;
-
-                // Clear previous errors
-                clearAllErrors();
-
-                const updatedRow = {
-                    date: itineraryData[index].date,
-                    planned_activities: document.getElementById('editActivities').value.trim(),
-                    accommodation: document.getElementById('editAccommodation').checked ? 1 : 0,
-                    air_ticket: isAirTicket ? 1 : 0,
-                    departure_place: isAirTicket ? document.getElementById('editFrom').value
-                        .trim() : '',
-                    arrival_place: isAirTicket ? document.getElementById('editTo').value.trim() :
-                        '',
-                    departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
-                        .trim() : ''
-                };
-
-                // Client-side validation
-                let hasError = false;
-
-                if (!updatedRow.planned_activities) {
-                    showFieldError('activities', 'Planned activities are required!');
-                    hasError = true;
-                }
-
-                if (isAirTicket) {
-                    if (!updatedRow.departure_place) {
-                        showFieldError('from',
-                            'Departure place is required when air ticket is selected!');
-                        hasError = true;
-                    }
-                    if (!updatedRow.arrival_place) {
-                        showFieldError('to', 'Arrival place is required when air ticket is selected!');
-                        hasError = true;
-                    }
-                    if (!updatedRow.departure_time) {
-                        showFieldError('departureTime',
-                            'Departure time is required when air ticket is selected!');
-                        hasError = true;
-                    }
-                }
-
-                if (hasError) {
-                    return;
-                }
-
-                const btn = this;
-                btn.disabled = true;
-                // btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
-
-                try {
-                    const currentRow = itineraryData[index];
-                    const dayId = currentRow.id;
-
-                    let response;
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
-                        'content');
-                    const payload = {
-                        date: updatedRow.date,
-                        planned_activities: updatedRow.planned_activities,
-                        accommodation: updatedRow.accommodation,
-                        air_ticket: updatedRow.air_ticket,
-                        departure_place: updatedRow.departure_place || null,
-                        arrival_place: updatedRow.arrival_place || null,
-                        departure_time: updatedRow.departure_time || null
-                    };
-
-                    if (dayId) {
-                        const updateUrlTemplate =
-                            '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
-                        const updateUrl = updateUrlTemplate.replace(':dayItinerary', dayId);
-
-                        response = await fetch(updateUrl, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                    } else {
-                        const createUrl =
-                            '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
-
-                        response = await fetch(createUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                    }
-
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-
-                        // Show server-side validation errors inline
-                        if (errorData.errors) {
-                            Object.keys(errorData.errors).forEach(field => {
-                                const messages = errorData.errors[field];
-                                const friendlyField = field.replace('planned_activities',
-                                        'activities')
-                                    .replace('departure_place', 'from')
-                                    .replace('arrival_place', 'to')
-                                    .replace('departure_time', 'departureTime');
-
-                                showFieldError(friendlyField, messages[
-                                    0]); // Show first error message
-                            });
-                        }
-
-                        throw new Error(errorData.message || (dayId ? 'Failed to update' :
-                            'Failed to create') + ' day itinerary');
-                    }
-
-                    const result = await response.json();
-
-                    if (!dayId && result.id) {
-                        itineraryData[index].id = result.id;
-                    }
-
-                    await reloadItineraryDataFromServer();
-                    renderDayItineraryRows();
-                    $('#savedDayItineraryTable').DataTable().ajax.reload();
-
-                    $('#editItineraryModal').modal('hide');
-                    toastr.success('Saved successfully!');
-                } catch (err) {
-                    // Generic fallback error (only if not shown inline)
-                    toastr.error(err.message || 'Error saving changes');
-                    console.error('Save error:', err);
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = 'Save';
-                }
-            });
-
-            async function reloadItineraryDataFromServer() {
-                try {
-                    const response = await fetch(
-                        '{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}?all=true', {
-                            headers: {
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        }
-                    );
-
-                    if (!response.ok) {
-                        throw new Error(`Failed to reload: ${response.status} ${response.statusText}`);
-                    }
-
-                    const json = await response.json();
-                    const freshSaved = json.data || json;
-
-                    const savedMap = {};
-                    freshSaved.forEach(item => {
-                        if (item.date) {
-                            savedMap[item.date] = {
-                                id: item.id,
-                                date: item.date,
-                                activities: item.planned_activities || '',
-                                accommodation: !!item.accommodation,
-                                air_ticket: !!item.air_ticket,
-                                from: item.departure_place || '',
-                                to: item.arrival_place || '',
-                                departure_time: item.departure_time || ''
-                            };
-                        }
-                    });
-
-                    const dates = generateDateRange(departureDateStr, returnDateStr);
-                    itineraryData = dates.map(date => savedMap[date] || {
-                        date: date,
-                        activities: '',
-                        accommodation: false,
-                        air_ticket: false,
-                        from: '',
-                        to: '',
-                        departure_time: ''
-                    });
-
-                    dayItineraryContainer.innerHTML = '';
-                    await new Promise(resolve => setTimeout(resolve, 10));
-                    renderDayItineraryRows();
-
-                    return true;
-                } catch (err) {
-                    console.error('Reload failed:', err);
-                    toastr.error('Failed to refresh itinerary. Please refresh page.');
-                    return false;
-                }
-            }
-
-            // Initial load
-            initializeItineraryData();
-            renderDayItineraryRows();
-
-
-            var savedDayTable = $('#savedDayItineraryTable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: "{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}",
-                bFilter: false,
-                bPaginate: false,
-                bInfo: false,
-                columns: [{
-                        data: 'date',
-                        name: 'date'
-                    },
-                    {
-                        data: 'planned_activities',
-                        name: 'planned_activities'
-                    },
-                    {
-                        data: 'accommodation',
-                        name: 'accommodation',
-                        orderable: false,
-                        searchable: false,
-                    },
-
-                    {
-                        data: 'air_ticket',
-                        name: 'air_ticket',
-                        orderable: false,
-                        searchable: false,
-                    },
-                ]
-            });
+            // $("#substitutes").select2({
+            //     width: '100%',
+            //     dropdownAutoWidth: true
+            // });
 
             //Hide "Add Estimation" button if an estimate already exists
             @if ($travelRequest->travelRequestEstimate)
@@ -564,23 +98,6 @@
                         },
                     }),
                 },
-            });
-
-            document.querySelector('.submit-record').addEventListener('click', function(e) {
-                e.preventDefault();
-                fv.validate().then(function(status) {
-                    if (status === 'Valid') {
-                        let btnInput = document.querySelector('input[name="btn"]');
-                        if (!btnInput) {
-                            btnInput = document.createElement('input');
-                            btnInput.type = 'hidden';
-                            btnInput.name = 'btn';
-                            form.appendChild(btnInput);
-                        }
-                        btnInput.value = 'submit';
-                        form.submit();
-                    }
-                });
             });
 
             // Passport Section Toggle
@@ -731,6 +248,79 @@
                 $('.estimateDiv').hide();
                 $('.submit-record').hide();
             @endif
+        });
+
+        var itineraryTable = $('#itineraryTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('travel.requests.itinerary.index', $travelRequest->id) }}",
+            bFilter: false,
+            bPaginate: false,
+            bInfo: false,
+            columns: [{
+                    data: 'departure_date',
+                    name: 'departure_date'
+                },
+                {
+                    data: 'departure_place',
+                    name: 'departure_place'
+                },
+                {
+                    data: 'arrival_date',
+                    name: 'arrival_date'
+                },
+                {
+                    data: 'arrival_place',
+                    name: 'arrival_place'
+                },
+                {
+                    data: 'mode_of_travel',
+                    name: 'mode_of_travel',
+                    orderable: false,
+                    searchable: false
+                },
+                // {
+                //     data: 'dsa_category',
+                //     name: 'dsa_category',
+                //     orderable: false,
+                //     searchable: false
+                // },
+                // {
+                //     data: 'dsa_unit_price',
+                //     name: 'dsa_unit_price'
+                // },
+                // {
+                //     data: 'dsa_total_price',
+                //     name: 'dsa_total_price'
+                // },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    className: 'sticky-col'
+                },
+            ]
+        });
+
+        $('#itineraryTable').on('click', '.delete-record', function(e) {
+            e.preventDefault();
+            $object = $(this);
+            var $url = $object.attr('data-href');
+            var successCallback = function(response) {
+                toastr.success(response.message, 'Success', {
+                    timeOut: 5000
+                });
+                if (response.itineraryCount) {
+                    $('.estimateDiv').show();
+                    $('.submit-record').show();
+                } else {
+                    $('.estimateDiv').hide();
+                    $('.submit-record').hide();
+                }
+                itineraryTable.ajax.reload();
+            }
+            ajaxDeleteSweetAlert($url, successCallback);
         });
 
         var estimateTable = $('#estimationTable').DataTable({
@@ -974,6 +564,241 @@
                         el.addEventListener('input', calculateTotal);
                         el.addEventListener('change', calculateTotal);
                     }
+                });
+            });
+        });
+
+        $(document).on('click', '.open-itinerary-modal-form', function(e) {
+            e.preventDefault();
+            $('#openModal').find('.modal-content').html('');
+            $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                const itineraryForm = document.getElementById('itineraryForm');
+                $(itineraryForm).find(".select2").each(function() {
+                    $(this)
+                        .wrap("<div class=\"position-relative\"></div>")
+                        .select2({
+                            dropdownParent: $(this).parent(),
+                            width: '100%',
+                            dropdownAutoWidth: true
+                        });
+                });
+
+                const fv = FormValidation.formValidation(itineraryForm, {
+                    fields: {
+                        departure_date: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Departure Date & Time is required'
+                                },
+                                date: {
+                                    format: 'YYYY-MM-DD HH:mm',
+                                    message: 'Please select a valid departure date & time'
+                                }
+                            }
+                        },
+                        arrival_date: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Arrival Date & Time is required'
+                                },
+                                date: {
+                                    format: 'YYYY-MM-DD HH:mm',
+                                    message: 'Please select a valid arrival date & time'
+                                }
+                            }
+                        },
+                        departure_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Departure place is required',
+                                },
+                            },
+                        },
+                        arrival_place: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Arrival place is required',
+                                },
+                            },
+                        },
+                        dsa_category_id: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'DSA Category is required',
+                                },
+                            },
+                        },
+                        dsa_unit_price: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'DSA Rate is required',
+                                },
+                                numeric: {
+                                    message: 'The DSA rate should be number.',
+                                },
+                                between: {
+                                    inclusive: true,
+                                    min: 0,
+                                    max: 99999999,
+                                    message: 'The value must be between 0 to 99999999',
+                                },
+                            },
+                        },
+                        activity_code_id: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Activity code is required',
+                                },
+                            },
+                        },
+                        account_code_id: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Account code is required',
+                                },
+                            },
+                        },
+                        description: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Description is required',
+                                },
+                            },
+                        },
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                        submitButton: new FormValidation.plugins.SubmitButton(),
+                        icon: new FormValidation.plugins.Icon({
+                            valid: 'bi bi-check2-square',
+                            invalid: 'bi bi-x-lg',
+                            validating: 'bi bi-arrow-repeat',
+                        }),
+                        startEndDate: new FormValidation.plugins.StartEndDate({
+                            format: 'YYYY-MM-DD HH:mm',
+                            startDate: {
+                                field: 'departure_date',
+                                message: 'Departure date must be a valid date and earlier than arrival date.',
+                            },
+                            endDate: {
+                                field: 'arrival_date',
+                                message: 'Arrival date must be a valid date and later than departure date.',
+                            },
+                        }),
+                    },
+                }).on('core.form.valid', function(event) {
+                    $url = fv.form.action;
+                    $form = fv.form;
+                    data = $($form).serialize();
+                    var successCallback = function(response) {
+                        $('#openModal').modal('hide');
+                        toastr.success(response.message, 'Success', {
+                            timeOut: 5000
+                        });
+                        if (response.itineraryCount) {
+                            $('.estimateDiv').show();
+                            $('.submit-record').show();
+                        } else {
+                            $('.estimateDiv').hide();
+                            $('.submit-record').hide();
+                        }
+                        itineraryTable.ajax.reload();
+                        estimateTable.ajax.reload();
+                    }
+                    ajaxSubmit($url, 'POST', data, successCallback);
+                });
+
+                $(itineraryForm).find('.travel-mode').on('change', function() {
+                    let selectedValues = $(this).val();
+                    if (selectedValues.includes('7')) {
+                        $(itineraryForm).find('.other-travel-mode').show();
+                    } else {
+                        $(itineraryForm).find('.other-travel-mode').hide();
+                    }
+                })
+
+                setTimeout(() => {
+                    $('.datetime-picker').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePicker24Hour: true,
+                        timePickerIncrement: 5,
+                        autoApply: true,
+                        autoUpdateInput: false,
+                        minDate: '{!! $travelRequest->departure_date->format('Y-m-d H:i') !!}',
+                        maxDate: '{!! $travelRequest->return_date->format('Y-m-d') !!} 23:59',
+                        locale: {
+                            format: 'YYYY-MM-DD HH:mm'
+                        }
+                    });
+
+                    @if (isset($itinerary))
+                        @if ($itinerary->departure_date)
+                            $('[name="departure_date"]').data('daterangepicker').setStartDate(
+                                '{!! $itinerary->departure_date->format('Y-m-d H:i') !!}'
+                            );
+                        @endif
+                        @if ($itinerary->arrival_date)
+                            $('[name="arrival_date"]').data('daterangepicker').setStartDate(
+                                '{!! $itinerary->arrival_date->format('Y-m-d H:i') !!}'
+                            );
+                        @endif
+                    @endif
+
+                    $('.datetime-picker').on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('YYYY-MM-DD HH:mm'));
+                        if (typeof fv !== 'undefined') {
+                            fv.revalidateField(this.name);
+                        }
+                    });
+                }, 300);
+
+                $(itineraryForm).on('change', '[name="activity_code_id"]', function(e) {
+                    $element = $(this);
+                    var activityCodeId = $element.val();
+                    var htmlToReplace = '<option value="">Select Account Code</option>';
+                    if (activityCodeId) {
+                        var url = baseUrl + '/api/master/activity-codes/' + activityCodeId;
+                        var successCallback = function(response) {
+                            response.accountCodes.forEach(function(accountCode) {
+                                htmlToReplace += '<option value="' + accountCode.id +
+                                    '">' + accountCode.title + ' ' + accountCode
+                                    .description + '</option>';
+                            });
+                            $($element).closest('form').find('[name="account_code_id"]').html(
+                                htmlToReplace);
+                        }
+                        var errorCallback = function(error) {
+                            console.log(error);
+                        }
+                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                    } else {
+                        $($element).closest('form').find('[name="account_code_id"]').html(
+                            htmlToReplace);
+                    }
+                    fv.revalidateField('activity_code_id');
+                }).on('change', '[name="account_code_id"]', function(e) {
+                    fv.revalidateField('account_code_id');
+                }).on('change', '[name="dsa_category_id"]', function(e) {
+                    $element = $(this);
+                    var categoryId = $element.val();
+                    if (categoryId) {
+                        var url = baseUrl + '/api/master/dsa-categories/' + categoryId;
+                        var successCallback = function(response) {
+                            $($element).closest('form').find('[name="dsa_unit_price"]').val(
+                                response.dsaCategory.rate);
+                        }
+                        var errorCallback = function(error) {
+                            console.log(error);
+                        }
+                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                    } else {
+                        $($element).closest('form').find('[name="dsa_unit_price"]').val(0);
+                    }
+                    fv.revalidateField('dsa_category_id');
+                }).on('change', '[name="travel_mode_id"]', function(e) {
+                    fv.revalidateField('travel_mode_id');
                 });
             });
         });
@@ -1353,8 +1178,7 @@
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks"
-                                    class="form-label required-label">{{ __('label.approval') }} </label>
+                                <label for="validationRemarks" class="form-label required-label">{{ __('label.approval') }} </label>
                             </div>
                         </div>
                         <div class="col-lg-9">
@@ -1384,151 +1208,43 @@
                     <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">
                         Update
                     </button>
-
                 </div>
                 {!! csrf_field() !!}
                 {!! method_field('PUT') !!}
             </div>
-
-            <div class="card mt-4">
-                <div class="card-header fw-bold">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span>Travel Itinerary</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive mb-4">
-                        <table class="table table-bordered align-middle">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
-                                    <th class="air-ticket-col">From</th>
-                                    <th class="air-ticket-col">To</th>
-                                    <th class="air-ticket-col">Departure Time</th>
-                                    <th style="width: 100px;" class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="day-itinerary-container">
-                                <!-- Dynamic rows injected by JS -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <div class="card">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">
                         <span> Travel Itinerary</span>
+                        <button data-toggle="modal" class="btn btn-primary btn-sm open-itinerary-modal-form"
+                            href="{!! route('travel.requests.itinerary.create', $travelRequest->id) !!}">
+                            <i class="bi-plus"></i> Add New Itinerary
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="savedDayItineraryTable">
+                        <table class="table" id="itineraryTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
+                                    <th scope="col">{{ __('label.from-date') }}</th>
+                                    <th scope="col">{{ __('label.from-place') }}</th>
+                                    <th scope="col">{{ __('label.to-date') }}</th>
+                                    <th scope="col">{{ __('label.to-place') }}</th>
+                                    <th scope="col">{{ __('label.mode-of-travel') }}</th>
+                                    {{-- <th scope="col">{{ __('label.dsa-category') }}</th>
+                                    <th scope="col">{{ __('label.dsa-rate') }}</th>
+                                    <th scope="col">{{ __('label.total-dsa') }}</th> --}}
+                                    <th style="width: 150px">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                            </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
-
-
-            <div class="modal fade" id="editItineraryModal" tabindex="-1" aria-labelledby="editItineraryModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title" id="editItineraryModalLabel">Edit Travel Itinerary</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="editItineraryForm">
-                                <input type="hidden" id="editRowIndex">
-
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Date</label>
-                                    <div class="col-md-9">
-                                        <input type="date" id="editDate" class="form-control" readonly>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">Planned Activities</label>
-                                    <div class="col-md-9">
-                                        <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
-                                        <div class="invalid-feedback" id="error-activities"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label class="form-check-label" for="editAccommodation">Accommodation</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="editAccommodation">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">Air Ticket</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">From</label>
-                                    <div class="col-md-9">
-                                        <input type="text" id="editFrom" class="form-control"
-                                            placeholder="Departure city/airport">
-                                        <div class="invalid-feedback" id="error-from"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">To</label>
-                                    <div class="col-md-9">
-                                        <input type="text" id="editTo" class="form-control"
-                                            placeholder="Arrival city/airport">
-                                        <div class="invalid-feedback" id="error-to"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">Departure Time</label>
-                                    <div class="col-md-9">
-                                        <input type="text" id="editDepartureTime" class="form-control"
-                                            placeholder="e.g. 14:30">
-                                        <div class="invalid-feedback" id="error-departureTime"></div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" id="saveEditBtn" class="btn btn-primary">Save</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="card ">
                 <div class="card-header fw-bold">
                     <div class="d-flex align-items-center add-info justify-content-between">

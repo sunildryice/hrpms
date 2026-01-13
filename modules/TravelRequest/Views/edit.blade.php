@@ -480,12 +480,6 @@
                 ]
             });
 
-            document.getElementById('travelRequestEditForm').addEventListener('submit', function(e) {
-                // Make sure latest data is sent (especially important if user didn't click Update button)
-                document.getElementById('dayItinerariesJson').value = JSON.stringify(itineraryData);
-            });
-
-
             // $("#substitutes").select2({
             //     width: '100%',
             //     dropdownAutoWidth: true
@@ -575,6 +569,23 @@
                         },
                     }),
                 },
+            });
+
+            document.querySelector('.submit-record').addEventListener('click', function(e) {
+                e.preventDefault();
+                fv.validate().then(function(status) {
+                    if (status === 'Valid') {
+                        let btnInput = document.querySelector('input[name="btn"]');
+                        if (!btnInput) {
+                            btnInput = document.createElement('input');
+                            btnInput.type = 'hidden';
+                            btnInput.name = 'btn';
+                            form.appendChild(btnInput);
+                        }
+                        btnInput.value = 'submit';
+                        form.submit();
+                    }
+                });
             });
 
             // Passport Section Toggle
@@ -1704,9 +1715,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <input type="hidden" name="day_itineraries_json" id="dayItinerariesJson" value="[]">
-
                 </div>
             </div>
 

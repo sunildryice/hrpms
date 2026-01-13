@@ -91,7 +91,7 @@
                 <input type="text" class="form-control @if ($errors->has('joined_date')) is-invalid @endif"
                     name="joined_date" placeholder="Joined Date"
                     value="{{ old('joined_date') ?: ($employee->latestTenure?->to_date?->format('Y-m-d') ?: $employee->latestTenure?->joined_date?->format('Y-m-d') ?: '') }}"
-                    readonly />
+                    onfocus="this.blur()" />
                 @if ($errors->has('joined_date'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="joined_date">{!! $errors->first('joined_date') !!}</div>
@@ -108,7 +108,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control @if ($errors->has('to_date')) is-invalid @endif"
-                    name="to_date" placeholder="To Date" value="{{ old('to_date') }}" readonly />
+                    name="to_date" placeholder="To Date" value="{{ old('to_date') }}" onfocus="this.blur()" />
                 @if ($errors->has('to_date'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="to_date">{!! $errors->first('to_date') !!}</div>
@@ -126,7 +126,7 @@
             <div class="col-lg-9">
                 <input type="text" class="form-control date @if ($errors->has('contract_end_date')) is-invalid @endif"
                     name="contract_end_date" placeholder="Contract End Date" value="{{ old('contract_end_date') }}"
-                    readonly />
+                    onfocus="this.blur()" />
                 @if ($errors->has('contract_end_date'))
                     <div class="fv-plugins-message-container invalid-feedback">
                         <div data-field="contract_end_date">{!! $errors->first('contract_end_date') !!}</div>
@@ -278,6 +278,46 @@
                             },
                         },
                     },
+                    to_date: {
+                        validators: {
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                            callback: {
+                                message: 'To Date cannot be earlier than Joined Date',
+                                callback: function(input) {
+                                    if (!input.value.trim()) {
+                                        return true;
+                                    }
+                                    const joinedDate = form.querySelector('[name="joined_date"]').value;
+                                    if (!joinedDate) {
+                                        return true;
+                                    }
+                                    return new Date(input.value) >= new Date(joinedDate);
+                                }
+                            }
+                        }
+                    },
+                    contract_end_date: {
+                        validators: {
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                            callback: {
+                                message: 'Contract End Date cannot be earlier than Joined Date',
+                                callback: function(input) {
+                                    if (!input.value.trim()) {
+                                        return true;
+                                    }
+                                    const joinedDate = form.querySelector('[name="joined_date"]').value;
+                                    if (!joinedDate) return true;
+                                    return new Date(input.value) >= new Date(joinedDate);
+                                }
+                            }
+                        }
+                    },
                     supervisor_id: {
                         validators: {
                             different: {
@@ -314,12 +354,16 @@
                 format: 'yyyy-mm-dd',
             }).on('change', function(e) {
                 fv.revalidateField('joined_date');
+                fv.revalidateField('to_date');
+                fv.revalidateField('contract_end_date');
             });
 
             $('[name="to_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+            }).on('change', function(e) {
+                fv.revalidateField('to_date');
             });
 
             $('[name="contract_end_date"]').datepicker({

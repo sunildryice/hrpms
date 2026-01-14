@@ -5,7 +5,7 @@
 @section('page_js')
 
     <script type="text/javascript">
-        $('.filter-items').on('click', function() {
+        $('.filter-items').on('click', function () {
             // //
             var chk_box = $(this).find('.f-check-input');
 
@@ -16,7 +16,7 @@
             $(this).find('i').toggleClass('bi-check-square-fill').toggleClass('bi-square');
             $(this).toggleClass('active');
         });
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#sidebar li').removeClass('active');
             $('#dashboard').addClass('active');
         });
@@ -27,8 +27,8 @@
     <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
+                <div class="brd-crms flex-grow-1">
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-dark">Home</a></li>
                             <li class="breadcrumb-item"><a href="#" class="text-decoration-none">HR</a></li>
@@ -212,8 +212,8 @@
                         </div>
                         <div class="col-lg-9">
                             <div class="row">
-                                <div class="col-lg-8"> <input type="text" class="form-control"
-                                        id="validationCustom02" value="" placeholder="Type"></div>
+                                <div class="col-lg-8"> <input type="text" class="form-control" id="validationCustom02"
+                                        value="" placeholder="Type"></div>
                                 <div class="col-lg-4">
 
                                     <select class="form-control select2" data-width="100%" name="" id="">
@@ -263,7 +263,7 @@
                             </div>
                         </div>
                         <div class="col-lg-9">
-                            <div class="form-check form-switch">
+                            <div class=" form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
                                     name="active" checked="">
                                 <label class="form-check-label" for="flexSwitchCheckChecked"></label>

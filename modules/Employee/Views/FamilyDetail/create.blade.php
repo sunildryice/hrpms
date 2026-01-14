@@ -57,7 +57,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
                         name="emergency_contact">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
@@ -90,7 +90,7 @@
                         data-width="100%">
                         <option value="">Select a Province</option>
                         @foreach ($provinces as $province)
-                            <option value="{{ $province->id }}">{{ $province->getProvinceName() }}</option>
+                        <option value="{{ $province->id }}">{{ $province->getProvinceName() }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -132,8 +132,8 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="number" min="1" class="form-control" name="ward"
-                        value="{{ old('ward') }}" placeholder="Ward Number">
+                    <input type="number" min="1" class="form-control" name="ward" value="{{ old('ward') }}"
+                        placeholder="Ward Number">
                 </div>
             </div>
 
@@ -144,8 +144,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="tole" value="{{ old('tole') }}"
-                        placeholder="Tole">
+                    <input type="text" class="form-control" name="tole" value="{{ old('tole') }}" placeholder="Tole">
                 </div>
             </div>
 
@@ -156,8 +155,8 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="contact_number"
-                        value="{{ old('contact_number') }}" placeholder="Contact Number">
+                    <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
+                        placeholder="Contact Number">
                 </div>
             </div>
         </div> --}}
@@ -168,7 +167,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="nomineeSwitchCheckChecked"
                         name="nominee" />
                     <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
@@ -184,7 +183,7 @@
 </form>
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function(e) {
+        document.addEventListener('DOMContentLoaded', function (e) {
             const form = document.getElementById('familyDetailForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -217,7 +216,7 @@
                             },
                             callback: {
                                 message: 'Please select a province',
-                                callback: function(value, validator, $field) {
+                                callback: function (value, validator, $field) {
                                     if ($('[name="emergency_contact"]').is(':checked')) {
                                         return true;
                                     } else {
@@ -235,7 +234,7 @@
                             },
                             callback: {
                                 message: 'Please select a district',
-                                callback: function(value, validator, $field) {
+                                callback: function (value, validator, $field) {
                                     if ($('[name="emergency_contact"]').is(':checked')) {
                                         return true;
                                     } else {
@@ -253,7 +252,7 @@
                             },
                             callback: {
                                 message: 'Please select a district',
-                                callback: function(value, validator, $field) {
+                                callback: function (value, validator, $field) {
                                     if ($('[name="emergency_contact"]').is(':checked')) {
                                         return true;
                                     } else {
@@ -285,7 +284,7 @@
                             },
                             callback: {
                                 message: 'Please enter a contact number',
-                                callback: function(value, validator, $field) {
+                                callback: function (value, validator, $field) {
                                     if ($('[name="emergency_contact"]').is(':checked')) {
                                         return true;
                                     } else {
@@ -318,12 +317,12 @@
                 autoHide: true,
                 format: 'yyyy-mm-dd',
                 endDate: '{!! date('Y-m-d') !!}',
-            }).on('change', function(e) {
+            }).on('change', function (e) {
                 fv.revalidateField('date_of_birth');
             });
             @if ($employee->nominee->nominee_at)
 
-                $('#familyDetailForm').on('change', '[name="nominee"]', function(e) {
+                $('#familyDetailForm').on('change', '[name="nominee"]', function (e) {
                     $object = $(this);
                     if (this.checked) {
                         Swal.fire({
@@ -346,7 +345,7 @@
                 })
             @endif
 
-            $('#familyDetailForm').on('change', '[name="emergency_contact"]', function(e) {
+            $('#familyDetailForm').on('change', '[name="emergency_contact"]', function (e) {
                 $('#emergencyContactBlock').hide();
                 if (this.checked) {
                     $('#emergencyContactBlock').show();
@@ -354,15 +353,15 @@
                 fv.revalidateField('province_id');
                 fv.revalidateField('district_id');
                 fv.revalidateField('local_level_id');
-            }).on('change', '[name="province_id"]', function(e) {
+            }).on('change', '[name="province_id"]', function (e) {
                 $element = $(this);
                 var provinceId = $element.val();
                 var htmlToReplace = '<option value="">Select a District</option>';
                 if (provinceId) {
                     var url = baseUrl + '/api/master/provinces/' + provinceId;
-                    var successCallback = function(response) {
+                    var successCallback = function (response) {
                         console.log(response);
-                        response.districts.forEach(function(district) {
+                        response.districts.forEach(function (district) {
                             htmlToReplace += '<option value="' + district.id + '">' + district
                                 .district_name + '</option>';
                         });
@@ -371,7 +370,7 @@
                         $($element).closest('form').find('[name="district_id"]').select2("destroy")
                             .select2();
                     }
-                    var errorCallback = function(error) {
+                    var errorCallback = function (error) {
                         console.log(error);
                     }
                     // ajaxNativeSubmit(url, 'GET', {}, 'json');
@@ -380,14 +379,14 @@
                     $($element).closest('form').find('[name="district_id"]').html(htmlToReplace);
                 }
                 fv.revalidateField('province_id');
-            }).on('change', '[name="district_id"]', function(e) {
+            }).on('change', '[name="district_id"]', function (e) {
                 $element = $(this);
                 var districtId = $element.val();
                 var htmlToReplace = '<option value="">Select a Local Level</option>';
                 if (districtId) {
                     var url = baseUrl + '/api/master/districts/' + districtId;
-                    var successCallback = function(response) {
-                        response.localLevels.forEach(function(localLevel) {
+                    var successCallback = function (response) {
+                        response.localLevels.forEach(function (localLevel) {
                             htmlToReplace += '<option value="' + localLevel.id + '">' +
                                 localLevel.local_level_name + '</option>';
                         });
@@ -395,7 +394,7 @@
                         $($element).closest('form').find('[name="local_level_id"]').select2("destroy")
                             .select2();
                     }
-                    var errorCallback = function(error) {
+                    var errorCallback = function (error) {
                         console.log(error);
                     }
                     ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -404,9 +403,9 @@
                 }
                 fv.revalidateField('district_id');
                 fv.revalidateField('local_level_id');
-            }).on('change', '[name="local_level_id"]', function(e) {
+            }).on('change', '[name="local_level_id"]', function (e) {
                 fv.revalidateField('local_level_id');
-            }).on('change', '[name="family_relation_id"]', function(e) {
+            }).on('change', '[name="family_relation_id"]', function (e) {
                 fv.revalidateField('family_relation_id');
             });
         });

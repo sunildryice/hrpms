@@ -14,10 +14,9 @@
                 </div>
             </div>
             <div class="col-lg-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch"
-                        id="skip_exit_handover_note" name="skip_exit_handover_note"
-                        {{$exitHandoverNote->status_id == config('constant.CLOSED_STATUS') ? 'checked disabled' : ''}}>
+                <div class=" form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="skip_exit_handover_note"
+                        name="skip_exit_handover_note" {{$exitHandoverNote->status_id == config('constant.CLOSED_STATUS') ? 'checked disabled' : ''}}>
                 </div>
             </div>
         </div>
@@ -28,7 +27,9 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <textarea class="form-control" name="skip_exit_handover_note_remarks" id="skip_exit_handover_note_remarks" rows="2" placeholder="Remarks">{{ $exitHandoverNote->remarks }}</textarea>
+                <textarea class="form-control" name="skip_exit_handover_note_remarks"
+                    id="skip_exit_handover_note_remarks" rows="2"
+                    placeholder="Remarks">{{ $exitHandoverNote->remarks }}</textarea>
             </div>
         </div>
         <div class="row mb-2">
@@ -38,9 +39,9 @@
                 </div>
             </div>
             <div class="col-lg-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch"
-                        id="skip_exit_interview" name="skip_exit_interview"
+                <div class=" form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="skip_exit_interview"
+                        name="skip_exit_interview"
                         {{$exitHandoverNote->exitInterview->status_id == config('constant.CLOSED_STATUS') ? 'checked disabled' : ''}}>
                 </div>
             </div>
@@ -52,7 +53,8 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <textarea class="form-control" name="skip_exit_interview_remarks" id="skip_exit_interview_remarks" rows="2" placeholder="Remarks">{{ $exitHandoverNote->exitInterview->remarks }}</textarea>
+                <textarea class="form-control" name="skip_exit_interview_remarks" id="skip_exit_interview_remarks"
+                    rows="2" placeholder="Remarks">{{ $exitHandoverNote->exitInterview->remarks }}</textarea>
             </div>
         </div>
     </div>

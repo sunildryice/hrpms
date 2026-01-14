@@ -104,9 +104,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" name="disabled"
-                        @if ($employee->finance->disabled) checked @endif>
+                <div class=" form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" name="disabled" @if
+                        ($employee->finance->disabled) checked @endif>
                     <label class="form-check-label" for="disabled"></label>
                 </div>
             </div>
@@ -125,7 +125,7 @@
 </form>
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function(e) {
+        document.addEventListener('DOMContentLoaded', function (e) {
             const fv = FormValidation.formValidation(document.getElementById('financeForm'), {
                 fields: {
                     ssf_number: {

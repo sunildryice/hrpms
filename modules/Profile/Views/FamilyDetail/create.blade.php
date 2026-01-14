@@ -1,8 +1,8 @@
 <div class="card-header fw-bold">
     <h3 class="m-0 fs-6">Add New Family Member</h3>
 </div>
-<form action="{{ route('profile.family.details.store') }}" method="post"
-      id="familyDetailForm" enctype="multipart/form-data" autocomplete="off" style="width: 100%;">
+<form action="{{ route('profile.family.details.store') }}" method="post" id="familyDetailForm"
+    enctype="multipart/form-data" autocomplete="off" style="width: 100%;">
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -12,7 +12,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control" name="full_name" placeholder="Full name"
-                       value="{{ old('full_name') }}">
+                    value="{{ old('full_name') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -38,8 +38,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control"
-                       name="date_of_birth" placeholder="Date of Birth" value="{{ old('date_of_birth') }}" readonly>
+                <input type="text" class="form-control" name="date_of_birth" placeholder="Date of Birth"
+                    value="{{ old('date_of_birth') }}" readonly>
             </div>
         </div>
         <div class="row mb-2">
@@ -59,9 +59,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                           name="emergency_contact">
+                        name="emergency_contact">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                 </div>
                 <div class="col-lg-9">
                     <select name="province_id" class="select2 form-control" placeholder="Select a Province"
-                            data-width="100%">
+                        data-width="100%">
                         <option value="">Select a Province</option>
                         @foreach ($provinces as $province)
                             <option value="{{ $province->id }}">{{ $province->getProvinceName() }}</option>
@@ -94,7 +94,7 @@
                 </div>
                 <div class="col-lg-9">
                     <select name="district_id" class="select2 form-control" placeholder="Select a District"
-                            data-width="100%">
+                        data-width="100%">
                         <option value="">Select a District</option>
                     </select>
                 </div>
@@ -108,8 +108,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <select name="local_level_id" class="select2 form-control"
-                            data-width="100%">
+                    <select name="local_level_id" class="select2 form-control" data-width="100%">
                         <option value="">Select a Local Level</option>
                     </select>
                 </div>
@@ -124,7 +123,7 @@
                 </div>
                 <div class="col-lg-9">
                     <input type="number" min="1" class="form-control" name="ward" value="{{ old('ward') }}"
-                           placeholder="Ward Number">
+                        placeholder="Ward Number">
                 </div>
             </div>
 
@@ -135,8 +134,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="tole" value="{{ old('tole') }}"
-                           placeholder="Tole">
+                    <input type="text" class="form-control" name="tole" value="{{ old('tole') }}" placeholder="Tole">
                 </div>
             </div>
 
@@ -147,8 +145,8 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="contact_number"
-                           value="{{ old('contact_number') }}" placeholder="Contact Number">
+                    <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
+                        placeholder="Contact Number">
                 </div>
             </div>
         </div>
@@ -159,9 +157,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="nomineeSwitchCheckChecked"
-                           name="nominee" />
+                        name="nominee" />
                     <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -312,26 +310,26 @@
             });
             @if($employee->nominee->nominee_at)
 
-            $('#familyDetailForm').on('change', '[name="nominee"]', function (e) {
-                $object = $(this);
-                if (this.checked) {
-                    Swal.fire({
-                        title: 'Do want to change a nominee?',
-                        text: "You have already selected a nominee. ",
-                        type: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, change it!'
-                    }).then((result) => {
-                        console.log(result);
-                        if (!result.value) {
-                            console.log($object);
-                            $($object).closest('form').find('[name="nominee"]').prop('checked',false);
-                        }
-                    });
-                }
-            })
+                $('#familyDetailForm').on('change', '[name="nominee"]', function (e) {
+                    $object = $(this);
+                    if (this.checked) {
+                        Swal.fire({
+                            title: 'Do want to change a nominee?',
+                            text: "You have already selected a nominee. ",
+                            type: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, change it!'
+                        }).then((result) => {
+                            console.log(result);
+                            if (!result.value) {
+                                console.log($object);
+                                $($object).closest('form').find('[name="nominee"]').prop('checked', false);
+                            }
+                        });
+                    }
+                })
             @endif
 
             $('#familyDetailForm').on('change', '[name="emergency_contact"]', function (e) {

@@ -3,7 +3,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form action="{!! route('privilege.permissions.update', $permission->id) !!}" method="post"
-      enctype="multipart/form-data" id="permissionForm" autocomplete="off">
+    enctype="multipart/form-data" id="permissionForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -15,7 +15,8 @@
                 <select class="select2 form-control" name="parent_id">
                     <option value="">Select Parent</option>
                     @foreach($permissions as $dropdown)
-                        <option value="{{ $dropdown->id }}" @if($dropdown->id == $permission->parent_id) selected @endif>{{ $dropdown->permission_name }}</option>
+                        <option value="{{ $dropdown->id }}" @if($dropdown->id == $permission->parent_id) selected @endif>
+                            {{ $dropdown->permission_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -27,7 +28,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="permission_name" value="{{ $permission->permission_name }}" placeholder="Permission Name">
+                <input type="text" class="form-control" name="permission_name"
+                    value="{{ $permission->permission_name }}" placeholder="Permission Name">
             </div>
         </div>
         <div class="row mb-2">
@@ -37,7 +39,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="guard_name" value="{{ $permission->guard_name }}" placeholder="Guard Name">
+                <input type="text" class="form-control" name="guard_name" value="{{ $permission->guard_name }}"
+                    placeholder="Guard Name">
             </div>
         </div>
         <div class="row mb-2">
@@ -47,9 +50,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                           name="active" @if($permission->activated_at) checked @endif>
+                        name="active" @if($permission->activated_at) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>

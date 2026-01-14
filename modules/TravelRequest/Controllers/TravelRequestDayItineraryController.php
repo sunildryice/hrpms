@@ -49,6 +49,8 @@ class TravelRequestDayItineraryController extends Controller
                             'departure_place' => $row->departure_place,
                             'arrival_place' => $row->arrival_place,
                             'departure_time' => $row->departure_time,
+                            'completed_tasks' => $row->completed_tasks,
+                            'remarks' => $row->remarks,
                         ];
                     })->toArray()
                 ]);

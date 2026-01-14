@@ -48,6 +48,8 @@
                             'from' => $item->departure_place ?? '',
                             'to' => $item->arrival_place ?? '',
                             'departure_time' => $item->departure_time ?? '',
+                            'completed_tasks' => $item->completed_tasks ?? '',
+                            'remarks' => $item->remarks ?? '',
                         ];
                     }),
                 ) !!} ?? [];
@@ -67,7 +69,9 @@
                             vehicle: false,
                             from: '',
                             to: '',
-                            departure_time: ''
+                            departure_time: '',
+                            completed_tasks: '',
+                            remarks: ''
                         };
                     }
                 });
@@ -119,6 +123,8 @@
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
+                    <td>${row.completed_tasks || '<em class="text-muted">No tasks</em>'}</td>
+                    <td>${row.remarks || '<em class="text-muted">No remarks</em>'}</td>
                     <td class="text-center">
                         ${actions}
                     </td>
@@ -212,6 +218,8 @@
                 document.getElementById('editFrom').value = data.from || '';
                 document.getElementById('editTo').value = data.to || '';
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
+                document.getElementById('editCompletedTasks').value = data.completed_tasks || '';
+                document.getElementById('editRemarks').value = data.remarks || '';
 
                 toggleAirTicketFieldsInModal(!!data.air_ticket);
                 $('#editItineraryModal').modal('show');
@@ -264,12 +272,18 @@
                     arrival_place: isAirTicket ? document.getElementById('editTo').value.trim() :
                         '',
                     departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
-                        .trim() : ''
+                        .trim() : '',
+                    completed_tasks: document.getElementById('editCompletedTasks').value.trim(),
+                    remarks: document.getElementById('editRemarks').value.trim()
                 };
                 // Client-side validation
                 let hasError = false;
                 if (!updatedRow.planned_activities) {
                     showFieldError('activities', 'Planned activities are required!');
+                    hasError = true;
+                }
+                if (!updatedRow.completed_tasks) {
+                    showFieldError('completedTasks', 'Carried activities / completed tasks are required!');
                     hasError = true;
                 }
 
@@ -310,7 +324,9 @@
                         vehicle: updatedRow.vehicle,
                         departure_place: updatedRow.departure_place || null,
                         arrival_place: updatedRow.arrival_place || null,
-                        departure_time: updatedRow.departure_time || null
+                        departure_time: updatedRow.departure_time || null,
+                        completed_tasks: updatedRow.completed_tasks,
+                        remarks: updatedRow.remarks,
                     };
 
                     if (dayId) {
@@ -417,7 +433,9 @@
                                 vehicle: !!item.vehicle,
                                 from: item.departure_place || '',
                                 to: item.arrival_place || '',
-                                departure_time: item.departure_time || ''
+                                departure_time: item.departure_time || '',
+                                completed_tasks: item.completed_tasks || '',
+                                remarks: item.remarks || ''
                             };
                         }
                     });
@@ -430,7 +448,9 @@
                         vehicle: false,
                         from: '',
                         to: '',
-                        departure_time: ''
+                        departure_time: '',
+                        completed_tasks: '',
+                        remarks: ''
                     });
                     dayItineraryContainer.innerHTML = '';
                     await new Promise(resolve => setTimeout(resolve, 10));
@@ -481,6 +501,14 @@
                         name: 'vehicle',
                         orderable: false,
                         searchable: false,
+                    },
+                    {
+                        data: 'completed_tasks',
+                        name: 'completed_tasks'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
                     },
                 ]
             });
@@ -1370,6 +1398,8 @@
                                     <th class="air-ticket-col">From</th>
                                     <th class="air-ticket-col">To</th>
                                     <th class="air-ticket-col">Departure Time</th>
+                                    <th>Carried Activities / Completed Tasks</th>
+                                    <th>Remarks</th>
                                     <th style="width: 100px;" class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -1397,6 +1427,8 @@
                                     <th class="text-center">Accommodation</th>
                                     <th class="text-center">Air Ticket</th>
                                     <th class="text-center">Vehicle</th>
+                                    <th class="text-center">Carried Activities / Completed Tasks</th>
+                                    <th class="text-center">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1491,6 +1523,23 @@
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">
                                         <div class="invalid-feedback" id="error-departureTime"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label required-label">Carried Activities / Completed Tasks</label>
+                                    <div class="col-md-9">
+                                        <textarea id="editCompletedTasks" class="form-control" rows="3" placeholder="Carried Activities / Completed Tasks"></textarea>
+                                        <div class="invalid-feedback" id="error-completedTasks"></div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">Remarks</label>
+                                    <div class="col-md-9">
+                                        <textarea id="editRemarks" class="form-control" rows="2" 
+                                                  placeholder="Remarks"></textarea>
+                                        <div class="invalid-feedback" id="error-remarks"></div>
                                     </div>
                                 </div>
                             </form>

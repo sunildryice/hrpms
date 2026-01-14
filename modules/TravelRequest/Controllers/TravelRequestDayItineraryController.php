@@ -45,6 +45,7 @@ class TravelRequestDayItineraryController extends Controller
                             'planned_activities' => $row->planned_activities,
                             'accommodation' => (bool) $row->accommodation,
                             'air_ticket' => (bool) $row->air_ticket,
+                            'vehicle' => (bool) $row->vehicle,
                             'departure_place' => $row->departure_place,
                             'arrival_place' => $row->arrival_place,
                             'departure_time' => $row->departure_time,

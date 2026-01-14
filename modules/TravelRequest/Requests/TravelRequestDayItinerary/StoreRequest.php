@@ -3,7 +3,6 @@
 namespace Modules\TravelRequest\Requests\TravelRequestDayItinerary;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Modules\TravelRequest\Models\TravelRequest;
 
 class StoreRequest extends FormRequest
 {

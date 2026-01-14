@@ -250,7 +250,6 @@
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
-                const isVehicle = document.getElementById('editVehicle').checked;
                 // Clear previous errors
                 clearAllErrors();
 
@@ -259,7 +258,7 @@
                     planned_activities: document.getElementById('editActivities').value.trim(),
                     accommodation: document.getElementById('editAccommodation').checked ? 1 : 0,
                     air_ticket: isAirTicket ? 1 : 0,
-                    vehicle: isVehicle ? 1 : 0,
+                    vehicle: document.getElementById('editVehicle').checked ? 1 : 0,
                     departure_place: isAirTicket ? document.getElementById('editFrom').value
                         .trim() : '',
                     arrival_place: isAirTicket ? document.getElementById('editTo').value.trim() :
@@ -356,7 +355,7 @@
                                     .replace('departure_time', 'departureTime');
 
                                 showFieldError(friendlyField, messages[
-                                    0]); // Show first error message
+                                    0]); 
                             });
                         }
 

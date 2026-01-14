@@ -183,7 +183,7 @@
                                             }
                                             reloadItineraryDataFromServer();
                                             renderDayItineraryRows();
-                                            $('#savedDayItineraryTable')
+                                            $('#itineraryTable')
                                                 .DataTable().ajax.reload();
                                         } else {
                                             toastr.error(response.message ||
@@ -385,7 +385,7 @@
                     }
                     await reloadItineraryDataFromServer();
                     renderDayItineraryRows();
-                    $('#savedDayItineraryTable').DataTable().ajax.reload();
+                    $('#itineraryTable').DataTable().ajax.reload();
 
                     $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
@@ -468,7 +468,7 @@
             initializeItineraryData();
             renderDayItineraryRows();
 
-            var savedDayTable = $('#savedDayItineraryTable').DataTable({
+            var itineraryTable = $('#itineraryTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}",
@@ -1419,7 +1419,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="savedDayItineraryTable">
+                        <table class="table table-bordered align-middle" id="itineraryTable">
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 120px;">Date</th>

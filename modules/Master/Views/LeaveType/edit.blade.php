@@ -2,8 +2,8 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Leave Type</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('master.leave.types.update', $leaveType->id) !!}" method="post"
-      enctype="multipart/form-data" id="leaveTypeForm" autocomplete="off">
+<form action="{!! route('master.leave.types.update', $leaveType->id) !!}" method="post" enctype="multipart/form-data"
+    id="leaveTypeForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -13,7 +13,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control" name="title" value="{!! $leaveType->title !!}"
-                       placeholder="Name of Leave">
+                    placeholder="Name of Leave">
             </div>
         </div>
         <div class="row mb-2">
@@ -23,7 +23,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="short_description" value="{!! $leaveType->short_description !!}" placeholder="Description">
+                <input type="text" class="form-control" name="short_description"
+                    value="{!! $leaveType->short_description !!}" placeholder="Description">
             </div>
         </div>
         <div class="row mb-2">
@@ -52,7 +53,7 @@
                             <span class="filter-items d-flex gap-2 mb-2" data-id="value">
                                 <span class="filter-checks">
                                     <input type="checkbox" name="applicable_to_all" class="f-check-input"
-                                           @if($leaveType->applicable_to_all) checked @endif>
+                                        @if($leaveType->applicable_to_all) checked @endif>
                                 </span>
                                 <span class="filter-body">
                                     Applicable to all staff
@@ -63,7 +64,7 @@
                             <span class="filter-items d-flex gap-2 mb-2" data-id="value">
                                 <span class="filter-checks">
                                     <input type="checkbox" name="include_weekends" class="f-check-input"
-                                           @if($leaveType->include_weekends) checked @endif>
+                                        @if($leaveType->include_weekends) checked @endif>
                                 </span>
                                 <span class="filter-body">
                                     Includes Weekends
@@ -73,8 +74,8 @@
                         <div class="col-lg-4">
                             <span class="filter-items d-flex gap-2 mb-2" data-id="value">
                                 <span class="filter-checks">
-                                    <input type="checkbox" name="female" class="f-check-input"
-                                           @if($leaveType->female) checked @endif>
+                                    <input type="checkbox" name="female" class="f-check-input" @if($leaveType->female)
+                                    checked @endif>
                                 </span>
                                 <span class="filter-body">
                                     Female Only
@@ -84,8 +85,8 @@
                         <div class="col-lg-4">
                             <span class="filter-items d-flex gap-2 mb-2 align-items-center" data-id="value">
                                 <span class="filter-checks">
-                                    <input type="checkbox" name="male" class="f-check-input"
-                                           @if($leaveType->male) checked @endif>
+                                    <input type="checkbox" name="male" class="f-check-input" @if($leaveType->male)
+                                    checked @endif>
                                 </span>
                                 <span class="filter-body">
                                     Male Only
@@ -96,7 +97,7 @@
                             <span class="filter-items d-flex gap-2 mb-2 align-items-center" data-id="value">
                                 <span class="filter-checks">
                                     <input type="checkbox" name="encashment" class="f-check-input"
-                                           @if($leaveType->encashment) checked @endif>
+                                        @if($leaveType->encashment) checked @endif>
                                 </span>
                                 <span class="filter-body">
                                     Encashment ?
@@ -116,7 +117,8 @@
             <div class="col-lg-9">
                 <div class="row">
                     <div class="col-lg-8">
-                        <input type="number" min="1" class="form-control" name="number_of_days" value="{{ $leaveType->number_of_days }}" placeholder="Balance"/>
+                        <input type="number" min="1" class="form-control" name="number_of_days"
+                            value="{{ $leaveType->number_of_days }}" placeholder="Balance" />
                     </div>
                     <div class="col-lg-4">
                         <select class="form-control select2" data-width="100%" name="leave_frequency">
@@ -153,8 +155,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="number" min="0" class="form-control" name="maximum_carry_over" value="{{ $leaveType->maximum_carry_over }}"
-                       placeholder="Maximum carry over">
+                <input type="number" min="0" class="form-control" name="maximum_carry_over"
+                    value="{{ $leaveType->maximum_carry_over }}" placeholder="Maximum carry over">
 
             </div>
         </div>
@@ -165,9 +167,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input form-control" type="checkbox" role="switch"
-                           id="flexSwitchCheckChecked" @if($leaveType->activated_at) checked @endif name="active">
+                        id="flexSwitchCheckChecked" @if($leaveType->activated_at) checked @endif name="active">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>

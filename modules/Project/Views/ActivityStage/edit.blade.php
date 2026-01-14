@@ -2,8 +2,8 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Activity Stage</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('activity-stage.update', $activityStage->id) !!}" method="post" enctype="multipart/form-data" id="activityStageEditForm"
-    autocomplete="off">
+<form action="{!! route('activity-stage.update', $activityStage->id) !!}" method="post" enctype="multipart/form-data"
+    id="activityStageEditForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -12,8 +12,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="title"
-                    value="{{ old('title', $activityStage->title) }}" placeholder="Title">
+                <input type="text" class="form-control" name="title" value="{{ old('title', $activityStage->title) }}"
+                    placeholder="Title">
             </div>
         </div>
         <div class="row mb-2">
@@ -23,7 +23,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea class="form-control" name="description" rows="4" placeholder="Description">{{ old('description', $activityStage->description) }}</textarea>
+                <textarea class="form-control" name="description" rows="4"
+                    placeholder="Description">{{ old('description', $activityStage->description) }}</textarea>
             </div>
         </div>
         <div class="row mb-2">
@@ -33,7 +34,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
                         name="activated" @if ($activityStage->activated_at) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>

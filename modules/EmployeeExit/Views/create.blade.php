@@ -2,8 +2,8 @@
     <h5 class="modal-title mb-0 fs-6" id="openModal1Label">Add New Employee Exit</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{{route('employee.exits.store')}}" method="post"
-      enctype="multipart/form-data" id="AddHandOverForm" autocomplete="off">
+<form action="{{route('employee.exits.store')}}" method="post" enctype="multipart/form-data" id="AddHandOverForm"
+    autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                 <select class="form-control select2" data-width="100%" name="employee_id">
+                <select class="form-control select2" data-width="100%" name="employee_id">
                     <option value="">Select Employee</option>
                     @foreach($employees as $employee)
                         <option value="{!! $employee->id !!}">{{ $employee->getFullName() }}</option>
@@ -50,9 +50,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                           name="is_insurance" checked>
+                        name="is_insurance" checked>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -63,4 +63,3 @@
     </div>
     {!! csrf_field() !!}
 </form>
-

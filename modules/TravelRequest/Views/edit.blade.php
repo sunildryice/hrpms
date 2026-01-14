@@ -12,8 +12,10 @@
 
             // NEW: Day-wise Itinerary Dynamic Rows
             const dayItineraryContainer = document.getElementById('day-itinerary-container');
-            const departureDateStr = '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
-            const returnDateStr = '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
+            const departureDateStr =
+                '{{ $travelRequest->departure_date ? $travelRequest->departure_date->format('Y-m-d') : '' }}';
+            const returnDateStr =
+                '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
             let itineraryData = [];
 
             function generateDateRange(start, end) {
@@ -42,6 +44,7 @@
                             'activities' => $item->planned_activities ?? '',
                             'accommodation' => !!$item->accommodation,
                             'air_ticket' => !!$item->air_ticket,
+                            'vehicle' => !!$item->vehicle,
                             'from' => $item->departure_place ?? '',
                             'to' => $item->arrival_place ?? '',
                             'departure_time' => $item->departure_time ?? '',
@@ -61,6 +64,7 @@
                             activities: '',
                             accommodation: false,
                             air_ticket: false,
+                            vehicle: false,
                             from: '',
                             to: '',
                             departure_time: ''
@@ -108,6 +112,9 @@
                     </td>
                     <td class="text-center">
                         ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                    </td>
+                    <td class="text-center">
+                        ${row.vehicle ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
@@ -161,7 +168,8 @@
                                     },
                                     success: function(response) {
                                         if (response.success) {
-                                            toastr.success(response.message || 'Deleted successfully!');
+                                            toastr.success(response.message ||
+                                                'Deleted successfully!');
                                             if (response.itineraryCount) {
                                                 $('.submit-record').show();
                                             } else {
@@ -169,7 +177,8 @@
                                             }
                                             reloadItineraryDataFromServer();
                                             renderDayItineraryRows();
-                                            $('#savedDayItineraryTable').DataTable().ajax.reload();
+                                            $('#savedDayItineraryTable')
+                                                .DataTable().ajax.reload();
                                         } else {
                                             toastr.error(response.message ||
                                                 'Failed to delete.');
@@ -199,6 +208,7 @@
                 document.getElementById('editActivities').value = data.activities || '';
                 document.getElementById('editAccommodation').checked = !!data.accommodation;
                 document.getElementById('editAirTicket').checked = !!data.air_ticket;
+                document.getElementById('editVehicle').checked = !!data.vehicle;
                 document.getElementById('editFrom').value = data.from || '';
                 document.getElementById('editTo').value = data.to || '';
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
@@ -240,6 +250,7 @@
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
+                const isVehicle = document.getElementById('editVehicle').checked;
                 // Clear previous errors
                 clearAllErrors();
 
@@ -248,6 +259,7 @@
                     planned_activities: document.getElementById('editActivities').value.trim(),
                     accommodation: document.getElementById('editAccommodation').checked ? 1 : 0,
                     air_ticket: isAirTicket ? 1 : 0,
+                    vehicle: isVehicle ? 1 : 0,
                     departure_place: isAirTicket ? document.getElementById('editFrom').value
                         .trim() : '',
                     arrival_place: isAirTicket ? document.getElementById('editTo').value.trim() :
@@ -296,6 +308,7 @@
                         planned_activities: updatedRow.planned_activities,
                         accommodation: updatedRow.accommodation,
                         air_ticket: updatedRow.air_ticket,
+                        vehicle: updatedRow.vehicle,
                         departure_place: updatedRow.departure_place || null,
                         arrival_place: updatedRow.arrival_place || null,
                         departure_time: updatedRow.departure_time || null
@@ -402,6 +415,7 @@
                                 activities: item.planned_activities || '',
                                 accommodation: !!item.accommodation,
                                 air_ticket: !!item.air_ticket,
+                                vehicle: !!item.vehicle,
                                 from: item.departure_place || '',
                                 to: item.arrival_place || '',
                                 departure_time: item.departure_time || ''
@@ -414,6 +428,7 @@
                         activities: '',
                         accommodation: false,
                         air_ticket: false,
+                        vehicle: false,
                         from: '',
                         to: '',
                         departure_time: ''
@@ -459,6 +474,12 @@
                     {
                         data: 'air_ticket',
                         name: 'air_ticket',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {  
+                        data: 'vehicle',
+                        name: 'vehicle',
                         orderable: false,
                         searchable: false,
                     },
@@ -1346,6 +1367,7 @@
                                     <th>Planned Activities</th>
                                     <th class="text-center">Accommodation</th>
                                     <th class="text-center">Air Ticket</th>
+                                    <th class="text-center">Vehicle</th>
                                     <th class="air-ticket-col">From</th>
                                     <th class="air-ticket-col">To</th>
                                     <th class="air-ticket-col">Departure Time</th>
@@ -1375,6 +1397,7 @@
                                     <th>Planned Activities</th>
                                     <th class="text-center">Accommodation</th>
                                     <th class="text-center">Air Ticket</th>
+                                    <th class="text-center">Vehicle</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1430,6 +1453,17 @@
                                     <div class="col-md-9">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="editAirTicket">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-check-label" for="editVehicle">Vehicle</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="editVehicle">
                                         </div>
                                     </div>
                                 </div>

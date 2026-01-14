@@ -80,6 +80,12 @@ class TravelRequestDayItineraryController extends Controller
 
                     return '<span class="text fw-bold">Yes</span>' . $places . $time;
                 })
+                ->addColumn('vehicle', function ($row) {
+                    return
+                    (int) $row->vehicle
+                    ? '<span class="text fw-bold">Yes</span>'
+                    : '<span class="text-muted fw-bold">No</span>';
+                })
                 ->addColumn('action', function ($row) use ($travelRequestId) {
                     // $btn = '<a class="btn btn-outline-primary btn-sm open-day-itinerary-modal-form" 
                     //            href="' . route('travel.requests.day-itinerary.edit', [$travelRequestId, $row->id]) . '" 
@@ -95,7 +101,7 @@ class TravelRequestDayItineraryController extends Controller
 
                     // return $btn;
                 })
-                ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'action']);
+                ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'vehicle', 'action']);
 
             return $datatable->make(true);
         }
@@ -110,21 +116,22 @@ class TravelRequestDayItineraryController extends Controller
     {
         $travelRequest = TravelRequest::findOrFail($travelRequestId);
 
-        $validated = $request->validate([
+        $inputs = $request->validate([
             'date' => 'required|date',
             'planned_activities' => 'nullable|string|max:2000',
             'accommodation' => 'boolean',
             'air_ticket' => 'boolean',
+            'vehicle' => 'boolean',
             'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'departure_time' => 'nullable|string|max:50',
         ]);
 
-        $validated['travel_request_id'] = $travelRequest->id;
-        $validated['created_by'] = auth()->id();
-        $validated['updated_by'] = auth()->id();
+        $inputs['travel_request_id'] = $travelRequest->id;
+        $inputs['created_by'] = auth()->id();
+        $inputs['updated_by'] = auth()->id();
 
-        $dayItinerary = $this->dayItinerary->create($validated);
+        $dayItinerary = $this->dayItinerary->create($inputs);
 
         return response()->json([
             'success' => true,
@@ -144,18 +151,19 @@ class TravelRequestDayItineraryController extends Controller
 
         // $this->authorize('update', $travelRequest);
 
-        $validated = $request->validate([
+        $inputs = $request->validate([
             'planned_activities' => 'nullable|string|max:2000',
             'accommodation' => 'boolean',
             'air_ticket' => 'boolean',
+            'vehicle' => 'boolean',
             'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'departure_time' => 'nullable|string|max:50',
         ]);
 
-        $validated['updated_by'] = auth()->id();
+        $inputs['updated_by'] = auth()->id();
 
-        $updated = $dayItinerary->update($validated);
+        $updated = $dayItinerary->update($inputs);
 
         if ($updated) {
             return response()->json([

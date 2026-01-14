@@ -203,63 +203,18 @@
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        $startDate = \Carbon\Carbon::parse(
-                                                            $travelRequest->departure_date,
-                                                        );
-                                                        $endDate = \Carbon\Carbon::parse($travelRequest->return_date);
-                                                        $dates = collect();
-                                                        for (
-                                                            $date = $startDate->copy();
-                                                            $date->lte($endDate);
-                                                            $date->addDay()
-                                                        ) {
-                                                            $dates->push($date->copy());
-                                                        }
+                                                        $itineraries = $travelRequest?->travelRequestDayItineraries;
                                                     @endphp
-
-                                                    @forelse($dates as $index => $date)
-                                                        @php
-                                                            $weekdayName = $date->format('l');
-                                                            $formattedDate = $date->format('d M Y');
-                                                            $storeDate = $date->format('Y-m-d');
-                                                            $dayNumber = $index + 1;
-                                                        @endphp
-
+                                                    @foreach ($itineraries as $index => $itinerary)
                                                         <tr>
-                                                            <td>
-                                                                <input type="text"
-                                                                    class="form-control text-center fw-bold"
-                                                                    value="{{ $weekdayName }}" readonly>
-                                                                <input type="hidden"
-                                                                    name="recommendation[day_number][{{ $index }}]"
-                                                                    value="{{ $dayNumber }}">
-                                                            </td>
-
-                                                            <td>
-                                                                <input type="text" class="form-control"
-                                                                    value="{{ $formattedDate }}" readonly>
-                                                                <input type="hidden"
-                                                                    name="recommendation[activity_date][{{ $index }}]"
-                                                                    value="{{ $storeDate }}">
-                                                            </td>
-
-                                                            <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3"
-                                                                    class="form-control @error('recommendation.completed_tasks.' . $index) is-invalid @enderror">{{ old('recommendation.completed_tasks.' . $index) }}</textarea>
-                                                            </td>
-
-                                                            <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old('recommendation.remarks.' . $index) }}</textarea>
-                                                            </td>
+                                                            <td class="text-center fw-bold">
+                                                                {{ $itinerary->date?->format('l') }}</td>
+                                                            <td class="text-nowrap">
+                                                                {{ $itinerary->date?->format('d M Y') }}</td>
+                                                            <td>{!! $itinerary?->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
+                                                            <td>{!! $itinerary?->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                                         </tr>
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="4" class="text-center text-danger">
-                                                                Invalid travel dates: Departure date must be before or equal
-                                                                to Return date.
-                                                            </td>
-                                                        </tr>
-                                                    @endforelse
+                                                    @endforeach
                                                 </tbody>
                                             </table>
                                             <div id="activitiesErrorContainer"

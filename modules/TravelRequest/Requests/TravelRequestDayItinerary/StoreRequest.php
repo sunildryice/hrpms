@@ -24,30 +24,18 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        $travelRequest = TravelRequest::findOrFail($this->travel_request_id);
-
-        $minDate = $travelRequest->departure_date->format('Y-m-d');
-        $maxDate = $travelRequest->return_date->copy()->endOfDay()->format('Y-m-d');
-
         return [
-            'travel_request_id' => 'required|exists:travel_requests,id',
-
-            'date' => [
-                'required',
-                'date_format:Y-m-d',
-                'after_or_equal:' . $minDate,
-                'before_or_equal:' . $maxDate,
-            ],
-
-            'planned_activities'       => 'nullable|string|max:2000',
-            'accommodation'            => 'boolean',
-            'air_ticket'               => 'boolean',
-            'departure_place'          => 'nullable|string|max:255|required_if:air_ticket,true',
-            'arrival_place'            => 'nullable|string|max:255|required_if:air_ticket,true',
-            'departure_time'           => 'nullable|string|max:50',
-
-            'vehicle'                  => 'boolean',
+            'date' => 'required|date',
+            'planned_activities' => 'nullable|string|max:2000',
+            'accommodation' => 'boolean',
+            'air_ticket' => 'boolean',
+            'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
+            'departure_time' => 'nullable|string|max:50',
+            'vehicle' => 'boolean',
             'vehicle_request_form_link' => 'nullable|url|max:500',
+            'completed_tasks' => 'nullable|string',
+            'remarks' => 'nullable|string',
         ];
     }
 
@@ -73,8 +61,8 @@ class StoreRequest extends FormRequest
     {
         $this->merge([
             'accommodation' => $this->boolean('accommodation', false),
-            'air_ticket'    => $this->boolean('air_ticket', false),
-            'vehicle'       => $this->boolean('vehicle', false),
+            'air_ticket' => $this->boolean('air_ticket', false),
+            'vehicle' => $this->boolean('vehicle', false),
         ]);
     }
 }

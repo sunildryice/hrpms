@@ -2,24 +2,25 @@
 
 namespace Modules\Inventory\Controllers;
 
-use App\Http\Controllers\Controller;
 use DataTables;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Modules\Grn\Repositories\GrnRepository;
 use Modules\Inventory\Models\InventoryItem;
-use Modules\Inventory\Repositories\InventoryItemRepository;
 use Modules\Inventory\Requests\StoreRequest;
 use Modules\Inventory\Requests\UpdateRequest;
-use Modules\Master\Repositories\ActivityCodeRepository;
-use Modules\Master\Repositories\DistributionTypeRepository;
+use Modules\Master\Repositories\ItemRepository;
+use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\DonorCodeRepository;
 use Modules\Master\Repositories\ExecutionRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\InventoryTypeRepository;
-use Modules\Master\Repositories\ItemRepository;
 use Modules\Supplier\Repositories\SupplierRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
+use Modules\Master\Repositories\InventoryTypeRepository;
+use Modules\Inventory\Repositories\InventoryItemRepository;
+use Modules\Master\Repositories\DistributionTypeRepository;
 
 class InventoryItemController extends Controller
 {
@@ -38,7 +39,8 @@ class InventoryItemController extends Controller
         protected ItemRepository $items,
         protected SupplierRepository $suppliers,
         protected FiscalYearRepository $fiscalYear,
-        protected InventoryTypeRepository $inventoryTypes
+        protected InventoryTypeRepository $inventoryTypes,
+        protected OfficeRepository $offices,
     ) {
         $this->destinationPath = 'inventory';
     }
@@ -291,6 +293,7 @@ class InventoryItemController extends Controller
             ->withDonorCodes($donorCodes)
             ->withExecutionTypes($executionTypes)
             ->withItems($items)
+            ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
             ->withSuppliers($suppliers);
     }
 
@@ -314,7 +317,7 @@ class InventoryItemController extends Controller
         $inputs['created_by'] = auth()->id();
         $inputs['category_id'] = $item->inventory_category_id;
         $inputs['item_name'] = $item->title;
-        $inputs['office_id'] = $authUser->employee->office_id;
+        // $inputs['office_id'] = $authUser->employee->office_id;
         $inputs['asset_flag'] = $item->category->getInventoryType() != 'Consumable' && $distributionType->title != 'Distribution';
         $inputs['fiscal_year_id'] = $this->fiscalYear->getCurrentFiscalYearId();
         $inventoryItem = $this->inventoryItems->create($inputs);

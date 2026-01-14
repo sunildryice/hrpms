@@ -73,6 +73,7 @@
         var showHideAttachment = function($element) {
             let days = 0;
             var leaveType = $($element).closest('form').find('[name="leave_type_id"] option:selected').text();
+            var leaveTypeID = $($element).closest('form').find('[name="leave_type_id"] option:selected').val();
             startDate = new Date($($element).closest('form').find('[name="start_date"]').val());
             endDate = new Date($($element).closest('form').find('[name="end_date"]').val());
             if (startDate instanceof Date && isFinite(startDate) && endDate instanceof Date && isFinite(endDate)) {
@@ -80,7 +81,7 @@
                 days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 days = isNaN(days) ? 0 : days + 1;
             }
-            if (days > 3) {
+            if (days > 3 && leaveTypeID == {{ config('constant.SICK_LEAVE') }}) {
                 $($element).closest('form').find('#attachmentBlock').show();
             } else {
                 $($element).closest('form').find('#attachmentBlock').hide();

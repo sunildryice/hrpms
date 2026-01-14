@@ -15,18 +15,40 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_ids'      => ['required', 'array', 'min:1'],
-            'project_ids.*'    => ['required', 'integer', 'exists:lkup_project_codes,id'],
+            'date'    => ['required', 'date'],
+            'reason'  => ['required', 'string'],
+            'send_to' => ['required', 'integer', 'exists:users,id'],
 
-            'date'             => ['required', 'date'],
-            'reason'           => ['required', 'string'],
-            'send_to'          => ['required', 'integer', 'exists:users,id'],
+            'deliverables'                  => ['required', 'array', 'min:1'],
+            'deliverables.*.project_id'     => ['required', 'integer', 'exists:lkup_project_codes,id'],
+            'deliverables.*.task'           => ['required', 'string'],
 
-            'deliverables'     => ['required', 'array', 'min:1'],
-            'deliverables.*'   => ['required', 'array', 'min:1'],
-            'deliverables.*.*' => ['required', 'string', 'max:255'],
+            'btn' => ['nullable', 'string', 'in:save,submit'],
+        ];
+    }
 
-            'btn'              => ['nullable', 'string', 'in:save,submit'],
+    public function attributes()
+    {
+        return [
+            'date'                     => 'off day work date',
+            'reason'                   => 'reason for off day work',
+            'send_to'                  => 'approver',
+            'deliverables'             => 'deliverables',
+            'deliverables.*.project_id' => 'project',
+            'deliverables.*.task'      => 'task',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'deliverables.required'              => 'Please add at least one deliverable.',
+            'deliverables.array'                 => 'Deliverables must be a valid list.',
+            'deliverables.min'                   => 'Please add at least one deliverable.',
+
+            'deliverables.*.project_id.required' => 'Project is required for each deliverable.',
+            'deliverables.*.project_id.exists'   => 'Please select a valid project.',
+            'deliverables.*.task.required'       => 'Task is required for each deliverable.',
         ];
     }
 }

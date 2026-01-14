@@ -261,7 +261,7 @@
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>
                                         </li>
 
-                                        <li class="position-relative">
+                                        {{-- <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
                                                 <div class="icon-section"><i
                                                         class="bi-activity dropdown-item-icon"></i></div>
@@ -284,7 +284,7 @@
                                                 <div class="d-content-section"> {!! $inventory->getDonorCode() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Donor Code"></span>
-                                        </li>
+                                        </li> --}}
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
                                                 <div class="icon-section"><i

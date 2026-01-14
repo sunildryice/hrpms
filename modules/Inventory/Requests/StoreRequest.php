@@ -25,6 +25,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'office_id'=>'required|exists:lkup_offices,id',
             'supplier_id'=>'required|exists:suppliers,id',
             'purchase_date'=>'required|date',
             'item_id'=>'required|exists:lkup_items,id',

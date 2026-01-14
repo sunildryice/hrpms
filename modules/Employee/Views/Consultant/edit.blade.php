@@ -501,6 +501,12 @@
                                 {{--         <i class="nav-icon bi bi-calendar4-range"></i> Training --}}
                                 {{--     </a> --}}
                                 {{-- </li> --}}
+                                 <li class="nav-item">
+                                    <a href="#" class="nav-link step-item text-decoration-none"
+                                        data-tag="finance-details">
+                                        <i class="nav-icon bi bi-bank"></i> Finance
+                                    </a>
+                                </li>
                                 <li class="nav-item">
                                     <a href="#" class="nav-link step-item text-decoration-none"
                                        data-tag="document-upload-details">

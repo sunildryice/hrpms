@@ -122,14 +122,6 @@ class RequestController extends Controller
 
                 $workFromHome = $this->workFromHomes->create($inputs);
 
-                $pivotData = [];
-                foreach ($inputs['project_ids'] as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($inputs['deliverables'][$projectId] ?? []),
-                    ];
-                }
-                $workFromHome->projects()->sync($pivotData);
-
 
                 $logInputs = [
                     'user_id' => $authUser->id,
@@ -138,8 +130,6 @@ class RequestController extends Controller
                     'status_id' => $workFromHome->status_id,
                     'work_from_home_id' => $workFromHome->id,
                 ];
-
-
 
                 $this->workFromHomeLogs->create($logInputs);
 
@@ -156,14 +146,6 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.CREATED_STATUS');
 
                 $workFromHome = $this->workFromHomes->create($inputs);
-
-                $pivotData = [];
-                foreach ($inputs['project_ids'] as $projectId) {
-                    $pivotData[$projectId] = [
-                        'deliverables' => json_encode($inputs['deliverables'][$projectId] ?? []),
-                    ];
-                }
-                $workFromHome->projects()->sync($pivotData);
             }
 
             DB::commit();
@@ -180,33 +162,27 @@ class RequestController extends Controller
         $wfhRequest = $this->workFromHomes
             ->with('logs')->find($id);
 
+        $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
 
         return view('WorkFromHome::show', [
             'wfhRequest' => $wfhRequest,
+            'deliverables' => $deliverables,
         ]);
     }
 
     public function edit($id)
     {
-        $workFromHome = $this->workFromHomes->with('projects')->findOrFail($id);
+        $workFromHome = $this->workFromHomes->find($id);
 
-        $selectedProjectIds = $workFromHome->projects->pluck('id')->toArray();
-
-        $deliverables = [];
         $projects = $this->projects->pluck('short_name', 'id')->toArray();
         $authUser = auth()->user();
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
-        foreach ($workFromHome->projects as $project) {
-            $deliverables[$project->id] = json_decode($project->pivot->deliverables, true) ?? [];
-        }
         return view('WorkFromHome::edit', compact(
             'workFromHome',
             'projects',
             'supervisors',
-            'selectedProjectIds',
-            'deliverables'
         ));
     }
 
@@ -224,8 +200,6 @@ class RequestController extends Controller
             $inputs['office_id']        = $authUser->employee->office_id;
             $inputs['department_id']    = $authUser->employee->department_id;
             $inputs['updated_by']       = auth()->id();
-            $projectIds   = $inputs['project_ids'] ?? [];
-            $deliverables = $inputs['deliverables'] ?? [];
 
             if ($inputs['btn'] === 'submit') {
                 $inputs['status_id']    = config('constant.SUBMITTED_STATUS');
@@ -258,14 +232,6 @@ class RequestController extends Controller
 
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
             }
-
-            $pivotData = [];
-            foreach ($projectIds as $projectId) {
-                $pivotData[$projectId] = [
-                    'deliverables' => json_encode($deliverables[$projectId] ?? []),
-                ];
-            }
-            $workFromHome->projects()->sync($pivotData);
 
             DB::commit();
 

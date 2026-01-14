@@ -9,14 +9,14 @@
             --c-work: #fd7e14;
             --bg-weekend: #e9ecef;
             --c-leave: #dc3545;
+            --bg-holiday: #e9ecef;
+            --bg-holiday-bar: #dc3545;
         }
 
         #calendar {
             background: white;
-            /* padding: 20px; */
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-            /* height: 750px; */
             width: 100%;
         }
 
@@ -56,6 +56,153 @@
             }
         @endif
 
+        .fc-event {
+            border: none;
+            border-radius: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 1px 3px;
+        }
+
+        .fc-daygrid-more-link {
+            font-weight: 700;
+            color: #495057 !important;
+            background: #dee2e6;
+            padding: 3px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .event-list-item {
+            cursor: pointer;
+            border-left: 5px solid #ccc;
+            transition: background 0.2s;
+        }
+
+        .event-list-item:hover {
+            background-color: #f1f3f5;
+        }
+
+        .fc .fc-daygrid-day-frame {
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+    </style>
+@endsection
+
+<div>
+    <div class="">
+        <div class="row justify-content-center">
+            <div class="col-10">
+                <div class="px-4 py-2" id="calendar"></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- DAY OVERVIEW MODAL --}}
+    <div class="modal fade" id="dayOverviewModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                    <div>
+                        <h5 class="modal-title fw-bold">
+                            <span id="dayOverviewDate" class="text-primary"></span>
+                        </h5>
+                        <small id="dayOverviewSubtitle" class="text-muted"></small>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body modal-body-scrollable p-0">
+                    <div class="container-fluid py-3">
+                        <div class="row gx-2 gy-3" id="dayEventsList">
+                            {{-- JS appends cols here --}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SINGLE EVENT MODAL -->
+    <div class="modal fade" id="singleEventModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header text-white" id="singleEventHeader">
+                    <h5 class="modal-title" id="singleEventTitle">Title</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <h6 class="fw-bold">Time / Duration</h6>
+                    <p id="singleEventDateRange" class="text-muted small mb-1"></p>
+                    <p id="singleEventDescription" class="text-muted small mb-0"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.8/index.global.min.js"></script>
+
+
+@section('page_css')
+    <style>
+        :root {
+            --c-sick-leave: #dc3545;
+            --c-annual-leave: #dc3545;
+            --c-lieu-leave: #dc3545;
+            --c-work-from-home: #0dcaf0;
+            --c-travel: #6610f2;
+            --c-work: #fd7e14;
+            --bg-weekend: #e9ecef;
+            --c-leave: #dc3545;
+            --bg-holiday: #e9ecef;
+            --bg-holiday-bar: #dc3545;
+        }
+
+        #calendar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            width: 100%;
+        }
+
+        .fc-day-sat {
+            background-color: var(--bg-weekend) !important;
+        }
+
+        .fc-day-sat .fc-daygrid-day-frame {
+            background-image: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(0, 0, 0, 0.02) 10px,
+                    rgba(0, 0, 0, 0.02) 20px);
+        }
+
+        .fc-day-sat .fc-daygrid-day-number {
+            color: #adb5bd;
+            font-weight: bold;
+        }
+
+        @if ($office->weekend_type == config('constant.Saturday+Sunday'))
+            .fc-day-sun {
+                background-color: var(--bg-weekend) !important;
+            }
+
+            .fc-day-sun .fc-daygrid-day-frame {
+                background-image: repeating-linear-gradient(45deg,
+                        transparent,
+                        transparent 10px,
+                        rgba(0, 0, 0, 0.02) 10px,
+                        rgba(0, 0, 0, 0.02) 20px);
+            }
+
+            .fc-day-sun .fc-daygrid-day-number {
+                color: #adb5bd;
+                font-weight: bold;
+            }
+        @endif
 
         .fc-event {
             border: none;
@@ -89,11 +236,6 @@
             padding-top: 2px;
             padding-bottom: 2px;
         }
-
-        /* .fc .fc-daygrid-body .fc-daygrid-day {
-                                                                                                                                                                                                                        height: 50px;
-                                                                                                                                                                                                                        max-height: 50px;
-                                                                                                                                                                                                                    } */
     </style>
 @endsection
 
@@ -106,6 +248,7 @@
         </div>
     </div>
 
+    {{-- DAY OVERVIEW MODAL --}}
     <div class="modal fade" id="dayOverviewModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -114,14 +257,14 @@
                         <h5 class="modal-title fw-bold">
                             <span id="dayOverviewDate" class="text-primary"></span>
                         </h5>
+                        <small id="dayOverviewSubtitle" class="text-muted"></small>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body modal-body-scrollable p-0">
-                    {{-- container-fluid + row so grid works inside modal --}}
                     <div class="container-fluid py-3">
                         <div class="row gx-2 gy-3" id="dayEventsList">
-                            {{-- JS will append cols here --}}
+                            {{-- JS appends cols here --}}
                         </div>
                     </div>
                 </div>
@@ -139,7 +282,8 @@
                 </div>
                 <div class="modal-body p-4">
                     <h6 class="fw-bold">Time / Duration</h6>
-                    <p id="singleEventDateRange" class="text-muted small"></p>
+                    <p id="singleEventDateRange" class="text-muted small mb-1"></p>
+                    <p id="singleEventDescription" class="text-muted small mb-0"></p>
                 </div>
             </div>
         </div>
@@ -148,7 +292,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/bootstrap5@6.1.8/index.global.min.js"></script>
-
 
 <script>
     const CALENDAR_URL_TEMPLATE =
@@ -161,7 +304,8 @@
         work_from_home: 4,
         travel: 5,
         work: 6,
-        leave: 7
+        leave: 7,
+        holiday: 8
     };
 
     function getPriority(type) {
@@ -182,7 +326,6 @@
         });
     }
 
-    // ensure YYYY-MM-DD string
     function normalizeDate(dateStr) {
         if (!dateStr) return null;
         if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
@@ -195,7 +338,6 @@
         return `${d.getFullYear()}-${m}-${day}`;
     }
 
-    // FullCalendar all-day "end" is exclusive, so add +1 day to include the last date
     function addOneDay(dateStr) {
         if (!dateStr) return null;
         const d = new Date(dateStr);
@@ -206,12 +348,28 @@
         return `${d.getFullYear()}-${m}-${day}`;
     }
 
-    // for display: convert exclusive end back to inclusive last day
     function subtractDay(dateObj) {
         if (!dateObj) return null;
         const d = new Date(dateObj.getTime());
         d.setDate(d.getDate() - 1);
         return d;
+    }
+
+    function setHolidayBackground(dateStr) {
+        const dateEl = document.querySelector(`.fc-day[data-date='${dateStr}']`);
+        if (dateEl) {
+            dateEl.style.backgroundColor = 'var(--bg-holiday)';
+            const frame = dateEl.querySelector('.fc-daygrid-day-frame');
+            if (frame) {
+                frame.style.backgroundImage = `
+                    repeating-linear-gradient(45deg,
+                        transparent,
+                        transparent 10px,
+                        rgba(0, 0, 0, 0.02) 10px,
+                        rgba(0, 0, 0, 0.02) 20px)`;
+            }
+            dateEl.style.fontWeight = 'bold';
+        }
     }
 
     function mapApiDataToEvents(data) {
@@ -224,9 +382,12 @@
         const travelRequests = data.travelRequests || [];
         const offDayWorks = data.offDayWorks || [];
         const otherLeaves = data.otherLeaves || [];
+        const holidays = data.holidays || [];
 
+        // sick leave
         sickLeaves.forEach(sl => {
             const requester = sl.requester || {};
+            const desc = sl.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Sick Leave`,
                 start: normalizeDate(sl.start_date),
@@ -234,13 +395,18 @@
                 type: 'sick_leave',
                 allDay: true,
                 backgroundColor: 'var(--c-leave)',
-                description: sl.remarks || 'No description.',
-                priority: getPriority('sick_leave')
+                /* description: desc, */
+                priority: getPriority('sick_leave'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // annual leave
         annualLeaves.forEach(al => {
             const requester = al.requester || {};
+            const desc = al.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Annual Leave`,
                 start: normalizeDate(al.start_date),
@@ -248,13 +414,18 @@
                 type: 'annual_leave',
                 allDay: true,
                 backgroundColor: 'var(--c-annual-leave)',
-                description: al.remarks || 'No description.',
-                priority: getPriority('annual_leave')
+                /* description: desc, */
+                priority: getPriority('annual_leave'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // lieu leave
         lieuLeaveRequests.forEach(llr => {
             const requester = llr.requester || {};
+            const desc = llr.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Lieu Leave`,
                 start: normalizeDate(llr.start_date),
@@ -262,13 +433,18 @@
                 type: 'lieu_leave',
                 allDay: true,
                 backgroundColor: 'var(--c-lieu-leave)',
-                description: llr.remarks || 'No description.',
-                priority: getPriority('lieu_leave')
+                /* description: desc, */
+                priority: getPriority('lieu_leave'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // work from home
         workFromHomeRequests.forEach(wfh => {
             const requester = wfh.requester || {};
+            const desc = wfh.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is Working from Home`,
                 start: normalizeDate(wfh.start_date),
@@ -276,13 +452,18 @@
                 type: 'work_from_home',
                 allDay: true,
                 backgroundColor: 'var(--c-work-from-home)',
-                description: wfh.remarks || 'No description.',
-                priority: getPriority('work_from_home')
+                /* description: desc, */
+                priority: getPriority('work_from_home'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // travel
         travelRequests.forEach(tr => {
             const requester = tr.requester || {};
+            const desc = tr.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Travel`,
                 start: normalizeDate(tr.departure_date),
@@ -290,14 +471,19 @@
                 type: 'travel',
                 allDay: true,
                 backgroundColor: 'var(--c-travel)',
-                description: tr.remarks || 'No description.',
-                priority: getPriority('travel')
+                /* description: desc, */
+                priority: getPriority('travel'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // off-day work
         offDayWorks.forEach(odw => {
             const requester = odw.requester || {};
             const date = normalizeDate(odw.date);
+            const desc = odw.description || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is working on an Off-day`,
                 start: date,
@@ -305,13 +491,18 @@
                 type: 'work',
                 allDay: true,
                 backgroundColor: 'var(--c-work)',
-                description: odw.description || 'No description.',
-                priority: getPriority('work')
+                /* description: desc, */
+                priority: getPriority('work'),
+                extendedProps: {
+                    /* description: desc */
+                }
             });
         });
 
+        // other leaves
         otherLeaves.forEach(ol => {
             const requester = ol.requester || {};
+            const desc = ol.remarks || 'No description.';
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Leave`,
                 start: normalizeDate(ol.start_date),
@@ -319,13 +510,47 @@
                 type: 'leave',
                 allDay: true,
                 backgroundColor: 'var(--c-leave)',
-                description: ol.remarks || 'No description.',
-                priority: getPriority('leave')
+                description: desc,
+                priority: getPriority('leave'),
+                extendedProps: {
+                    /* description: desc */
+                }
+            });
+        });
+
+        // holidays with female-only note
+        holidays.forEach(h => {
+            const holidayDate = normalizeDate(h.holiday_date);
+            setHolidayBackground(holidayDate);
+
+            const onlyFemale = h.only_female === 1 || h.only_female === '1';
+            const baseTitle = h.title;
+            const baseDesc = h.description || '';
+            const desc = onlyFemale ?
+                `${baseDesc} (only for female)` :
+                baseDesc;
+
+
+
+            events.push({
+                title: `${baseTitle}`,
+                start: holidayDate,
+                end: addOneDay(holidayDate),
+                type: 'holiday',
+                allDay: true,
+                backgroundColor: 'var(--bg-holiday-bar)',
+                description: desc,
+                priority: getPriority('holiday'),
+                extendedProps: {
+                    only_female: h.only_female,
+                    type: 'holiday',
+                    description: desc
+                }
             });
         });
 
         return events;
-    }
+    } // extendedProps.type and only_female are used to build the holiday subtitle. 
 
     async function fetchCalendarDataForRange(start, end) {
         const month = start.getMonth() + 1;
@@ -344,8 +569,7 @@
             throw new Error('HTTP ' + response.status);
         }
 
-        const data = await response.json();
-        return data;
+        return await response.json();
     }
 
     function openDayOverviewModal(date, segs) {
@@ -354,6 +578,25 @@
             month: 'long',
             day: 'numeric'
         }));
+
+        // holiday subtitle (if any holiday on this day)
+        const holidaySegs = segs.filter(seg => {
+            const e = seg.event;
+            return e.extendedProps.type === 'holiday' || e.type === 'holiday';
+        });
+
+        let subtitle = '';
+        if (holidaySegs.length > 0) {
+            const firstHoliday = holidaySegs[0].event;
+            const baseTitle = firstHoliday.title;
+            const onlyFemale = firstHoliday.extendedProps.only_female;
+            if (onlyFemale === 1 || onlyFemale === '1') {
+                subtitle = `${baseTitle} (only for female)`;
+            } else {
+                subtitle = baseTitle;
+            }
+        }
+        $('#dayOverviewSubtitle').text(subtitle);
 
         $('#dayEventsList').empty();
 
@@ -398,6 +641,9 @@
         }
         $('#singleEventDateRange').text(range);
 
+        const desc = event.extendedProps.description || event.description || '';
+        $('#singleEventDescription').text(desc);
+
         new bootstrap.Modal(document.getElementById('singleEventModal')).show();
     }
 
@@ -441,6 +687,7 @@
                 openDayOverviewModal(info.date, info.allSegs);
                 return 'function';
             },
+
             eventClick: function(info) {
                 openSingleEventModal(info.event);
             }

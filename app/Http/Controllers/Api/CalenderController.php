@@ -8,9 +8,9 @@ use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
 use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\OffDayWork\Repositories\OffDayWorkRepository;
-use Modules\Privilege\Models\User;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
+use Modules\Master\Repositories\HolidayRepository;
 
 
 class CalenderController extends Controller
@@ -21,6 +21,7 @@ class CalenderController extends Controller
         protected OffDayWorkRepository $offDayWork,
         protected LieuLeaveRequestRepository $lieuLeaveRequest,
         protected WorkFromHomeRepository $workFromHome,
+        protected HolidayRepository $holidayRepository,
         protected OfficeRepository $officeRepository,
     ) {}
 
@@ -33,29 +34,37 @@ class CalenderController extends Controller
 
         $leaveRequests = $this->leaveRequest->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->whereBetween('start_date', [$startOfMonth, $endOfMonth])
-            ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('start_date', [$startOfMonth, $endOfMonth])
+                    ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);
+            });
 
-        $sickLeaves = $leaveRequests->where('leave_type_id', config('constant.SICK_LEAVE'))->with(['requester'])->get();
-        $annualLeaves = $leaveRequests->where('leave_type_id', config('constant.ANNUAL_LEAVE'))->with(['requester'])->get();
+        $sickLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.SICK_LEAVE'))->with(['requester'])->get();
+        $annualLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.ANNUAL_LEAVE'))->with(['requester'])->get();
 
         $lieuLeaveRequests = $this->lieuLeaveRequest->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->whereBetween('start_date', [$startOfMonth, $endOfMonth])
-            ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth])
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('start_date', [$startOfMonth, $endOfMonth])
+                    ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);
+            })
             ->with(['requester'])
             ->get();
         $workFromHomeRequests = $this->workFromHome->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->whereBetween('start_date', [$startOfMonth, $endOfMonth])
-            ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth])
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('start_date', [$startOfMonth, $endOfMonth])
+                    ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);
+            })
             ->with(['requester'])
             ->get();
 
         $travelRequests = $this->travelRequest->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->whereBetween('departure_date', [$startOfMonth, $endOfMonth])
-            ->orWhereBetween('return_date', [$startOfMonth, $endOfMonth])
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('departure_date', [$startOfMonth, $endOfMonth])
+                    ->orWhereBetween('return_date', [$startOfMonth, $endOfMonth]);
+            })
             ->with(['requester'])
             ->get();
 
@@ -66,13 +75,15 @@ class CalenderController extends Controller
             ->with(['requester'])
             ->get();
 
-        $otherLeaves = $leaveRequests->whereNotIn('leave_type_id', [
+        $otherLeaves = (clone $leaveRequests)->whereNotIn('leave_type_id', [
             config('constant.SICK_LEAVE'),
             config('constant.ANNUAL_LEAVE'),
         ])->with(['requester'])->get();
 
 
         $office = $this->officeRepository->find($officeId);
+
+        $holidays = $this->getOfficeHolidays(auth()->id(), $officeId, $startOfMonth, $endOfMonth);
 
 
         return response()->json([
@@ -84,6 +95,31 @@ class CalenderController extends Controller
             'offDayWorks' => $offDayWorks,
             'otherLeaves' => $otherLeaves,
             'office' => $office,
+            'holidays' => $holidays,
         ]);
+    }
+
+    public function getOfficeHolidays($authUserId, $officeId, $startOfMonth, $endOfMonth)
+    {
+        $holidays = $this->holidayRepository
+            ->select(['title', 'holiday_date', 'only_female'])
+            ->whereBetween('holiday_date', [$startOfMonth, $endOfMonth])
+            ->whereHas('offices', function ($q) use ($officeId) {
+                $q->where('lkup_offices.id', $officeId);
+            })
+            // ->when(
+            //     $authUser->employee->gender == config('constant.FEMALE'),
+            //     function ($query) {},
+            //     function ($query) {
+            //         // non-female: exclude female-only holidays
+            //         $query->where(function ($q) {
+            //             $q->whereNull('only_female')
+            //                 ->orWhere('only_female', false);
+            //         });
+            //     }
+            // )
+            ->get();
+
+        return $holidays;
     }
 }

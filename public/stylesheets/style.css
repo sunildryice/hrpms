@@ -1295,8 +1295,8 @@ th.sticky-col {
 }
 
 .form-switch .form-check-input {
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: #fff;
+  border-color: gray;
   color: #fff;
 }
 

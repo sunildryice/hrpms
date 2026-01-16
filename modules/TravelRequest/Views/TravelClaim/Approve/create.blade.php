@@ -98,14 +98,15 @@
             bFilter: false,
             bPaginate: false,
             bInfo: false,
-            columns: [{
-                    data: 'activity',
-                    name: 'activity'
-                },
-                {
-                    data: 'activities',
-                    name: 'activities'
-                },
+            columns: [
+                // {
+                //     data: 'activity',
+                //     name: 'activity'
+                // },
+                // {
+                //     data: 'activities',
+                //     name: 'activities'
+                // },
                 {
                     data: 'departure_place',
                     name: 'departure_place'
@@ -287,9 +288,9 @@
                             <table class="table table-bordered" id="itineraryTable">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
+                                        {{-- <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
                                         <th scope="col" rowspan="2">Activities/Tasks
-                                        </th>
+                                        </th> --}}
                                         <th scope="col" colspan="2" class="text-center">
                                             {{ __('label.destination') }}</th>
                                         <th scope="col" colspan="2" class="text-center">

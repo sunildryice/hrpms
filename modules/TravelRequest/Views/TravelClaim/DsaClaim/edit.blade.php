@@ -12,7 +12,7 @@
                 </small>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">Activity</label>
@@ -38,7 +38,7 @@
                 <input type="text" class="form-control" name="activities"
                     value="{{ old('activities', $travelDsaClaim->activities) }}" placeholder="Activities">
             </div>
-        </div>
+        </div> --}}
 
         <div class="mb-2 row">
             <div class="col-lg-3"><label class="form-label required-label">From Date</label></div>

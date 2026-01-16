@@ -822,8 +822,8 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 {{-- <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
-                                                <th scope="col" rowspan="2">Activities/Tasks --}}
-                                                </th>
+                                                <th scope="col" rowspan="2">Activities/Tasks
+                                                </th> --}}
                                                 <th scope="col" colspan="2" class="text-center">
                                                     {{ __('label.destination') }}
                                                 </th>

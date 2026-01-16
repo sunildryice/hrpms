@@ -624,10 +624,11 @@
 
                     const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
                     const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')?.value || '';
 
                     let rowHTML = `
                     <div class="col-lg-3"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="text" 
                                name="external_travelers[${i}][name]" 
                                class="form-control" 
@@ -635,12 +636,19 @@
                                value="${oldName}" 
                                required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="email" 
                                name="external_travelers[${i}][email]" 
                                class="form-control" 
-                               placeholder="Email (optional)" 
+                               placeholder="Email" 
                                value="${oldEmail}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" 
+                               name="external_travelers[${i}][mobile_number]" 
+                               class="form-control" 
+                               placeholder="Mobile Number" 
+                               value="${oldMobileNumber}">
                     </div>
                     <div class="col-md-1">
                     <div class="btn-group" role="group">
@@ -1291,16 +1299,21 @@
                             <div class="row mb-2 align-items-end external-traveler-row">
                                 <div class="col-lg-3">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="text" name="external_travelers[{{ $index }}][name]"
                                         class="form-control" placeholder="Full Name *"
                                         value="{{ old("external_travelers.$index.name", $traveler['name'] ?? '') }}"
                                         required>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="email" name="external_travelers[{{ $index }}][email]"
-                                        class="form-control" placeholder="Email (optional)"
+                                        class="form-control" placeholder="Email"
                                         value="{{ old("external_travelers.$index.email", $traveler['email'] ?? '') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="external_travelers[{{ $index }}][mobile_number]"
+                                        class="form-control" placeholder="Mobile Number"
+                                        value="{{ old("external_travelers.$index.mobile_number", $traveler['mobile_number'] ?? '') }}">
                                 </div>
                                 <div class="col-md-1">
                                     <button type="button" class="btn btn-danger btn-sm remove-traveler-row">
@@ -1362,15 +1375,15 @@
                         <table class="table table-bordered align-middle">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
-                                    <th class="text-center">Vehicle</th>
-                                    <th class="air-ticket-col">From</th>
-                                    <th class="air-ticket-col">To</th>
-                                    <th class="air-ticket-col">Departure Time</th>
-                                    <th style="width: 100px;" class="text-center">Action</th>
+                                    <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.planned-activities') }}</th>
+                                    <th class="text-center">{{ __('label.accommodation') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                    <th class="text-center">{{ __('label.vehicle') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.from') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.to') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.departure-time') }}</th>
+                                    <th style="width: 100px;" class="text-center">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="day-itinerary-container">

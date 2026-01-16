@@ -170,7 +170,9 @@
                                         if (response.success) {
                                             toastr.success(response.message ||
                                                 'Deleted successfully!');
-                                            if (response.itineraryCount) {
+                                            if (response.itineraryCount ==
+                                                response.totalTravelDurationDays
+                                                ) {
                                                 $('.submit-record').show();
                                             } else {
                                                 $('.submit-record').hide();
@@ -355,7 +357,7 @@
                                     .replace('departure_time', 'departureTime');
 
                                 showFieldError(friendlyField, messages[
-                                    0]); 
+                                    0]);
                             });
                         }
 
@@ -373,8 +375,9 @@
 
                     $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
-                    if (result.itineraryCount !== undefined) {
-                        if (result.itineraryCount > 0) {
+                    if (result.itineraryCount !== undefined && result.totalTravelDurationDays !==
+                        undefined) {
+                        if (result.itineraryCount == result.totalTravelDurationDays) {
                             $('.submit-record').show();
                         } else {
                             $('.submit-record').hide();
@@ -476,7 +479,7 @@
                         orderable: false,
                         searchable: false,
                     },
-                    {  
+                    {
                         data: 'vehicle',
                         name: 'vehicle',
                         orderable: false,
@@ -624,7 +627,8 @@
 
                     const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
                     const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
-                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')?.value || '';
+                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')
+                        ?.value || '';
 
                     let rowHTML = `
                     <div class="col-lg-3"></div>
@@ -1440,7 +1444,8 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
+                                    <label
+                                        class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
                                     <div class="col-md-9">
                                         <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
                                         <div class="invalid-feedback" id="error-activities"></div>
@@ -1449,7 +1454,8 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAccommodation">{{ __('label.accommodation') }}</label>
+                                        <label class="form-check-label"
+                                            for="editAccommodation">{{ __('label.accommodation') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1457,10 +1463,11 @@
                                         </div>
                                     </div>
                                 </div>
- 
+
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editVehicle">{{ __('label.vehicle') }}</label>
+                                        <label class="form-check-label"
+                                            for="editVehicle">{{ __('label.vehicle') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1468,10 +1475,11 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
+                                        <label class="form-check-label"
+                                            for="editAirTicket">{{ __('label.air-ticket') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1499,7 +1507,8 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
+                                    <label
+                                        class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">

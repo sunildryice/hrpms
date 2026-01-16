@@ -122,6 +122,7 @@ class TravelRequestDayItineraryController extends Controller
         $inputs['travel_request_id'] = $travelRequest->id;
         $inputs['created_by'] = auth()->id();
         $inputs['updated_by'] = auth()->id();
+        $totalTravelDurationDays = $travelRequest->departure_date && $travelRequest->return_date ? \Carbon\Carbon::parse($travelRequest->departure_date)->diffInDays(\Carbon\Carbon::parse($travelRequest->return_date)) + 1 : 0;
         $dayItinerary = $this->dayItinerary->create($inputs);
 
         return response()->json([
@@ -129,6 +130,7 @@ class TravelRequestDayItineraryController extends Controller
             'message' => 'Day itinerary created successfully',
             'id' => $dayItinerary->id,
             'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
+            'totalTravelDurationDays' => $totalTravelDurationDays,
         ]);
     }
 
@@ -141,6 +143,7 @@ class TravelRequestDayItineraryController extends Controller
         $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
         $travelRequest = $dayItinerary->travelRequest;
         $inputs['updated_by'] = auth()->id();
+        $totalTravelDurationDays = $travelRequest->departure_date && $travelRequest->return_date ? \Carbon\Carbon::parse($travelRequest->departure_date)->diffInDays(\Carbon\Carbon::parse($travelRequest->return_date)) + 1 : 0;
         $updated = $dayItinerary->update($inputs);
 
         if ($updated) {
@@ -148,6 +151,7 @@ class TravelRequestDayItineraryController extends Controller
                 'success' => true,
                 'message' => 'Day itinerary updated successfully',
                 'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
+                'totalTravelDurationDays' => $totalTravelDurationDays,
             ]);
         }
 
@@ -164,6 +168,7 @@ class TravelRequestDayItineraryController extends Controller
     {
         $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
         $travelRequest = $dayItinerary->travelRequest;
+        $totalTravelDurationDays = $travelRequest->departure_date && $travelRequest->return_date ? \Carbon\Carbon::parse($travelRequest->departure_date)->diffInDays(\Carbon\Carbon::parse($travelRequest->return_date)) + 1 : 0;
         // $this->authorize('delete', $travelRequest);  
 
         $deleted = $dayItinerary->delete();
@@ -172,6 +177,7 @@ class TravelRequestDayItineraryController extends Controller
                 'success' => true,
                 'message' => 'Day itinerary deleted successfully',
                 'itineraryCount' => $travelRequest->travelRequestDayItineraries()->count(),
+                'totalTravelDurationDays' => $totalTravelDurationDays,
             ]);
         }
         return response()->json([

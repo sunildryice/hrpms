@@ -151,10 +151,11 @@
 
                     const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
                     const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')?.value || '';
 
                     let rowHTML = `
                     <div class="col-lg-3"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="text" 
                                name="external_travelers[${i}][name]" 
                                class="form-control" 
@@ -162,12 +163,19 @@
                                value="${oldName}" 
                                required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="email" 
                                name="external_travelers[${i}][email]" 
                                class="form-control" 
-                               placeholder="Email (optional)" 
+                               placeholder="Email" 
                                value="${oldEmail}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" 
+                               name="external_travelers[${i}][mobile_number]" 
+                               class="form-control" 
+                               placeholder="Mobile Number" 
+                               value="${oldMobileNumber}">
                     </div>
                     <div class="col-md-1">
                     <div class="btn-group" role="group">
@@ -582,15 +590,20 @@
                                 <div class="row mb-2 align-items-end external-traveler-row">
                                     <div class="col-lg-3">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <input type="text" name="external_travelers[{{ $i }}][name]"
                                             class="form-control" placeholder="Full Name *"
                                             value="{{ $travelers[$i]['name'] ?? '' }}" required>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <input type="email" name="external_travelers[{{ $i }}][email]"
-                                            class="form-control" placeholder="Email (optional)"
+                                            class="form-control" placeholder="Email"
                                             value="{{ $travelers[$i]['email'] ?? '' }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" name="external_travelers[{{ $i }}][mobile_number]"
+                                            class="form-control" placeholder="Mobile Number"
+                                            value="{{ $travelers[$i]['mobile_number'] ?? '' }}">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-danger btn-sm remove-row">

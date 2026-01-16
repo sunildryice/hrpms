@@ -111,10 +111,10 @@
                         ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="text-center">
-                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                        ${row.vehicle ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="text-center">
-                        ${row.vehicle ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
@@ -170,7 +170,9 @@
                                         if (response.success) {
                                             toastr.success(response.message ||
                                                 'Deleted successfully!');
-                                            if (response.itineraryCount) {
+                                            if (response.itineraryCount ==
+                                                response.totalTravelDurationDays
+                                                ) {
                                                 $('.submit-record').show();
                                             } else {
                                                 $('.submit-record').hide();
@@ -355,7 +357,7 @@
                                     .replace('departure_time', 'departureTime');
 
                                 showFieldError(friendlyField, messages[
-                                    0]); 
+                                    0]);
                             });
                         }
 
@@ -373,8 +375,9 @@
 
                     $('#editItineraryModal').modal('hide');
                     toastr.success('Saved successfully!');
-                    if (result.itineraryCount !== undefined) {
-                        if (result.itineraryCount > 0) {
+                    if (result.itineraryCount !== undefined && result.totalTravelDurationDays !==
+                        undefined) {
+                        if (result.itineraryCount == result.totalTravelDurationDays) {
                             $('.submit-record').show();
                         } else {
                             $('.submit-record').hide();
@@ -476,7 +479,7 @@
                         orderable: false,
                         searchable: false,
                     },
-                    {  
+                    {
                         data: 'vehicle',
                         name: 'vehicle',
                         orderable: false,
@@ -624,10 +627,12 @@
 
                     const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
                     const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')
+                        ?.value || '';
 
                     let rowHTML = `
                     <div class="col-lg-3"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="text" 
                                name="external_travelers[${i}][name]" 
                                class="form-control" 
@@ -635,12 +640,19 @@
                                value="${oldName}" 
                                required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="email" 
                                name="external_travelers[${i}][email]" 
                                class="form-control" 
-                               placeholder="Email (optional)" 
+                               placeholder="Email" 
                                value="${oldEmail}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" 
+                               name="external_travelers[${i}][mobile_number]" 
+                               class="form-control" 
+                               placeholder="Mobile Number" 
+                               value="${oldMobileNumber}">
                     </div>
                     <div class="col-md-1">
                     <div class="btn-group" role="group">
@@ -1291,16 +1303,21 @@
                             <div class="row mb-2 align-items-end external-traveler-row">
                                 <div class="col-lg-3">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="text" name="external_travelers[{{ $index }}][name]"
                                         class="form-control" placeholder="Full Name *"
                                         value="{{ old("external_travelers.$index.name", $traveler['name'] ?? '') }}"
                                         required>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <input type="email" name="external_travelers[{{ $index }}][email]"
-                                        class="form-control" placeholder="Email (optional)"
+                                        class="form-control" placeholder="Email"
                                         value="{{ old("external_travelers.$index.email", $traveler['email'] ?? '') }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" name="external_travelers[{{ $index }}][mobile_number]"
+                                        class="form-control" placeholder="Mobile Number"
+                                        value="{{ old("external_travelers.$index.mobile_number", $traveler['mobile_number'] ?? '') }}">
                                 </div>
                                 <div class="col-md-1">
                                     <button type="button" class="btn btn-danger btn-sm remove-traveler-row">
@@ -1362,15 +1379,15 @@
                         <table class="table table-bordered align-middle">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
-                                    <th class="text-center">Vehicle</th>
-                                    <th class="air-ticket-col">From</th>
-                                    <th class="air-ticket-col">To</th>
-                                    <th class="air-ticket-col">Departure Time</th>
-                                    <th style="width: 100px;" class="text-center">Action</th>
+                                    <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.planned-activities') }}</th>
+                                    <th class="text-center">{{ __('label.accommodation') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                    <th class="text-center">{{ __('label.vehicle') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.from') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.to') }}</th>
+                                    <th class="air-ticket-col">{{ __('label.departure-time') }}</th>
+                                    <th style="width: 100px;" class="text-center">{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="day-itinerary-container">
@@ -1427,7 +1444,8 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
+                                    <label
+                                        class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
                                     <div class="col-md-9">
                                         <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
                                         <div class="invalid-feedback" id="error-activities"></div>
@@ -1436,7 +1454,8 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAccommodation">{{ __('label.accommodation') }}</label>
+                                        <label class="form-check-label"
+                                            for="editAccommodation">{{ __('label.accommodation') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1447,22 +1466,24 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
+                                        <label class="form-check-label"
+                                            for="editVehicle">{{ __('label.vehicle') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
+                                            <input class="form-check-input" type="checkbox" id="editVehicle">
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editVehicle">{{ __('label.vehicle') }}</label>
+                                        <label class="form-check-label"
+                                            for="editAirTicket">{{ __('label.air-ticket') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="editVehicle">
+                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
                                         </div>
                                     </div>
                                 </div>
@@ -1486,7 +1507,8 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
+                                    <label
+                                        class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">

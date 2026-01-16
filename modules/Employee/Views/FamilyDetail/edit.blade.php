@@ -52,17 +52,7 @@
                 <input type="text" class="form-control" name="contact_number" value="" placeholder="Contact Number">
             </div>
         </div>
-        {{-- <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="Fdname" class="form-label">Remarks</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <textarea name="remarks" class="form-control" placeholder="Remarks"></textarea>
-            </div>
-        </div> --}}
-        {{-- <div class="row mb-2">
+        <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label">Emergency Contact</label>
@@ -75,7 +65,18 @@
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
+        </div>
+        {{-- <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="Fdname" class="form-label">Remarks</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <textarea name="remarks" class="form-control" placeholder="Remarks"></textarea>
+            </div>
         </div> --}}
+        
         {{-- <div style="display: none" id="emergencyContactBlock">
             <div class="row mb-2">
                 <div class="col-lg-3">

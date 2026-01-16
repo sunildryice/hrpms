@@ -50,7 +50,20 @@
                 <textarea name="remarks" class="form-control" placeholder="Remarks">{!! old('remarks') !!}</textarea>
             </div>
         </div> --}}
-        {{-- <div class="row mb-2">
+        
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="validationTole" class="form-label">Contact Number</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
+                placeholder="Contact Number">
+            </div>
+        </div>
+        
+        <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label">Emergency Contact</label>
@@ -62,18 +75,6 @@
                         name="emergency_contact">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
-            </div>
-        </div> --}}
-
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="validationTole" class="form-label">Contact Number</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
-                    placeholder="Contact Number">
             </div>
         </div>
 

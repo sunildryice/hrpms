@@ -42,14 +42,6 @@
                     orderable: false,
                     searchable: false,
                 },
-                {
-                    data: 'completed_tasks',
-                    name: 'completed_tasks'
-                },
-                {
-                    data: 'remarks',
-                    name: 'remarks'
-                },
             ]
         });
 
@@ -150,8 +142,6 @@
                                         <th class="text-center">Accommodation</th>
                                         <th class="text-center">Air Ticket</th>
                                         <th class="text-center">Vehicle</th>
-                                        <th class="text-center">Carried Activities / Completed Tasks</th>
-                                        <th class="text-center">Remarks</th>
                                     </tr>
                                 </thead>
                                 <tbody>

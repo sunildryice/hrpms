@@ -111,7 +111,13 @@ class TravelReportRepository extends Repository
         DB::beginTransaction();
         try {
             $travelReport = $this->model->findOrFail($id);
-            $travelReport->travelReportRecommendations()->delete();
+            // $travelReport->travelReportRecommendations()->delete();
+            $travelReport->travelRequest->travelRequestDayItineraries()
+                ->update([
+                    'completed_tasks' => null,
+                    'remarks' => null,
+                    'updated_at' => now(),
+                ]);
             $travelReport->logs()->delete();
             $travelReport->delete();
             DB::commit();

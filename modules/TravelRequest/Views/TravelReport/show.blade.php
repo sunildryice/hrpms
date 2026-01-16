@@ -74,16 +74,36 @@
                                         </thead>
                                         <tbody>
                                             @php
-                                                $itineraries = $travelReport->travelRequest->travelRequestDayItineraries;
+                                                $itineraries =
+                                                    $travelRequest?->travelRequestDayItineraries ?? collect();
                                             @endphp
-                                            @foreach ($itineraries as $index => $itinerary)
+
+                                            @forelse($itineraries as $index => $itinerary)
+                                                @php
+                                                    $date = \Carbon\Carbon::parse($itinerary->date);
+                                                    $weekday = $date->format('l');
+                                                    $formattedDate = $date->format('d M Y');
+                                                @endphp
+
                                                 <tr>
-                                                    <td class="text-center fw-bold">{{ $itinerary->date?->format('l') }}</td>
-                                                    <td class="text-nowrap">{{ $itinerary->date?->format('d M Y') }}</td>
-                                                    <td>{!! $itinerary?->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
-                                                    <td>{!! $itinerary?->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
+                                                    <td class="text-center fw-bold">{{ $weekday }}</td>
+                                                    <td class="text-nowrap">{{ $formattedDate }}</td>
+                                                    <td>
+                                                        {!! $itinerary->completed_tasks
+                                                            ? nl2br(e($itinerary->completed_tasks))
+                                                            : '<em class="text-muted">Not filled</em>' !!}
+                                                    </td>
+                                                    <td>
+                                                        {!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}
+                                                    </td>
                                                 </tr>
-                                            @endforeach
+                                            @empty
+                                                <tr>
+                                                    <td colspan="4" class="text-center text-muted">
+                                                        No itinerary days available for this travel request.
+                                                    </td>
+                                                </tr>
+                                            @endforelse
                                         </tbody>
                                     </table>
                                 </div>

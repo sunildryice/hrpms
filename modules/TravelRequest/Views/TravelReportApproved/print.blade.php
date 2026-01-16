@@ -118,16 +118,28 @@
                         </thead>
                         <tbody>
                             @php
-                                $itineraries = $travelReport?->travelRequest?->travelRequestDayItineraries;
+                                $itineraries = $travelRequest?->travelRequestDayItineraries ?? collect();
                             @endphp
-                            @foreach ($itineraries as $index => $itinerary)
+
+                            @forelse($itineraries as $index => $itinerary)
+                                @php
+                                    $date = \Carbon\Carbon::parse($itinerary->date);
+                                    $weekday = $date->format('l');
+                                    $formattedDate = $date->format('d M Y');
+                                @endphp
                                 <tr>
-                                    <td class="text-center">{{ $itinerary->date?->format('l') }}</td>
-                                    <td class="text-nowrap">{{ $itinerary->date?->format('d M Y') }}</td>
-                                    <td>{!! $itinerary?->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
-                                    <td>{!! $itinerary?->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
+                                    <td class="text-center">{{ $weekday }}</td>
+                                    <td class="text-nowrap">{{ $formattedDate }}</td>
+                                    <td>{!! $itinerary->completed_tasks? nl2br(e($itinerary->completed_tasks)) : '<span class="text-muted">Not filled</span>' !!}</td>
+                                    <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">
+                                        No itinerary days recorded for this travel request.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
 

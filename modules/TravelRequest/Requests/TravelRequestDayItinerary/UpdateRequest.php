@@ -33,8 +33,6 @@ class UpdateRequest extends FormRequest
             'departure_time' => 'nullable|string|max:50',
             'vehicle' => 'boolean',
             'vehicle_request_form_link' => 'nullable|url|max:500',
-            'completed_tasks' => 'nullable|string',
-            'remarks' => 'nullable|string',
         ];
     }
 

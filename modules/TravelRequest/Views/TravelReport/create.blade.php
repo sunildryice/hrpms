@@ -41,7 +41,7 @@
                                 message: 'Activities are required',
                                 callback: function(input) {
                                     const fields = form.querySelectorAll(
-                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                        'textarea[name^="itinerary[completed_tasks]"]');
                                     let allFilled = true;
 
                                     fields.forEach(function(field) {
@@ -85,18 +85,14 @@
                 },
             });
 
-            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
+            form.querySelectorAll('textarea[name^="itinerary[completed_tasks]"]').forEach(function(field) {
                 field.addEventListener('input', function() {
                     fv.revalidateField('completed_tasks');
                 });
             });
-
+            
             @if ($errors->any())
-                @foreach ($dates as $index => $date)
-                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
-                        fv.revalidateField('completed_tasks');
-                    @endif
-                @endforeach
+                fv.revalidateField('completed_tasks');
             @endif
         });
     </script>
@@ -205,16 +201,45 @@
                                                     @php
                                                         $itineraries = $travelRequest?->travelRequestDayItineraries;
                                                     @endphp
-                                                    @foreach ($itineraries as $index => $itinerary)
+
+                                                    @forelse($itineraries as $index => $itinerary)
+                                                        @php
+                                                            $date = \Carbon\Carbon::parse($itinerary->date);
+                                                            $weekdayName = $date->format('l');
+                                                            $formattedDate = $date->format('d M Y');
+                                                        @endphp
+
                                                         <tr>
-                                                            <td class="text-center fw-bold">
-                                                                {{ $itinerary->date?->format('l') }}</td>
-                                                            <td class="text-nowrap">
-                                                                {{ $itinerary->date?->format('d M Y') }}</td>
-                                                            <td>{!! $itinerary?->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
-                                                            <td>{!! $itinerary?->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
+                                                            <td>
+                                                                <input type="text"
+                                                                    class="form-control text-center fw-bold"
+                                                                    value="{{ $weekdayName }}" readonly>
+                                                            </td>
+
+                                                            <td>
+                                                                <input type="text" class="form-control"
+                                                                    value="{{ $formattedDate }}" readonly>
+                                                                <input type="hidden"
+                                                                    name="itinerary[itinerary_id][{{ $index }}]"
+                                                                    value="{{ $itinerary->id }}">
+                                                            </td>
+
+                                                            <td>
+                                                                <textarea name="itinerary[completed_tasks][{{ $index }}]" rows="3"
+                                                                    class="form-control @error('itinerary.completed_tasks.' . $index) is-invalid @enderror">{{ old('itinerary.completed_tasks.' . $index) }}</textarea>
+                                                            </td>
+
+                                                            <td>
+                                                                <textarea name="itinerary[remarks][{{ $index }}]" rows="3" class="form-control">{{ old('itinerary.remarks.' . $index) }}</textarea>
+                                                            </td>
                                                         </tr>
-                                                    @endforeach
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center text-danger">
+                                                                No itinerary days found for this travel request.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
                                                 </tbody>
                                             </table>
                                             <div id="activitiesErrorContainer"

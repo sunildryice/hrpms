@@ -37,17 +37,16 @@ class TravelReportController extends Controller
      *
      */
     public function __construct(
-        EmployeeRepository                   $employees,
-        TravelReportRepository               $travelReport,
+        EmployeeRepository $employees,
+        TravelReportRepository $travelReport,
         TravelReportRecommendationRepository $travelReportRecommendation,
-        TravelRequestRepository              $travelRequest,
-        TravelRequestEstimateRepository      $travelRequestEstimate,
-        TravelRequestItineraryRepository     $travelRequestItinerary,
-        RoleRepository                       $roles,
-        StatusRepository                     $status,
-        UserRepository                       $user
-    )
-    {
+        TravelRequestRepository $travelRequest,
+        TravelRequestEstimateRepository $travelRequestEstimate,
+        TravelRequestItineraryRepository $travelRequestItinerary,
+        RoleRepository $roles,
+        StatusRepository $status,
+        UserRepository $user
+    ) {
         $this->employees = $employees;
         $this->travelReport = $travelReport;
         $this->travelReportRecommendation = $travelReportRecommendation;
@@ -177,14 +176,14 @@ class TravelReportController extends Controller
         $authUser = auth()->user();
         $inputs = $request->validated();
 
-        foreach ($inputs['recommendation']['day_number'] as $index => $subject) {
-            $recommendationInputs = ['day_number' => $inputs['recommendation']['day_number'][$index],
-                'activity_date' => $inputs['recommendation']['activity_date'][$index],
-                'completed_tasks' => $inputs['recommendation']['completed_tasks'][$index],
-                'remarks' => $inputs['recommendation']['remarks'][$index]
+        foreach ($inputs['itinerary']['itinerary_id'] as $index => $itineraryId) {
+            $itineraryData = [
+                'itinerary_id' => $itineraryId,
+                'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
-            if (count(array_filter($recommendationInputs))) {
-                $inputs['recommendation_input'][$index] = $recommendationInputs;
+            if (trim($itineraryData['completed_tasks'] . $itineraryData['remarks']) !== '') {
+                $inputs['itinerary_updates'][$index] = $itineraryData;
             }
         }
         $travelRequest = $this->travelRequest->find($travelRequestId);
@@ -246,14 +245,15 @@ class TravelReportController extends Controller
         $this->authorize('update', $travelReport);
         $inputs = $request->validated();
 
-        foreach ($inputs['recommendation']['day_number'] as $index => $subject) {
-            $recommendationInputs = ['day_number' => $inputs['recommendation']['day_number'][$index],
-                'activity_date' => $inputs['recommendation']['activity_date'][$index],
-                'completed_tasks' => $inputs['recommendation']['completed_tasks'][$index],
-                'remarks' => $inputs['recommendation']['remarks'][$index]
+        foreach ($inputs['itinerary']['itinerary_id'] ?? [] as $index => $itineraryId) {
+            $itineraryData = [
+                'itinerary_id' => $itineraryId,
+                'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
-            if (count(array_filter($recommendationInputs))) {
-                $inputs['recommendation_input'][$index] = $recommendationInputs;
+
+            if (trim($itineraryData['completed_tasks'] . $itineraryData['remarks']) !== '') {
+                $inputs['itinerary_updates'][$index] = $itineraryData;
             }
         }
 
@@ -285,7 +285,7 @@ class TravelReportController extends Controller
     {
         $authUser = auth()->user();
         $travelReport = $this->travelReport->find($id);
-//        $this->authorize('view', $travelReport);
+        //        $this->authorize('view', $travelReport);
 
         return view('TravelRequest::TravelReport.show')
             ->withAuthUser($authUser)

@@ -48,8 +48,6 @@
                             'from' => $item->departure_place ?? '',
                             'to' => $item->arrival_place ?? '',
                             'departure_time' => $item->departure_time ?? '',
-                            'completed_tasks' => $item->completed_tasks ?? '',
-                            'remarks' => $item->remarks ?? '',
                         ];
                     }),
                 ) !!} ?? [];
@@ -70,8 +68,6 @@
                             from: '',
                             to: '',
                             departure_time: '',
-                            completed_tasks: '',
-                            remarks: ''
                         };
                     }
                 });
@@ -123,8 +119,6 @@
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.departure_time || '-') : ''}</td>
-                    <td>${row.completed_tasks || '<em class="text-muted">No tasks</em>'}</td>
-                    <td>${row.remarks || '<em class="text-muted">No remarks</em>'}</td>
                     <td class="text-center">
                         ${actions}
                     </td>
@@ -218,8 +212,6 @@
                 document.getElementById('editFrom').value = data.from || '';
                 document.getElementById('editTo').value = data.to || '';
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
-                document.getElementById('editCompletedTasks').value = data.completed_tasks || '';
-                document.getElementById('editRemarks').value = data.remarks || '';
 
                 toggleAirTicketFieldsInModal(!!data.air_ticket);
                 $('#editItineraryModal').modal('show');
@@ -273,17 +265,11 @@
                         '',
                     departure_time: isAirTicket ? document.getElementById('editDepartureTime').value
                         .trim() : '',
-                    completed_tasks: document.getElementById('editCompletedTasks').value.trim(),
-                    remarks: document.getElementById('editRemarks').value.trim()
                 };
                 // Client-side validation
                 let hasError = false;
                 if (!updatedRow.planned_activities) {
                     showFieldError('activities', 'Planned activities are required!');
-                    hasError = true;
-                }
-                if (!updatedRow.completed_tasks) {
-                    showFieldError('completedTasks', 'Carried activities / completed tasks are required!');
                     hasError = true;
                 }
 
@@ -325,8 +311,6 @@
                         departure_place: updatedRow.departure_place || null,
                         arrival_place: updatedRow.arrival_place || null,
                         departure_time: updatedRow.departure_time || null,
-                        completed_tasks: updatedRow.completed_tasks,
-                        remarks: updatedRow.remarks,
                     };
 
                     if (dayId) {
@@ -434,8 +418,6 @@
                                 from: item.departure_place || '',
                                 to: item.arrival_place || '',
                                 departure_time: item.departure_time || '',
-                                completed_tasks: item.completed_tasks || '',
-                                remarks: item.remarks || ''
                             };
                         }
                     });
@@ -449,8 +431,6 @@
                         from: '',
                         to: '',
                         departure_time: '',
-                        completed_tasks: '',
-                        remarks: ''
                     });
                     dayItineraryContainer.innerHTML = '';
                     await new Promise(resolve => setTimeout(resolve, 10));
@@ -501,14 +481,6 @@
                         name: 'vehicle',
                         orderable: false,
                         searchable: false,
-                    },
-                    {
-                        data: 'completed_tasks',
-                        name: 'completed_tasks'
-                    },
-                    {
-                        data: 'remarks',
-                        name: 'remarks'
                     },
                 ]
             });
@@ -1398,8 +1370,6 @@
                                     <th class="air-ticket-col">From</th>
                                     <th class="air-ticket-col">To</th>
                                     <th class="air-ticket-col">Departure Time</th>
-                                    <th>Carried Activities / Completed Tasks</th>
-                                    <th>Remarks</th>
                                     <th style="width: 100px;" class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -1422,13 +1392,11 @@
                         <table class="table table-bordered align-middle" id="itineraryTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
-                                    <th class="text-center">Vehicle</th>
-                                    <th class="text-center">Carried Activities / Completed Tasks</th>
-                                    <th class="text-center">Remarks</th>
+                                    <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.planned-activities') }}</th>
+                                    <th class="text-center">{{ __('label.accommodation') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                    <th class="text-center">{{ __('label.vehicle') }}</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1452,14 +1420,14 @@
                                 <input type="hidden" id="editRowIndex">
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Date</label>
+                                    <label class="col-md-3 col-form-label">{{ __('label.date') }}</label>
                                     <div class="col-md-9">
                                         <input type="date" id="editDate" class="form-control" readonly>
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">Planned Activities</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
                                     <div class="col-md-9">
                                         <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
                                         <div class="invalid-feedback" id="error-activities"></div>
@@ -1468,7 +1436,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAccommodation">Accommodation</label>
+                                        <label class="form-check-label" for="editAccommodation">{{ __('label.accommodation') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1479,7 +1447,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">Air Ticket</label>
+                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1490,7 +1458,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editVehicle">Vehicle</label>
+                                        <label class="form-check-label" for="editVehicle">{{ __('label.vehicle') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1500,7 +1468,7 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">From</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.from') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editFrom" class="form-control"
                                             placeholder="Departure city/airport">
@@ -1509,7 +1477,7 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">To</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.to') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editTo" class="form-control"
                                             placeholder="Arrival city/airport">
@@ -1518,28 +1486,11 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">Departure Time</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">
                                         <div class="invalid-feedback" id="error-departureTime"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">Carried Activities / Completed Tasks</label>
-                                    <div class="col-md-9">
-                                        <textarea id="editCompletedTasks" class="form-control" rows="3" placeholder="Carried Activities / Completed Tasks"></textarea>
-                                        <div class="invalid-feedback" id="error-completedTasks"></div>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Remarks</label>
-                                    <div class="col-md-9">
-                                        <textarea id="editRemarks" class="form-control" rows="2" 
-                                                  placeholder="Remarks"></textarea>
-                                        <div class="invalid-feedback" id="error-remarks"></div>
                                     </div>
                                 </div>
                             </form>

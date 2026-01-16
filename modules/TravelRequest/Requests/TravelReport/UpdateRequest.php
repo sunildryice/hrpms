@@ -30,10 +30,9 @@ class UpdateRequest extends FormRequest
             'conclusion_recommendations' => 'nullable',
             'total_travel_days' => 'nullable|integer|min:1',
 
-            'recommendation.day_number.*' => 'nullable|string',
-            'recommendation.activity_date.*' => 'nullable|date',
-            'recommendation.completed_tasks.*' => 'nullable|string',
-            'recommendation.remarks.*' => 'nullable|string',
+            'itinerary.itinerary_id.*' => 'required|integer|exists:travel_request_day_itineraries,id',
+            'itinerary.completed_tasks.*' => 'nullable|string',
+            'itinerary.remarks.*' => 'nullable|string',
 
             'approver_id' => 'required|exists:users,id',
             'btn' => 'required',

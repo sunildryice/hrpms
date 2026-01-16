@@ -187,13 +187,14 @@
                 bFilter: false,
                 bPaginate: false,
                 bInfo: false,
-                columns: [{
-                    data: 'activity',
-                    name: 'activity'
-                }, {
-                    data: 'activities',
-                    name: 'activities'
-                },
+                columns: [
+                // {
+                //     data: 'activity',
+                //     name: 'activity'
+                // }, {
+                //     data: 'activities',
+                //     name: 'activities'
+                // },
                 {
                     data: 'departure_place',
                     name: 'departure_place'
@@ -582,20 +583,20 @@
 
                         const fv = FormValidation.formValidation(claimItineraryForm, {
                             fields: {
-                                activity_code_id: {
-                                    validators: {
-                                        notEmpty: {
-                                            message: 'Activity is required',
-                                        },
-                                    },
-                                },
-                                activities: {
-                                    validators: {
-                                        notEmpty: {
-                                            message: 'Activities is required'
-                                        }
-                                    }
-                                },
+                                // activity_code_id: {
+                                //     validators: {
+                                //         notEmpty: {
+                                //             message: 'Activity is required',
+                                //         },
+                                //     },
+                                // },
+                                // activities: {
+                                //     validators: {
+                                //         notEmpty: {
+                                //             message: 'Activities is required'
+                                //         }
+                                //     }
+                                // },
                                 departure_date: {
                                     validators: {
                                         notEmpty: {
@@ -820,8 +821,8 @@
                                     <table class="table" id="itineraryTable">
                                         <thead class="thead-light">
                                             <tr>
-                                                <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
-                                                <th scope="col" rowspan="2">Activities/Tasks
+                                                {{-- <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
+                                                <th scope="col" rowspan="2">Activities/Tasks --}}
                                                 </th>
                                                 <th scope="col" colspan="2" class="text-center">
                                                     {{ __('label.destination') }}

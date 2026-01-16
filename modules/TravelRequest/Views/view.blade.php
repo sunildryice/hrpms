@@ -136,13 +136,11 @@
                         <div class="table-responsive">
                             <table class="table" id="itineraryTable">
                                 <thead class="thead-light">
-                                    <tr>
-                                        <th style="width: 120px;">Date</th>
-                                        <th>Planned Activities</th>
-                                        <th class="text-center">Accommodation</th>
-                                        <th class="text-center">Air Ticket</th>
-                                        <th class="text-center">Vehicle</th>
-                                    </tr>
+                                    <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.planned-activities') }}</th>
+                                    <th class="text-center">{{ __('label.accommodation') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                    <th class="text-center">{{ __('label.vehicle') }}</th>
                                 </thead>
                                 <tbody>
                                 </tbody>

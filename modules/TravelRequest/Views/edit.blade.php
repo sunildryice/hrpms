@@ -1392,11 +1392,11 @@
                         <table class="table table-bordered align-middle" id="itineraryTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th style="width: 120px;">Date</th>
-                                    <th>Planned Activities</th>
-                                    <th class="text-center">Accommodation</th>
-                                    <th class="text-center">Air Ticket</th>
-                                    <th class="text-center">Vehicle</th>
+                                    <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.planned-activities') }}</th>
+                                    <th class="text-center">{{ __('label.accommodation') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                    <th class="text-center">{{ __('label.vehicle') }}</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -1420,14 +1420,14 @@
                                 <input type="hidden" id="editRowIndex">
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Date</label>
+                                    <label class="col-md-3 col-form-label">{{ __('label.date') }}</label>
                                     <div class="col-md-9">
                                         <input type="date" id="editDate" class="form-control" readonly>
                                     </div>
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label required-label">Planned Activities</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.planned-activities') }}</label>
                                     <div class="col-md-9">
                                         <textarea id="editActivities" class="form-control" rows="3" placeholder="Describe planned activities..."></textarea>
                                         <div class="invalid-feedback" id="error-activities"></div>
@@ -1436,7 +1436,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAccommodation">Accommodation</label>
+                                        <label class="form-check-label" for="editAccommodation">{{ __('label.accommodation') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1447,7 +1447,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">Air Ticket</label>
+                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1458,7 +1458,7 @@
 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
-                                        <label class="form-check-label" for="editVehicle">Vehicle</label>
+                                        <label class="form-check-label" for="editVehicle">{{ __('label.vehicle') }}</label>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="form-check">
@@ -1468,7 +1468,7 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">From</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.from') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editFrom" class="form-control"
                                             placeholder="Departure city/airport">
@@ -1477,7 +1477,7 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">To</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.to') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editTo" class="form-control"
                                             placeholder="Arrival city/airport">
@@ -1486,7 +1486,7 @@
                                 </div>
 
                                 <div class="row mb-3 air-ticket-fields" style="display: none;">
-                                    <label class="col-md-3 col-form-label required-label">Departure Time</label>
+                                    <label class="col-md-3 col-form-label required-label">{{ __('label.departure-time') }}</label>
                                     <div class="col-md-9">
                                         <input type="text" id="editDepartureTime" class="form-control"
                                             placeholder="e.g. 14:30">

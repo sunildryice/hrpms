@@ -25,6 +25,8 @@ return new class extends Migration {
             $table->string('departure_time')->nullable()->default(null);
             $table->boolean('vehicle')->default(false);
             $table->string('vehicle_request_form_link')->nullable();
+            $table->string('completed_tasks')->nullable()->default(null);
+            $table->text('remarks')->nullable()->default(null);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable()->default(null);
             $table->nullableTimestamps();

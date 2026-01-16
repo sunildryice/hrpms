@@ -74,33 +74,14 @@
                                         </thead>
                                         <tbody>
                                             @php
-                                                $start = \Carbon\Carbon::parse($travelRequest->departure_date);
-                                                $end = \Carbon\Carbon::parse($travelRequest->return_date);
-                                                $dates = collect();
-                                                for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-                                                    $dates->push($d->copy());
-                                                }
-
-                                                $existing = $travelReport->travelReportRecommendations->keyBy(function (
-                                                    $item,
-                                                ) {
-                                                    return $item->activity_date?->format('Y-m-d');
-                                                });
+                                                $itineraries = $travelReport->travelRequest->travelRequestDayItineraries;
                                             @endphp
-
-                                            @foreach ($dates as $index => $date)
-                                                @php
-                                                    $dateStr = $date->format('Y-m-d');
-                                                    $weekday = $date->format('l');
-                                                    $dayNum = $index + 1;
-
-                                                    $rec = $existing->get($dateStr);
-                                                @endphp
+                                            @foreach ($itineraries as $index => $itinerary)
                                                 <tr>
-                                                    <td class="text-center fw-bold">{{ $weekday }}</td>
-                                                    <td class="text-nowrap">{{ $date->format('d M Y') }}</td>
-                                                    <td>{!! $rec?->completed_tasks ? nl2br(e($rec->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
-                                                    <td>{!! $rec?->remarks ? nl2br(e($rec->remarks)) : '' !!}</td>
+                                                    <td class="text-center fw-bold">{{ $itinerary->date?->format('l') }}</td>
+                                                    <td class="text-nowrap">{{ $itinerary->date?->format('d M Y') }}</td>
+                                                    <td>{!! $itinerary?->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
+                                                    <td>{!! $itinerary?->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

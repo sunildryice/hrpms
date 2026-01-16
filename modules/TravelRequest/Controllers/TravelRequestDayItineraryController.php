@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Modules\TravelRequest\Models\TravelRequest;
 use Modules\TravelRequest\Models\TravelRequestDayItinerary;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
+use Modules\TravelRequest\Requests\TravelRequestDayItinerary\StoreRequest;
 use Modules\TravelRequest\Repositories\TravelRequestDayItineraryRepository;
+use Modules\TravelRequest\Requests\TravelRequestDayItinerary\UpdateRequest;
 
 class TravelRequestDayItineraryController extends Controller
 {
@@ -43,9 +45,12 @@ class TravelRequestDayItineraryController extends Controller
                             'planned_activities' => $row->planned_activities,
                             'accommodation' => (bool) $row->accommodation,
                             'air_ticket' => (bool) $row->air_ticket,
+                            'vehicle' => (bool) $row->vehicle,
                             'departure_place' => $row->departure_place,
                             'arrival_place' => $row->arrival_place,
                             'departure_time' => $row->departure_time,
+                            'completed_tasks' => $row->completed_tasks,
+                            'remarks' => $row->remarks,
                         ];
                     })->toArray()
                 ]);
@@ -80,22 +85,28 @@ class TravelRequestDayItineraryController extends Controller
 
                     return '<span class="text fw-bold">Yes</span>' . $places . $time;
                 })
+                ->addColumn('vehicle', function ($row) {
+                    return
+                        (int) $row->vehicle
+                        ? '<span class="text fw-bold">Yes</span>'
+                        : '<span class="text-muted fw-bold">No</span>';
+                })
                 ->addColumn('action', function ($row) use ($travelRequestId) {
                     // $btn = '<a class="btn btn-outline-primary btn-sm open-day-itinerary-modal-form" 
                     //            href="' . route('travel.requests.day-itinerary.edit', [$travelRequestId, $row->id]) . '" 
                     //            title="Edit Day Itinerary">
                     //            <i class="bi bi-pencil-square"></i>
                     //        </a>';
-
+    
                     // $btn .= ' <a href="javascript:;" class="btn btn-danger btn-sm delete-record" 
                     //              data-href="' . route('travel.requests.day-itinerary.destroy', [$travelRequestId, $row->id]) . '" 
                     //              title="Delete Day Itinerary">
                     //              <i class="bi bi-trash"></i>
                     //          </a>';
-
+    
                     // return $btn;
                 })
-                ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'action']);
+                ->rawColumns(['planned_activities', 'accommodation', 'air_ticket', 'vehicle', 'action']);
 
             return $datatable->make(true);
         }
@@ -106,25 +117,14 @@ class TravelRequestDayItineraryController extends Controller
     /**
      * Store a newly created day itinerary
      */
-    public function store(Request $request, $travelRequestId)
+    public function store(StoreRequest $request, $travelRequestId)
     {
+        $inputs = $request->validated();
         $travelRequest = TravelRequest::findOrFail($travelRequestId);
-
-        $validated = $request->validate([
-            'date' => 'required|date',
-            'planned_activities' => 'nullable|string|max:2000',
-            'accommodation' => 'boolean',
-            'air_ticket' => 'boolean',
-            'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
-            'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
-            'departure_time' => 'nullable|string|max:50',
-        ]);
-
-        $validated['travel_request_id'] = $travelRequest->id;
-        $validated['created_by'] = auth()->id();
-        $validated['updated_by'] = auth()->id();
-
-        $dayItinerary = $this->dayItinerary->create($validated);
+        $inputs['travel_request_id'] = $travelRequest->id;
+        $inputs['created_by'] = auth()->id();
+        $inputs['updated_by'] = auth()->id();
+        $dayItinerary = $this->dayItinerary->create($inputs);
 
         return response()->json([
             'success' => true,
@@ -137,25 +137,13 @@ class TravelRequestDayItineraryController extends Controller
     /**
      * Update a single day itinerary entry (used from modal or AJAX)
      */
-    public function update(Request $request, $travelRequestId, $id)
+    public function update(UpdateRequest $request, $travelRequestId, $id)
     {
+        $inputs = $request->validated();
         $dayItinerary = TravelRequestDayItinerary::findOrFail($id);
         $travelRequest = $dayItinerary->travelRequest;
-
-        // $this->authorize('update', $travelRequest);
-
-        $validated = $request->validate([
-            'planned_activities' => 'nullable|string|max:2000',
-            'accommodation' => 'boolean',
-            'air_ticket' => 'boolean',
-            'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
-            'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
-            'departure_time' => 'nullable|string|max:50',
-        ]);
-
-        $validated['updated_by'] = auth()->id();
-
-        $updated = $dayItinerary->update($validated);
+        $inputs['updated_by'] = auth()->id();
+        $updated = $dayItinerary->update($inputs);
 
         if ($updated) {
             return response()->json([

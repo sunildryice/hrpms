@@ -3,8 +3,6 @@
 namespace Modules\TravelRequest\Requests\TravelRequestDayItinerary;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Modules\TravelRequest\Models\TravelRequest;
-use Modules\TravelRequest\Models\TravelRequestDayItinerary;
 
 class UpdateRequest extends FormRequest
 {
@@ -25,30 +23,18 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-
-        $travelRequest = TravelRequest::findOrFail($this->travel_request_id);
-
-        $minDate = $travelRequest->departure_date->format('Y-m-d');
-        $maxDate = $travelRequest->return_date->copy()->endOfDay()->format('Y-m-d');
-
         return [
-            'date' => [
-                'required',
-                'date_format:Y-m-d',
-                'after_or_equal:' . $minDate,
-                'before_or_equal:' . $maxDate,
-            ],
-
+            'date' => 'required|date',
             'planned_activities' => 'nullable|string|max:2000',
             'accommodation' => 'boolean',
             'air_ticket' => 'boolean',
             'departure_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'arrival_place' => 'nullable|string|max:255|required_if:air_ticket,true',
             'departure_time' => 'nullable|string|max:50',
-
-            // Future vehicle fields
             'vehicle' => 'boolean',
             'vehicle_request_form_link' => 'nullable|url|max:500',
+            'completed_tasks' => 'nullable|string',
+            'remarks' => 'nullable|string',
         ];
     }
 

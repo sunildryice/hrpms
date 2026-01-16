@@ -34,6 +34,8 @@ class TravelRequestDayItinerary extends Model
         'departure_time',
         'vehicle',
         'vehicle_request_form_link',
+        'completed_tasks',
+        'remarks',
         'created_by',
         'updated_by',
     ];

@@ -111,10 +111,10 @@
                         ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="text-center">
-                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                        ${row.vehicle ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="text-center">
-                        ${row.vehicle ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
+                        ${row.air_ticket ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.from || '-') : ''}</td>
                     <td class="air-ticket-col text-center">${row.air_ticket ? (row.to || '-') : ''}</td>
@@ -1457,18 +1457,7 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
-                                    </div>
-                                    <div class="col-md-9">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
-                                        </div>
-                                    </div>
-                                </div>
-
+ 
                                 <div class="row mb-3">
                                     <div class="col-md-3">
                                         <label class="form-check-label" for="editVehicle">{{ __('label.vehicle') }}</label>
@@ -1476,6 +1465,17 @@
                                     <div class="col-md-9">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="editVehicle">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-check-label" for="editAirTicket">{{ __('label.air-ticket') }}</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="editAirTicket">
                                         </div>
                                     </div>
                                 </div>

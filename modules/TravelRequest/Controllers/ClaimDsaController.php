@@ -129,12 +129,12 @@ class ClaimDsaController extends Controller
                 'status' => 'ok',
                 'travelClaim' => $travelDsaClaim->travelClaim,
                 'travelDsaClaim' => $travelDsaClaim,
-                'message' => 'Travel DSA Claim Itinerary is successfully added.'
+                'message' => 'Travel TADA Claim Itinerary is successfully added.'
             ], 200);
         }
         return response()->json([
             'status' => 'error',
-            'message' => 'Travel DSA Claim Itinerary can not be added.'
+            'message' => 'Travel TADA Claim Itinerary can not be added.'
         ], 422);
     }
 
@@ -185,12 +185,12 @@ class ClaimDsaController extends Controller
                 'status' => 'ok',
                 'travelClaim' => $travelDsaClaims->travelClaim,
                 'travelDsaClaims' => $travelDsaClaims,
-                'message' => 'Travel DSA Claim Itinerary is successfully updated.'
+                'message' => 'Travel TADA Claim Itinerary is successfully updated.'
             ], 200);
         }
         return response()->json([
             'status' => 'error',
-            'message' => 'Travel DSA Claim Itinerary can not be updated.'
+            'message' => 'Travel TADA Claim Itinerary can not be updated.'
         ], 422);
     }
 
@@ -211,13 +211,13 @@ class ClaimDsaController extends Controller
             return response()->json([
                 'type' => 'success',
                 'travelClaim' => $travelClaim,
-                'message' => 'Travel DSA Claim Itinerary is successfully deleted.',
+                'message' => 'Travel TADA Claim Itinerary is successfully deleted.',
             ], 200);
         }
         return response()->json([
             'type' => 'error',
             'travelClaim' => $travelDsaClaims->travelClaim,
-            'message' => 'Travel DSA Claim Itinerary can not deleted.',
+            'message' => 'Travel TADA Claim Itinerary can not deleted.',
         ], 422);
     }
 }

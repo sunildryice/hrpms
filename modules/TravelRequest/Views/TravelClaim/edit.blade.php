@@ -809,7 +809,7 @@
                             <button data-toggle="modal"
                                 class="m-2 btn btn-primary btn-sm text-capitalize open-itinerary-modal-form"
                                 href="{!! route('travel.claims.dsa.create', $travelClaim->id) !!}"><i class="bi-plus"></i>
-                                Add DSA Claim
+                                New TADA Claim
                             </button>
                         @endif
                     </div>
@@ -878,7 +878,7 @@
                             <button data-toggle="modal"
                                 class="m-2 btn btn-primary btn-sm text-capitalize open-local-travel-modal-form"
                                 href="{!! route('travel.claims.local.travel.create', $travelClaim->id) !!}"><i
-                                    class="bi-plus"></i> Add Local Travel Claim
+                                    class="bi-plus"></i> New Local Travel Claim
                             </button>
                         @endif
                     </div>
@@ -922,8 +922,7 @@
                             <button data-toggle="modal"
                                 class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"
                                 href="{!! route('travel.claims.expenses.create', $travelClaim->id) !!}"><i
-                                    class="bi-plus"></i> Add New
-                                Expense
+                                    class="bi-plus"></i> New Expense
                             </button>
                         @endif
                     </div>

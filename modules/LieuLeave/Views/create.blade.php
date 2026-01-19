@@ -70,8 +70,6 @@
                 ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
             }
 
-
-
             let availableDates = [];
 
             $('[name="off_day_work_date"]').datepicker({

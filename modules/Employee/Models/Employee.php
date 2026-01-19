@@ -347,7 +347,7 @@ class Employee extends Model
     public function tenures()
     {
         return $this->hasMany(Tenure::class, 'employee_id')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'asc');
     }
 
     /**

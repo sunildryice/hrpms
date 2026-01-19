@@ -568,41 +568,82 @@
                 fv.revalidateField('permanent_local_level_id');
             });
 
-            $('#validationcurrent').on('change', function(e) {
-                fv.revalidateField('temporary_province_id');
-                fv.revalidateField('temporary_district_id');
-                fv.revalidateField('temporary_local_level_id');
-                fv.revalidateField('temporary_ward');
-                fv.revalidateField('temporary_tole');
-                $element = $(this);
-                var checked = $(this).is(':checked');
-                var province2 = $("#validationprovince").val();
-                var district2 = $('#validationdistrict').val();
-                var locallevel2 = $('#validationmunicipality').val();
-                var ward2 = $('#validationward').val();
-                var tole2 = $('#validationtole').val();
-                if (checked) {
-                    var htmltoappend =
-                        '<input name="permanent_province_id" id="permanent_province_id" class="inputs" value="' +
-                        province2 + '" hidden>' +
-                        '<input name="permanent_district_id" id="permanent_district_id" class="inputs" value="' +
-                        district2 + '" hidden>' +
-                        '<input name="permanent_local_level_id" id="permanent_local_level_id" class="inputs" value="' +
-                        locallevel2 + '" hidden>' +
-                        '<input name="permanent_ward" id="permanent_ward" class="inputs" value="' + ward2 +
-                        '" hidden>' +
-                        '<input name="permanent_tole" id="permanent_tole" class="inputs" value="' + tole2 +
-                        '" hidden>';
-                    $('.currentchecked').hide();
-                    $('.append_input').append(htmltoappend);
+            // $('#validationcurrent').on('change', function(e) {
+            //     fv.revalidateField('temporary_province_id');
+            //     fv.revalidateField('temporary_district_id');
+            //     fv.revalidateField('temporary_local_level_id');
+            //     fv.revalidateField('temporary_ward');
+            //     fv.revalidateField('temporary_tole');
+            //     $element = $(this);
+            //     var checked = $(this).is(':checked');
+            //     var province2 = $("#validationprovince").val();
+            //     var district2 = $('#validationdistrict').val();
+            //     var locallevel2 = $('#validationmunicipality').val();
+            //     var ward2 = $('#validationward').val();
+            //     var tole2 = $('#validationtole').val();
+            //     if (checked) {
+            //         var htmltoappend =
+            //             '<input name="permanent_province_id" id="permanent_province_id" class="inputs" value="' +
+            //             province2 + '" hidden>' +
+            //             '<input name="permanent_district_id" id="permanent_district_id" class="inputs" value="' +
+            //             district2 + '" hidden>' +
+            //             '<input name="permanent_local_level_id" id="permanent_local_level_id" class="inputs" value="' +
+            //             locallevel2 + '" hidden>' +
+            //             '<input name="permanent_ward" id="permanent_ward" class="inputs" value="' + ward2 +
+            //             '" hidden>' +
+            //             '<input name="permanent_tole" id="permanent_tole" class="inputs" value="' + tole2 +
+            //             '" hidden>';
+            //         $('.currentchecked').hide();
+            //         $('.append_input').append(htmltoappend);
+            //     } else {
+            //         fv.revalidateField('permanent_province_id');
+            //         fv.revalidateField('permanent_district_id');
+            //         fv.revalidateField('permanent_local_level_id');
+            //         fv.revalidateField('permanent_ward');
+            //         fv.revalidateField('permanent_tole');
+            //         $('.append_input').remove();
+            //         $('.currentchecked').show();
+            //     }
+            // });
+
+            $('#validationcurrent').on('change', function() {
+                const isChecked = this.checked;
+                const $permanentFields = $(
+                    '#validationprovince2, #validationdistrict2, #validationmunicipality2, ' +
+                    '#validationwardno2, #validationtole2'
+                );
+                if (isChecked) {
+                    $permanentFields.prop('disabled', true);
+                    $('#validationprovince2')
+                        .val($('#validationprovince').val() || '')
+                        .trigger('change');
+                    setTimeout(() => {
+                        $('#validationdistrict2')
+                            .val($('#validationdistrict').val() || '')
+                            .trigger('change');
+
+                        setTimeout(() => {
+                            $('#validationmunicipality2')
+                                .val($('#validationmunicipality').val() || '')
+                                .trigger('change');
+                            $('#validationwardno2').val($('#validationward').val() || '');
+                            $('#validationtole2').val($('#validationtole').val() || '');
+
+                            fv.revalidateField('permanent_province_id');
+                            fv.revalidateField('permanent_district_id');
+                            fv.revalidateField('permanent_local_level_id');
+                            fv.revalidateField('permanent_ward');
+                            fv.revalidateField('permanent_tole');
+                        }, 150);
+                    }, 200);
                 } else {
+                    $permanentFields.prop('disabled', false);
+
                     fv.revalidateField('permanent_province_id');
                     fv.revalidateField('permanent_district_id');
                     fv.revalidateField('permanent_local_level_id');
                     fv.revalidateField('permanent_ward');
                     fv.revalidateField('permanent_tole');
-                    $('.append_input').remove();
-                    $('.currentchecked').show();
                 }
             });
         });

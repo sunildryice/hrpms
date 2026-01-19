@@ -164,7 +164,7 @@
                         <td colspan="4">{{ $employee->mobile_number }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Date of Birth (DD/MM/YYYY) AD*</th>
+                        <th scope="row">Date of Birth (DD/MM/YYYY) AD</th>
                         <td colspan="4">{{ $employee->getDateOfBirth() }}</td>
                     </tr>
                     <tr>
@@ -198,7 +198,7 @@
                     <tr>
                         <th>If married:</th>
                         <td>Spouse Name : {{ $employee->isMarried() ? $employee->spouse->getFullName() : '' }}</td>
-                        <td colspan="3">Date of Birth AD* :
+                        <td colspan="3">Date of Birth AD :
                             {{ $employee->isMarried() ? $employee->spouse->getDateOfBirth() : '' }}</td>
                     </tr>
                     {{-- <tr>

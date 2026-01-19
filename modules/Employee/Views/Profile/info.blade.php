@@ -43,7 +43,7 @@
 
 
         .staff-image img {
-            height: 100px;
+            height: 160px;
             object-fit: contain;
         }
     </style>

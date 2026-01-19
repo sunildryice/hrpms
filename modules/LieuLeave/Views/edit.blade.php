@@ -14,18 +14,48 @@
 
             const form = document.getElementById('lieuLeaveRequestEditForm');
 
+            const convertMonthYearToDate = (monthYear, day = 20) => {
+                const date = new Date(`${monthYear} ${day}`);
+                return date.toISOString().split('T')[0];
+            };
+
+            let monthAvailability = {};
+
+            let LeaveDate = new Date();
+            checkLeavesForMonth(LeaveDate.toISOString().split('T')[0].substring(0, 7));
+
             $('[name="leave_date"]').datepicker({
-                language: 'en-GB',
-                autoHide: true,
-                format: 'yyyy-mm-dd',
-                startDate: new Date(),
-            }).on('change', function() {
-                if (window.fv) {
-                    // fv.revalidateField('leave_date');
-                    let leaveDate = $(this).val();
-                    checkAvailableStatus(leaveDate);
-                }
-            });
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                    startDate: LeaveDate,
+                    filter: function(date) {
+                        const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2,
+                            '0');
+
+                        // If API says NOT available → disable date
+                        if (monthAvailability[monthKey] === false) {
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                })
+                .on('click', function(e) {
+                    let currentMonthInDatePicker = $('li[data-view="month current"]').text();
+                    let dateFormatCurrentDatePicker = convertMonthYearToDate(currentMonthInDatePicker, 20);
+
+                    checkLeavesForMonth(dateFormatCurrentDatePicker);
+                })
+                .on('change', function() {
+                    if (window.fv) {
+                        // fv.revalidateField('leave_date');
+                        let leaveDate = $(this).val();
+                        checkAvailableStatus(leaveDate);
+                        fetchOffDayWorksforLieuLeave(leaveDate);
+                    }
+                });
 
             function checkAvailableStatus(month) {
                 const url = "{{ route('api.lieu.leave.check.status', ':month') }}".replace(':month', month);
@@ -43,7 +73,64 @@
                 ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
             }
 
+            function checkLeavesForMonth(month) {
+                const url = "{{ route('api.lieu.leave.check.status', ':month') }}".replace(':month', month);
+
+                const successCallback = function(response) {
+                    if (response.status === 'success') {
+                        let balanceStatus = response.data.available_balance_status;
+                        // Extract YYYY-MM from month
+                        let monthKey = month.substring(0, 7);
+
+                        if (balanceStatus === "Not Available") {
+                            monthAvailability[monthKey] = false;
+                        } else {
+                            monthAvailability[monthKey] = true;
+                        }
+                        $('[name="leave_date"]').datepicker('update');
+                    }
+                };
+
+                const errorCallback = function(error) {
+                    console.error(error);
+                };
+
+                ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+            }
+
             checkAvailableStatus($('#leave_date').val());
+
+            function fetchOffDayWorksforLieuLeave(date) {
+                const url = "{{ route('api.lieu.leave.offdaywork.user', ':date') }}".replace(':date', date || '');
+
+                const successCallback = function(response) {
+                    availableDates = response.data.available_off_day_work_dates;
+                };
+
+                const errorCallback = function(error) {
+                    console.error(error);
+                };
+
+                ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+            }
+
+            let availableDates = [];
+
+            $('[name="off_day_work_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                filter: formatDate => {
+                    const d = formatDate.getFullYear() + '-' +
+                        ('0' + (formatDate.getMonth() + 1)).slice(-2) + '-' +
+                        ('0' + formatDate.getDate()).slice(-2);
+                    return Object.values(availableDates).includes(d);
+                }
+
+            });
+
+            // Prefetch available Off Day Work dates for current leave date
+            fetchOffDayWorksforLieuLeave($('#leave_date').val());
 
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
@@ -139,6 +226,12 @@
                     $prefillReason = old('reason', $lieuLeaveRequest->reason ?? '');
                     $prefillApprover = old('send_to', $lieuLeaveRequest->approver_id ?? '');
                     $prefillBalance = old('balance', $lieuLeaveRequest->balance ?? '');
+                    $prefillOffDayWorkDate = old(
+                        'off_day_work_date',
+                        isset($lieuLeaveRequest->off_day_work_date) && $lieuLeaveRequest->off_day_work_date
+                            ? \Carbon\Carbon::parse($lieuLeaveRequest->off_day_work_date)->format('Y-m-d')
+                            : '',
+                    );
                     $selectedSubs = old(
                         'substitutes',
                         isset($lieuLeaveRequest->substitutes)
@@ -157,6 +250,15 @@
                     <div class="mb-3 col-2">
                         <input type="text" class="form-control" id="balance" name="balance"
                             value="{{ $prefillBalance }}" required readonly>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col-2">
+                        <label for="off_day_work_date" class="form-label required-label">Off Day Work Date</label>
+                    </div>
+                    <div class="mb-3 col-10">
+                        <input type="date" class="form-control date" id="off_day_work_date" name="off_day_work_date"
+                            value="{{ $prefillOffDayWorkDate }}" required>
                     </div>
                 </div>
                 <div class="row mb-3">

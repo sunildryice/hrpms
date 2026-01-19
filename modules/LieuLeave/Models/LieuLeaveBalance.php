@@ -21,7 +21,7 @@ class LieuLeaveBalance extends Model
     ];
 
     protected $dates = [
-        'earned_date',
+        // 'earned_date',
         'earned_month',
         'expires_at',
         'created_at',

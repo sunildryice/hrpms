@@ -266,5 +266,4 @@
             </div>
         </div>
     </section>
-    @include('Project::ProjectActivity.index')
 @endsection

@@ -47,13 +47,13 @@
 
                         <div class="col-lg-6">
                             <label class="form-label required-label">Start Date</label>
-                            <input type="text" name="start_date" class="form-control date" data-toggle="datepicker"
+                            <input type="date" name="start_date" class="form-control date" data-toggle="datepicker"
                                 placeholder="yyyy-mm-dd" />
                         </div>
 
                         <div class="col-lg-6">
                             <label class="form-label required-label">End Date</label>
-                            <input type="text" name="end_date" class="form-control date" data-toggle="datepicker"
+                            <input type="date" name="end_date" class="form-control date" data-toggle="datepicker"
                                 placeholder="yyyy-mm-dd" />
                         </div>
                     </div>

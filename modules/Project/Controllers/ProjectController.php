@@ -21,7 +21,6 @@ class ProjectController
 
     public function index(Request $request)
     {
-
         $authUser = auth()->user();
 
         if ($request->ajax()) {

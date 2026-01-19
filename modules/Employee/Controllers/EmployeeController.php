@@ -337,6 +337,7 @@ class EmployeeController extends Controller
     public function profile($id)
     {
         $employee = $this->employees->find($id);
+        $employee->setRelation('tenures', $employee->tenures()->orderBy('joined_date', 'asc')->get());
         $leaves = $this->leaves->select('*')
             ->where('employee_id', $employee->id)
             ->whereYear('reported_date', date('Y'))

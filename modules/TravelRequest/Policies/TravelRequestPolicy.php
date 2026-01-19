@@ -28,7 +28,7 @@ class TravelRequestPolicy
     public function amend(User $user, TravelRequest $travelRequest)
     {
         return $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
-            ! $travelRequest->travelClaim &&
+            !$travelRequest->travelClaim &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
     }
 
@@ -52,7 +52,7 @@ class TravelRequestPolicy
     {
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by])
-            && ! $travelRequest->travelReport;
+            && !$travelRequest->travelReport;
         // && (now() < $travelRequest->departure_date);
     }
 
@@ -77,9 +77,9 @@ class TravelRequestPolicy
         return
             $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
-            $travelRequest->travelReport && ! $travelRequest->travelClaim;
+            $travelRequest->travelReport && !$travelRequest->travelClaim;
 
-//        return now() >= $travelRequest->return_date &&
+        //        return now() >= $travelRequest->return_date &&
 //            $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
 //            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
 //            $travelRequest->travelReport && ! $travelRequest->travelClaim;
@@ -93,7 +93,7 @@ class TravelRequestPolicy
     public function createReport(User $user, TravelRequest $travelRequest)
     {
         return (now() > $travelRequest->departure_date && $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
-            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by])) && ! $travelRequest->travelReport;
+            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by])) && !$travelRequest->travelReport;
     }
 
     /**
@@ -125,7 +125,19 @@ class TravelRequestPolicy
      */
     public function submit(User $user, TravelRequest $travelRequest)
     {
-        return $travelRequest->travelRequestItineraries->count() != 0 && in_array($travelRequest->status_id, [1, 2]) && in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
+        if (!in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) || !in_array($travelRequest->status_id, [1, 2])) {
+            return false;
+        }
+        if (!$travelRequest->departure_date || !$travelRequest->return_date) {
+            return false;
+        }
+        $start = \Carbon\Carbon::parse($travelRequest->departure_date);
+        $end = \Carbon\Carbon::parse($travelRequest->return_date);
+        $totalTravelDurationDays = $start->diffInDays($end) + 1;
+
+        $itineraries = $travelRequest->travelRequestDayItineraries;
+
+        return $itineraries->count() == $totalTravelDurationDays;
     }
 
     /**
@@ -153,7 +165,7 @@ class TravelRequestPolicy
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
             $travelRequest->advance_requested_at == null && $travelRequest->advance_received_at == null &&
-                        ! $travelRequest->travelClaim;
+            !$travelRequest->travelClaim;
     }
 
     public function giveAdvance(User $user, TravelRequest $travelRequest)
@@ -161,6 +173,6 @@ class TravelRequestPolicy
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             $travelRequest->advance_received_at == null &&
             $user->can('travel-request-advance') &&
-                        ! $travelRequest->travelClaim;
+            !$travelRequest->travelClaim;
     }
 }

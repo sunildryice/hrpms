@@ -107,7 +107,7 @@ class FamilyDetailController extends Controller
         $familyDetail = $this->familyDetails->update($id, $inputs);
 
         if ($familyDetail) {
-            return redirect()->back()->withInput()
+            return redirect()->back()
                 ->withSuccessMessage('Employee family detail is successfully updated.');
         }
         return redirect()->back()->withInput()

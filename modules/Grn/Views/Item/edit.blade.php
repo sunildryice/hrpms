@@ -2,9 +2,7 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit GRN Item</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form
-    action="{!! route('grns.items.update', [$grnItem->grn_id, $grnItem->id]) !!}"
-    method="post"
+<form action="{!! route('grns.items.update', [$grnItem->grn_id, $grnItem->id]) !!}" method="post"
     enctype="multipart/form-data" id="grnItemForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
@@ -35,7 +33,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="number" class="form-control" name="quantity" value="{{ $grnItem->quantity }}"
-                       placeholder="{{ __('label.quantity-received') }}">
+                    placeholder="{{ __('label.quantity-received') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -46,7 +44,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="number" class="form-control" name="unit_price" value="{{ $grnItem->unit_price }}"
-                       placeholder="{{ __('label.unit-price') }}">
+                    placeholder="{{ __('label.unit-price') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -56,8 +54,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input readonly class="form-control" name="sub_total" value="{{ $grnItem->quantity * $grnItem->unit_price }}"
-                       placeholder="{{ __('label.sub-total') }}">
+                <input readonly class="form-control" name="sub_total"
+                    value="{{ $grnItem->quantity * $grnItem->unit_price }}" placeholder="{{ __('label.sub-total') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -68,7 +66,7 @@
             </div>
             <div class="col-lg-9">
                 <input class="form-control" name="discount_amount" value="{{ $grnItem->discount_amount }}"
-                       placeholder="{{ __('label.discount-amount') }}">
+                    placeholder="{{ __('label.discount-amount') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -78,9 +76,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                           name="vat_applicable" @if($grnItem->vat_amount > 0) checked @endif>
+                        name="vat_applicable" @if($grnItem->vat_amount > 0) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -93,7 +91,7 @@
             </div>
             <div class="col-lg-9">
                 <input readonly class="form-control" name="vat_amount" value="{{ $grnItem->vat_amount }}"
-                       placeholder="{{ __('label.vat-amount') }}">
+                    placeholder="{{ __('label.vat-amount') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -104,7 +102,7 @@
             </div>
             <div class="col-lg-9">
                 <input readonly class="form-control" name="total_amount" value="{{ $grnItem->total_amount }}"
-                       placeholder="{{ __('label.total-amount') }}">
+                    placeholder="{{ __('label.total-amount') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -117,7 +115,8 @@
                 <select class="form-control select2" data-width="100%" name="activity_code_id">
                     <option value="">Select Activity Code</option>
                     @foreach($activityCodes as $activityCode)
-                        <option value="{!! $activityCode->id !!}" @if($activityCode->id == $grnItem->activity_code_id) selected @endif>{{ $activityCode->getActivityCodeWithDescription() }}</option>
+                        <option value="{!! $activityCode->id !!}" @if($activityCode->id == $grnItem->activity_code_id)
+                        selected @endif>{{ $activityCode->getActivityCodeWithDescription() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -132,7 +131,8 @@
                 <select class="form-control select2" data-width="100%" name="account_code_id">
                     <option value="">Select Account Code</option>
                     @foreach($accountCodes as $accountCode)
-                        <option value="{!! $accountCode->id !!}" @if($accountCode->id == $grnItem->account_code_id) selected @endif>{{ $accountCode->getAccountCodeWithDescription() }}</option>
+                        <option value="{!! $accountCode->id !!}" @if($accountCode->id == $grnItem->account_code_id) selected
+                        @endif>{{ $accountCode->getAccountCodeWithDescription() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -147,7 +147,8 @@
                 <select class="form-control select2" data-width="100%" name="donor_code_id">
                     <option value="">Select Donor Code</option>
                     @foreach($donorCodes as $donorCode)
-                        <option value="{!! $donorCode->id !!}" @if($donorCode->id == $grnItem->donor_code_id) selected @endif>{{ $donorCode->getDonorCodeWithDescription() }}</option>
+                        <option value="{!! $donorCode->id !!}" @if($donorCode->id == $grnItem->donor_code_id) selected @endif>
+                            {{ $donorCode->getDonorCodeWithDescription() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -159,7 +160,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea class="form-control" name="specification" id="specification" rows="2">{{ $grnItem->specification }}</textarea>
+                <textarea class="form-control" name="specification" id="specification"
+                    rows="2">{{ $grnItem->specification }}</textarea>
             </div>
         </div>
     </div>

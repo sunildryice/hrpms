@@ -296,6 +296,13 @@ class TravelRequest extends Model
             ->orderBy('departure_date');
     }
 
+    // In TravelRequest.php
+    public function travelRequestDayItineraries()
+    {
+        return $this->hasMany(TravelRequestDayItinerary::class, 'travel_request_id')
+            ->orderBy('date', 'asc');
+    }
+
     /**
      * Get the travel type of the travel request.
      */

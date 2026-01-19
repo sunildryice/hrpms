@@ -41,7 +41,7 @@
                                 message: 'Activities are required',
                                 callback: function(input) {
                                     const fields = form.querySelectorAll(
-                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                        'textarea[name^="itinerary[completed_tasks]"]');
                                     let allFilled = true;
 
                                     fields.forEach(function(field) {
@@ -85,18 +85,14 @@
                 },
             });
 
-            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
+            form.querySelectorAll('textarea[name^="itinerary[completed_tasks]"]').forEach(function(field) {
                 field.addEventListener('input', function() {
                     fv.revalidateField('completed_tasks');
                 });
             });
-
+            
             @if ($errors->any())
-                @foreach ($dates as $index => $date)
-                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
-                        fv.revalidateField('completed_tasks');
-                    @endif
-                @endforeach
+                fv.revalidateField('completed_tasks');
             @endif
         });
     </script>
@@ -203,26 +199,14 @@
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        $startDate = \Carbon\Carbon::parse(
-                                                            $travelRequest->departure_date,
-                                                        );
-                                                        $endDate = \Carbon\Carbon::parse($travelRequest->return_date);
-                                                        $dates = collect();
-                                                        for (
-                                                            $date = $startDate->copy();
-                                                            $date->lte($endDate);
-                                                            $date->addDay()
-                                                        ) {
-                                                            $dates->push($date->copy());
-                                                        }
+                                                        $itineraries = $travelRequest?->travelRequestDayItineraries;
                                                     @endphp
 
-                                                    @forelse($dates as $index => $date)
+                                                    @forelse($itineraries as $index => $itinerary)
                                                         @php
+                                                            $date = \Carbon\Carbon::parse($itinerary->date);
                                                             $weekdayName = $date->format('l');
                                                             $formattedDate = $date->format('d M Y');
-                                                            $storeDate = $date->format('Y-m-d');
-                                                            $dayNumber = $index + 1;
                                                         @endphp
 
                                                         <tr>
@@ -230,33 +214,29 @@
                                                                 <input type="text"
                                                                     class="form-control text-center fw-bold"
                                                                     value="{{ $weekdayName }}" readonly>
-                                                                <input type="hidden"
-                                                                    name="recommendation[day_number][{{ $index }}]"
-                                                                    value="{{ $dayNumber }}">
                                                             </td>
 
                                                             <td>
                                                                 <input type="text" class="form-control"
                                                                     value="{{ $formattedDate }}" readonly>
                                                                 <input type="hidden"
-                                                                    name="recommendation[activity_date][{{ $index }}]"
-                                                                    value="{{ $storeDate }}">
+                                                                    name="itinerary[itinerary_id][{{ $index }}]"
+                                                                    value="{{ $itinerary->id }}">
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3"
-                                                                    class="form-control @error('recommendation.completed_tasks.' . $index) is-invalid @enderror">{{ old('recommendation.completed_tasks.' . $index) }}</textarea>
+                                                                <textarea name="itinerary[completed_tasks][{{ $index }}]" rows="3"
+                                                                    class="form-control @error('itinerary.completed_tasks.' . $index) is-invalid @enderror">{{ old('itinerary.completed_tasks.' . $index) }}</textarea>
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old('recommendation.remarks.' . $index) }}</textarea>
+                                                                <textarea name="itinerary[remarks][{{ $index }}]" rows="3" class="form-control">{{ old('itinerary.remarks.' . $index) }}</textarea>
                                                             </td>
                                                         </tr>
                                                     @empty
                                                         <tr>
                                                             <td colspan="4" class="text-center text-danger">
-                                                                Invalid travel dates: Departure date must be before or equal
-                                                                to Return date.
+                                                                No itinerary days found for this travel request.
                                                             </td>
                                                         </tr>
                                                     @endforelse

@@ -214,7 +214,8 @@ class TravelRequestRepository extends Repository
             }
             $travelRequest->accompanyingStaffs()->sync([]);
             $travelRequest->travelRequestEstimate()->delete();
-            $travelRequest->travelRequestItineraries()->delete();
+            // $travelRequest->travelRequestItineraries()->delete();
+            $travelRequest->travelRequestDayItineraries()->delete();
             $travelRequest->logs()->delete();
             $travelRequest->delete();
             DB::commit();

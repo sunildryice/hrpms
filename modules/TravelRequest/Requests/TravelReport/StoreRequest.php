@@ -30,10 +30,9 @@ class StoreRequest extends FormRequest
             'conclusion_recommendations' => 'nullable',
             'total_travel_days' => 'nullable|integer|min:1',
 
-            'recommendation.day_number.*' => 'nullable|string',
-            'recommendation.activity_date.*' => 'nullable|date',
-            'recommendation.completed_tasks.*' => 'nullable|string',
-            'recommendation.remarks.*' => 'nullable|string',
+            'itinerary.itinerary_id.*' => 'required|integer|exists:travel_request_day_itineraries,id',
+            'itinerary.completed_tasks.*' => 'nullable|string',
+            'itinerary.remarks.*' => 'nullable|string',
 
             'btn' => 'required',
         ];
@@ -42,9 +41,7 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'recommendation.activity_date.*.required' => 'Date is required for each day.',
-            'recommendation.activity_date.*.date' => 'Please enter a valid date.',
-            'recommendation.completed_tasks.*.required' => 'Please describe the activities completed on this day.',
+            'itinerary.completed_tasks.*.required' => 'Please describe the activities completed on this day.',
         ];
     }
 }

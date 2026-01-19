@@ -118,6 +118,9 @@
                     },
                     profile_picture: {
                         validators: {
+                            notEmpty: {
+                                message: 'The Profile Picture is required'
+                            },
                             file: {
                                 extension: 'jpeg,jpg,png',
                                 type: 'image/jpeg,image/jpg,image/png',
@@ -128,6 +131,9 @@
                     },
                     cv_attachment: {
                         validators: {
+                            notEmpty: {
+                                message: 'The CV is required'
+                            },
                             file: {
                                 extension: 'pdf',
                                 type: 'application/pdf',

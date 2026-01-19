@@ -118,33 +118,28 @@
                         </thead>
                         <tbody>
                             @php
-                                $start = \Carbon\Carbon::parse($travelRequest->departure_date);
-                                $end = \Carbon\Carbon::parse($travelRequest->return_date);
-                                $dates = collect();
-                                for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-                                    $dates->push($d->copy());
-                                }
-
-                                $existing = $travelReport->travelReportRecommendations->keyBy(function ($item) {
-                                    return $item->activity_date?->format('Y-m-d');
-                                });
+                                $itineraries = $travelRequest?->travelRequestDayItineraries ?? collect();
                             @endphp
 
-                            @foreach ($dates as $index => $date)
+                            @forelse($itineraries as $index => $itinerary)
                                 @php
-                                    $dateStr = $date->format('Y-m-d');
+                                    $date = \Carbon\Carbon::parse($itinerary->date);
                                     $weekday = $date->format('l');
-                                    $dayNum = $index + 1;
-
-                                    $rec = $existing->get($dateStr);
+                                    $formattedDate = $date->format('d M Y');
                                 @endphp
                                 <tr>
                                     <td class="text-center">{{ $weekday }}</td>
-                                    <td class="text-nowrap">{{ $date->format('d M Y') }}</td>
-                                    <td>{!! $rec?->completed_tasks ? nl2br(e($rec->completed_tasks)) : '<em class="text-muted"></em>' !!}</td>
-                                    <td>{!! $rec?->remarks ? nl2br(e($rec->remarks)) : '' !!}</td>
+                                    <td class="text-nowrap">{{ $formattedDate }}</td>
+                                    <td>{!! $itinerary->completed_tasks? nl2br(e($itinerary->completed_tasks)) : '<span class="text-muted">Not filled</span>' !!}</td>
+                                    <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">
+                                        No itinerary days recorded for this travel request.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
 

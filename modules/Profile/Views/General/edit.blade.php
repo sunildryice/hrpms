@@ -112,13 +112,14 @@
                         <small>Supported file types jpeg/jpg/png and file size of upto 2MB.</small>
                         @if ($errors->has('citizenship_attachment'))
                             <div class="fv-plugins-message-container text-danger">
-                                <div data-field="citizenship_attachment">{!! $errors->first('citizenship_attachment') !!}</div>
+                                <div data-field="citizenship_attachment">{!! $errors->first('citizenship_attachment') !!}
+                                </div>
                             </div>
                         @endif
                         @if (file_exists('storage/' . $employee->citizenship_attachment) && $employee->citizenship_attachment != '')
                             <div class="media">
-                                <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}" target="_blank" class="fs-5"
-                                    title="View Attachment">
+                                <a href="{!! asset('storage/' . $employee->citizenship_attachment) !!}" target="_blank"
+                                    class="fs-5" title="View Attachment">
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </a>
                             </div>
@@ -185,8 +186,8 @@
                         @endif
                         @if (file_exists('storage/' . $employee->passport_attachment) && $employee->passport_attachment != '')
                             <div class="media">
-                                <a href="{!! asset('storage/' . $employee->passport_attachment) !!}" target="_blank" class="fs-5"
-                                    title="View Attachment">
+                                <a href="{!! asset('storage/' . $employee->passport_attachment) !!}" target="_blank"
+                                    class="fs-5" title="View Attachment">
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </a>
                             </div>
@@ -207,8 +208,7 @@
                         <select name="vehicle_license_category[]" class="select2 form-control" multiple="multiple"
                             data-placeholder="Select categories (optional)" style="width: 100%">
                             @foreach ($vehicleLicenseCategories as $cat)
-                                <option value="{{ $cat->code }}"
-                                    {{ in_array($cat->code, $employee->vehicle_license_category ?? []) ? 'selected' : '' }}>
+                                <option value="{{ $cat->code }}" {{ in_array($cat->code, $employee->vehicle_license_category ?? []) ? 'selected' : '' }}>
                                     {{ $cat->code }} — {{ $cat->name }}
                                 </option>
                             @endforeach
@@ -229,7 +229,8 @@
                     <option value="">Select a Gender</option>
                     @foreach ($genders as $gender)
                         <option value="{{ $gender->id }}" @if ($gender->id == $employee->gender) selected @endif>
-                            {{ $gender->title }}</option>
+                            {{ $gender->title }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -246,7 +247,8 @@
                     <option value="">Select a Marital Status</option>
                     @foreach ($maritalStatus as $status)
                         <option value="{{ $status->id }}" @if ($status->id == $employee->marital_status) selected @endif>
-                            {{ $status->title }}</option>
+                            {{ $status->title }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -258,9 +260,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="physicallyabled"
-                        name="active" checked="">
+                <div class=" form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="physicallyabled" name="active"
+                        checked="">
                     <label class="form-check-label" for="physicallyabled"></label>
                 </div>
             </div>

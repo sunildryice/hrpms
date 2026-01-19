@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
                         name="activated">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>

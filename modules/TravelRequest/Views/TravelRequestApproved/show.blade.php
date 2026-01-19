@@ -11,60 +11,37 @@
         var itineraryTable = $('#itineraryTable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('travel.requests.itinerary.index', $travelRequest->id) }}",
+            ajax: "{{ route('travel.requests.day-itinerary.index', $travelRequest->id) }}",
             bFilter: false,
             bPaginate: false,
             bInfo: false,
             columns: [{
-                    data: 'departure_date',
-                    name: 'departure_date'
+                    data: 'date',
+                    name: 'date'
                 },
                 {
-                    data: 'departure_place',
-                    name: 'departure_place'
+                    data: 'planned_activities',
+                    name: 'planned_activities'
                 },
                 {
-                    data: 'arrival_date',
-                    name: 'arrival_date'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'mode_of_travel',
-                    name: 'mode_of_travel',
+                    data: 'accommodation',
+                    name: 'accommodation',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
                 },
+
                 {
-                    data: 'description',
-                    name: 'description',
+                    data: 'air_ticket',
+                    name: 'air_ticket',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
                 },
                 {
-                    data: 'activity',
-                    name: 'activity',
+                    data: 'vehicle',
+                    name: 'vehicle',
+                    orderable: false,
+                    searchable: false,
                 },
-                // {
-                //     data: 'donor',
-                //     name: 'donor',
-                // },
-                // {
-                //     data: 'dsa_category',
-                //     name: 'dsa_category',
-                //     orderable: false,
-                //     searchable: false
-                // },
-                // {
-                //     data: 'dsa_unit_price',
-                //     name: 'dsa_unit_price'
-                // },
-                // {
-                //     data: 'dsa_total_price',
-                //     name: 'dsa_total_price'
-                // },
             ]
         });
 
@@ -161,17 +138,11 @@
                             <table class="table" id="itineraryTable">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">{{ __('label.from-date') }}</th>
-                                        <th scope="col">{{ __('label.from-place') }}</th>
-                                        <th scope="col">{{ __('label.to-date') }}</th>
-                                        <th scope="col">{{ __('label.to-place') }}</th>
-                                        <th scope="col">{{ __('label.mode-of-travel') }}</th>
-                                        <th scope="col">{{ __('label.description') }}</th>
-                                        <th scope="col">{{ __('label.activity') }}</th>
-                                        {{-- <th scope="col">{{ __('label.donor') }}</th>
-                                                <th scope="col">{{ __('label.dsa-category') }}</th>
-                                                <th scope="col">{{ __('label.dsa-rate') }}</th>
-                                                <th scope="col">{{ __('label.total-dsa') }}</th> --}}
+                                        <th style="width: 120px;">{{ __('label.date') }}</th>
+                                        <th>{{ __('label.planned-activities') }}</th>
+                                        <th class="text-center">{{ __('label.accommodation') }}</th>
+                                        <th class="text-center">{{ __('label.air-ticket') }}</th>
+                                        <th class="text-center">{{ __('label.vehicle')   }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

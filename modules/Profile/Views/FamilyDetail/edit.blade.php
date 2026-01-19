@@ -1,8 +1,8 @@
 <div class="card-header fw-bold">
     <h3 class="m-0 fs-6">Edit Family Member<span class="full_name"></span></h3>
 </div>
-<form action="{{ route('profile.family.details.update', ['family']) }}"
-      method="post" id="familyDetailEditForm" enctype="multipart/form-data" autocomplete="off" style="width: 100%;">
+<form action="{{ route('profile.family.details.update', ['family']) }}" method="post" id="familyDetailEditForm"
+    enctype="multipart/form-data" autocomplete="off" style="width: 100%;">
     <div class="card-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -11,8 +11,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="full_name" placeholder="Full name"
-                       value="">
+                <input type="text" class="form-control" name="full_name" placeholder="Full name" value="">
             </div>
         </div>
         <div class="row mb-2">
@@ -22,8 +21,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="family_relation_id" class="select2 form-control"
-                        placeholder="Select a Relation" autocomplete="off" data-width="100%">
+                <select name="family_relation_id" class="select2 form-control" placeholder="Select a Relation"
+                    autocomplete="off" data-width="100%">
                     <option value="">Select a Relation</option>
                     @foreach($familyRelations as $relation)
                         <option value="{{ $relation->id }}">{{ $relation->title }}</option>
@@ -41,8 +40,8 @@
             </div>
             <div class="col-lg-9">
 
-                <input type="text" class="form-control"
-                       name="date_of_birth" placeholder="Date of Birth" value="" readonly>
+                <input type="text" class="form-control" name="date_of_birth" placeholder="Date of Birth" value=""
+                    readonly>
             </div>
         </div>
         <div class="row mb-2">
@@ -52,8 +51,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea name="remarks" class="form-control"
-                          placeholder="Remarks"></textarea>
+                <textarea name="remarks" class="form-control" placeholder="Remarks"></textarea>
             </div>
         </div>
         <div class="row mb-2">
@@ -63,9 +61,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch"
-                           id="flexSwitchCheckChecked" name="emergency_contact">
+                <div class=" form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
+                        name="emergency_contact">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -129,8 +127,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="number" min="1" class="form-control" name="ward"
-                           value="" placeholder="Ward Number">
+                    <input type="number" min="1" class="form-control" name="ward" value="" placeholder="Ward Number">
                 </div>
             </div>
 
@@ -141,8 +138,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="tole"
-                           value="" placeholder="Tole">
+                    <input type="text" class="form-control" name="tole" value="" placeholder="Tole">
                 </div>
             </div>
 
@@ -153,8 +149,7 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="contact_number"
-                           value="" placeholder="Contact Number">
+                    <input type="text" class="form-control" name="contact_number" value="" placeholder="Contact Number">
                 </div>
             </div>
         </div>
@@ -165,9 +160,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="nomineeSwitchCheckChecked"
-                           name="nominee"/>
+                        name="nominee" />
                     <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -180,7 +175,7 @@
     </div>
     {!! csrf_field() !!}
     {!! method_field('PUT') !!}
-    <input type="hidden" value="" name="family_detail_id"/>
+    <input type="hidden" value="" name="family_detail_id" />
 </form>
 
 
@@ -314,28 +309,28 @@
         });
 
         @if($employee->nominee->nominee_at)
-        $('#familyDetailEditForm').on('change', '[name="nominee"]', function (e) {
-            var nomineeId = "{{ $employee->nominee->id }}";
-            var familyDetailId = $(this).closest('form').find('[name="family_detail_id"]').val();
-            $object = $(this);
-            if (this.checked && nomineeId != familyDetailId) {
-                Swal.fire({
-                    title: 'Do want to change a nominee?',
-                    text: "You have already selected a nominee. ",
-                    type: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, change it!'
-                }).then((result) => {
-                    console.log(result);
-                    if (!result.value) {
-                        console.log($object);
-                        $($object).closest('form').find('[name="nominee"]').prop('checked', false);
-                    }
-                });
-            }
-        })
+            $('#familyDetailEditForm').on('change', '[name="nominee"]', function (e) {
+                var nomineeId = "{{ $employee->nominee->id }}";
+                var familyDetailId = $(this).closest('form').find('[name="family_detail_id"]').val();
+                $object = $(this);
+                if (this.checked && nomineeId != familyDetailId) {
+                    Swal.fire({
+                        title: 'Do want to change a nominee?',
+                        text: "You have already selected a nominee. ",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, change it!'
+                    }).then((result) => {
+                        console.log(result);
+                        if (!result.value) {
+                            console.log($object);
+                            $($object).closest('form').find('[name="nominee"]').prop('checked', false);
+                        }
+                    });
+                }
+            })
         @endif
 
         $('#familyDetailEditForm').on('change', '[name="emergency_contact"]', function (e) {

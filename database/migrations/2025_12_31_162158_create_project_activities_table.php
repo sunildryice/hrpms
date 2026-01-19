@@ -119,9 +119,9 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('project_activity_extensions');
-        Schema::dropIfExists('project_activity_stages');
         Schema::dropIfExists('project_activity_members');
         Schema::dropIfExists('project_activities');
+        Schema::dropIfExists('project_activity_stages');
         Schema::dropIfExists('project_members');
         Schema::dropIfExists('projects');
         Schema::dropIfExists('lkup_activity_stages');

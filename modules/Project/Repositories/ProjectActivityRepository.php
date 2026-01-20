@@ -3,7 +3,7 @@
 namespace Modules\Project\Repositories;
 
 use App\Repositories\Repository;
-use Modules\Project\Models\Project\ProjectActivity;
+use Modules\Project\Models\ProjectActivity;
 
 class ProjectActivityRepository extends Repository
 {

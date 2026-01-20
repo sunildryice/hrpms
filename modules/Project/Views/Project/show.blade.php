@@ -16,71 +16,169 @@
 @endsection
 
 @section('page_js')
+
     <script type="text/javascript">
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function(e) {
             $('#navbarVerticalMenu').find('#project-index').addClass('active');
-            $('select[name="members[]"]').select2({
-                placeholder: "Select Members",
-                width: '100%',
-                closeOnSelect: false,
+
+            // var oTable = $('#projectActivityTable').DataTable({
+            //     processing: true,
+            //     serverSide: true,
+            //     ajax: "{{ route('activity-stages.index', $project->id) }}",
+            //     bFilter: false,
+            //     bPaginate: false,
+            //     bInfo: false,
+            //     columns: [
+            //         {
+            //             data: 'DT_RowIndex',
+            //             name: 'DT_RowIndex',
+            //             orderable: false,
+            //             searchable: false
+            //         },
+            //         {
+            //             data: 'stage.title',
+            //             name: 'stage.title'
+            //         },
+            //         {
+            //             data: 'activity_level',
+            //             name: 'activity_level'
+            //         },
+            //         {
+            //             data: 'parent_activity.title',
+            //             name: 'parent_activity.title'
+            //         },
+            //         {
+            //             data: 'title',
+            //             name: 'title'
+            //         },
+            //         {
+            //             data: 'start_date',
+            //             name: 'start_date'
+            //         },
+            //         {
+            //             data: 'end_date',
+            //             name: 'end_date'
+            //         },
+            //     ],
+            // });
+
+            $('#projectActivityTable').on('click', '.delete-record', function(e) {
+                e.preventDefault();
+                $object = $(this);
+                var $url = $object.attr('data-href');
+                var successCallback = function(response) {
+                    toastr.success(response.message, 'Success', {
+                        timeOut: 5000
+                    });
+                    oTable.ajax.reload();
+                }
+                ajaxDeleteSweetAlert($url, successCallback);
             });
 
-            // Open Create Project Activity modal via AJAX
-            $(document).on('click', '#btn-open-project-activity', function(e) {
+            $(document).on('click', '.open-project-activity-modal-form', function(e) {
                 e.preventDefault();
-                var $btn = $(this);
-                var url = $btn.data('url');
-                if (!url) return;
-
-                $btn.prop('disabled', true);
-                $.get(url)
-                    .done(function(html) {
-                        var $container = $('#project-activity-modal-container');
-                        $container.html(html);
-
-                        var modalEl = document.getElementById('addProjectActivityModal');
-                        if (!modalEl) return;
-
-                        // Initialize Select2 inside modal if present
-                        if ($.fn.select2) {
-                            $(modalEl).find('.select2').select2({
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('ProjectActivityCreateForm');
+                    $(form).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
                                 width: '100%',
-                                dropdownParent: $(modalEl)
+                                dropdownAutoWidth: true
                             });
-                        }
-
-                        // Initialize datepicker (Chen Fengyuan) for newly injected elements
-                        if ($.fn.datepicker) {
-                            $(modalEl).find('[data-toggle="datepicker"]').each(function() {
-                                $(this).datepicker({
-                                    language: 'en-GB',
-                                    autoHide: true,
-                                    format: 'yyyy-mm-dd'
-                                });
-                            });
-                        }
-
-                        // Show modal (Bootstrap 5 preferred, fallback to jQuery plugin)
-                        if (window.bootstrap && bootstrap.Modal) {
-                            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-                            modal.show();
-                        } else if (typeof $(modalEl).modal === 'function') {
-                            $(modalEl).modal('show');
-                        }
-                    })
-                    .fail(function() {
-                        alert('Failed to load form. Please try again.');
-                    })
-                    .always(function() {
-                        $btn.prop('disabled', false);
                     });
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            stage_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The stage is required'
+                                    },
+                                },
+                            },
+                            activity_level: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The activity level is required'
+                                    },
+                                },
+                            },
+                            start_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The start date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The start date is not a valid date'
+                                    }
+                                },
+                            },
+                            end_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The end date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The end date is not a valid date'
+                                    }
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+                    $('[name="start_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        endDate: '{{ date('Y-m-d') }}',
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('start_date');
+                    });
+
+                    $('[name="end_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        endDate: '{{ date('Y-m-d') }}',
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('end_date');
+                    });
+
+
+                });
             });
         });
     </script>
 @endsection
 
 @section('page-content')
-    {{-- Breadcrumb Header --}}
     <div class="pb-3 mb-3 border-bottom">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
             <div class="brd-crms flex-grow-1">
@@ -111,11 +209,40 @@
         </div>
 
         <div class="col-lg-9">
-            @include('Project::ProjectActivity.index')
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Project Activity</span>
+                        <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                            href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i class="bi-plus"></i> Add Project Activity
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered table-striped" id="projectActivityTable">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Stage</th>
+                                    <th>Activity Level</th>
+                                    <th>Parent Activity</th>
+                                    <th>Activity Title</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="project-activity-modal-container"></div>
         </div>
     </div>
 
     <div id="project-activity-modal-container">
-        kldsfmlk
+        xyz
     </div>
 @endsection

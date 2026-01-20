@@ -27,6 +27,12 @@ class ProjectController
             $data = $this->projectRepository->query();
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->editColumn('start_date', function ($row) {
+                    return $row->start_date->format('M d, Y');
+                })
+                ->editColumn('completion_date', function ($row) {
+                    return $row->completion_date->format('M d, Y');
+                })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.show', $row->id) . '" rel="tooltip" title="View Project">';

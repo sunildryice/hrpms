@@ -23,6 +23,11 @@ class Project extends Model
         'focal_person_id',
     ];
 
+    protected $dates = [
+        'start_date',
+        'completion_date',
+    ];
+
     public function members()
     {
         return $this->belongsToMany(User::class, 'project_members', 'project_id', 'user_id');

@@ -24,6 +24,11 @@ class ProjectActivity extends Model
         'updated_by',
     ];
 
+    protected $dates = [
+        'start_date',
+        'completion_date',
+    ];
+
     public function parent()
     {
         return $this->belongsTo(ProjectActivity::class, 'parent_id');

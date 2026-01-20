@@ -25,6 +25,12 @@ class ProjectActivityController extends Controller
         $authUser = auth()->user();
         return DataTables::of($data)
             ->addIndexColumn()
+            ->editColumn('start_date', function ($row) {
+                return $row->start_date?->format('M d, Y');
+            })
+            ->editColumn('completion_date', function ($row) {
+                return $row->completion_date?->format('M d, Y');
+            })
             ->addColumn('activity_stage', function ($row) {
                 return $row->stage->title;
             })

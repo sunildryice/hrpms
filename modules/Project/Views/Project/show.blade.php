@@ -142,6 +142,13 @@
                                     }
                                 },
                             },
+                            members: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The members field is required'
+                                    },
+                                },
+                            },
                         },
                         plugins: {
                             trigger: new FormValidation.plugins.Trigger(),

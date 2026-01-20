@@ -63,8 +63,9 @@
             </div>
         </div>
         <div class="col-lg-9">
-            <input type="text" name="start_date" value="{{ old('start_date', $projectActivity->start_date) }}"
-                readonly class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
+            <input type="text" name="start_date"
+                value="{{ old('start_date', $projectActivity->start_date->format('Y-m-d')) }}" readonly
+                class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
         </div>
     </div>
 
@@ -76,10 +77,25 @@
         </div>
         <div class="col-lg-9">
             <input type="text" name="completion_date"
-                value="{{ old('completion_date', $projectActivity->completion_date) }}" readonly class="form-control"
-                placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
+                value="{{ old('completion_date', $projectActivity->completion_date->format('Y-m-d')) }}" readonly
+                class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
         </div>
     </div>
+
+    <div class="row mb-2">
+        <div class="col-lg-3">
+            <div class="d-flex align-items-start h-100">
+                <label class="form-label required-label m-0">Members</label>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            @foreach ($projectActivity->members as $member)
+                <span class="badge bg-secondary mb-1">{{ $member->full_name }}</span>
+            @endforeach
+        </div>
+    </div>
+
+
 </div>
 
 <div class="modal-footer">

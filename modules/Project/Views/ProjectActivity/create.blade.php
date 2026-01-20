@@ -87,8 +87,23 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="end_date" class="form-control" placeholder="yyyy-mm-dd"
+                <input type="text" name="completion_date" class="form-control" placeholder="yyyy-mm-dd"
                     onfocus="this.blur()" autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Members</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="members[]" class="select2 form-control" data-width="100%" multiple>
+                    @foreach ($project->members as $member)
+                        <option value="{{ $member->id }}">{{ $member->full_name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
     </div>

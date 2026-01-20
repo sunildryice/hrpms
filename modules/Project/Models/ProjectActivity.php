@@ -2,6 +2,7 @@
 
 namespace Modules\Project\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Project\Models\ActivityStage;
 
@@ -42,5 +43,10 @@ class ProjectActivity extends Model
     public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'project_activity_members', 'activity_id', 'user_id');
     }
 }

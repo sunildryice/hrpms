@@ -78,8 +78,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="start_date" value="{{ old('start_date', $projectActivity->start_date) }}"
-                    class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
+                <input type="text" name="start_date"
+                    value="{{ old('start_date', $projectActivity->start_date->format('Y-m-d')) }}" class="form-control"
+                    placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
             </div>
         </div>
 
@@ -91,8 +92,24 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" name="completion_date"
-                    value="{{ old('completion_date', $projectActivity->completion_date) }}" class="form-control"
-                    placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
+                    value="{{ old('completion_date', $projectActivity->completion_date->format('Y-m-d')) }}"
+                    class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Members</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="members[]" class="select2 form-control" data-width="100%" multiple>
+                    @foreach ($project->members as $member)
+                        <option @if (in_array($member->id, old('members', $projectActivity->members->pluck('id')->toArray() ?? []))) selected @endif value="{{ $member->id }}">
+                            {{ $member->full_name }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
     </div>

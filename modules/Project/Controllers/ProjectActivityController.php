@@ -75,6 +75,7 @@ class ProjectActivityController extends Controller
         $input['project_id'] = $project->id;
         $this->projectActivity->create($input);
 
+
         return response()->json([
             'message' => 'Project Activity created successfully.',
             'redirect' => route('project.show', $project->id),
@@ -87,8 +88,9 @@ class ProjectActivityController extends Controller
         $activityLevels = ActivityLevel::cases();
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
+        $project = $projectActivity->project;
 
-        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities'));
+        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project'));
     }
 
     public function edit($id)
@@ -97,8 +99,9 @@ class ProjectActivityController extends Controller
         $activityLevels = ActivityLevel::cases();
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
+        $project = $projectActivity->project;
 
-        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities'));
+        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project'));
     }
 
     public function update(UpdateRequest $request, ProjectActivity $projectActivity)

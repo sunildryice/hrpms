@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Edit Project')
+@section('title', 'Show Project')
 
 @section('page_css')
     <style>
@@ -15,52 +15,60 @@
     </style>
 @endsection
 
+
+
 @section('page_js')
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function(e) {
             $('#navbarVerticalMenu').find('#project-index').addClass('active');
 
-            // var oTable = $('#projectActivityTable').DataTable({
-            //     processing: true,
-            //     serverSide: true,
-            //     ajax: "{{ route('activity-stages.index', $project->id) }}",
-            //     bFilter: false,
-            //     bPaginate: false,
-            //     bInfo: false,
-            //     columns: [
-            //         {
-            //             data: 'DT_RowIndex',
-            //             name: 'DT_RowIndex',
-            //             orderable: false,
-            //             searchable: false
-            //         },
-            //         {
-            //             data: 'stage.title',
-            //             name: 'stage.title'
-            //         },
-            //         {
-            //             data: 'activity_level',
-            //             name: 'activity_level'
-            //         },
-            //         {
-            //             data: 'parent_activity.title',
-            //             name: 'parent_activity.title'
-            //         },
-            //         {
-            //             data: 'title',
-            //             name: 'title'
-            //         },
-            //         {
-            //             data: 'start_date',
-            //             name: 'start_date'
-            //         },
-            //         {
-            //             data: 'end_date',
-            //             name: 'end_date'
-            //         },
-            //     ],
-            // });
+            var oTable = $('#projectActivityTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('project-activity.index', $project->id) }}",
+                bFilter: false,
+                bPaginate: false,
+                bInfo: false,
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'activity_stage',
+                        name: 'activity_stage'
+                    },
+                    {
+                        data: 'activity_level',
+                        name: 'activity_level'
+                    },
+                    {
+                        data: 'parent',
+                        name: 'parent'
+                    },
+                    {
+                        data: 'title',
+                        name: 'title'
+                    },
+                    {
+                        data: 'start_date',
+                        name: 'start_date'
+                    },
+                    {
+                        data: 'completion_date',
+                        name: 'completion_date'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'sticky-col'
+                    },
+                ],
+            });
 
             $('#projectActivityTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
@@ -91,7 +99,14 @@
                     });
                     const fv = FormValidation.formValidation(form, {
                         fields: {
-                            stage_id: {
+                            title: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The title is required'
+                                    },
+                                },
+                            },
+                            activity_stage_id: {
                                 validators: {
                                     notEmpty: {
                                         message: 'The stage is required'
@@ -116,14 +131,14 @@
                                     }
                                 },
                             },
-                            end_date: {
+                            completion_date: {
                                 validators: {
                                     notEmpty: {
-                                        message: 'The end date is required'
+                                        message: 'The completion date is required'
                                     },
                                     date: {
                                         format: 'YYYY-MM-DD',
-                                        message: 'The end date is not a valid date'
+                                        message: 'The completion date is not a valid date'
                                     }
                                 },
                             },
@@ -155,20 +170,18 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        endDate: '{{ date('Y-m-d') }}',
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('start_date');
                     });
 
-                    $('[name="end_date"]').datepicker({
+                    $('[name="completion_date"]').datepicker({
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        endDate: '{{ date('Y-m-d') }}',
                         zIndex: 2048,
                     }).on('change', function(e) {
-                        fv.revalidateField('end_date');
+                        fv.revalidateField('completion_date');
                     });
 
 
@@ -208,41 +221,44 @@
             </div>
         </div>
 
-        <div class="col-lg-9">
-            <div class="card h-100">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Project Activity</span>
-                        <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                            href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i class="bi-plus"></i> Add Project Activity
-                        </button>
+        @can('manage-project-activities')
+            <div class="col-lg-9">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">Project Activity</span>
+                            <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
+                                    class="bi-plus"></i> Add Project Activity
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered table-striped" id="projectActivityTable">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>SN</th>
+                                        <th>Stage</th>
+                                        <th>Activity Level</th>
+                                        <th>Parent Activity</th>
+                                        <th>Activity Title</th>
+                                        <th>Start Date</th>
+                                        <th>Completion Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered table-striped" id="projectActivityTable">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Stage</th>
-                                    <th>Activity Level</th>
-                                    <th>Parent Activity</th>
-                                    <th>Activity Title</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablebody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
 
-            <div id="project-activity-modal-container"></div>
-        </div>
+                <div id="project-activity-modal-container"></div>
+            </div>
+        @endcan
     </div>
 
     <div id="project-activity-modal-container">
-        xyz
     </div>
 @endsection

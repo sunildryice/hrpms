@@ -13,7 +13,7 @@ class StoreRequest extends FormRequest
             'activity_level' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:project_activities,id',
             'title' => 'required|string|max:255',
-            'deliverables' => 'required|string',
+            'deliverables' => 'nullable|string',
             'budget_description' => 'nullable|string',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',

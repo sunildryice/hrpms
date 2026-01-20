@@ -36,6 +36,12 @@ class ProjectController
                     $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
+                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                    data-href="' . route('project.destroy', $row->id) . '"
+                    data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                    $btn .= '<i class="bi bi-trash"></i></button>';
+
+
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -108,5 +114,15 @@ class ProjectController
 
 
         return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $this->projectRepository->destroy($id);
+
+        return response()->json([
+            'message' => 'Project deleted successfully.',
+            'redirect' => route('project.index'),
+        ]);
     }
 }

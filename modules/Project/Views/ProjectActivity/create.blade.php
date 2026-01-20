@@ -2,11 +2,23 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Add Project Activity</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form id="ProjectActivityCreateForm" method="post" action=""
-    autocomplete="off">
+<form id="ProjectActivityCreateForm" method="post"
+    action="{{ route('project-activity.store', ['project' => $project->id]) }}" autocomplete="off">
 
     <div class="modal-body">
         {!! csrf_field() !!}
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Title</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" name="title" class="form-control" />
+            </div>
+        </div>
+
 
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -15,7 +27,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="stage_id" class="select2 form-control" data-width="100%">
+                <select name="activity_stage_id" class="select2 form-control" data-width="100%">
                     <option value="">Select Stage</option>
                     @foreach ($stages as $stage)
                         <option value="{{ $stage->id }}">{{ $stage->title }}</option>
@@ -47,9 +59,11 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="parent_activity_id" class="select2 form-control" data-width="100%">
+                <select name="parent_id" class="select2 form-control" data-width="100%">
                     <option value="">Select Parent Activity (Optional)</option>
-                    {{-- Will be populated dynamically if needed --}}
+                    @foreach ($parentActivities as $activity)
+                        <option value="{{ $activity->id }}">{{ $activity->title }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>

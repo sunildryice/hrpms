@@ -3,6 +3,7 @@
 namespace Modules\Project\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Project\Models\ActivityStage;
 
 class ProjectActivity extends Model
 {
@@ -18,8 +19,23 @@ class ProjectActivity extends Model
         'budget_description',
         'status',
         'start_date',
-        'end_date',
+        'completion_date',
         'created_by',
         'updated_by',
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(ProjectActivity::class, 'parent_id');
+    }
+
+    public function stage()
+    {
+        return $this->belongsTo(ActivityStage::class, 'activity_stage_id');
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
 }

@@ -28,5 +28,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
 
+    Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
     Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');
+    Route::post('/project-activity/{project}/store', [ProjectActivityController::class, 'store'])->name('project-activity.store');
+    Route::get('/project-activity/{projectActivity}/edit', [ProjectActivityController::class, 'edit'])->name('project-activity.edit');
+    Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
+    Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
+    Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
 });

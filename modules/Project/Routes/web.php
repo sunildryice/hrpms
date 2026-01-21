@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\ProjectMembersController;
-
+use Modules\Project\Controllers\ProjectActivityController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -14,7 +14,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects/{id}/show', [ProjectController::class, 'show'])->name('project.show');
     Route::post('/projects/{id}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
-
 
 
     Route::get('/activity-stages', [ActivityStageController::class, 'index'])->name('activity-stages.index');
@@ -27,4 +26,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
+
+
+    Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
+    Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');
+    Route::post('/project-activity/{project}/store', [ProjectActivityController::class, 'store'])->name('project-activity.store');
+    Route::get('/project-activity/{projectActivity}/edit', [ProjectActivityController::class, 'edit'])->name('project-activity.edit');
+    Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
+    Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
+    Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
 });

@@ -263,7 +263,6 @@
                         <a href="{!! route('employees.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                     </div>
                 </form>
-
             </div>
         </div>
     </section>

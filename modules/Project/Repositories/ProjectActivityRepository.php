@@ -1,0 +1,51 @@
+<?php
+
+namespace Modules\Project\Repositories;
+
+use App\Repositories\Repository;
+use Illuminate\Support\Facades\DB;
+use Modules\Project\Models\ProjectActivity;
+
+class ProjectActivityRepository extends Repository
+{
+    public function __construct(protected ProjectActivity $projectActivity)
+    {
+        $this->model = $projectActivity;
+    }
+
+    public function create($inputs)
+    {
+
+        DB::beginTransaction();
+        try {
+            $record = $this->model->create($inputs);
+            $record->members()->sync($inputs['members']);
+
+            DB::commit();
+            return $record;
+        } catch (\Illuminate\Database\QueryException $e) {
+            dd($e->getMessage());
+            logger()->error($e->getMessage());
+            DB::rollback();
+            return false;
+        }
+    }
+
+    public function update($id, $inputs)
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->model->findOrFail($id);
+            $record->update($inputs);
+            if (isset($inputs['members']) && is_array($inputs['members'])) {
+                $record->members()->sync($inputs['members']);
+            }
+            DB::commit();
+            return $record;
+        } catch (\Illuminate\Database\QueryException $e) {
+            logger()->error($e->getMessage());
+            DB::rollback();
+            return false;
+        }
+    }
+}

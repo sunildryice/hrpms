@@ -54,8 +54,7 @@ class ProjectController
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-
-
+        
         return view('Project::Project.index');
     }
 

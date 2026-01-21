@@ -2,15 +2,16 @@
 
 namespace Modules\Project\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Project\Requests\ProjectActivity\StoreRequest;
-use Modules\Project\Requests\ProjectActivity\UpdateRequest;
-use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Project;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Repositories\ProjectActivityRepository;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Project\Models\ProjectActivity;
+use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Requests\ProjectActivity\StoreRequest;
+use Modules\Project\Repositories\ProjectActivityRepository;
+use Modules\Project\Requests\ProjectActivity\UpdateRequest;
 
 class ProjectActivityController extends Controller
 {
@@ -76,7 +77,6 @@ class ProjectActivityController extends Controller
         $input['project_id'] = $project->id;
         $this->projectActivity->create($input);
 
-
         return response()->json([
             'message' => 'Project Activity created successfully.',
             'redirect' => route('project.show', $project->id),
@@ -133,11 +133,5 @@ class ProjectActivityController extends Controller
             'message' => 'Project Activity can not deleted.',
             'redirect' => route('project.show', $projectId),
         ], 422);
-    }
-
-    // Import Create
-    public function importCreate(Project $project)
-    {
-        return view('Project::ProjectActivity.import', compact('project'));
     }
 }

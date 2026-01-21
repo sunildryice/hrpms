@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectController;
+use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ProjectActivityExportController;
+use Modules\Project\Controllers\ProjectActivityImportController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -25,11 +27,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
     // import project activity routes
-    Route::get('/project-activity/import/{project}', [ProjectActivityController::class, 'importCreate'])->name('project-activity.import.create');
-    Route::post('/project-activity/import/{project}/store', [ProjectActivityController::class, 'importStore'])->name('project-activity.import.store');
+    Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'importCreate'])->name('project-activity.import.create');
+    Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'importStore'])->name('project-activity.import.store');
 
     // export project activity routes
-    Route::get('/project-activity/export/{project}', [ProjectActivityController::class, 'export'])->name('project-activity.export');
+    Route::get('/project-activity/export/{project}', [ProjectActivityExportController::class, 'export'])->name('project-activity.export');
 
     Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
     Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');

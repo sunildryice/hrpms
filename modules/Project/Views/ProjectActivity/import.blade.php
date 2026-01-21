@@ -22,8 +22,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <a href="{{ route('project-activity.export', $project) }}" target="_blank">Download</a> a file with all activities to import.<br />
-                Make sure the columns in the file match the format of the file you downloaded.
+                <a href="{{ route('project-activity.export', $project) }}" target="_blank">Download</a> a sample file.<br />
             </div>
         </div>
     </div>

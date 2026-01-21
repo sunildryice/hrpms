@@ -11,10 +11,9 @@
         @foreach ($project->activities as $activity)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $activity->name }}</td>
-                <td>{{ $activity->start_date }}</td>
-                <td>{{ $activity->end_date }}</td>
-                <td>{{ $activity->status }}</td>
+                <td>{{ $activity->title }}</td>
+                <td>{{ $activity->start_date->format('Y-m-d') }}</td>
+                <td>{{ $activity->completion_date->format('Y-m-d') }}</td>
             </tr>
         @endforeach
 

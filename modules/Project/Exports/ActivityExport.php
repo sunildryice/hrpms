@@ -3,8 +3,10 @@
 namespace Modules\Project\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
-class ActivityExport implements FromView, WithTitle
+
+class ActivityExport implements FromView
 {
     protected $project;
 
@@ -19,9 +21,17 @@ class ActivityExport implements FromView, WithTitle
             'project' => $this->project,
         ]);
     }
-    public function title(): string
-    {
-        return 'Activity Export';
-    }
 
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                foreach (range('A', 'Z') as $column) {
+                    $event->sheet->getColumnDimension($column)->setAutoSize(true);
+                }
+                $event->sheet->getColumnDimension('A')->setWidth(15); 
+                $event->sheet->getColumnDimension('B')->setWidth(40); 
+            },
+        ];
+    }
 }

@@ -237,7 +237,6 @@
                             });
                             $('#projectActivityTable').DataTable().ajax.reload();
                         };
-                        document.querySelector(".preloader").style.display = "block";
                         ajaxSubmitFormData($url, 'POST', data, function(response) {
                             successCallback(response);
                         });

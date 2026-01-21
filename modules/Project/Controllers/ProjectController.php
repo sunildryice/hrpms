@@ -68,7 +68,9 @@ class ProjectController
 
     public function store(StoreRequest $request)
     {
+        $authUser = auth()->user();
         $inputs = $request->validated();
+        $inputs['created_by'] = $authUser->id;
         $project = $this->projectRepository->create($inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
@@ -96,7 +98,9 @@ class ProjectController
 
     public function update($id, UpdateRequest $request)
     {
+        $authUser = auth()->user();
         $inputs = $request->validated();
+        $inputs['updated_by'] = $authUser->id;
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

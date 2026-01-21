@@ -72,8 +72,10 @@ class ProjectActivityController extends Controller
 
     public function store(StoreRequest $request, Project $project)
     {
+        $authUser = auth()->user();
         $input = $request->validated();
         $input['project_id'] = $project->id;
+        $inputs['created_by'] = $authUser->id;
         $this->projectActivity->create($input);
 
         return response()->json([
@@ -107,8 +109,10 @@ class ProjectActivityController extends Controller
 
     public function update(UpdateRequest $request, ProjectActivity $projectActivity)
     {
+        $authUser = auth()->user();
         $input = $request->validated();
         $input['project_id'] = $projectActivity->project_id;
+        $input['updated_by'] = $authUser->id;
         $this->projectActivity->update($projectActivity->id, $input);
 
         return response()->json([

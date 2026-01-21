@@ -22,17 +22,22 @@ class ProjectActivityImportController extends Controller
 
     public function store(Request $request, Project $project)
     {
-        $fiscalYear = $project->fiscal_year;
-        $userCode = auth()->user()->employee?->code ?? null;
+        $request->validate([
+            'attachment' => 'required|max:10240|mimes:xlsx'
+        ], [
+            'attachment.required' => 'Please choose the file.',
+            'attachment.max' => 'File size cannot exceed :max KB',
+            'attachment.mimes' => 'Please upload excel file!'
+        ]);
 
         $file = $request->hasFile('attachment') ? $request->file('attachment') : null;
         try {
-            Excel::import(new ActivityImport($fiscalYear, $userCode), $file, null, \Maatwebsite\Excel\Excel::XLSX);
+            Excel::import(new ActivityImport($project), $file, null, \Maatwebsite\Excel\Excel::XLSX);
             $response = ['message' => ' Activity imported successfully.'];
 
             return response()->json($response, 200);
         } catch (\Throwable $th) {
-            logger()->error($th->getMessage());
+            dd($th);
             $response = ['message' => 'Failed to import activity. Please check the file and try again.'];
             return response()->json($response, 500);
         }

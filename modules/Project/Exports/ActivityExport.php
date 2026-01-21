@@ -1,37 +1,27 @@
-<?php 
+<?php
 
 namespace Modules\Project\Exports;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Modules\Project\Models\ProjectActivity;
-class ActivityExport implements FromCollection, WithHeadings
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\WithTitle;
+class ActivityExport implements FromView, WithTitle
 {
     protected $project;
-    
+
     public function __construct($project)
     {
         $this->project = $project;
     }
 
-    public function collection()
+    public function view(): View
     {
-        return ProjectActivity::where('project_id', $this->project->id)->get([
-            'title',
-            'start_date',
-            'completion_date',
-            'parent_id',
-            'project_id',
+        return view('Project::Excel.activity-export', [
+            'project' => $this->project,
         ]);
     }
-
-    public function headings(): array
+    public function title(): string
     {
-        return [
-            'Title',
-            'Start Date',
-            'Completion Date',
-            'Parent ID',
-            'Project ID',
-        ];
+        return 'Activity Export';
     }
+
 }

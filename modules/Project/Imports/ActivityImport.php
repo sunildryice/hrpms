@@ -36,12 +36,17 @@ class ActivityImport implements ToCollection, WithBatchInserts, WithCalculatedFo
 
                 ProjectActivity::updateOrCreate(
                     [
+                        'id' => trim($row['sn'] ?? ''),
                         'project_id' => $this->project->id,
-                        'title' => trim($row['activity_name'] ?? ''),
                         'activity_stage_id' => trim($row['stages'] ?? ''),
                         'activity_level' => trim($row['activity_level'] ?? ''),
+                    ],
+                    [
+                        'title' => trim($row['activity_name'] ?? ''),
                         'start_date' => $start,
                         'completion_date' => $end,
+                        'created_by' => auth()->id(),
+                        'updated_by' => auth()->id(),
                     ]
                 );
             }

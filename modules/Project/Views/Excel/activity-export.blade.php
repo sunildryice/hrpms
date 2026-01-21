@@ -12,7 +12,7 @@
     <tbody>
         @foreach ($project->activities as $activity)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                <td>{{ $activity->id }}</td>
                 <td>{{ $activity->title }}</td>
                 <td>{{ $activity->activity_stage_id }}</td>
                 <td>{{ $activity->activity_level }}</td>

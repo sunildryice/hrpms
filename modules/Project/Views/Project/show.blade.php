@@ -289,10 +289,12 @@
                                     href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                     <i class="bi-plus"></i> Import Activity
                                 </button>
-                                <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                    href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
-                                        class="bi-plus"></i> Add Project Activity
-                                </button>
+                                @can('add-project-activity-on-certain-time')
+                                    <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                        href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
+                                            class="bi-plus"></i> Add Project Activity
+                                    </button>
+                                @endcan
                             </div>
                         </div>
                     </div>

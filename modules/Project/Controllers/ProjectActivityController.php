@@ -17,8 +17,7 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
-    }
+    ) {}
 
     public function index(Request $request, Project $project)
     {
@@ -90,8 +89,9 @@ class ProjectActivityController extends Controller
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
         $project = $projectActivity->project;
+        $authUser = auth()->user();
 
-        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project'));
+        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project', 'authUser'));
     }
 
     public function edit($id)

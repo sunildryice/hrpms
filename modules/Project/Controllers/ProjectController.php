@@ -17,8 +17,7 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -54,7 +53,7 @@ class ProjectController
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-        
+
         return view('Project::Project.index');
     }
 
@@ -82,7 +81,8 @@ class ProjectController
         $project = $this->projectRepository->find($id);
         $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
-        return view('Project::Project.show', compact('project', 'users', 'stages'));
+        $authUser = auth()->user();
+        return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser'));
     }
 
 

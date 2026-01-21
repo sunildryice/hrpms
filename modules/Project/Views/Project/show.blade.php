@@ -232,12 +232,18 @@
             <div class="col-lg-9">
                 <div class="card h-100">
                     <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center justify-content-between">
                             <span class="fw-bold">Project Activity</span>
-                            <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
-                                    class="bi-plus"></i> Add Project Activity
-                            </button>
+                            <div class="justify-content-end d-flex gap-2">
+                                <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
+                                    href="">
+                                    <i class="bi-plus"></i> Import Activity
+                                </button>
+                                <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                    href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
+                                        class="bi-plus"></i> Add Project Activity
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">

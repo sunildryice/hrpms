@@ -12,8 +12,8 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $activity->title }}</td>
-                <td>{{ $activity->start_date->format('Y-m-d') }}</td>
-                <td>{{ $activity->completion_date->format('Y-m-d') }}</td>
+                <td>{{ $activity->start_date?->format('Y-m-d') }}</td>
+                <td>{{ $activity->completion_date?->format('Y-m-d') }}</td>
             </tr>
         @endforeach
 

@@ -27,8 +27,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
     // import project activity routes
-    Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'importCreate'])->name('project-activity.import.create');
-    Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'importStore'])->name('project-activity.import.store');
+    Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'create'])->name('project-activity.import.create');
+    Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'store'])->name('project-activity.import.store');
 
     // export project activity routes
     Route::get('/project-activity/export/{project}', [ProjectActivityExportController::class, 'export'])->name('project-activity.export');

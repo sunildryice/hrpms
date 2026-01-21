@@ -15,12 +15,12 @@ class ProjectActivityImportController extends Controller
     ) {
     }
 
-    public function importCreate(Request $request, Project $project)
+    public function create(Request $request, Project $project)
     {
         return view('Project::ProjectActivity.import', compact('project'));
     }
 
-    public function importStore(Request $request, Project $project)
+    public function store(Request $request, Project $project)
     {
         $fiscalYear = $project->fiscal_year;
         $userCode = auth()->user()->employee?->code ?? null;

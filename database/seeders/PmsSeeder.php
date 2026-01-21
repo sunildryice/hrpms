@@ -46,6 +46,12 @@ class PmsSeeder extends Seeder
                 'parent_id' => $pmsPermission->id,
                 'activated_at' => now(),
             ],
+            [
+                'permission_name' => 'Edit Project Activity',
+                'guard_name' => 'edit-project-activity',
+                'parent_id' => $pmsPermission->id,
+                'activated_at' => now(),
+            ],
         ];
 
         foreach ($subPermissions as $subPermission) {

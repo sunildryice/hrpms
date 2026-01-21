@@ -128,6 +128,15 @@ class AuthServiceProvider extends ServiceProvider
 
             $hasPerm = $user->can('add-project-activity');
 
+            $quarterStart = Carbon::now()->startOfQuarter();
+            $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));
+
+            return $hasPerm && $isFirstWeek;
+        });
+
+        Gate::define('edit-project-activity-on-certain-time', function (User $user) {
+
+            $hasPerm = $user->can('edit-project-activity');
 
             $quarterStart = Carbon::now()->startOfQuarter();
             $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));

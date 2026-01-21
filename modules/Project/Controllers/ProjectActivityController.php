@@ -5,13 +5,13 @@ namespace Modules\Project\Controllers;
 use Illuminate\Http\Request;
 use Modules\Project\Models\Project;
 use App\Http\Controllers\Controller;
-use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Requests\ProjectActivity\StoreRequest;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Requests\ProjectActivity\UpdateRequest;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectActivityController extends Controller
 {
@@ -43,9 +43,11 @@ class ProjectActivityController extends Controller
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
-                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
-                $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
-                $btn .= '<i class="bi bi-pencil-square"></i></a>';
+                if (Gate::allows('edit-project-activity-on-certain-time')) {
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
+                    $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
+                    $btn .= '<i class="bi bi-pencil-square"></i></a>';
+                }
 
                 $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';

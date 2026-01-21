@@ -19,14 +19,17 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/activity-stages', [ActivityStageController::class, 'index'])->name('activity-stages.index');
     Route::get('/activity-stages/create', [ActivityStageController::class, 'create'])->name('activity-stage.create');
     Route::post('/activity-stages/store', [ActivityStageController::class, 'store'])->name('activity-stage.store');
-    Route::get('/activity-stages/{id}/edit', [
-        ActivityStageController::class,
-        'edit'
-    ])->name('activity-stage.edit');
+    Route::get('/activity-stages/{id}/edit', [ActivityStageController::class, 'edit'])->name('activity-stage.edit');
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
+    // import project activity routes
+    Route::get('/project-activity/import/{project}', [ProjectActivityController::class, 'importCreate'])->name('project-activity.import.create');
+    Route::post('/project-activity/import/{project}/store', [ProjectActivityController::class, 'importStore'])->name('project-activity.import.store');
+
+    // export project activity routes
+    Route::get('/project-activity/export/{project}', [ProjectActivityController::class, 'export'])->name('project-activity.export');
 
     Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
     Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');

@@ -194,6 +194,56 @@
 
                 });
             });
+
+            $(document).on('click', '.open-import-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('activityImportForm');
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            attachment: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Attachment is required',
+                                    },
+                                    file: {
+                                        extension: 'xls,xlsx',
+                                        type: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                        message: 'Please choose an Excel file',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function(event) {
+                        const $url = fv.form.action;
+                        const $form = fv.form;
+                        const data = new FormData($form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message, 'Success', {
+                                timeOut: 5000
+                            });
+                            $('#projectActivityTable').DataTable().ajax.reload();
+                        };
+                        document.querySelector(".preloader").style.display = "block";
+                        ajaxSubmitFormData($url, 'POST', data, function(response) {
+                            successCallback(response);
+                        });
+                    });
+                });
+            });
         });
     </script>
 @endsection
@@ -236,7 +286,7 @@
                             <span class="fw-bold">Project Activity</span>
                             <div class="justify-content-end d-flex gap-2">
                                 <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
-                                    href="">
+                                    href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                     <i class="bi-plus"></i> Import Activity
                                 </button>
                                 <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"

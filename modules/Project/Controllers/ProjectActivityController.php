@@ -134,4 +134,10 @@ class ProjectActivityController extends Controller
             'redirect' => route('project.show', $projectId),
         ], 422);
     }
+
+    // Import Create
+    public function importCreate(Project $project)
+    {
+        return view('Project::ProjectActivity.import', compact('project'));
+    }
 }

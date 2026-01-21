@@ -51,8 +51,7 @@ use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
 use Modules\Privilege\Models\User;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Policies\ProjectActivityPolicy;
+use Modules\Project\Models\Project;
 use Modules\WorkFromHome\Models\WorkFromHome;
 use Modules\WorkFromHome\Policies\WorkFromHomePolicy;
 
@@ -124,24 +123,24 @@ class AuthServiceProvider extends ServiceProvider
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
         });
 
-        Gate::define('add-project-activity-on-certain-time', function (User $user) {
+        Gate::define('add-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
 
             $hasPerm = $user->can('add-project-activity');
 
             $quarterStart = Carbon::now()->startOfQuarter();
             $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));
 
-            return $hasPerm && $isFirstWeek;
+            return ($project->isFocalPerson($user->id) || $hasPerm) && $isFirstWeek;
         });
 
-        Gate::define('edit-project-activity-on-certain-time', function (User $user) {
+        Gate::define('edit-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
 
             $hasPerm = $user->can('edit-project-activity');
 
             $quarterStart = Carbon::now()->startOfQuarter();
             $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));
 
-            return $hasPerm && $isFirstWeek;
+            return ($project->isFocalPerson($user->id) || $hasPerm) && $isFirstWeek;
         });
     }
 }

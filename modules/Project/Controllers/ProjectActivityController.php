@@ -43,7 +43,7 @@ class ProjectActivityController extends Controller
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
-                if (Gate::allows('edit-project-activity-on-certain-time')) {
+                if (Gate::allows('edit-project-activity-on-certain-time', $row->project)) {
                     $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
                     $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';

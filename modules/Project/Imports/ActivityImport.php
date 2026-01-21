@@ -19,10 +19,8 @@ class ActivityImport implements ToModel, WithHeadingRow
     {
         return new ProjectActivity([
             'title' => $row['title'],
-            'description' => $row['description'],
             'start_date' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['start_date']),
             'completion_date' => \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['completion_date']),
-            'level' => $row['level'],
             'parent_id' => $row['parent_id'],
             'project_id' => $row['project_id'],
             'created_by' => $this->userCode,

@@ -1,37 +1,37 @@
-<?php 
+<?php
 
 namespace Modules\Project\Exports;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Modules\Project\Models\ProjectActivity;
-class ActivityExport implements FromCollection, WithHeadings
+use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithTitle;
+
+class ActivityExport implements FromView
 {
     protected $project;
-    
+
     public function __construct($project)
     {
         $this->project = $project;
     }
 
-    public function collection()
+    public function view(): View
     {
-        return ProjectActivity::where('project_id', $this->project->id)->get([
-            'title',
-            'start_date',
-            'completion_date',
-            'parent_id',
-            'project_id',
+        return view('Project::Excel.activity-export', [
+            'project' => $this->project,
         ]);
     }
 
-    public function headings(): array
+    public function registerEvents(): array
     {
         return [
-            'Title',
-            'Start Date',
-            'Completion Date',
-            'Parent ID',
-            'Project ID',
+            AfterSheet::class => function (AfterSheet $event) {
+                foreach (range('A', 'Z') as $column) {
+                    $event->sheet->getColumnDimension($column)->setAutoSize(true);
+                }
+                $event->sheet->getColumnDimension('A')->setWidth(15); 
+                $event->sheet->getColumnDimension('B')->setWidth(40); 
+            },
         ];
     }
 }

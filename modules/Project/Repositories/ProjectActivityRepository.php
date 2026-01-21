@@ -24,7 +24,6 @@ class ProjectActivityRepository extends Repository
             DB::commit();
             return $record;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e->getMessage());
             logger()->error($e->getMessage());
             DB::rollback();
             return false;

@@ -43,10 +43,10 @@ class ProjectController
                     $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
-                    data-href="' . route('project.destroy', $row->id) . '"
-                    data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
-                    $btn .= '<i class="bi bi-trash"></i></button>';
+                    // $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                    // data-href="' . route('project.destroy', $row->id) . '"
+                    // data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                    // $btn .= '<i class="bi bi-trash"></i></button>';
 
 
                     return $btn;
@@ -73,7 +73,7 @@ class ProjectController
         $inputs = $request->validated();
         $project = $this->projectRepository->create($inputs);
         if ($project) {
-            return redirect()->route('project.edit', $project->id)->withSuccessMessage('Project created successfully.');
+            return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
         }
         return redirect()->back()->withInput()->withErrorMessage('Failed to create Project.');
     }
@@ -107,11 +107,17 @@ class ProjectController
 
     public function destroy($id)
     {
-        $this->projectRepository->destroy($id);
+        $project = $this->projectRepository->destroy($id);
+        if ($project) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Project is successfully deleted.',
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Project deleted successfully.',
-            'redirect' => route('project.index'),
-        ]);
+            'type' => 'error',
+            'message' => 'Project can not deleted.',
+        ], 422);
     }
 }

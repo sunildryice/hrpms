@@ -40,6 +40,6 @@ class Project extends Model
 
     public function activities()
     {
-        return $this->belongsToMany(ProjectActivity::class, 'project_activities', 'project_id', 'id');
+        return $this->hasMany(ProjectActivity::class, 'project_id', 'id');
     }
 }

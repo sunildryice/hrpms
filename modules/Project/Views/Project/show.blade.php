@@ -242,8 +242,8 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover table-bordered table-striped" id="projectActivityTable">
-                                <thead class="bg-light">
+                            <table class="table table-bordered" id="projectActivityTable">
+                                <thead class="thead-light">
                                     <tr>
                                         <th>SN</th>
                                         <th>Stage</th>

@@ -3,10 +3,10 @@
 namespace Modules\Project\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
-use Modules\Project\Models\Project\ProjectActivity;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Project\Models\ProjectActivity;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Project extends Model
 {
@@ -40,6 +40,6 @@ class Project extends Model
 
     public function activities()
     {
-        return $this->belongsToMany(ProjectActivity::class, 'project_activities', 'project_id', 'id');
+        return $this->hasMany(ProjectActivity::class, 'project_id', 'id');
     }
 }

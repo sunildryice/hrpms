@@ -2,21 +2,23 @@
 
 namespace Modules\Project\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Project\Requests\ProjectActivity\StoreRequest;
-use Modules\Project\Requests\ProjectActivity\UpdateRequest;
-use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Project;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Repositories\ProjectActivityRepository;
+use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Project\Models\ProjectActivity;
+use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Requests\ProjectActivity\StoreRequest;
+use Modules\Project\Repositories\ProjectActivityRepository;
+use Modules\Project\Requests\ProjectActivity\UpdateRequest;
 
 class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {}
+    ) {
+    }
 
     public function index(Request $request, Project $project)
     {
@@ -42,7 +44,7 @@ class ProjectActivityController extends Controller
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
-                $btn  .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
+                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
                 $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
                 $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
@@ -74,7 +76,6 @@ class ProjectActivityController extends Controller
         $input = $request->validated();
         $input['project_id'] = $project->id;
         $this->projectActivity->create($input);
-
 
         return response()->json([
             'message' => 'Project Activity created successfully.',
@@ -119,11 +120,18 @@ class ProjectActivityController extends Controller
     public function destroy(ProjectActivity $projectActivity)
     {
         $projectId = $projectActivity->project_id;
-        $this->projectActivity->destroy($projectActivity->id);
+        $projectActivity = $this->projectActivity->destroy($projectActivity->id);
+        if ($projectActivity) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Project Activity is successfully deleted.',
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Project Activity deleted successfully.',
+            'type' => 'error',
+            'message' => 'Project Activity can not deleted.',
             'redirect' => route('project.show', $projectId),
-        ]);
+        ], 422);
     }
 }

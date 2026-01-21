@@ -17,7 +17,8 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -38,14 +39,14 @@ class ProjectController
                     $btn .= route('project.show', $row->id) . '" rel="tooltip" title="View Project">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
 
-                    $btn  .= ' <a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
-                    data-href="' . route('project.destroy', $row->id) . '"
-                    data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
-                    $btn .= '<i class="bi bi-trash"></i></button>';
+                    // $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                    // data-href="' . route('project.destroy', $row->id) . '"
+                    // data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                    // $btn .= '<i class="bi bi-trash"></i></button>';
 
 
                     return $btn;
@@ -53,8 +54,7 @@ class ProjectController
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
-
-
+        
         return view('Project::Project.index');
     }
 
@@ -70,22 +70,11 @@ class ProjectController
     public function store(StoreRequest $request)
     {
         $inputs = $request->validated();
-
-        try {
-            $stages = $inputs['stages'];
-            $members = $inputs['members'];
-
-            $project = $this->projectRepository->create($inputs);
-
-            $project->stages()->sync($stages);
-
-            $project->members()->sync($members);
-
-
-            return redirect()->route('project.edit', $project->id)->withSuccessMessage('Project created successfully.');
-        } catch (\Exception $e) {
-            return redirect()->back()->withInput()->withErrorMessage('Failed to create Project. ' . $e->getMessage());
+        $project = $this->projectRepository->create($inputs);
+        if ($project) {
+            return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
         }
+        return redirect()->back()->withInput()->withErrorMessage('Failed to create Project.');
     }
 
     public function show($id)
@@ -99,7 +88,7 @@ class ProjectController
 
     public function edit($id)
     {
-        $project = $this->projectRepository->with('members', 'stages')->find($id);
+        $project = $this->projectRepository->with(['members', 'stages'])->find($id);
         $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
         return view('Project::Project.edit', compact('project', 'users', 'stages'));
@@ -108,27 +97,26 @@ class ProjectController
     public function update($id, UpdateRequest $request)
     {
         $inputs = $request->validated();
-
-        $this->projectRepository->update($id, $inputs);
-
-        $project = $this->projectRepository->find($id);
-        $stages = $inputs['stages'];
-        $members = $inputs['members'];
-        $project->stages()->sync($stages);
-        $project->members()->sync($members);
-
-
-
-        return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');
+        $project = $this->projectRepository->update($id, $inputs);
+        if ($project) {
+            return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');
+        }
+        return redirect()->back()->withInput()->withErrorMessage('Failed to update Project.');
     }
 
     public function destroy($id)
     {
-        $this->projectRepository->destroy($id);
+        $project = $this->projectRepository->destroy($id);
+        if ($project) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Project is successfully deleted.',
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Project deleted successfully.',
-            'redirect' => route('project.index'),
-        ]);
+            'type' => 'error',
+            'message' => 'Project can not deleted.',
+        ], 422);
     }
 }

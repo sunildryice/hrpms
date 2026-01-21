@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectController;
+use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ProjectActivityExportController;
+use Modules\Project\Controllers\ProjectActivityImportController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -19,14 +21,17 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/activity-stages', [ActivityStageController::class, 'index'])->name('activity-stages.index');
     Route::get('/activity-stages/create', [ActivityStageController::class, 'create'])->name('activity-stage.create');
     Route::post('/activity-stages/store', [ActivityStageController::class, 'store'])->name('activity-stage.store');
-    Route::get('/activity-stages/{id}/edit', [
-        ActivityStageController::class,
-        'edit'
-    ])->name('activity-stage.edit');
+    Route::get('/activity-stages/{id}/edit', [ActivityStageController::class, 'edit'])->name('activity-stage.edit');
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
+    // import project activity routes
+    Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'create'])->name('project-activity.import.create');
+    Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'store'])->name('project-activity.import.store');
+
+    // export project activity routes
+    Route::get('/project-activity/export/{project}', [ProjectActivityExportController::class, 'export'])->name('project-activity.export');
 
     Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
     Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');

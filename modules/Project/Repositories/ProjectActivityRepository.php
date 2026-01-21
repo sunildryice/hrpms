@@ -24,7 +24,6 @@ class ProjectActivityRepository extends Repository
             DB::commit();
             return $record;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e->getMessage());
             logger()->error($e->getMessage());
             DB::rollback();
             return false;
@@ -42,6 +41,23 @@ class ProjectActivityRepository extends Repository
             }
             DB::commit();
             return $record;
+        } catch (\Illuminate\Database\QueryException $e) {
+            logger()->error($e->getMessage());
+            DB::rollback();
+            return false;
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->model->findOrFail($id);
+            $record->members()->sync([]);
+            $record->delete();
+
+            DB::commit();
+            return true;
         } catch (\Illuminate\Database\QueryException $e) {
             logger()->error($e->getMessage());
             DB::rollback();

@@ -260,7 +260,7 @@
                     <div class="card-footer border-0 justify-content-end d-flex gap-2">
                         <button type="submit" class="btn btn-primary btn-sm">Update</button>
                         {{-- <button class="btn btn-success btn-sm">Update</button> --}}
-                        <a href="{!! route('employees.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                        <a href="{!! route('project.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                     </div>
                 </form>
             </div>

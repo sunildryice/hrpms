@@ -17,7 +17,7 @@ class UpdateRequest extends FormRequest
             'budget_description' => 'nullable|string',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
-            'members[]' => 'required|array|min:1',
+            'members' => 'required|array|min:1',
             'members.*' => 'exists:users,id',
         ];
     }

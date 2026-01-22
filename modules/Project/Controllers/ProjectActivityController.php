@@ -17,7 +17,8 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {}
+    ) {
+    }
 
     public function index(Request $request, Project $project)
     {
@@ -38,6 +39,9 @@ class ProjectActivityController extends Controller
             ->addColumn('parent', function ($row) {
                 return $row->parent?->title;
             })
+            ->addColumn('activity_level', function ($row) {
+                return ucfirst(str_replace('_', ' ', $row->activity_level));
+            })
             ->addColumn('action', function ($row) use ($authUser) {
                 $btn = '<a class="btn btn-outline-primary btn-sm open-project-activity-modal-form" href="';
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
@@ -57,7 +61,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-trash"></i></button>';
                 }
 
-
+                // Timesheet button of the activity for assigned users which is not theme activity level
+                if ($row->activity_level !== ActivityLevel::Theme) {
+                    // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
+                    // if ($isAssigned) {
+                        $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
+                        $btn .= '<i class="bi bi-clock"></i></a>';
+                    // }
+                }
 
                 return $btn;
             })

@@ -64,4 +64,9 @@ class ProjectActivity extends Model
     {
         return $this->members->pluck('full_name')->join(', ');
     }
+
+    public function isUserAssignedToActivity($userId, $activityId)
+    {
+        return $this->members()->where('user_id', $userId)->where('activity_id', $activityId)->exists();
+    }
 }

@@ -277,50 +277,50 @@
             </div>
         </div>
 
-        @can('manage-project-activities')
-            <div class="col-lg-9">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="fw-bold">Project Activity</span>
-                            <div class="justify-content-end d-flex gap-2">
+
+        <div class="col-lg-9">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold">Project Activity</span>
+                        <div class="justify-content-end d-flex gap-2">
+
+                            @can('manage-project-activity-on-certain-time', $project)
                                 <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
                                     href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                     <i class="bi-plus"></i> Import Activity
                                 </button>
-                                @can('add-project-activity-on-certain-time', $project)
-                                    <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                        href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
-                                            class="bi-plus"></i> Add Project Activity
-                                    </button>
-                                @endcan
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="projectActivityTable">
-                                <thead class="thead-light">
-                                    <tr>
-                                        <th>SN</th>
-                                        <th>Stage</th>
-                                        <th>Activity Level</th>
-                                        <th>Parent Activity</th>
-                                        <th>Activity Title</th>
-                                        <th>Start Date</th>
-                                        <th>Completion Date</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablebody"></tbody>
-                            </table>
+                                <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                    href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
+                                        class="bi-plus"></i> Add Project Activity
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
-
-                <div id="project-activity-modal-container"></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="projectActivityTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Stage</th>
+                                    <th>Activity Level</th>
+                                    <th>Parent Activity</th>
+                                    <th>Activity Title</th>
+                                    <th>Start Date</th>
+                                    <th>Completion Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        @endcan
+
+            <div id="project-activity-modal-container"></div>
+        </div>
     </div>
 
     <div id="project-activity-modal-container">

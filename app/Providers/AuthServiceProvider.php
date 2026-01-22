@@ -124,14 +124,7 @@ class AuthServiceProvider extends ServiceProvider
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
         });
 
-        Gate::define('add-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
-
-            $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
-
-            return $project->isFocalPerson($user->id) && $checkCurrentActivePeriod;
-        });
-
-        Gate::define('edit-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
+        Gate::define('manage-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
 
             $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
 

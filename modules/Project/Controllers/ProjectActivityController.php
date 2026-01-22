@@ -43,18 +43,21 @@ class ProjectActivityController extends Controller
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
-                if (Gate::allows('edit-project-activity-on-certain-time', $row->project)) {
+                if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
                     $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
                     $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
+
+
+                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
+                data-href="';
+                    $btn .= route('project-activity.destroy', $row->id) . '"
+                data-id="';
+                    $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
+                    $btn .= '<i class="bi bi-trash"></i></button>';
                 }
 
-                $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
-                data-href="';
-                $btn .= route('project-activity.destroy', $row->id) . '"
-                data-id="';
-                $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
-                $btn .= '<i class="bi bi-trash"></i></button>';
+
 
                 return $btn;
             })

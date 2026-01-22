@@ -480,6 +480,15 @@
                                 </a>
                             </div>
                         @endif
+
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('activity-access-periods.index') }}" role="button"
+                                id="activity-access-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Activity Access Periods">
+                                <i class="bi bi-list-stars nav-icon"></i>
+                                <span class="nav-link-title">Activity Access Periods</span>
+                            </a>
+                        </div>
                     @endif
 
                     @if (

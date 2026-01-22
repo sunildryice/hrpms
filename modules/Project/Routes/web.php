@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Project\Controllers\ActivityAccessPeriodController;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
@@ -25,6 +26,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
+
+    Route::get('/activity-access-periods', [ActivityAccessPeriodController::class, 'index'])->name('activity-access-periods.index');
+    Route::get('/activity-access-periods/create', [ActivityAccessPeriodController::class, 'create'])->name('activity-access-periods.create');
+    Route::post('/activity-access-periods/store', [ActivityAccessPeriodController::class, 'store'])->name('activity-access-periods.store');
+    Route::get('/activity-access-periods/{id}/show', [ActivityAccessPeriodController::class, 'show'])->name('activity-access-periods.show');
+    Route::get('/activity-access-periods/{id}/edit', [ActivityAccessPeriodController::class, 'edit'])->name('activity-access-periods.edit');
+    Route::post('/activity-access-periods/{id}/update', [ActivityAccessPeriodController::class, 'update'])->name('activity-access-periods.update');
+    Route::delete('/activity-access-periods/{id}/delete', [ActivityAccessPeriodController::class, 'destroy'])->name('activity-access-periods.destroy');
 
     Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'create'])->name('project-activity.import.create');
     Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'store'])->name('project-activity.import.store');

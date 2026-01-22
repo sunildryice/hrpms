@@ -3,21 +3,20 @@
 namespace Modules\Project\Repositories;
 
 use App\Repositories\Repository;
-use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\ActivityUpdatePeriod;
 
-class ActivityStageRepository extends Repository
+class ActivityUpdatePeriodRepository extends Repository
 {
-    public function __construct(ActivityStage $model)
+    public function __construct(ActivityUpdatePeriod $model)
     {
         $this->model = $model;
     }
 
-    public function checkCurrentActivityAccess(): bool
+    public function checkCurrentActivePeriod(): bool
     {
         $currentDate = date('Y-m-d');
 
-        return ActivityUpdatePeriod::active()
+        return $this->model->active()
             ->where('start_date', '<=', $currentDate)
             ->where('end_date', '>=', $currentDate)
             ->exists();

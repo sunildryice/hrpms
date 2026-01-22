@@ -2,15 +2,16 @@
 
 namespace Modules\Project\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Project\Requests\ProjectActivity\StoreRequest;
-use Modules\Project\Requests\ProjectActivity\UpdateRequest;
-use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Project;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Repositories\ProjectActivityRepository;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Project\Models\ProjectActivity;
+use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Requests\ProjectActivity\StoreRequest;
+use Modules\Project\Repositories\ProjectActivityRepository;
+use Modules\Project\Requests\ProjectActivity\UpdateRequest;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectActivityController extends Controller
 {
@@ -42,16 +43,21 @@ class ProjectActivityController extends Controller
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
-                $btn  .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
-                $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
-                $btn .= '<i class="bi bi-pencil-square"></i></a>';
+                if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
+                    $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
+                    $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
+
+                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';
-                $btn .= route('project-activity.destroy', $row->id) . '"
+                    $btn .= route('project-activity.destroy', $row->id) . '"
                 data-id="';
-                $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
-                $btn .= '<i class="bi bi-trash"></i></button>';
+                    $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
+                    $btn .= '<i class="bi bi-trash"></i></button>';
+                }
+
+
 
                 return $btn;
             })
@@ -71,10 +77,11 @@ class ProjectActivityController extends Controller
 
     public function store(StoreRequest $request, Project $project)
     {
+        $authUser = auth()->user();
         $input = $request->validated();
         $input['project_id'] = $project->id;
+        $inputs['created_by'] = $authUser->id;
         $this->projectActivity->create($input);
-
 
         return response()->json([
             'message' => 'Project Activity created successfully.',
@@ -89,8 +96,9 @@ class ProjectActivityController extends Controller
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
         $project = $projectActivity->project;
+        $authUser = auth()->user();
 
-        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project'));
+        return view('Project::ProjectActivity.show', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project', 'authUser'));
     }
 
     public function edit($id)
@@ -106,8 +114,10 @@ class ProjectActivityController extends Controller
 
     public function update(UpdateRequest $request, ProjectActivity $projectActivity)
     {
+        $authUser = auth()->user();
         $input = $request->validated();
         $input['project_id'] = $projectActivity->project_id;
+        $input['updated_by'] = $authUser->id;
         $this->projectActivity->update($projectActivity->id, $input);
 
         return response()->json([
@@ -119,11 +129,18 @@ class ProjectActivityController extends Controller
     public function destroy(ProjectActivity $projectActivity)
     {
         $projectId = $projectActivity->project_id;
-        $this->projectActivity->destroy($projectActivity->id);
+        $projectActivity = $this->projectActivity->destroy($projectActivity->id);
+        if ($projectActivity) {
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Project Activity is successfully deleted.',
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Project Activity deleted successfully.',
+            'type' => 'error',
+            'message' => 'Project Activity can not deleted.',
             'redirect' => route('project.show', $projectId),
-        ]);
+        ], 422);
     }
 }

@@ -4,6 +4,7 @@ namespace Modules\Project\Repositories;
 
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Modules\Project\Models\ProjectActivity;
 
 class ProjectActivityRepository extends Repository
@@ -15,19 +16,18 @@ class ProjectActivityRepository extends Repository
 
     public function create($inputs)
     {
-
         DB::beginTransaction();
         try {
             $record = $this->model->create($inputs);
-            $record->members()->sync($inputs['members']);
-
+            if (isset($inputs['members']) && is_array($inputs['members'])) {
+                $record->members()->sync($inputs['members']);
+            }
             DB::commit();
             return $record;
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e->getMessage());
+        } catch (QueryException $e) {
             logger()->error($e->getMessage());
             DB::rollback();
-            return false;
+            throw $e;
         }
     }
 
@@ -42,10 +42,27 @@ class ProjectActivityRepository extends Repository
             }
             DB::commit();
             return $record;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             logger()->error($e->getMessage());
             DB::rollback();
-            return false;
+            throw $e;
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $record = $this->model->findOrFail($id);
+            $record->members()->sync([]);
+            $record->delete();
+
+            DB::commit();
+            return true;
+        } catch (QueryException $e) {
+            logger()->error($e->getMessage());
+            DB::rollback();
+            throw $e;
         }
     }
 }

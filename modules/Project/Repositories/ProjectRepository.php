@@ -58,4 +58,25 @@ class ProjectRepository extends Repository
             return false;
         }
     }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $project = $this->model->findOrFail($id);
+            $project->stages()->sync([]);
+            $project->members()->sync([]);
+            foreach ($project->activities as $activity) {
+                $activity->members()->sync([]);
+            }
+            $project->activities()->delete();
+            $project->delete();
+            DB::commit();
+
+            return true;
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollback();
+            return false;
+        }
+    }
 }

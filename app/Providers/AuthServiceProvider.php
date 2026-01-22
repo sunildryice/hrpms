@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Modules\Employee\Models\Address;
@@ -49,6 +50,9 @@ use Modules\LieuLeave\Models\LieuLeaveRequest;
 use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
+use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
+use Modules\Project\Repositories\ActivityUpdatePeriodRepository;
 use Modules\WorkFromHome\Models\WorkFromHome;
 use Modules\WorkFromHome\Policies\WorkFromHomePolicy;
 
@@ -118,6 +122,13 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('approve-event-form', function ($user) use ($permission) {
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
+        });
+
+        Gate::define('manage-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
+
+            $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
+
+            return $project->isFocalPerson($user->id) && $checkCurrentActivePeriod;
         });
     }
 }

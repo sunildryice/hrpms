@@ -194,6 +194,55 @@
 
                 });
             });
+
+            $(document).on('click', '.open-import-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('activityImportForm');
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            attachment: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Attachment is required',
+                                    },
+                                    file: {
+                                        extension: 'xls,xlsx',
+                                        type: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                        message: 'Please choose an Excel file',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function(event) {
+                        const $url = fv.form.action;
+                        const $form = fv.form;
+                        const data = new FormData($form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message, 'Success', {
+                                timeOut: 5000
+                            });
+                            $('#projectActivityTable').DataTable().ajax.reload();
+                        };
+                        ajaxSubmitFormData($url, 'POST', data, function(response) {
+                            successCallback(response);
+                        });
+                    });
+                });
+            });
         });
     </script>
 @endsection
@@ -228,42 +277,50 @@
             </div>
         </div>
 
-        @can('manage-project-activities')
-            <div class="col-lg-9">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold">Project Activity</span>
-                            <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
-                                    class="bi-plus"></i> Add Project Activity
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover table-bordered table-striped" id="projectActivityTable">
-                                <thead class="bg-light">
-                                    <tr>
-                                        <th>SN</th>
-                                        <th>Stage</th>
-                                        <th>Activity Level</th>
-                                        <th>Parent Activity</th>
-                                        <th>Activity Title</th>
-                                        <th>Start Date</th>
-                                        <th>Completion Date</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tablebody"></tbody>
-                            </table>
+
+        <div class="col-lg-9">
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold">Project Activity</span>
+                        <div class="justify-content-end d-flex gap-2">
+
+                            @can('manage-project-activity-on-certain-time', $project)
+                                <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
+                                    href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
+                                    <i class="bi-plus"></i> Import Activity
+                                </button>
+                                <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                    href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
+                                        class="bi-plus"></i> Add Project Activity
+                                </button>
+                            @endcan
                         </div>
                     </div>
                 </div>
-
-                <div id="project-activity-modal-container"></div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="projectActivityTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Stage</th>
+                                    <th>Activity Level</th>
+                                    <th>Parent Activity</th>
+                                    <th>Activity Title</th>
+                                    <th>Start Date</th>
+                                    <th>Completion Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        @endcan
+
+            <div id="project-activity-modal-container"></div>
+        </div>
     </div>
 
     <div id="project-activity-modal-container">

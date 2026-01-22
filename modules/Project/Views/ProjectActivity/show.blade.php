@@ -1,5 +1,5 @@
 <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Project Activity</h5>
+    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Show Project Activity</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 

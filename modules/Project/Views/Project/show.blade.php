@@ -28,7 +28,7 @@
                 serverSide: true,
                 ajax: "{{ route('project-activity.index', $project->id) }}",
                 bFilter: false,
-                bPaginate: false,
+                bPaginate: true,
                 bInfo: false,
                 columns: [{
                         data: 'DT_RowIndex',

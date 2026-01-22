@@ -61,8 +61,7 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-trash"></i></button>';
                 }
 
-                // Timesheet button of the activity for assigned users which is not theme activity level
-                if ($row->activity_level !== ActivityLevel::Theme) {
+                if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
                     // if ($isAssigned) {
                         $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';

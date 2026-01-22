@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('activity_id');
-            $table->unsignedBigInteger('user_id');
             $table->date('timesheet_date');
             $table->decimal('hours_spent', 5, 2);
             $table->text('description')->nullable();

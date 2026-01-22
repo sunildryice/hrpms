@@ -15,7 +15,6 @@ class ActivityTimeSheet extends Model
     protected $fillable = [
         'project_id',
         'activity_id',
-        'user_id',
         'timesheet_date',
         'hours_spent',
         'description',
@@ -34,10 +33,5 @@ class ActivityTimeSheet extends Model
     public function activity()
     {
         return $this->belongsTo(ProjectActivity::class, 'activity_id');
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
     }
 }

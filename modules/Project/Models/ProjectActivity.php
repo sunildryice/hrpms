@@ -50,6 +50,11 @@ class ProjectActivity extends Model
         return $this->belongsToMany(User::class, 'project_activity_members', 'activity_id', 'user_id');
     }
 
+    public function timesheets()
+    {
+        return $this->hasMany(ActivityTimeSheet::class, 'activity_id');
+    }
+
     public function parentName()
     {
         return $this->parent ? $this->parent->title : '';

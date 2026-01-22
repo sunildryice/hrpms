@@ -14,14 +14,14 @@
     <tbody>
         @foreach ($project->activities as $activity)
             <tr>
-                <td>{{ $loop->iteration }}</td>
+                {{-- <td>{{ $loop->iteration }}</td>
                 <td>{{ $activity->title }}</td>
                 <td>{{ $activity->stageName() }}</td>
                 <td>{{ $activity->activity_level }}</td>
                 <td>{{ $activity->parentName() }}</td>
                 <td>{{ $activity->start_date?->format('Y-m-d') }}</td>
                 <td>{{ $activity->completion_date?->format('Y-m-d') }}</td>
-                <td>{{ $activity->memberNames() }}</td>
+                <td>{{ $activity->memberNames() }}</td> --}}
             </tr>
         @endforeach
 

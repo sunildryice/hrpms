@@ -40,7 +40,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
 
                 $title = trim($row['activity_name'] ?? $row['activity-name'] ?? $row['activity name'] ?? '');
                 $stage_name = trim($row['stage_name'] ?? $row['stage-name'] ?? '');
-                $level = trim($row['activity_level'] ?? $row['activity-level'] ?? '');
+                $level = $this->normalizeActivityLevel($row['activity_level'] ?? '');
                 $start_raw = $row['start_date'] ?? null;
                 $end_raw = $row['end_date'] ?? null;
                 $members_str = trim($row['members'] ?? '');
@@ -145,6 +145,18 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         } catch (\Exception $e) {
             return null;
         }
+    }
+
+    private function normalizeActivityLevel($raw): string
+    {
+        $normalized = trim(strtolower($raw));
+
+        return match ($normalized) {
+            'theme', 'themes' => 'theme',
+            'activity', 'activities', 'act' => 'activity',
+            'sub activity', 'sub-activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
+            default => 'activity',
+        };
     }
 
     private function syncMembersFromString(ProjectActivity $activity, string $namesCsv): void

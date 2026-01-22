@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Project\Controllers\ActivityAccessPeriodController;
+use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
@@ -27,13 +27,13 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
 
-    Route::get('/activity-access-periods', [ActivityAccessPeriodController::class, 'index'])->name('activity-access-periods.index');
-    Route::get('/activity-access-periods/create', [ActivityAccessPeriodController::class, 'create'])->name('activity-access-periods.create');
-    Route::post('/activity-access-periods/store', [ActivityAccessPeriodController::class, 'store'])->name('activity-access-periods.store');
-    Route::get('/activity-access-periods/{id}/show', [ActivityAccessPeriodController::class, 'show'])->name('activity-access-periods.show');
-    Route::get('/activity-access-periods/{id}/edit', [ActivityAccessPeriodController::class, 'edit'])->name('activity-access-periods.edit');
-    Route::post('/activity-access-periods/{id}/update', [ActivityAccessPeriodController::class, 'update'])->name('activity-access-periods.update');
-    Route::delete('/activity-access-periods/{id}/delete', [ActivityAccessPeriodController::class, 'destroy'])->name('activity-access-periods.destroy');
+    Route::get('/activity-update-periods', [ActivityUpdatePeriodController::class, 'index'])->name('activity-update-periods.index');
+    Route::get('/activity-update-periods/create', [ActivityUpdatePeriodController::class, 'create'])->name('activity-update-periods.create');
+    Route::post('/activity-update-periods/store', [ActivityUpdatePeriodController::class, 'store'])->name('activity-update-periods.store');
+    Route::get('/activity-update-periods/{id}/show', [ActivityUpdatePeriodController::class, 'show'])->name('activity-update-periods.show');
+    Route::get('/activity-update-periods/{id}/edit', [ActivityUpdatePeriodController::class, 'edit'])->name('activity-update-periods.edit');
+    Route::post('/activity-update-periods/{id}/update', [ActivityUpdatePeriodController::class, 'update'])->name('activity-update-periods.update');
+    Route::delete('/activity-update-periods/{id}/delete', [ActivityUpdatePeriodController::class, 'destroy'])->name('activity-update-periods.destroy');
 
     Route::get('/project-activity/import/{project}', [ProjectActivityImportController::class, 'create'])->name('project-activity.import.create');
     Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'store'])->name('project-activity.import.store');

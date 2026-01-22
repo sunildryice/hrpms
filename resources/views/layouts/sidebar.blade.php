@@ -482,11 +482,11 @@
                         @endif
 
                         <div class="nav-item">
-                            <a class="nav-link" href="{{ route('activity-access-periods.index') }}" role="button"
-                                id="activity-access-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Activity Access Periods">
+                            <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
+                                id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Activity Update Periods">
                                 <i class="bi bi-list-stars nav-icon"></i>
-                                <span class="nav-link-title">Activity Access Periods</span>
+                                <span class="nav-link-title">Activity Update Periods</span>
                             </a>
                         </div>
                     @endif

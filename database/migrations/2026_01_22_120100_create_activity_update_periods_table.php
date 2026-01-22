@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('lkup_activity_access_periods', function (Blueprint $table) {
+        Schema::create('lkup_activity_update_periods', function (Blueprint $table) {
             $table->id();
             $table->date('start_date');
             $table->date('end_date');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lkup_activity_access_periods');
+        Schema::dropIfExists('lkup_activity_update_periods');
     }
 };

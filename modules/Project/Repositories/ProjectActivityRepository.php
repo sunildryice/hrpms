@@ -19,8 +19,9 @@ class ProjectActivityRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->create($inputs);
-            $record->members()->sync($inputs['members']);
-
+            if (isset($inputs['members']) && is_array($inputs['members'])) {
+                $record->members()->sync($inputs['members']);
+            }
             DB::commit();
             return $record;
         } catch (\Illuminate\Database\QueryException $e) {

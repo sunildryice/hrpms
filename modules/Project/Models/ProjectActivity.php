@@ -54,4 +54,14 @@ class ProjectActivity extends Model
     {
         return $this->parent ? $this->parent->title : '';
     }
+
+    public function stageName()
+    {
+        return $this->stage ? $this->stage->title : '';
+    }
+
+    public function memberNames()
+    {
+        return $this->members->pluck('full_name')->join(', ');
+    }
 }

@@ -16,16 +16,12 @@
             <tr>
                 <td>{{ $activity->id }}</td>
                 <td>{{ $activity->title }}</td>
-                <td>{{ $activity->stage->title }}</td>
+                <td>{{ $activity->stageName() }}</td>
                 <td>{{ $activity->activity_level }}</td>
                 <td>{{ $activity->parentName() }}</td>
                 <td>{{ $activity->start_date?->format('Y-m-d') }}</td>
                 <td>{{ $activity->completion_date?->format('Y-m-d') }}</td>
-                <td>
-                    @foreach ($activity->members as $member)
-                        {{ $member->full_name }}@if (!$loop->last), @endif
-                    @endforeach
-                </td>
+                <td>{{ $activity->memberNames() }}</td>
             </tr>
         @endforeach
 

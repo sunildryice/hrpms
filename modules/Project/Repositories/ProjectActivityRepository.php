@@ -55,6 +55,7 @@ class ProjectActivityRepository extends Repository
         try {
             $record = $this->model->findOrFail($id);
             $record->members()->sync([]);
+            $record->timesheets()->delete();
             $record->delete();
 
             DB::commit();

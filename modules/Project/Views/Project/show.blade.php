@@ -37,20 +37,20 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_stage',
-                        name: 'activity_stage'
-                    },
-                    {
-                        data: 'activity_level',
-                        name: 'activity_level'
+                        data: 'title',
+                        name: 'title'
                     },
                     {
                         data: 'parent',
                         name: 'parent'
                     },
                     {
-                        data: 'title',
-                        name: 'title'
+                        data: 'activity_level',
+                        name: 'activity_level'
+                    },
+                    {
+                        data: 'activity_stage',
+                        name: 'activity_stage'
                     },
                     {
                         data: 'start_date',
@@ -383,10 +383,10 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>SN</th>
-                                    <th>Stage</th>
-                                    <th>Activity Level</th>
-                                    <th>Parent Activity</th>
                                     <th>Activity Title</th>
+                                    <th>Parent Activity</th>
+                                    <th>Activity Level</th>
+                                    <th>Stage</th>
                                     <th>Start Date</th>
                                     <th>Completion Date</th>
                                     <th>Action</th>

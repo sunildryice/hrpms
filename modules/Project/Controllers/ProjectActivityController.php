@@ -19,7 +19,6 @@ class ProjectActivityController extends Controller
         protected ProjectActivityRepository $projectActivity
     ) {
     }
-
     public function index(Request $request, Project $project)
     {
         $data = $this->projectActivity
@@ -60,7 +59,6 @@ class ProjectActivityController extends Controller
                     $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
                     $btn .= '<i class="bi bi-trash"></i></button>';
                 }
-
                 if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
                     // if ($isAssigned) {

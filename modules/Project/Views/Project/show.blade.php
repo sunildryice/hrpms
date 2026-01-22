@@ -178,7 +178,8 @@
                         autoHide: true,
                         format: 'yyyy-mm-dd',
                         startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
-                        endDate: new Date('{{ $project->completion_date->format('Y-m-d') }}'),
+                        endDate: new Date(
+                            '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('start_date');
@@ -189,7 +190,8 @@
                         autoHide: true,
                         format: 'yyyy-mm-dd',
                         startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
-                        endDate: new Date('{{ $project->completion_date->format('Y-m-d') }}'),
+                        endDate: new Date(
+                            '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('completion_date');
@@ -257,7 +259,7 @@
 
                     const fv = FormValidation.formValidation(form, {
                         fields: {
-                            date: {
+                            timesheet_date: {
                                 validators: {
                                     notEmpty: {
                                         message: 'The date is required'
@@ -275,6 +277,11 @@
                                     },
                                     numeric: {
                                         message: 'The hours spent must be a number'
+                                    },
+                                    between: {
+                                        min: 0.1,
+                                        max: 24,
+                                        message: 'Hours spent should be between 0.1 and 24'
                                     }
                                 },
                             },
@@ -302,13 +309,16 @@
                         ajaxSubmitFormData($url, 'POST', formData, successCallback);
                     });
 
-                    $('[name="date"]').datepicker({
+
+                    $('[name="timesheet_date"]').datepicker({
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
+                        startDate: new Date('{{ $projectActivity->min('start_date') ?? '' }}'),
+                        endDate: new Date('{{ $projectActivity->max('completion_date') ?? '' }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
-                        fv.revalidateField('date');
+                        fv.revalidateField('timesheet_date');
                     });
                 });
             });

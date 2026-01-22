@@ -52,6 +52,7 @@ use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
+use Modules\Project\Repositories\ActivityUpdatePeriodRepository;
 use Modules\WorkFromHome\Models\WorkFromHome;
 use Modules\WorkFromHome\Policies\WorkFromHomePolicy;
 
@@ -125,22 +126,16 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('add-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
 
-            $hasPerm = $user->can('add-project-activity');
+            $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
 
-            $quarterStart = Carbon::now()->startOfQuarter();
-            $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));
-
-            return ($project->isFocalPerson($user->id) || $hasPerm) && $isFirstWeek;
+            return $project->isFocalPerson($user->id) && $checkCurrentActivePeriod;
         });
 
         Gate::define('edit-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
 
-            $hasPerm = $user->can('edit-project-activity');
+            $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
 
-            $quarterStart = Carbon::now()->startOfQuarter();
-            $isFirstWeek = Carbon::now()->lte($quarterStart->addDays(6));
-
-            return ($project->isFocalPerson($user->id) || $hasPerm) && $isFirstWeek;
+            return $project->isFocalPerson($user->id) && $checkCurrentActivePeriod;
         });
     }
 }

@@ -11,4 +11,14 @@ class ActivityUpdatePeriodRepository extends Repository
     {
         $this->model = $model;
     }
+
+    public function checkCurrentActivePeriod(): bool
+    {
+        $currentDate = date('Y-m-d');
+
+        return $this->model->active()
+            ->where('start_date', '<=', $currentDate)
+            ->where('end_date', '>=', $currentDate)
+            ->exists();
+    }
 }

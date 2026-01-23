@@ -42,7 +42,7 @@ class ProjectActivityController extends Controller
                 return ucfirst(str_replace('_', ' ', $row->activity_level));
             })
             ->addColumn('action', function ($row) use ($authUser) {
-                $btn = '<a class="btn btn-outline-primary btn-sm open-project-activity-modal-form" href="';
+                $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 

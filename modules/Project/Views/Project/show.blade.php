@@ -15,8 +15,6 @@
     </style>
 @endsection
 
-
-
 @section('page_js')
 
     <script type="text/javascript">
@@ -250,12 +248,11 @@
                 });
             });
 
-            // Timesheet modal for Project Activity
             $(document).on('click', '.open-timesheet-modal-form', function(e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
                 $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
-                    const form = document.getElementById('ProjectActivityTimeSheetCreateForm');
+                    const form = document.getElementById('ProjectActivityTimeSheetForm');
 
                     const fv = FormValidation.formValidation(form, {
                         fields: {

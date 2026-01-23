@@ -4,6 +4,7 @@ namespace Modules\Project\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet; // ← add this
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
@@ -17,16 +18,47 @@ class ProjectActivityTimeSheetController extends Controller
     ) {
     }
 
+    public function index(Request $request, ProjectActivity $projectActivity)
+    {
+        $data = $this->activityTimeSheets
+            ->where('activity_id', '=', $projectActivity->id);
+        $authUser = auth()->user();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->editColumn('timesheet_date', function ($row) {
+                return $row->timesheet_date?->format('M d, Y');
+            })
+            ->addColumn('activity_title', function ($row) {
+                return $row->activity?->title;
+            })
+            ->addColumn('action', function ($row) use ($authUser) {
+
+                $btn = ' <a class="btn btn-outline-primary btn-sm open-timesheet-modal-form" href="';
+                $btn .= route('project-activity.timesheet.edit', $row->id) . '" rel="tooltip" title="Edit Timesheet">';
+                $btn .= '<i class="bi bi-pencil-square"></i></a>';
+
+
+                $btn .= ' <button class="btn btn-outline-danger btn-sm delete-record"
+                data-href="';
+                $btn .= route('project-activity-timesheet.destroy', $row->id) . '"
+                data-id="';
+                $btn .= $row->id . '" rel="tooltip" title="Delete Timesheet"> ';
+                $btn .= '<i class="bi bi-trash"></i></button>';
+
+                return $btn;
+            })
+            ->rawColumns(['action', 'status'])
+            ->make(true);
+    }
     public function create(ProjectActivity $projectActivity)
     {
-        $timesheet = null;
-        return view('Project::ProjectActivityTimeSheet.create', compact('projectActivity', 'timesheet'));
+        return view('Project::ProjectActivityTimeSheet.create', compact('projectActivity'));
     }
 
     public function edit(ActivityTimeSheet $timesheet)
     {
         $projectActivity = $timesheet->activity;
-        return view('Project::ProjectActivityTimeSheet.create', compact('projectActivity', 'timesheet'));
+        return view('Project::ProjectActivityTimeSheet.edit', compact('projectActivity', 'timesheet'));
     }
 
 
@@ -41,7 +73,7 @@ class ProjectActivityTimeSheetController extends Controller
 
         return response()->json([
             'message' => 'Timesheet created successfully.',
-            'redirect' => route('project.show', $projectActivity->project_id),
+            'redirect' => route('project-activity.show', $projectActivity->id),
         ]);
     }
 
@@ -54,7 +86,16 @@ class ProjectActivityTimeSheetController extends Controller
 
         return response()->json([
             'message' => 'Timesheet updated successfully.',
-            'redirect' => route('project.show', $timesheet->project_id),
+            'redirect' => route('project-activity.show', $timesheet->activity_id),
+        ]);
+    }
+
+    public function destroy(ActivityTimeSheet $timesheet)
+    {
+        $this->activityTimeSheets->destroy($timesheet->id);
+
+        return response()->json([
+            'message' => 'Timesheet deleted successfully.',
         ]);
     }
 }

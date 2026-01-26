@@ -121,7 +121,7 @@
                             'parent_id': {
                                 validators: {
                                     callback: {
-                                        message: 'Parent activity is required for Activity & Sub Activity levels',
+                                        message: 'Parent activity is required',
                                         callback: function(input) {
                                             const level = $activityLevelSelect.val();
                                             if (level === 'theme') return true;
@@ -155,7 +155,7 @@
                             'members[]': {
                                 validators: {
                                     callback: {
-                                        message: 'At least one member is required for Activity & Sub Activity',
+                                        message: 'At least one member is required',
                                         callback: function(input) {
                                             const level = $activityLevelSelect.val();
                                             if (level === 'theme') return true;
@@ -167,7 +167,7 @@
                             }
                         },
                         plugins: {
-                            trigger: new FormValidation.plugins.Trigger(),
+                            // Remove live validation trigger to validate only on submit
                             bootstrap5: new FormValidation.plugins.Bootstrap5(),
                             submitButton: new FormValidation.plugins.SubmitButton(),
                             icon: new FormValidation.plugins.Icon({
@@ -197,8 +197,6 @@
                         endDate: new Date(
                             '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
-                    }).on('change', function(e) {
-                        fv.revalidateField('start_date');
                     });
 
                     $('[name="completion_date"]').datepicker({
@@ -209,8 +207,6 @@
                         endDate: new Date(
                             '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
-                    }).on('change', function(e) {
-                        fv.revalidateField('completion_date');
                     });
 
                     const $activityLevelSelect = $('[name="activity_level"]');
@@ -273,11 +269,6 @@
                     $activityLevelSelect.on('change', function() {
                         const level = $(this).val();
                         toggleFieldsBasedOnLevel(level);
-
-                        if (fv) {
-                            fv.revalidateField('parent_id');
-                            fv.revalidateField('members[]');
-                        }
                     });
 
                     $parentSelect.select2({

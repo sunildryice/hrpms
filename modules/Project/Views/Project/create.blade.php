@@ -71,6 +71,25 @@
                             </div>
                         </div>
 
+
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.short-name') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text"
+                                    class="form-control @if ($errors->has('short_name')) is-invalid @endif"
+                                    name="short_name" value="{!! old('short_name') !!}" />
+                                @if ($errors->has('short_name'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="short_name">{!! $errors->first('short_name') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
                         {{-- <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">

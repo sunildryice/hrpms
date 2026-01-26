@@ -394,6 +394,7 @@ return [
     'serial-no' => 'SN',
     'serial-number' => 'Serial Number',
     'service-request-for' => 'Problem/Service Request for',
+    'short-name' => 'Short Name',
     'title' => 'Title',
     'team-lead' => 'Team Lead',
     'termination-days' => 'Termination Days',

@@ -375,6 +375,7 @@ return [
     'start-datetime' => 'Start Datetime',
     'start-time' => 'Start Time',
     'status' => 'Status',
+    'stage' => 'Stage',
     'stages' => 'Stages',
     'stage-name' => 'Stage Name',
     'state' => 'State',

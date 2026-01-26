@@ -154,7 +154,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         return match ($normalized) {
             'theme', 'themes' => 'theme',
             'activity', 'activities', 'act' => 'activity',
-            'sub activity', 'sub-activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
+            'sub activity', 'sub-activity', 'sub_activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
             default => 'activity',
         };
     }

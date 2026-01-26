@@ -1,17 +1,17 @@
 <?php
 
+// repo for project activity timesheet
 namespace Modules\Project\Repositories;
 
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
-use Modules\Project\Models\ProjectActivity;
-
-class ProjectActivityRepository extends Repository
+use Modules\Project\Models\ActivityTimeSheet;
+class ActivityTimeSheetRepository extends Repository
 {
-    public function __construct(protected ProjectActivity $projectActivity)
+    public function __construct(ActivityTimeSheet $model)
     {
-        $this->model = $projectActivity;
+        $this->model = $model;
     }
 
     public function create($inputs)
@@ -19,9 +19,6 @@ class ProjectActivityRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->create($inputs);
-            if (isset($inputs['members']) && is_array($inputs['members'])) {
-                $record->members()->sync($inputs['members']);
-            }
             DB::commit();
             return $record;
         } catch (QueryException $e) {
@@ -37,9 +34,6 @@ class ProjectActivityRepository extends Repository
         try {
             $record = $this->model->findOrFail($id);
             $record->update($inputs);
-            if (isset($inputs['members']) && is_array($inputs['members'])) {
-                $record->members()->sync($inputs['members']);
-            }
             DB::commit();
             return $record;
         } catch (QueryException $e) {
@@ -54,8 +48,6 @@ class ProjectActivityRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
-            $record->members()->sync([]);
-            $record->timesheets()->delete();
             $record->delete();
 
             DB::commit();
@@ -66,4 +58,5 @@ class ProjectActivityRepository extends Repository
             throw $e;
         }
     }
+
 }

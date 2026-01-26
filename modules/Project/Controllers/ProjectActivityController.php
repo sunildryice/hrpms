@@ -17,12 +17,14 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {}
-
+    ) {
+    }
     public function index(Request $request, Project $project)
     {
         $data = $this->projectActivity
-            ->where('project_id', '=', $project->id);
+            ->where('project_id', '=', $project->id)
+            ->withCount('timesheets');
+
         $authUser = auth()->user();
         return DataTables::of($data)
             ->addIndexColumn()
@@ -38,8 +40,11 @@ class ProjectActivityController extends Controller
             ->addColumn('parent', function ($row) {
                 return $row->parent?->title;
             })
+            ->addColumn('activity_level', function ($row) {
+                return ucfirst(str_replace('_', ' ', $row->activity_level));
+            })
             ->addColumn('action', function ($row) use ($authUser) {
-                $btn = '<a class="btn btn-outline-primary btn-sm open-project-activity-modal-form" href="';
+                $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                 $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
                 $btn .= '<i class="bi bi-eye"></i></a>';
 
@@ -56,8 +61,15 @@ class ProjectActivityController extends Controller
                     $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
                     $btn .= '<i class="bi bi-trash"></i></button>';
                 }
-
-
+                if ($row->activity_level !== ActivityLevel::Theme->value) {
+                    // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
+                    // if ($isAssigned) {
+                    if ($row->timesheets_count === 0) {
+                        $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
+                        $btn .= '<i class="bi bi-clock"></i></a>';
+                    }
+                    // }
+                }
 
                 return $btn;
             })

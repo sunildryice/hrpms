@@ -15,8 +15,6 @@
     </style>
 @endsection
 
-
-
 @section('page_js')
 
     <script type="text/javascript">
@@ -28,7 +26,7 @@
                 serverSide: true,
                 ajax: "{{ route('project-activity.index', $project->id) }}",
                 bFilter: false,
-                bPaginate: false,
+                bPaginate: true,
                 bInfo: false,
                 columns: [{
                         data: 'DT_RowIndex',
@@ -37,20 +35,20 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_stage',
-                        name: 'activity_stage'
-                    },
-                    {
-                        data: 'activity_level',
-                        name: 'activity_level'
+                        data: 'title',
+                        name: 'title'
                     },
                     {
                         data: 'parent',
                         name: 'parent'
                     },
                     {
-                        data: 'title',
-                        name: 'title'
+                        data: 'activity_level',
+                        name: 'activity_level'
+                    },
+                    {
+                        data: 'activity_stage',
+                        name: 'activity_stage'
                     },
                     {
                         data: 'start_date',
@@ -177,6 +175,9 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
+                        startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
+                        endDate: new Date(
+                            '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('start_date');
@@ -186,6 +187,9 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
+                        startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
+                        endDate: new Date(
+                            '{{ $project->completion_date->format('Y-m-d') }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('completion_date');
@@ -240,6 +244,78 @@
                         ajaxSubmitFormData($url, 'POST', data, function(response) {
                             successCallback(response);
                         });
+                    });
+                });
+            });
+
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('ProjectActivityTimeSheetForm');
+
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            timesheet_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The date is not a valid date'
+                                    }
+                                },
+                            },
+                            hours_spent: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The hours spent is required'
+                                    },
+                                    numeric: {
+                                        message: 'The hours spent must be a number'
+                                    },
+                                    between: {
+                                        min: 0.1,
+                                        max: 24,
+                                        message: 'Hours spent should be between 0.1 and 24'
+                                    }
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+
+                    $('[name="timesheet_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        startDate: new Date('{{ $projectActivity->min('start_date') ?? '' }}'),
+                        endDate: new Date('{{ $projectActivity->max('completion_date') ?? '' }}'),
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('timesheet_date');
                     });
                 });
             });
@@ -304,10 +380,10 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>SN</th>
-                                    <th>Stage</th>
-                                    <th>Activity Level</th>
-                                    <th>Parent Activity</th>
                                     <th>Activity Title</th>
+                                    <th>Parent Activity</th>
+                                    <th>Activity Level</th>
+                                    <th>Stage</th>
                                     <th>Start Date</th>
                                     <th>Completion Date</th>
                                     <th>Action</th>

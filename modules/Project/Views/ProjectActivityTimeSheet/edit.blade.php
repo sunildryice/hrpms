@@ -52,6 +52,7 @@
                 <textarea name="description" class="form-control" rows="4">{{ $timesheet->description }}</textarea>
             </div>
         </div>
+        
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

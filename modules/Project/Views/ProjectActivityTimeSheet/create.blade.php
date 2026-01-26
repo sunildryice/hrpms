@@ -40,6 +40,7 @@
                 <input type="number" step="0.1" name="hours_spent" class="form-control" />
             </div>
         </div>
+
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -49,16 +50,17 @@
             <div class="col-lg-9">
                 <textarea name="description" class="form-control" rows="4"></textarea>
             </div>
-            <div class="row mb-2">
-                <div class="col-lg-3">
-                    <div class="d-flex align-items-start h-100">
-                        <label for="" class="m-0">Attachment </label>
-                    </div>
+        </div>
+        
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Attachment </label>
                 </div>
-                <div class="col-lg-9">
-                    <input type="file" class="form-control" name="attachment">
-                    <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
-                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="file" class="form-control" name="attachment">
+                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
             </div>
         </div>
     </div>

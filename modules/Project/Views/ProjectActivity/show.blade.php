@@ -172,10 +172,10 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity TimeSheets</span>
                         <div class="justify-content-end d-flex gap-2">
-                            {{-- <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
-                                href="{{ route('project-activity-timesheet.create', ['project' => $project->id]) }}"><i
+                            <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
+                                href="{{ route('project-activity.timesheet.create', ['projectActivity' => $projectActivity->id]) }}"><i
                                     class="bi-plus"></i> Add TimeSheet
-                            </button> --}}
+                            </button>
                         </div>
                     </div>
                 </div>

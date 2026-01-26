@@ -1,103 +1,200 @@
-<div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Show Project Activity</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
+@extends('layouts.container')
 
-<div class="modal-body">
-    {!! csrf_field() !!}
+@section('title', 'Show Project Activity')
 
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Title</label>
+@section('page_js')
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function(e) {
+            $('#navbarVerticalMenu').find('#project-index').addClass('active');
+
+            var oTable = $('#activityTimeSheetTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route("project-activity-timesheet.index", ["projectActivity" => $projectActivity->id]) }}',
+                bFilter: false,
+                bPaginate: true,
+                bInfo: false,
+                columns: [
+                    {
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'activity_title',
+                        name: 'activity_title'
+                    },
+                    {
+                        data: 'timesheet_date',
+                        name: 'timesheet_date'
+                    },
+                    {
+                        data: 'hours_spent',
+                        name: 'hours_spent'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                ],
+            });
+
+            $('#activityTimeSheetTable').on('click', '.delete-record', function(e) {
+                e.preventDefault();
+                $object = $(this);
+                var $url = $object.attr('data-href');
+                var successCallback = function(response) {
+                    toastr.success(response.message, 'Success', {
+                        timeOut: 5000
+                    });
+                    oTable.ajax.reload();
+                }
+                ajaxDeleteSweetAlert($url, successCallback);
+            });
+
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('ProjectActivityTimeSheetForm');
+
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            timesheet_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The date is not a valid date'
+                                    }
+                                },
+                            },
+                            hours_spent: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The hours spent is required'
+                                    },
+                                    numeric: {
+                                        message: 'The hours spent must be a number'
+                                    },
+                                    between: {
+                                        min: 0.1,
+                                        max: 24,
+                                        message: 'Hours spent should be between 0.1 and 24'
+                                    }
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+
+                    $('[name="timesheet_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        startDate: new Date(
+                            '{{ $projectActivity->min('start_date') ?? '' }}'),
+                        endDate: new Date(
+                            '{{ $projectActivity->max('completion_date') ?? '' }}'),
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('timesheet_date');
+                    });
+                });
+            });
+        });
+    </script>
+@endsection
+
+@section('page-content')
+    <div class="pb-3 mb-3 border-bottom">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
+            <div class="brd-crms flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('dashboard.index') }}" class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('project.show', $projectActivity->project_id) }}"
+                                class="text-decoration-none text-dark">Project Details</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Project Activity</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">View Project Activity</h4>
             </div>
-        </div>
-        <div class="col-lg-9">
-            <input type="text" name="title" readonly value="{{ old('title', $projectActivity->title) }}"
-                class="form-control" />
         </div>
     </div>
 
-
-    <div class="row mb-2">
+    <div class="row">
         <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Stage</label>
+            <div class="card">
+                <div class="card-header fw-bold">Project Activity Information</div>
+                <div class="card-body">
+                    @include('Project::Partials.activity-detail')
+                </div>
             </div>
         </div>
         <div class="col-lg-9">
-            <input type="text" name="activity_stage_id" readonly
-                value="{{ old('activity_stage_id', $projectActivity->stage->title) }}" class="form-control" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Activity Level</label>
+            <div class="card h-100">
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold">Project Activity TimeSheets</span>
+                        <div class="justify-content-end d-flex gap-2">
+                            {{-- <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
+                                href="{{ route('project-activity-timesheet.create', ['project' => $project->id]) }}"><i
+                                    class="bi-plus"></i> Add TimeSheet
+                            </button> --}}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="activityTimeSheetTable">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>SN</th>
+                                    <th>Activity Title</th>
+                                    <th>Timesheet Date</th>
+                                    <th>Hours Spent</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablebody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-lg-9">
-            <input type="text" name="activity_level" readonly
-                value="{{ old('activity_level', ucfirst(strtolower($projectActivity->activity_level))) }}"
-                class="form-control" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label m-0">Parent Activity</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <input type="text" name="parent_activity_id" readonly
-                value="{{ old('parent_id', $projectActivity->parent?->title ?? '-') }}" class="form-control" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Start Date</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <input type="text" name="start_date"
-                value="{{ old('start_date', $projectActivity->start_date->format('Y-m-d')) }}" readonly
-                class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Completion Date</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <input type="text" name="completion_date"
-                value="{{ old('completion_date', $projectActivity->completion_date->format('Y-m-d')) }}" readonly
-                class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
-        </div>
-    </div>
-
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label required-label m-0">Members</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            @foreach ($projectActivity->members as $member)
-                <span class="badge bg-secondary mb-1">{{ $member->full_name }}</span>
-            @endforeach
-        </div>
-    </div>
-
-
-</div>
-
-<div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-</div>
+    @endsection

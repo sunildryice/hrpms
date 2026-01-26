@@ -83,8 +83,9 @@ class ProjectController
         $project = $this->projectRepository->find($id);
         $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
+        $projectActivity = $project->activities;
         $authUser = auth()->user();
-        return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser'));
+        return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
     }
 
 

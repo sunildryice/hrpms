@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
+use Modules\Project\Controllers\ProjectActivityTimeSheetController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -47,4 +48,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
     Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
+    
+    Route::get('/project-activity/{projectActivity}/timesheet/data', [ProjectActivityTimeSheetController::class, 'index'])->name('project-activity-timesheet.index');
+    Route::get('/project-activity/{projectActivity}/timesheet/create', [ProjectActivityTimeSheetController::class, 'create'])->name('project-activity.timesheet.create');
+    Route::get('/project-activity/timesheet/{timesheet}/edit', [ProjectActivityTimeSheetController::class, 'edit'])->name('project-activity.timesheet.edit');
+    Route::post('/project-activity/{projectActivity}/timesheet/store', [ProjectActivityTimeSheetController::class, 'store'])->name('project-activity.timesheet.store');
+    Route::put('/project-activity/timesheet/{timesheet}/update', [ProjectActivityTimeSheetController::class, 'update'])->name('project-activity.timesheet.update');
+    Route::delete('/project-activity/timesheet/{timesheet}/delete', [ProjectActivityTimeSheetController::class, 'destroy'])->name('project-activity-timesheet.destroy');
 });

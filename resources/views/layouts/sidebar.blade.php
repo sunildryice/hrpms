@@ -457,8 +457,7 @@
                             </div>
                         </div>
                     @endif
-
-                    {{-- @if ($authUser->can('manage-pms')) --}}
+                    {{-- Project Management Menu --}}
                     <span class="dropdown-header fw-bold">Project Management</span>
 
                     <div class="nav-item">
@@ -480,15 +479,17 @@
                         </div>
                     @endif
 
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
-                            id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Activity Update Periods">
-                            <i class="bi bi-list-stars nav-icon"></i>
-                            <span class="nav-link-title">Activity Update Periods</span>
-                        </a>
-                    </div>
-                    {{-- @endif --}}
+
+                    @if ($authUser->can('manage-activity-update-periods'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
+                                id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Activity Update Periods">
+                                <i class="bi bi-list-stars nav-icon"></i>
+                                <span class="nav-link-title">Activity Update Periods</span>
+                            </a>
+                        </div>
+                    @endif
 
                     @if (
                         $authUser->can('local-travel') ||

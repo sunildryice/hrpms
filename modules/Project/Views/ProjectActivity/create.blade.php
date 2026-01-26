@@ -69,7 +69,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Start Date</label>
+                    <label class="form-label m-0">Start Date</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -81,7 +81,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">End Date</label>
+                    <label class="form-label m-0">End Date</label>
                 </div>
             </div>
             <div class="col-lg-9">

@@ -39,9 +39,19 @@ class Project extends Model
         return $this->belongsTo(User::class, 'focal_person_id', 'id');
     }
 
+    public function teamLead()
+    {
+        return $this->belongsTo(User::class, 'team_lead_id', 'id');
+    }
+
     public function isFocalPerson($userId): bool
     {
         return $this->focal_person_id == $userId;
+    }
+
+    public function isTeamLead($userId): bool
+    {
+        return $this->team_lead_id == $userId;
     }
 
     public function stages()

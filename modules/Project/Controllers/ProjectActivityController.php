@@ -17,12 +17,21 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
-    }
+    ) {}
     public function index(Request $request, Project $project)
     {
+        $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
+            ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id), function ($query) {
+                // Focal Person or Team Lead can see all activities
+                return $query;
+            }, function ($query) use ($authUser) {
+                // Other users can see only assigned activities
+                return $query->whereHas('members', function ($q) use ($authUser) {
+                    $q->where('user_id', $authUser->id);
+                });
+            })
             ->withCount('timesheets');
 
         $authUser = auth()->user();

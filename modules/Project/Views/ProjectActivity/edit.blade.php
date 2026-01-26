@@ -61,7 +61,7 @@
             </div>
             <div class="col-lg-9">
                 <select name="parent_id" class="select2 form-control" data-width="100%">
-                    <option value="">Select Parent Activity (Optional)</option>
+                    <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
                         <option @if (old('parent_id', $projectActivity->parent_id) == $activity->id) selected @endif value="{{ $activity->id }}">
                             {{ $activity->title }}</option>

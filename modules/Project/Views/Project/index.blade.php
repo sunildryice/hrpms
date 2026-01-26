@@ -23,6 +23,10 @@
                         name: 'title'
                     },
                     {
+                        data: 'short_name',
+                        name: 'short_name'
+                    },
+                    {
                         data: 'start_date',
                         name: 'start_date'
                     },
@@ -104,6 +108,7 @@
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
                                 <th>{{ __('label.project') }}</th>
+                                <th>{{ __('label.short-name') }}</th>
                                 <th>{{ __('label.start-date') }}</th>
                                 <th>{{ __('label.completion-date') }}</th>
                                 <th>{{ __('label.action') }}</th>

@@ -16,7 +16,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            // 'description' => 'required|string',
             'start_date' => 'required|date',
             'completion_date' => 'required|date|after_or_equal:start_date',
             'team_lead_id' => 'required|exists:users,id',

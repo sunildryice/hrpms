@@ -104,7 +104,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-2">
+                        {{-- <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
                                     <label class="form-label required-label">{{ __('label.description') }}</label>
@@ -118,7 +118,7 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
@@ -128,7 +128,7 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('start_date')) is-invalid @endif"
-                                    name="start_date" value="{!! old('start_date', $project->start_date) !!}" placeholder="yyyy-mm-dd"
+                                    name="start_date" value="{!! old('start_date', $project->start_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('start_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">
@@ -146,35 +146,11 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('completion_date')) is-invalid @endif"
-                                    name="completion_date" value="{!! old('completion_date', $project->completion_date) !!}" placeholder="yyyy-mm-dd"
+                                    name="completion_date" value="{!! old('completion_date', $project->completion_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('completion_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <div data-field="completion_date">{!! $errors->first('completion_date') !!}</div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label class="form-label required-label">{{ __('label.members') }}</label>
-                                </div>
-                            </div>
-                            <div class="col-lg-9">
-                                <select name="members[]"
-                                    class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
-                                    multiple data-placeholder="Select Members" style="width: 100%">
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}"
-                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
-                                            {{ $name }}</option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('members'))
-                                    <div class="fv-plugins-message-container invalid-feedback">
-                                        <div data-field="members">{!! $errors->first('members') !!}</div>
                                     </div>
                                 @endif
                             </div>
@@ -225,6 +201,30 @@
                                 @if ($errors->has('focal_person_id'))
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <div data-field="focal_person_id">{!! $errors->first('focal_person_id') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.members') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="members[]"
+                                    class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
+                                    multiple data-placeholder="Select Members" style="width: 100%">
+                                    @foreach ($users as $id => $name)
+                                        <option value="{{ $id }}"
+                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('members'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="members">{!! $errors->first('members') !!}</div>
                                     </div>
                                 @endif
                             </div>

@@ -100,8 +100,8 @@
             </div>
             <div class="col-lg-9">
                 <select name="members[]" class="select2 form-control" data-width="100%" multiple>
-                    @foreach ($project->members as $member)
-                        <option value="{{ $member->id }}">{{ $member->full_name }}</option>
+                    @foreach ($allProjectMembers as $id => $fullName)
+                        <option value="{{ $id }}">{{ $fullName }}</option>
                     @endforeach
                 </select>
             </div>

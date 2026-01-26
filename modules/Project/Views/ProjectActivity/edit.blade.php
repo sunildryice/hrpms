@@ -105,9 +105,9 @@
             </div>
             <div class="col-lg-9">
                 <select name="members[]" class="select2 form-control" data-width="100%" multiple>
-                    @foreach ($project->members as $member)
-                        <option @if (in_array($member->id, old('members', $projectActivity->members->pluck('id')->toArray() ?? []))) selected @endif value="{{ $member->id }}">
-                            {{ $member->full_name }}</option>
+                    @foreach ($allProjectMembers as $id => $fullName)
+                        <option @if (in_array($id, old('members', $projectActivity->members->pluck('id')->toArray() ?? []))) selected @endif value="{{ $id }}">
+                            {{ $fullName }}</option>
                     @endforeach
                 </select>
             </div>

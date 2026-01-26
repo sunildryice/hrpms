@@ -34,19 +34,22 @@ class ProjectController
                     return $row->completion_date->format('M d, Y');
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
+
+
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.show', $row->id) . '" rel="tooltip" title="View Project">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
 
-                    $btn .= ' <a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
-                    $btn .= '<i class="bi bi-pencil-square"></i></a>';
+                    if ($authUser->can('manage-pms')) {
+                        $btn .= ' <a class="btn btn-outline-primary btn-sm" href="';
+                        $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
+                        $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                    // $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
-                    // data-href="' . route('project.destroy', $row->id) . '"
-                    // data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
-                    // $btn .= '<i class="bi bi-trash"></i></button>';
-
+                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                        data-href="' . route('project.destroy', $row->id) . '"
+                        data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                        $btn .= '<i class="bi bi-trash"></i></button>';
+                    }
 
                     return $btn;
                 })

@@ -458,38 +458,37 @@
                         </div>
                     @endif
 
-                    @if ($authUser->can('manage-pms'))
-                        <span class="dropdown-header fw-bold">Project Management</span>
+                    {{-- @if ($authUser->can('manage-pms')) --}}
+                    <span class="dropdown-header fw-bold">Project Management</span>
 
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Projects">
+                            <i class="bi bi-kanban nav-icon"></i>
+                            <span class="nav-link-title">Projects</span>
+                        </a>
+                    </div>
+
+                    @if ($authUser->can('manage-activity-stages'))
                         <div class="nav-item">
-                            <a class="nav-link" href="{{ route('project.index') }}" role="button"
-                                id="project-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Projects">
-                                <i class="bi bi-kanban nav-icon"></i>
-                                <span class="nav-link-title">Projects</span>
-                            </a>
-                        </div>
-
-                        @if ($authUser->can('manage-activity-stages'))
-                            <div class="nav-item">
-                                <a class="nav-link" href="{{ route('activity-stages.index') }}" role="button"
-                                    id="activity-stages-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                    title="Activity Stages">
-                                    <i class="bi bi-list-stars nav-icon"></i>
-                                    <span class="nav-link-title">Activity Stages</span>
-                                </a>
-                            </div>
-                        @endif
-
-                        <div class="nav-item">
-                            <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
-                                id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Activity Update Periods">
+                            <a class="nav-link" href="{{ route('activity-stages.index') }}" role="button"
+                                id="activity-stages-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Activity Stages">
                                 <i class="bi bi-list-stars nav-icon"></i>
-                                <span class="nav-link-title">Activity Update Periods</span>
+                                <span class="nav-link-title">Activity Stages</span>
                             </a>
                         </div>
                     @endif
+
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
+                            id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Activity Update Periods">
+                            <i class="bi bi-list-stars nav-icon"></i>
+                            <span class="nav-link-title">Activity Update Periods</span>
+                        </a>
+                    </div>
+                    {{-- @endif --}}
 
                     @if (
                         $authUser->can('local-travel') ||

@@ -21,6 +21,99 @@
             // Highlight Project nav; rely on global datepicker init
             $('#navbarVerticalMenu').find('#project-index').addClass('active');
 
+            const form = document.getElementById('ProjectAddForm');
+
+            const fv = FormValidation.formValidation(form, {
+                fields: {
+                    title: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Project title is required'
+                            }
+                        }
+                    },
+                    short_name: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Short name is required'
+                            }
+                        }
+                    },
+                    start_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Start date is required'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Please enter a valid date (yyyy-mm-dd)'
+                            }
+                        }
+                    },
+                    completion_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Completion date is required'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Please enter a valid date (yyyy-mm-dd)'
+                            },
+                            callback: {
+                                message: 'Completion date must be after or equal to start date',
+                                callback: function(input) {
+                                    if (!input.value || !fv.getFieldValue('start_date')) {
+                                        return true;
+                                    }
+                                    return moment(input.value, 'YYYY-MM-DD').isSameOrAfter(
+                                        moment(fv.getFieldValue('start_date'), 'YYYY-MM-DD')
+                                    );
+                                }
+                            }
+                        }
+                    },
+                    team_lead_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Team lead is required'
+                            }
+                        }
+                    },
+                    focal_person_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Focal person is required'
+                            }
+                        }
+                    },
+                    'members[]': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please select at least one member'
+                            }
+                        }
+                    },
+                    'stages[]': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please select at least one stage'
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap5: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.row.mb-2, .row.mb-3',
+                        eleInvalidClass: 'is-invalid',
+                        eleValidClass: '',
+                    }),
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                }
+            });
+
             $('select[name="members[]"]').select2({
                 placeholder: "Select Members",
                 width: '100%',
@@ -121,7 +214,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                         {{-- <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">

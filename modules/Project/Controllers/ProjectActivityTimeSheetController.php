@@ -16,6 +16,7 @@ class ProjectActivityTimeSheetController extends Controller
     public function __construct(
         protected ActivityTimeSheetRepository $activityTimeSheets
     ) {
+        $this->destinationPath = 'ProjectActivity';
     }
 
     public function index(Request $request, ProjectActivity $projectActivity)
@@ -65,6 +66,11 @@ class ProjectActivityTimeSheetController extends Controller
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $projectActivity->id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['activity_id'] = $projectActivity->id;
         $inputs['project_id'] = $projectActivity->project_id;
         $inputs['created_by'] = auth()->id();
@@ -80,6 +86,11 @@ class ProjectActivityTimeSheetController extends Controller
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)
     {
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $timesheet->activity_id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['updated_by'] = auth()->id();
 
         $this->activityTimeSheets->update($timesheet->id, $inputs);

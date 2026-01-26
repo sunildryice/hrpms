@@ -3,8 +3,7 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form id="ProjectActivityTimeSheetForm" method="post"
-    action="{{ route('project-activity.timesheet.store', [$projectActivity->id]) }}"
-    autocomplete="off">
+    action="{{ route('project-activity.timesheet.store', [$projectActivity->id]) }}" autocomplete="off">
     <div class="modal-body">
         {!! csrf_field() !!}
 
@@ -15,7 +14,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="project_activity" class="form-control" value="{{ $projectActivity->title }}" readonly />
+                <input type="text" name="project_activity" class="form-control" value="{{ $projectActivity->title }}"
+                    readonly />
             </div>
         </div>
 
@@ -47,9 +47,20 @@
                 </div>
             </div>
             <div class="col-lg-9">
-            <textarea name="description" class="form-control" rows="4"></textarea>
+                <textarea name="description" class="form-control" rows="4"></textarea>
+            </div>
+            <div class="row mb-2">
+                <div class="col-lg-3">
+                    <div class="d-flex align-items-start h-100">
+                        <label for="" class="m-0">Attachment </label>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <input type="file" class="form-control" name="attachment">
+                    <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
+                </div>
+            </div>
         </div>
-    </div>
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Save</button>

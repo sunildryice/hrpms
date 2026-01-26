@@ -52,6 +52,24 @@
                 <textarea name="description" class="form-control" rows="4">{{ $timesheet->description }}</textarea>
             </div>
         </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Attachment </label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="file" class="form-control" name="attachment">
+                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
+                @if (file_exists('storage/' . $timesheet->attachment) && $timesheet->attachment != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $timesheet->attachment) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Save</button>

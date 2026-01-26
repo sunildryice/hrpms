@@ -79,4 +79,10 @@ class ProjectRepository extends Repository
             return false;
         }
     }
+
+    public function viewAllMembers($id)
+    {
+        $projectMembers = $this->model->members;
+        return $projectMembers;
+    }
 }

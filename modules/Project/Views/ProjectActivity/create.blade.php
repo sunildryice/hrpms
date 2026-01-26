@@ -101,25 +101,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="members[]" id="members_select" class="select2 form-control" data-width="100%" multiple>
-                    <!-- Team Lead & Focal Person first -->
-                    @if ($project->teamLead)
-                        <option value="{{ $project->teamLead->id }}" selected>
-                            {{ $project->teamLead->full_name }} (Team Lead)
-                        </option>
-                    @endif
-                    @if ($project->focalPerson)
-                        <option value="{{ $project->focalPerson->id }}" selected>
-                            {{ $project->focalPerson->full_name }} (Focal Person)
-                        </option>
-                    @endif
-
-                    @foreach ($project->members as $member)
-                        @if (
-                            !($project->teamLead && $member->id == $project->teamLead->id) &&
-                                !($project->focalPerson && $member->id == $project->focalPerson->id))
-                            <option value="{{ $member->id }}">{{ $member->full_name }}</option>
-                        @endif
+                <select name="members[]" class="select2 form-control" data-width="100%" multiple>
+                    @foreach ($allProjectMembers as $id => $fullName)
+                        <option value="{{ $id }}">{{ $fullName }}</option>
                     @endforeach
                 </select>
             </div>

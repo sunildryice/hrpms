@@ -49,6 +49,21 @@ class Project extends Model
         return $this->focal_person_id == $userId;
     }
 
+    public function isTeamLead($userId): bool
+    {
+        return $this->team_lead_id == $userId;
+    }
+
+    public function allMembers()
+    {
+        return collect()
+            ->merge($this->members()->get())
+            ->when($this->focalPerson, fn($c) => $c->push($this->focalPerson))
+            ->when($this->teamLead, fn($c) => $c->push($this->teamLead))
+            ->unique('id')
+            ->values();
+    }
+
     public function stages()
     {
         return $this->belongsToMany(ActivityStage::class, 'project_activity_stages', 'project_id', 'activity_stage_id');

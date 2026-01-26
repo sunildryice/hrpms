@@ -118,28 +118,28 @@
                                     },
                                 },
                             },
-                            start_date: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The start date is required'
-                                    },
-                                    date: {
-                                        format: 'YYYY-MM-DD',
-                                        message: 'The start date is not a valid date'
-                                    }
-                                },
-                            },
-                            completion_date: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The completion date is required'
-                                    },
-                                    date: {
-                                        format: 'YYYY-MM-DD',
-                                        message: 'The completion date is not a valid date'
-                                    }
-                                },
-                            },
+                            // start_date: {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'The start date is required'
+                            //         },
+                            //         date: {
+                            //             format: 'YYYY-MM-DD',
+                            //             message: 'The start date is not a valid date'
+                            //         }
+                            //     },
+                            // },
+                            // completion_date: {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'The completion date is required'
+                            //         },
+                            //         date: {
+                            //             format: 'YYYY-MM-DD',
+                            //             message: 'The completion date is not a valid date'
+                            //         }
+                            //     },
+                            // },
                             members: {
                                 validators: {
                                     notEmpty: {

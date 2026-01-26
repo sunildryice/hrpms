@@ -73,10 +73,8 @@ class ProjectActivityController extends Controller
                 if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
                     // if ($isAssigned) {
-                    if ($row->timesheets_count === 0) {
-                        $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
-                        $btn .= '<i class="bi bi-clock"></i></a>';
-                    }
+                    $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
+                    $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
 

@@ -11,14 +11,18 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Title</label>
+                    <label class="form-label required-label m-0">Activity Level</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" name="title" class="form-control" />
+                <select name="activity_level" class="select2 form-control" data-width="100%">
+                    <option value="">Select Level</option>
+                    @foreach ($activityLevels as $level)
+                        <option value="{{ $level->value }}">{{ ucfirst(strtolower($level->name)) }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
-
 
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -39,19 +43,13 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Activity Level</label>
+                    <label class="form-label required-label m-0">Title</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="activity_level" class="select2 form-control" data-width="100%">
-                    <option value="">Select Level</option>
-                    @foreach ($activityLevels as $level)
-                        <option value="{{ $level->value }}">{{ ucfirst(strtolower($level->name)) }}</option>
-                    @endforeach
-                </select>
+                <input type="text" name="title" class="form-control" />
             </div>
         </div>
-
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -60,7 +58,7 @@
             </div>
             <div class="col-lg-9">
                 <select name="parent_id" class="select2 form-control" data-width="100%">
-                    <option value="">Select Parent Activity (Optional)</option>
+                    <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
                         <option value="{{ $activity->id }}">{{ $activity->title }}</option>
                     @endforeach
@@ -71,7 +69,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Start Date</label>
+                    <label class="form-label m-0">Start Date</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -83,7 +81,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">End Date</label>
+                    <label class="form-label m-0">End Date</label>
                 </div>
             </div>
             <div class="col-lg-9">

@@ -21,6 +21,99 @@
             // Highlight Project nav; rely on global datepicker init
             $('#navbarVerticalMenu').find('#project-index').addClass('active');
 
+            const form = document.getElementById('ProjectAddForm');
+
+            const fv = FormValidation.formValidation(form, {
+                fields: {
+                    title: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Project title is required'
+                            }
+                        }
+                    },
+                    short_name: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Short name is required'
+                            }
+                        }
+                    },
+                    start_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Start date is required'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Please enter a valid date (yyyy-mm-dd)'
+                            }
+                        }
+                    },
+                    completion_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Completion date is required'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Please enter a valid date (yyyy-mm-dd)'
+                            },
+                            callback: {
+                                message: 'Completion date must be after or equal to start date',
+                                callback: function(input) {
+                                    if (!input.value || !fv.getFieldValue('start_date')) {
+                                        return true;
+                                    }
+                                    return moment(input.value, 'YYYY-MM-DD').isSameOrAfter(
+                                        moment(fv.getFieldValue('start_date'), 'YYYY-MM-DD')
+                                    );
+                                }
+                            }
+                        }
+                    },
+                    team_lead_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Team lead is required'
+                            }
+                        }
+                    },
+                    focal_person_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Focal person is required'
+                            }
+                        }
+                    },
+                    'members[]': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please select at least one member'
+                            }
+                        }
+                    },
+                    'stages[]': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Please select at least one stage'
+                            }
+                        }
+                    }
+                },
+
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap5: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.row.mb-2, .row.mb-3',
+                        eleInvalidClass: 'is-invalid',
+                        eleValidClass: '',
+                    }),
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                }
+            });
+
             $('select[name="members[]"]').select2({
                 placeholder: "Select Members",
                 width: '100%',
@@ -107,6 +200,24 @@
                         <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.short-name') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text"
+                                    class="form-control @if ($errors->has('short_name')) is-invalid @endif"
+                                    name="short_name" value="{!! old('short_name', $project->short_name) !!}" />
+                                @if ($errors->has('short_name'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="short_name">{!! $errors->first('short_name') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
                                     <label class="form-label required-label">{{ __('label.description') }}</label>
                                 </div>
                             </div>
@@ -118,7 +229,7 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="row mb-2">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
@@ -128,7 +239,7 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('start_date')) is-invalid @endif"
-                                    name="start_date" value="{!! old('start_date', $project->start_date) !!}" placeholder="yyyy-mm-dd"
+                                    name="start_date" value="{!! old('start_date', $project->start_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('start_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">
@@ -146,35 +257,11 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('completion_date')) is-invalid @endif"
-                                    name="completion_date" value="{!! old('completion_date', $project->completion_date) !!}" placeholder="yyyy-mm-dd"
+                                    name="completion_date" value="{!! old('completion_date', $project->completion_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('completion_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <div data-field="completion_date">{!! $errors->first('completion_date') !!}</div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label class="form-label required-label">{{ __('label.members') }}</label>
-                                </div>
-                            </div>
-                            <div class="col-lg-9">
-                                <select name="members[]"
-                                    class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
-                                    multiple data-placeholder="Select Members" style="width: 100%">
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}"
-                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
-                                            {{ $name }}</option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('members'))
-                                    <div class="fv-plugins-message-container invalid-feedback">
-                                        <div data-field="members">{!! $errors->first('members') !!}</div>
                                     </div>
                                 @endif
                             </div>
@@ -225,6 +312,30 @@
                                 @if ($errors->has('focal_person_id'))
                                     <div class="fv-plugins-message-container invalid-feedback">
                                         <div data-field="focal_person_id">{!! $errors->first('focal_person_id') !!}</div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label required-label">{{ __('label.members') }}</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="members[]"
+                                    class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
+                                    multiple data-placeholder="Select Members" style="width: 100%">
+                                    @foreach ($users as $id => $name)
+                                        <option value="{{ $id }}"
+                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
+                                            {{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @if ($errors->has('members'))
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="members">{!! $errors->first('members') !!}</div>
                                     </div>
                                 @endif
                             </div>

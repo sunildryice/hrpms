@@ -85,10 +85,12 @@
                     </nav>
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
-                <div class="add-info justify-content-end">
-                    <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">
-                        <i class="bi-plus"></i> Add New</a>
-                </div>
+                @can('manage-pms')
+                    <div class="add-info justify-content-end">
+                        <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">
+                            <i class="bi-plus"></i> Add New</a>
+                    </div>
+                @endcan
             </div>
         </div>
     </div>

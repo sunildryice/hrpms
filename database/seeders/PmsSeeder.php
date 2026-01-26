@@ -40,6 +40,12 @@ class PmsSeeder extends Seeder
                 'parent_id' => $pmsPermission->id,
                 'activated_at' => now(),
             ],
+            [
+                'permission_name' => 'Manage Activity Update Periods',
+                'guard_name' => 'manage-activity-update-periods',
+                'parent_id' => $pmsPermission->id,
+                'activated_at' => now(),
+            ]
         ];
 
         foreach ($subPermissions as $subPermission) {

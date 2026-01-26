@@ -16,6 +16,7 @@ class Project extends Model
 
     protected $fillable = [
         'title',
+        'short_name',
         'description',
         'start_date',
         'completion_date',

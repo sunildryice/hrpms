@@ -101,7 +101,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="members[]" class="select2 form-control" data-width="100%" multiple>
+                <select name="members[]" class="select2 form-control" id="members_select" data-width="100%" multiple>
                     @foreach ($allProjectMembers as $id => $fullName)
                         <option value="{{ $id }}">{{ $fullName }}</option>
                     @endforeach

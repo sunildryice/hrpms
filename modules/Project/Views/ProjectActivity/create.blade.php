@@ -50,17 +50,21 @@
                 <input type="text" name="title" class="form-control" />
             </div>
         </div>
-        <div class="row mb-2">
+
+        <div class="row mb-2" id="parent-activity-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label m-0">Parent Activity</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="parent_id" class="select2 form-control" data-width="100%">
+                <select name="parent_id" id="parent_activity_select" class="select2 form-control" data-width="100%">
                     <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
-                        <option value="{{ $activity->id }}">{{ $activity->title }}</option>
+                        <option value="{{ $activity->id }}" data-level="{{ $activity->activity_level }}"
+                            data-title="{{ $activity->title }}">
+                            {{ $activity->title }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -90,16 +94,32 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        <div class="row mb-2" id="members-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Members</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="members[]" class="select2 form-control" data-width="100%" multiple>
+                <select name="members[]" id="members_select" class="select2 form-control" data-width="100%" multiple>
+                    <!-- Team Lead & Focal Person first -->
+                    @if ($project->teamLead)
+                        <option value="{{ $project->teamLead->id }}" selected>
+                            {{ $project->teamLead->full_name }} (Team Lead)
+                        </option>
+                    @endif
+                    @if ($project->focalPerson)
+                        <option value="{{ $project->focalPerson->id }}" selected>
+                            {{ $project->focalPerson->full_name }} (Focal Person)
+                        </option>
+                    @endif
+
                     @foreach ($project->members as $member)
-                        <option value="{{ $member->id }}">{{ $member->full_name }}</option>
+                        @if (
+                            !($project->teamLead && $member->id == $project->teamLead->id) &&
+                                !($project->focalPerson && $member->id == $project->focalPerson->id))
+                            <option value="{{ $member->id }}">{{ $member->full_name }}</option>
+                        @endif
                     @endforeach
                 </select>
             </div>

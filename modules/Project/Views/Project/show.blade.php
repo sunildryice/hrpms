@@ -118,6 +118,18 @@
                                     },
                                 },
                             },
+                            'parent_id': {
+                                validators: {
+                                    callback: {
+                                        message: 'Parent activity is required for Activity & Sub Activity levels',
+                                        callback: function(input) {
+                                            const level = $activityLevelSelect.val();
+                                            if (level === 'theme') return true;
+                                            return input.value !== '';
+                                        }
+                                    }
+                                }
+                            },
                             // start_date: {
                             //     validators: {
                             //         notEmpty: {
@@ -140,13 +152,19 @@
                             //         }
                             //     },
                             // },
-                            members: {
+                            'members[]': {
                                 validators: {
-                                    notEmpty: {
-                                        message: 'The members field is required'
-                                    },
-                                },
-                            },
+                                    callback: {
+                                        message: 'At least one member is required for Activity & Sub Activity',
+                                        callback: function(input) {
+                                            const level = $activityLevelSelect.val();
+                                            if (level === 'theme') return true;
+                                            return $membersSelect.val() &&
+                                                $membersSelect.val().length > 0;
+                                        }
+                                    }
+                                }
+                            }
                         },
                         plugins: {
                             trigger: new FormValidation.plugins.Trigger(),
@@ -193,6 +211,83 @@
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('completion_date');
+                    });
+
+                    const $activityLevelSelect = $('[name="activity_level"]');
+                    const $parentRow = $('#parent-activity-row');
+                    const $membersRow = $('#members-row');
+                    const $parentSelect = $('#parent_activity_select');
+                    const $membersSelect = $('#members_select');
+
+                    const allParentOptions = $parentSelect.html();
+
+                    function updateParentOptions(selectedLevel) {
+                        $parentSelect.html('<option value="">Select Parent Activity</option>');
+
+                        if (selectedLevel === 'activity') {
+                            $parentSelect.find('option').remove(); // clear
+                            $parentSelect.append('<option value="">Select Theme Activity</option>');
+
+                            $(allParentOptions).filter('[data-level="theme"]').each(function() {
+                                $parentSelect.append(this);
+                            });
+                        } else if (selectedLevel === 'sub_activity') {
+                            $parentSelect.find('option').remove();
+                            $parentSelect.append(
+                                '<option value="">Select Parent Activity</option>');
+
+                            $(allParentOptions).filter('[data-level="activity"]').each(function() {
+                                $parentSelect.append(this);
+                            });
+                        } else {
+                            $parentSelect.html(
+                                '<option value="">Not applicable for Theme</option>');
+                        }
+
+                        $parentSelect.trigger('change');
+                    }
+
+                    function toggleFieldsBasedOnLevel(level) {
+                        if (level === 'theme') {
+                            $parentRow.hide();
+                            $membersRow.hide();
+
+                            $parentSelect.val(null).trigger('change');
+                            $membersSelect.val(null).trigger('change');
+                        } else {
+                            $parentRow.show();
+                            $membersRow.show();
+
+                            updateParentOptions(level);
+                        }
+                    }
+
+                    const initialLevel = $activityLevelSelect.val();
+                    if (initialLevel) {
+                        toggleFieldsBasedOnLevel(initialLevel);
+                    } else {
+                        $parentRow.hide();
+                        $membersRow.hide();
+                    }
+
+                    $activityLevelSelect.on('change', function() {
+                        const level = $(this).val();
+                        toggleFieldsBasedOnLevel(level);
+
+                        if (fv) {
+                            fv.revalidateField('parent_id');
+                            fv.revalidateField('members[]');
+                        }
+                    });
+
+                    $parentSelect.select2({
+                        dropdownParent: $parentSelect.parent(),
+                        width: '100%'
+                    });
+
+                    $membersSelect.select2({
+                        dropdownParent: $membersSelect.parent(),
+                        width: '100%'
                     });
 
 
@@ -311,8 +406,10 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $projectActivity->min('start_date') ?? '' }}'),
-                        endDate: new Date('{{ $projectActivity->max('completion_date') ?? '' }}'),
+                        startDate: new Date(
+                            '{{ $projectActivity->min('start_date') ?? '' }}'),
+                        endDate: new Date(
+                            '{{ $projectActivity->max('completion_date') ?? '' }}'),
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');

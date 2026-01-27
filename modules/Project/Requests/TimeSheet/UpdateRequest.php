@@ -9,6 +9,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'project_id' => 'required|exists:projects,id',
+            'activity_id' => 'required|exists:project_activities,id',
             'timesheet_date' => 'required|date',
             'hours_spent' => 'required|numeric|min:0',
             'description' => 'nullable|string',

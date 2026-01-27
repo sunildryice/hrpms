@@ -37,6 +37,7 @@ class ActivityTimeSheetRepository extends Repository
             DB::commit();
             return $record;
         } catch (QueryException $e) {
+            dd($e);
             logger()->error($e->getMessage());
             DB::rollback();
             throw $e;

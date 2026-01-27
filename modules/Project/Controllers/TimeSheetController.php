@@ -79,8 +79,6 @@ class TimeSheetController extends Controller
                 ->storeAs($this->destinationPath . '/' . $projectActivity->id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
-        $inputs['activity_id'] = $projectActivity->id;
-        $inputs['project_id'] = $projectActivity->project_id;
         $inputs['created_by'] = auth()->id();
 
         $this->timeSheets->create($inputs);

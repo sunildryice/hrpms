@@ -61,7 +61,9 @@
                 <select name="parent_id" id="parent_activity_select" class="select2 form-control" data-width="100%">
                     <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
-                        <option value="{{ $activity->id }}" data-level="{{ $activity->activity_level }}"
+                        <option value="{{ $activity->id }}" 
+                            data-level="{{ $activity->activity_level }}"
+                            data-stage="{{ $activity->activity_stage_id }}"
                             data-title="{{ $activity->title }}">
                             {{ $activity->title }}
                         </option>

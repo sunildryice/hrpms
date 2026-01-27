@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Project\Controllers\ProjectController;
+use Modules\Project\Controllers\TimeSheetController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;

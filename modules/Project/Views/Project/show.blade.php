@@ -209,7 +209,10 @@
                         zIndex: 2048,
                     });
 
+                    // Filter Partent Activity Based on the Activity Level and Stage, and Toggle Parent Activity and Members fields based on the Activity Level
+
                     const $activityLevelSelect = $('[name="activity_level"]');
+                    const $stageSelect = $('[name="activity_stage_id"]');
                     const $parentRow = $('#parent-activity-row');
                     const $membersRow = $('#members-row');
                     const $parentSelect = $('#parent_activity_select');
@@ -217,29 +220,52 @@
 
                     const allParentOptions = $parentSelect.html();
 
-                    function updateParentOptions(selectedLevel) {
+                    function updateParentOptions() {
+                        const level = $activityLevelSelect.val();
+                        const stage = $stageSelect.val();
+
                         $parentSelect.html('<option value="">Select Parent Activity</option>');
-
-                        if (selectedLevel === 'activity') {
-                            $parentSelect.find('option').remove(); // clear
-                            $parentSelect.append('<option value="">Select Theme Activity</option>');
-
-                            $(allParentOptions).filter('[data-level="theme"]').each(function() {
-                                $parentSelect.append(this);
-                            });
-                        } else if (selectedLevel === 'sub_activity') {
-                            $parentSelect.find('option').remove();
-                            $parentSelect.append(
-                                '<option value="">Select Parent Activity</option>');
-
-                            $(allParentOptions).filter('[data-level="activity"]').each(function() {
-                                $parentSelect.append(this);
-                            });
-                        } else {
+                        if (level === 'theme') {
                             $parentSelect.html(
                                 '<option value="">Not applicable for Theme</option>');
+                            $parentSelect.trigger('change');
+                            return;
+                        }
+                        let allowedParentLevel = null;
+                        let placeholderText = "Select Parent Activity";
+
+                        if (level === 'activity') {
+                            allowedParentLevel = 'theme';
+                            placeholderText = "Select Theme Activity";
+                        } else if (level === 'sub_activity') {
+                            allowedParentLevel = 'activity';
+                            placeholderText = "Select Parent Activity";
                         }
 
+                        if (!allowedParentLevel) {
+                            return;
+                        }
+                        let filtered = $(allParentOptions).filter(function() {
+                            const $opt = $(this);
+                            if (!$opt.val()) return false;
+                            return $opt.data('level') === allowedParentLevel;
+                        });
+
+                        if (stage) {
+                            filtered = filtered.filter(function() {
+                                const $opt = $(this);
+                                return String($opt.data('stage')) === String(stage);
+                            });
+                        }
+                        $parentSelect.html('<option value="">' + placeholderText + '</option>');
+
+                        if (filtered.length === 0) {
+                            $parentSelect.append(
+                                '<option value="" disabled>No matching parent activities found</option>'
+                            );
+                        } else {
+                            $parentSelect.append(filtered);
+                        }
                         $parentSelect.trigger('change');
                     }
 
@@ -247,16 +273,26 @@
                         if (level === 'theme') {
                             $parentRow.hide();
                             $membersRow.hide();
-
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
                         } else {
                             $parentRow.show();
                             $membersRow.show();
-
-                            updateParentOptions(level);
+                            updateParentOptions();
                         }
                     }
+
+                    $activityLevelSelect.on('change', function() {
+                        const level = $(this).val();
+                        toggleFieldsBasedOnLevel(level);
+                    });
+
+                    $stageSelect.on('change', function() {
+                        const level = $activityLevelSelect.val();
+                        if (level && level !== 'theme') {
+                            updateParentOptions();
+                        }
+                    });
 
                     const initialLevel = $activityLevelSelect.val();
                     if (initialLevel) {
@@ -265,11 +301,6 @@
                         $parentRow.hide();
                         $membersRow.hide();
                     }
-
-                    $activityLevelSelect.on('change', function() {
-                        const level = $(this).val();
-                        toggleFieldsBasedOnLevel(level);
-                    });
 
                     $parentSelect.select2({
                         dropdownParent: $parentSelect.parent(),
@@ -280,8 +311,6 @@
                         dropdownParent: $membersSelect.parent(),
                         width: '100%'
                     });
-
-
                 });
             });
 

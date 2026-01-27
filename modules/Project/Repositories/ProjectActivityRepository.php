@@ -19,11 +19,10 @@ class ProjectActivityRepository extends Repository
         return $this->model
             ->with('members')
             ->whereIn('activity_level', ['activity', 'sub_activity'])
-            ->where(function ($q) use ($authUser) {
-                $q->WhereHas('members', function ($sq) use ($authUser) {
-                    $sq->where('user_id', $authUser->id);
-                });
+            ->whereHas('members', function ($q) use ($authUser) {
+                $q->where('user_id', $authUser->id);
             })
+            ->orderBy('parent_id')
             ->orderBy('title')
             ->get();
     }

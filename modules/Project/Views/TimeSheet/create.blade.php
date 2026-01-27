@@ -7,6 +7,38 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Projects</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="project_id" class="select2 form-control" data-width="100%">
+                    <option value="">Select Project</option>
+                    @foreach ($projects as $project)
+                        <option value="{{ $project->id }}">{{ $project->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Activity / Sub Activity</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="activity_id" class="select2 form-control" data-width="100%">
+                    <option value="">Select Activity / Sub Activity</option>
+                    @foreach ($activities as $activity)
+                        <option value="{{ $activity->id }}">{{ $activity->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Hours Spent</label>
                 </div>
             </div>

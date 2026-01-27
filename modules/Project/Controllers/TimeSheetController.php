@@ -10,6 +10,7 @@ use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Project\Repositories\ProjectRepository;
 use Modules\Project\Requests\TimeSheet\StoreRequest;
 use Modules\Project\Requests\TimeSheet\UpdateRequest;
+use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class TimeSheetController extends Controller
@@ -17,6 +18,7 @@ class TimeSheetController extends Controller
     public function __construct(
         protected ActivityTimeSheetRepository $timeSheets,
         protected ProjectRepository $projects,
+        protected ProjectActivityRepository $projectActivities,
     ) {
         $this->destinationPath = 'TimeSheet';
     }
@@ -64,8 +66,9 @@ class TimeSheetController extends Controller
 
     public function create()
     {
-        $projects = $this->projects->query();
-        return view('Project::TimeSheet.create', compact('projects'));
+        $projects = $this->projects->query()->get();
+        $activities = $this->projectActivities->query()->get();
+        return view('Project::TimeSheet.create', compact('projects', 'activities'));
     }
 
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
@@ -89,14 +92,16 @@ class TimeSheetController extends Controller
 
     public function edit(ActivityTimeSheet $timesheet)
     {
-        $projectActivity = $timesheet->activity;
-        return view('Project::TimeSheet.edit', compact('projectActivity', 'timesheet'));
+        $projects = $this->projects->query()->get();
+        $activities = $this->projectActivities->query()->get();
+        return view('Project::TimeSheet.edit', compact('projects', 'timesheet', 'activities'));
     }
 
     public function show(ActivityTimeSheet $timesheet)
     {
-        $projectActivity = $timesheet->activity;
-        return view('Project::TimeSheet.show', compact('projectActivity', 'timesheet'));
+        $projects = $this->projects->query()->get();
+        $activities = $this->projectActivities->query()->get();
+        return view('Project::TimeSheet.show', compact('projects', 'timesheet', 'activities'));
     }
 
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)

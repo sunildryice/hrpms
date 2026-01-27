@@ -6,6 +6,36 @@
     <div class="row mb-2">
         <div class="col-lg-3">
             <div class="d-flex align-items-start h-100">
+                <label class="form-label m-0">Project</label>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <select name="project_id" class="select2 form-control" data-width="100%" disabled>
+                @foreach ($projects as $project)
+                    <option @if (old('project_id', $timesheet->project_id) == $project->id) selected @endif value="{{ $project->id }}">
+                        {{ $project->title }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-lg-3">
+            <div class="d-flex align-items-start h-100">
+                <label class="form-label m-0">Activity / Sub Activity</label>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <select name="activity_id" class="select2 form-control" data-width="100%" disabled>
+                @foreach ($activities as $activity)
+                    <option @if (old('project_id', $timesheet->activity_id) == $activity->id) selected @endif value="{{ $activity->id }}">
+                        {{ $activity->title }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-lg-3">
+            <div class="d-flex align-items-start h-100">
                 <label class="form-label m-0">Date</label>
             </div>
         </div>

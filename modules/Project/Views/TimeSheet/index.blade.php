@@ -59,8 +59,32 @@
                 $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('TimeSheetForm');
 
+                    $(form).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
+                    });
+
                     const fv = FormValidation.formValidation(form, {
                         fields: {
+                            project_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Project is required'
+                                    }
+                                }
+                            },
+                            activity_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Activity / Sub Activity is required'
+                                    }
+                                }
+                            },
                             timesheet_date: {
                                 validators: {
                                     notEmpty: {
@@ -152,8 +176,8 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form" rel="tooltip"
-                        title="Add TimeSheet">
+                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form"
+                        rel="tooltip" title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New</a>
                 </div>
             </div>

@@ -57,7 +57,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'attachment.mimes' => 'Only png,jpg or pdf files are allowed.',
-            'attachment.size' => 'Maximum allowed file size is 2MB.',
+            'attachment.size' => 'Maximum allowed file size is 5MB.',
         ];
     }
 }

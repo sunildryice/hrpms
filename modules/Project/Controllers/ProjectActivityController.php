@@ -17,12 +17,21 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
-    }
+    ) {}
     public function index(Request $request, Project $project)
     {
+        $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
+            ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id), function ($query) {
+                // Focal Person or Team Lead can see all activities
+                return $query;
+            }, function ($query) use ($authUser) {
+                // Other users can see only assigned activities
+                return $query->whereHas('members', function ($q) use ($authUser) {
+                    $q->where('user_id', $authUser->id);
+                });
+            })
             ->withCount('timesheets');
 
         $authUser = auth()->user();
@@ -64,10 +73,8 @@ class ProjectActivityController extends Controller
                 if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
                     // if ($isAssigned) {
-                    if ($row->timesheets_count === 0) {
-                        $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
-                        $btn .= '<i class="bi bi-clock"></i></a>';
-                    }
+                    $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
+                    $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
 
@@ -82,9 +89,11 @@ class ProjectActivityController extends Controller
         $activityLevels = ActivityLevel::cases();
         $stages = $project->stages;
 
+        $allProjectMembers = $project->load('members', 'focalPerson', 'teamLead')->allMembers()->pluck('full_name', 'id');
+
         $parentActivities = $this->projectActivity->where('project_id', '=', $project->id)->get();
 
-        return view('Project::ProjectActivity.create', compact('activityLevels', 'stages', 'project', 'parentActivities'));
+        return view('Project::ProjectActivity.create', compact('activityLevels', 'stages', 'project', 'parentActivities', 'allProjectMembers'));
     }
 
     public function store(StoreRequest $request, Project $project)
@@ -121,7 +130,9 @@ class ProjectActivityController extends Controller
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
         $project = $projectActivity->project;
 
-        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project'));
+        $allProjectMembers = $project->load('members', 'focalPerson', 'teamLead')->allMembers()->pluck('full_name', 'id');
+
+        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project', 'allProjectMembers'));
     }
 
     public function update(UpdateRequest $request, ProjectActivity $projectActivity)

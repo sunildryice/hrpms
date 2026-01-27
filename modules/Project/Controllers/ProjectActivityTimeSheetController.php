@@ -16,6 +16,7 @@ class ProjectActivityTimeSheetController extends Controller
     public function __construct(
         protected ActivityTimeSheetRepository $activityTimeSheets
     ) {
+        $this->destinationPath = 'ProjectActivity';
     }
 
     public function index(Request $request, ProjectActivity $projectActivity)
@@ -30,6 +31,14 @@ class ProjectActivityTimeSheetController extends Controller
             })
             ->addColumn('activity_title', function ($row) {
                 return $row->activity?->title;
+            })
+            ->addColumn('attachment', function ($row) {
+                $attachment = '';
+                if (file_exists('storage/' . $row->attachment) && $row->attachment != '') {
+                    $attachment = '<a href = "' . asset('storage/' . $row->attachment) . '" target = "_blank" class="fs-5" ';
+                    $attachment .= 'title = "View Attachment" ><i class="bi bi-file-earmark-medical"></i></a>';
+                }
+                return $attachment;
             })
             ->addColumn('action', function ($row) use ($authUser) {
 
@@ -47,7 +56,7 @@ class ProjectActivityTimeSheetController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['action', 'status'])
+            ->rawColumns(['action', 'status', 'attachment'])
             ->make(true);
     }
     public function create(ProjectActivity $projectActivity)
@@ -65,6 +74,11 @@ class ProjectActivityTimeSheetController extends Controller
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $projectActivity->id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['activity_id'] = $projectActivity->id;
         $inputs['project_id'] = $projectActivity->project_id;
         $inputs['created_by'] = auth()->id();
@@ -80,6 +94,11 @@ class ProjectActivityTimeSheetController extends Controller
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)
     {
         $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $timesheet->activity_id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
         $inputs['updated_by'] = auth()->id();
 
         $this->activityTimeSheets->update($timesheet->id, $inputs);

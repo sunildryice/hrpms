@@ -18,6 +18,7 @@ class ActivityTimeSheet extends Model
         'timesheet_date',
         'hours_spent',
         'description',
+        'attachment',
         'created_by',
         'updated_by',
     ];

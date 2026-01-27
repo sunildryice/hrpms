@@ -1,17 +1,17 @@
 @extends('layouts.container')
 
-@section('title', 'Activity Stages')
+@section('title', 'Timesheet')
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#activity-stages-index').addClass('active');
+            $('#navbarVerticalMenu').find('#timesheets-index').addClass('active');
 
-            var oTable = $('#ActitivityStageTable').DataTable({
+            var oTable = $('#TimeSheetTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('activity-stages.index') }}",
+                ajax: "{{ route('timesheet.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -19,16 +19,16 @@
                         searchable: false
                     },
                     {
-                        data: 'title',
-                        name: 'title'
+                        data: 'timesheet_date',
+                        name: 'timesheet_date'
                     },
                     {
-                        data: 'created_by',
-                        name: 'created_by'
+                        data: 'hours_spent',
+                        name: 'hours_spent'
                     },
                     {
-                        data: 'updated_at',
-                        name: 'updated_at'
+                        data: 'attachment',
+                        name: 'attachment'
                     },
                     {
                         data: 'action',
@@ -41,7 +41,7 @@
             });
 
 
-            $('#ActitivityStageTable').on('click', '.cancel-record', function(e) {
+            $('#TimeSheetTable').on('click', '.cancel-record', function(e) {
                 e.preventDefault();
                 let url = $(this).attr('data-href');
                 let number = $(this).attr('data-number');
@@ -55,7 +55,7 @@
                     successCallback);
             })
 
-            $('#ActitivityStageTable').on('click', '.delete-record', function(e) {
+            $('#TimeSheetTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
                 var $url = $object.attr('data-href');
@@ -69,7 +69,7 @@
             });
 
             // Open add/edit forms in modal (fallback if server doesn't emit .open-modal-form)
-            $('#ActitivityStageTable').on('click', '.edit-record', function(e) {
+            $('#TimeSheetTable').on('click', '.edit-record', function(e) {
                 e.preventDefault();
                 var href = $(this).attr('href') || $(this).attr('data-href');
                 if (!href) return;
@@ -94,8 +94,8 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="{!! route('activity-stage.create') !!}" class="btn btn-primary btn-sm open-modal-form" rel="tooltip"
-                        title="Add Activity Stage">
+                    <a href="" class="btn btn-primary btn-sm open-timesheet-modal-form" rel="tooltip"
+                        title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New</a>
                 </div>
             </div>
@@ -103,16 +103,16 @@
     </div>
 
     <div class="container-fluid">
-        <div class="card shadow-sm border rounded c-tabs-content active" id="employee-table">
+        <div class="card shadow-sm border rounded c-tabs-content active">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="ActitivityStageTable">
+                    <table class="table" id="TimeSheetTable">
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
-                                <th>{{ __('label.title') }}</th>
-                                <th>{{ __('label.created-by') }}</th>
-                                <th>{{ __('label.updated-on') }}</th>
+                                <th>Timesheet Date</th>
+                                <th>Hours Spent</th>
+                                <th>{{ __('label.attachment') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

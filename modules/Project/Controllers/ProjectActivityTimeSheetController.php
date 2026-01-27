@@ -32,6 +32,14 @@ class ProjectActivityTimeSheetController extends Controller
             ->addColumn('activity_title', function ($row) {
                 return $row->activity?->title;
             })
+            ->addColumn('attachment', function ($row) {
+                $attachment = '';
+                if (file_exists('storage/' . $row->attachment) && $row->attachment != '') {
+                    $attachment = '<a href = "' . asset('storage/' . $row->attachment) . '" target = "_blank" class="fs-5" ';
+                    $attachment .= 'title = "View Attachment" ><i class="bi bi-file-earmark-medical"></i></a>';
+                }
+                return $attachment;
+            })
             ->addColumn('action', function ($row) use ($authUser) {
 
                 $btn = ' <a class="btn btn-outline-primary btn-sm open-timesheet-modal-form" href="';
@@ -48,7 +56,7 @@ class ProjectActivityTimeSheetController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['action', 'status'])
+            ->rawColumns(['action', 'status', 'attachment'])
             ->make(true);
     }
     public function create(ProjectActivity $projectActivity)

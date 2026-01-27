@@ -61,7 +61,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="file" class="form-control" name="attachment">
-                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
+                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 5MB.</small>
                 @if (file_exists('storage/' . $timesheet->attachment) && $timesheet->attachment != '')
                     <div class="media">
                         <a href="{!! asset('storage/' . $timesheet->attachment) !!}" target="_blank" class="fs-5" title="View Attachment">

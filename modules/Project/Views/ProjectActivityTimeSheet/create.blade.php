@@ -60,7 +60,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="file" class="form-control" name="attachment">
-                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 2MB.</small>
+                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 5MB.</small>
             </div>
         </div>
     </div>

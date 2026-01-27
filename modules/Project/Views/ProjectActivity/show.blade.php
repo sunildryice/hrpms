@@ -11,12 +11,11 @@
             var oTable = $('#activityTimeSheetTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route("project-activity-timesheet.index", ["projectActivity" => $projectActivity->id]) }}',
+                ajax: '{{ route('project-activity-timesheet.index', ['projectActivity' => $projectActivity->id]) }}',
                 bFilter: false,
                 bPaginate: true,
                 bInfo: false,
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,

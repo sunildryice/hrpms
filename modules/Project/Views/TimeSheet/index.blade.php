@@ -40,21 +40,6 @@
                 ]
             });
 
-
-            $('#TimeSheetTable').on('click', '.cancel-record', function(e) {
-                e.preventDefault();
-                let url = $(this).attr('data-href');
-                let number = $(this).attr('data-number');
-                let successCallback = function(response) {
-                    toastr.success(response.message, 'Success', {
-                        timeOut: 2000
-                    });
-                    oTable.ajax.reload();
-                };
-                ajaxTextSweetAlert(url, 'POST', `Cancel ${number}?`, 'Remarks', 'log_remarks',
-                    successCallback);
-            })
-
             $('#TimeSheetTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
@@ -68,13 +53,86 @@
                 ajaxDeleteSweetAlert($url, successCallback);
             });
 
-            // Open add/edit forms in modal (fallback if server doesn't emit .open-modal-form)
-            $('#TimeSheetTable').on('click', '.edit-record', function(e) {
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
                 e.preventDefault();
-                var href = $(this).attr('href') || $(this).attr('data-href');
-                if (!href) return;
-                $('#openModal').modal('show').find('.modal-content').load(href);
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('TimeSheetForm');
+
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            timesheet_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The date is not a valid date'
+                                    }
+                                },
+                            },
+                            hours_spent: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The hours spent is required'
+                                    },
+                                    numeric: {
+                                        message: 'The hours spent must be a number'
+                                    },
+                                    between: {
+                                        min: 0.1,
+                                        max: 24,
+                                        message: 'Hours spent should be between 0.1 and 24'
+                                    }
+                                },
+                            },
+                            attachment: {
+                                validators: {
+                                    file: {
+                                        extension: 'jpeg,jpg,png,pdf',
+                                        type: 'image/jpeg,image/png,application/pdf',
+                                        maxSize: '5097152',
+                                        message: 'The selected file is not valid file or must not be greater than 5 MB.',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+
+                    $('[name="timesheet_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('timesheet_date');
+                    });
+                });
             });
+
         });
     </script>
 @endsection
@@ -94,7 +152,7 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="" class="btn btn-primary btn-sm open-timesheet-modal-form" rel="tooltip"
+                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form" rel="tooltip"
                         title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New</a>
                 </div>

@@ -2,17 +2,21 @@
 
 namespace Modules\Project\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet;
+use Modules\Project\Repositories\ProjectRepository;
+use Modules\Project\Requests\TimeSheet\StoreRequest;
+use Modules\Project\Requests\TimeSheet\UpdateRequest;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class TimeSheetController extends Controller
 {
     public function __construct(
-        protected ActivityTimeSheetRepository $timeSheets
+        protected ActivityTimeSheetRepository $timeSheets,
+        protected ProjectRepository $projects,
     ) {
         $this->destinationPath = 'TimeSheet';
     }
@@ -25,7 +29,7 @@ class TimeSheetController extends Controller
             $data = $this->timeSheets->query();
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('timesheet_date', function($row){
+                ->addColumn('timesheet_date', function ($row) {
                     return $row->timesheet_date?->format('M d, Y');
                 })
                 ->addColumn('attachment', function ($row) {
@@ -40,24 +44,78 @@ class TimeSheetController extends Controller
                     $btn = '<a class="btn btn-outline-primary btn-sm open-timesheet-modal-form" href="';
                     $btn .= route('timesheet.show', $row->id) . '" rel="tooltip" title="View TimeSheet">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
-    
+
                     $btn .= ' <a class="btn btn-outline-primary btn-sm open-timesheet-modal-form" href="';
                     $btn .= route('timesheet.edit', $row->id) . '" rel="tooltip" title="Edit TimeSheet">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
-    
+
                     $btn .= ' <a class="btn btn-outline-danger btn-sm delete-record" href="javascript:void(0)"';
                     $btn .= ' data-href="' . route('timesheet.destroy', $row->id) . '" rel="tooltip"';
                     $btn .= ' title="Delete TimeSheet"><i class="bi bi-trash"></i></a>';
-    
+
                     return $btn;
                 })
                 ->rawColumns(['action', 'status', 'attachment'])
                 ->make(true);
         }
 
-
         return view('Project::TimeSheet.index');
     }
 
+    public function create()
+    {
+        $projects = $this->projects->query();
+        return view('Project::TimeSheet.create', compact('projects'));
+    }
 
+    public function store(StoreRequest $request, ProjectActivity $projectActivity)
+    {
+        $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $projectActivity->id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
+        $inputs['activity_id'] = $projectActivity->id;
+        $inputs['project_id'] = $projectActivity->project_id;
+        $inputs['created_by'] = auth()->id();
+
+        $this->timeSheets->create($inputs);
+
+        return response()->json([
+            'message' => 'Timesheet created successfully.',
+        ]);
+    }
+
+    public function edit(ActivityTimeSheet $timesheet)
+    {
+        $projectActivity = $timesheet->activity;
+        return view('Project::TimeSheet.edit', compact('projectActivity', 'timesheet'));
+    }
+
+    public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)
+    {
+        $inputs = $request->validated();
+        if ($request->file('attachment')) {
+            $filename = $request->file('attachment')
+                ->storeAs($this->destinationPath . '/' . $timesheet->activity_id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
+            $inputs['attachment'] = $filename;
+        }
+        $inputs['updated_by'] = auth()->id();
+
+        $this->timeSheets->update($timesheet->id, $inputs);
+
+        return response()->json([
+            'message' => 'Timesheet updated successfully.',
+        ]);
+    }
+
+    public function destroy(ActivityTimeSheet $timesheet)
+    {
+        $this->timeSheets->destroy($timesheet->id);
+
+        return response()->json([
+            'message' => 'Timesheet deleted successfully.',
+        ]);
+    }
 }

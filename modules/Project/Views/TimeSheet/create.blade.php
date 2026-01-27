@@ -1,42 +1,40 @@
 <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Add Activity Stage</h5>
+    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Add TimeSheet</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('activity-stage.store') !!}" method="post" enctype="multipart/form-data" id="activityStageForm"
-    autocomplete="off">
+<form action="{!! route('timesheet.store') !!}" method="post" enctype="multipart/form-data" id="TimeSheetForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Title</label>
+                    <label class="form-label required-label m-0">Hours Spent</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="title" placeholder="Title">
+                <input type="number" step="0.1" name="hours_spent" class="form-control" />
             </div>
         </div>
+
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Description</label>
+                    <label class="form-label m-0">Description</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea class="form-control" name="description" rows="4" placeholder="Description"></textarea>
+                <textarea name="description" class="form-control" rows="4"></textarea>
             </div>
         </div>
+
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="m-0">Activate ? </label>
+                    <label for="" class="m-0">Attachment </label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class=" form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                        name="activated">
-                    <label class="form-check-label" for="flexSwitchCheckChecked"></label>
-                </div>
+                <input type="file" class="form-control" name="attachment">
+                <small>Supported file types jpeg/jpg/png/pdf and file size of upto 5MB.</small>
             </div>
         </div>
     </div>

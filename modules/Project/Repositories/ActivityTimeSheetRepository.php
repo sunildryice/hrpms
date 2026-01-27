@@ -58,5 +58,4 @@ class ActivityTimeSheetRepository extends Repository
             throw $e;
         }
     }
-
 }

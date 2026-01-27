@@ -193,9 +193,9 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
+                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
                         endDate: new Date(
-                            '{{ $project->completion_date->format('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
                         zIndex: 2048,
                     });
 
@@ -203,9 +203,9 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date->format('Y-m-d') }}'),
+                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
                         endDate: new Date(
-                            '{{ $project->completion_date->format('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
                         zIndex: 2048,
                     });
 

@@ -3,6 +3,7 @@
 namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
+use Modules\Project\Models\Project;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
@@ -28,7 +29,19 @@ class TimeSheetController extends Controller
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = $this->timeSheets->getQuery()->with(['project', 'activity'])->get();
+            $data = $this->timeSheets->getQuery()
+                ->with(['project', 'activity'])
+                ->where(function ($q) use ($authUser) {
+                    $q->whereHas('project', function ($pq) use ($authUser) {
+                        $pq->where('focal_person_id', $authUser->id)
+                            ->orWhere('team_lead_id', $authUser->id)
+                            ->orWhereHas('members', fn($m) => $m->where('user_id', $authUser->id));
+                    })
+                        ->orWhereHas('activity', function ($aq) use ($authUser) {
+                            $aq->whereHas('members', fn($m) => $m->where('user_id', $authUser->id));
+                        });
+                })
+                ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('project_id', function ($row) {
@@ -72,8 +85,9 @@ class TimeSheetController extends Controller
 
     public function create()
     {
-        $projects = $this->projects->query()->get();
-        $activities = $this->projectActivities->query()->get();
+        $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
+        $activities = $this->projectActivities->getActivitiesByProject($authUser);
         return view('Project::TimeSheet.create', compact('projects', 'activities'));
     }
 
@@ -96,15 +110,17 @@ class TimeSheetController extends Controller
 
     public function edit(ActivityTimeSheet $timesheet)
     {
-        $projects = $this->projects->query()->get();
-        $activities = $this->projectActivities->query()->get();
+        $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
+        $activities = $this->projectActivities->getActivitiesByProject($authUser);
         return view('Project::TimeSheet.edit', compact('projects', 'timesheet', 'activities'));
     }
 
     public function show(ActivityTimeSheet $timesheet)
     {
-        $projects = $this->projects->query()->get();
-        $activities = $this->projectActivities->query()->get();
+        $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
+        $activities = $this->projectActivities->getActivitiesByProject($authUser);
         return view('Project::TimeSheet.show', compact('projects', 'timesheet', 'activities'));
     }
 

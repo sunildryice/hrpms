@@ -14,6 +14,20 @@ class ProjectActivityRepository extends Repository
         $this->model = $projectActivity;
     }
 
+    public function getActivitiesByProject($authUser)
+    {
+        return $this->model
+            ->with('members')
+            ->whereIn('activity_level', ['activity', 'sub_activity'])
+            ->where(function ($q) use ($authUser) {
+                $q->WhereHas('members', function ($sq) use ($authUser) {
+                    $sq->where('user_id', $authUser->id);
+                });
+            })
+            ->orderBy('title')
+            ->get();
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();

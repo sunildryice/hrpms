@@ -491,6 +491,24 @@
                         </div>
                     @endif
 
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('timesheet.index') }}" role="button"
+                            id="timesheets-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Timesheets">
+                            <i class="bi bi-clock nav-icon"></i>
+                            <span class="nav-link-title"> Timesheets</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
+                            id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Activity Update Periods">
+                            <i class="bi bi-journal-text nav-icon"></i>
+                            <span class="nav-link-title">Monthly Timesheets</span>
+                        </a>
+                    </div>
+
                     @if (
                         $authUser->can('local-travel') ||
                             $authUser->can('approve-local-travel') ||

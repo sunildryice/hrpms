@@ -64,13 +64,6 @@ class ProjectActivityTimeSheetController extends Controller
         return view('Project::ProjectActivityTimeSheet.create', compact('projectActivity'));
     }
 
-    public function edit(ActivityTimeSheet $timesheet)
-    {
-        $projectActivity = $timesheet->activity;
-        return view('Project::ProjectActivityTimeSheet.edit', compact('projectActivity', 'timesheet'));
-    }
-
-
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
         $inputs = $request->validated();
@@ -89,6 +82,12 @@ class ProjectActivityTimeSheetController extends Controller
             'message' => 'Timesheet created successfully.',
             'redirect' => route('project-activity.show', $projectActivity->id),
         ]);
+    }
+
+    public function edit(ActivityTimeSheet $timesheet)
+    {
+        $projectActivity = $timesheet->activity;
+        return view('Project::ProjectActivityTimeSheet.edit', compact('projectActivity', 'timesheet'));
     }
 
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)

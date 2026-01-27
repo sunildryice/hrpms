@@ -1,17 +1,17 @@
 @extends('layouts.container')
 
-@section('title', 'Activity Stages')
+@section('title', 'Timesheet')
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#activity-stages-index').addClass('active');
+            $('#navbarVerticalMenu').find('#timesheets-index').addClass('active');
 
-            var oTable = $('#ActitivityStageTable').DataTable({
+            var oTable = $('#TimeSheetTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('activity-stages.index') }}",
+                ajax: "{{ route('timesheet.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -19,16 +19,24 @@
                         searchable: false
                     },
                     {
-                        data: 'title',
-                        name: 'title'
+                        data: 'project_id',
+                        name: 'project_id'
                     },
                     {
-                        data: 'created_by',
-                        name: 'created_by'
+                        data: 'activity_id',
+                        name: 'activity_id'
                     },
                     {
-                        data: 'updated_at',
-                        name: 'updated_at'
+                        data: 'timesheet_date',
+                        name: 'timesheet_date'
+                    },
+                    {
+                        data: 'hours_spent',
+                        name: 'hours_spent'
+                    },
+                    {
+                        data: 'attachment',
+                        name: 'attachment'
                     },
                     {
                         data: 'action',
@@ -40,22 +48,7 @@
                 ]
             });
 
-
-            $('#ActitivityStageTable').on('click', '.cancel-record', function(e) {
-                e.preventDefault();
-                let url = $(this).attr('data-href');
-                let number = $(this).attr('data-number');
-                let successCallback = function(response) {
-                    toastr.success(response.message, 'Success', {
-                        timeOut: 2000
-                    });
-                    oTable.ajax.reload();
-                };
-                ajaxTextSweetAlert(url, 'POST', `Cancel ${number}?`, 'Remarks', 'log_remarks',
-                    successCallback);
-            })
-
-            $('#ActitivityStageTable').on('click', '.delete-record', function(e) {
+            $('#TimeSheetTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
                 var $url = $object.attr('data-href');
@@ -68,13 +61,110 @@
                 ajaxDeleteSweetAlert($url, successCallback);
             });
 
-            // Open add/edit forms in modal (fallback if server doesn't emit .open-modal-form)
-            $('#ActitivityStageTable').on('click', '.edit-record', function(e) {
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
                 e.preventDefault();
-                var href = $(this).attr('href') || $(this).attr('data-href');
-                if (!href) return;
-                $('#openModal').modal('show').find('.modal-content').load(href);
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('TimeSheetForm');
+
+                    $(form).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
+                    });
+
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            project_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Project is required'
+                                    }
+                                }
+                            },
+                            activity_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The Activity / Sub Activity is required'
+                                    }
+                                }
+                            },
+                            timesheet_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The date is not a valid date'
+                                    }
+                                },
+                            },
+                            hours_spent: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The hours spent is required'
+                                    },
+                                    numeric: {
+                                        message: 'The hours spent must be a number'
+                                    },
+                                    between: {
+                                        min: 0.1,
+                                        max: 24,
+                                        message: 'Hours spent should be between 0.1 and 24'
+                                    }
+                                },
+                            },
+                            attachment: {
+                                validators: {
+                                    file: {
+                                        extension: 'jpeg,jpg,png,pdf',
+                                        type: 'image/jpeg,image/png,application/pdf',
+                                        maxSize: '5097152',
+                                        message: 'The selected file is not valid file or must not be greater than 5 MB.',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+
+                    $('[name="timesheet_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        zIndex: 2048,
+                    }).on('change', function(e) {
+                        fv.revalidateField('timesheet_date');
+                    });
+                });
             });
+
         });
     </script>
 @endsection
@@ -94,8 +184,8 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="{!! route('activity-stage.create') !!}" class="btn btn-primary btn-sm open-modal-form" rel="tooltip"
-                        title="Add Activity Stage">
+                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form"
+                        rel="tooltip" title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New</a>
                 </div>
             </div>
@@ -103,16 +193,18 @@
     </div>
 
     <div class="container-fluid">
-        <div class="card shadow-sm border rounded c-tabs-content active" id="employee-table">
+        <div class="card shadow-sm border rounded c-tabs-content active">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="ActitivityStageTable">
+                    <table class="table" id="TimeSheetTable">
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
-                                <th>{{ __('label.title') }}</th>
-                                <th>{{ __('label.created-by') }}</th>
-                                <th>{{ __('label.updated-on') }}</th>
+                                <th>{{ __('label.project') }}</th>
+                                <th>{{ __('label.activity') }}</th>
+                                <th>Timesheet Date</th>
+                                <th>Hours Spent</th>
+                                <th>{{ __('label.attachment') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

@@ -13,6 +13,21 @@ class ProjectRepository extends Repository
         $this->model = $model;
     }
 
+    public function getAssignedProjects($authUser)
+    {
+        return $this->model
+            ->with(['members', 'focalPerson', 'teamLead'])
+            ->where(function ($q) use ($authUser) {
+                $q->where('focal_person_id', $authUser->id)
+                    ->orWhere('team_lead_id', $authUser->id)
+                    ->orWhereHas('members', function ($sq) use ($authUser) {
+                        $sq->where('user_id', $authUser->id);
+                    });
+            })
+            ->latest()
+            ->get();
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();

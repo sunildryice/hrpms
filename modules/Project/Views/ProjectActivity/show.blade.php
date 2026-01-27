@@ -197,12 +197,12 @@
                         <table class="table table-bordered" id="activityTimeSheetTable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>SN</th>
+                                     <th>{{ __('label.sn') }}</th>
                                     <th>Activity Title</th>
                                     <th>Timesheet Date</th>
                                     <th>Hours Spent</th>
                                     <th>{{ __('label.attachment') }}</th>
-                                    <th>Action</th>
+                                    <th>{{ __('label.action') }}</th>
                                 </tr>
                             </thead>
                             <tbody id="tablebody"></tbody>

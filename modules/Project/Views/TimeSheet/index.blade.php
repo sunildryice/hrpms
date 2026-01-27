@@ -19,6 +19,14 @@
                         searchable: false
                     },
                     {
+                        data: 'project_id',
+                        name: 'project_id'
+                    },
+                    {
+                        data: 'activity_id',
+                        name: 'activity_id'
+                    },
+                    {
                         data: 'timesheet_date',
                         name: 'timesheet_date'
                     },
@@ -192,6 +200,8 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
+                                <th>{{ __('label.project') }}</th>
+                                <th>{{ __('label.activity') }}</th>
                                 <th>Timesheet Date</th>
                                 <th>Hours Spent</th>
                                 <th>{{ __('label.attachment') }}</th>

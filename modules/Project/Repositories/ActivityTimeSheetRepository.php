@@ -14,6 +14,11 @@ class ActivityTimeSheetRepository extends Repository
         $this->model = $model;
     }
 
+    public function getQuery()
+    {
+        return $this->model;
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();

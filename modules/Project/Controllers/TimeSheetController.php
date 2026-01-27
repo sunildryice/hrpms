@@ -28,9 +28,15 @@ class TimeSheetController extends Controller
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = $this->timeSheets->query();
+            $data = $this->timeSheets->getQuery()->with(['project', 'activity'])->get();
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('project_id', function ($row) {
+                    return $row->project?->title;
+                })
+                ->addColumn('activity_id', function ($row) {
+                    return $row->activity?->title;
+                })
                 ->addColumn('timesheet_date', function ($row) {
                     return $row->timesheet_date?->format('M d, Y');
                 })

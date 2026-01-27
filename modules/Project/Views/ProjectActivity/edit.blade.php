@@ -53,17 +53,20 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        <div class="row mb-2" id="parent-activity-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label m-0">Parent Activity</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="parent_id" class="select2 form-control" data-width="100%">
+                <select name="parent_id" id="parent_activity_select" class="select2 form-control" data-width="100%">
                     <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
-                        <option @if (old('parent_id', $projectActivity->parent_id) == $activity->id) selected @endif value="{{ $activity->id }}">
+                        <option @if (old('parent_id', $projectActivity->parent_id) == $activity->id) selected @endif value="{{ $activity->id }}"
+                            data-level="{{ $activity->activity_level }}" 
+                            data-stage="{{ $activity->activity_stage_id }}"
+                            data-title="{{ $activity->title }}">
                             {{ $activity->title }}</option>
                     @endforeach
                 </select>

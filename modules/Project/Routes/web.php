@@ -55,4 +55,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/project-activity/{projectActivity}/timesheet/store', [ProjectActivityTimeSheetController::class, 'store'])->name('project-activity.timesheet.store');
     Route::put('/project-activity/timesheet/{timesheet}/update', [ProjectActivityTimeSheetController::class, 'update'])->name('project-activity.timesheet.update');
     Route::delete('/project-activity/timesheet/{timesheet}/delete', [ProjectActivityTimeSheetController::class, 'destroy'])->name('project-activity-timesheet.destroy');
+
+    Route::get('/timesheet/index', [TimeSheetController::class, 'index'])->name('timesheet.index');
+    Route::get('/timesheet/create', [TimeSheetController::class, 'create'])->name('timesheet.create');
+    Route::post('/timesheet/store', [TimeSheetController::class, 'store'])->name('timesheet.store');
+    Route::get('/timesheet/{timesheet}/edit', [TimeSheetController::class, 'edit'])->name('timesheet.edit');
+    Route::put('/timesheet/{timesheet}/update', [TimeSheetController::class, 'update'])->name('timesheet.update');
+    Route::delete('/timesheet/{timesheet}/delete', [TimeSheetController::class, 'destroy'])->name('timesheet.destroy');
+    
 });

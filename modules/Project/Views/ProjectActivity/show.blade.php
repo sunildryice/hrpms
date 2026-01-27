@@ -34,6 +34,10 @@
                         name: 'hours_spent'
                     },
                     {
+                        data: 'attachment',
+                        name: 'attachment'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -87,6 +91,16 @@
                                         max: 24,
                                         message: 'Hours spent should be between 0.1 and 24'
                                     }
+                                },
+                            },
+                            attachment: {
+                                validators: {
+                                    file: {
+                                        extension: 'jpeg,jpg,png,pdf',
+                                        type: 'image/jpeg,image/png,application/pdf',
+                                        maxSize: '5097152',
+                                        message: 'The selected file is not valid file or must not be greater than 5 MB.',
+                                    },
                                 },
                             },
                         },
@@ -171,10 +185,10 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity TimeSheets</span>
                         <div class="justify-content-end d-flex gap-2">
-                            {{-- <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
-                                href="{{ route('project-activity-timesheet.create', ['project' => $project->id]) }}"><i
+                            <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
+                                href="{{ route('project-activity.timesheet.create', ['projectActivity' => $projectActivity->id]) }}"><i
                                     class="bi-plus"></i> Add TimeSheet
-                            </button> --}}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -187,6 +201,7 @@
                                     <th>Activity Title</th>
                                     <th>Timesheet Date</th>
                                     <th>Hours Spent</th>
+                                    <th>{{ __('label.attachment') }}</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

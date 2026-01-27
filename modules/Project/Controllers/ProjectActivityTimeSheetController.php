@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Models\ActivityTimeSheet; // ← add this
+use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Requests\ActivityTimeSheet\StoreRequest;
 use Modules\Project\Requests\ActivityTimeSheet\UpdateRequest;
@@ -64,13 +64,6 @@ class ProjectActivityTimeSheetController extends Controller
         return view('Project::ProjectActivityTimeSheet.create', compact('projectActivity'));
     }
 
-    public function edit(ActivityTimeSheet $timesheet)
-    {
-        $projectActivity = $timesheet->activity;
-        return view('Project::ProjectActivityTimeSheet.edit', compact('projectActivity', 'timesheet'));
-    }
-
-
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
         $inputs = $request->validated();
@@ -89,6 +82,12 @@ class ProjectActivityTimeSheetController extends Controller
             'message' => 'Timesheet created successfully.',
             'redirect' => route('project-activity.show', $projectActivity->id),
         ]);
+    }
+
+    public function edit(ActivityTimeSheet $timesheet)
+    {
+        $projectActivity = $timesheet->activity;
+        return view('Project::ProjectActivityTimeSheet.edit', compact('projectActivity', 'timesheet'));
     }
 
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)

@@ -32,7 +32,8 @@ class ProjectActivityController extends Controller
                     $q->where('user_id', $authUser->id);
                 });
             })
-            ->withCount('timesheets');
+            ->orderBy('activity_stage_id')
+            ->orderBy('parent_id');
 
         $authUser = auth()->user();
         return DataTables::of($data)

@@ -117,6 +117,11 @@ class Repository
         return $this->model->whereIn($field, $value);
     }
 
+    public function whereRaw($sql, $bindings = [])
+    {
+        return $this->model->whereRaw($sql, $bindings);
+    }
+
     public function orderby($field, $type = 'desc')
     {
         return $this->model->orderby($field, $type);

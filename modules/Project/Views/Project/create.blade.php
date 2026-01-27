@@ -128,7 +128,7 @@
             $('[data-toggle="datepicker"]').on('change', function() {
                 fv.revalidateField($(this).attr('name'));
             });
-            
+
         });
     </script>
 @endsection

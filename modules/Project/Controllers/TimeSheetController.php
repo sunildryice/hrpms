@@ -93,6 +93,12 @@ class TimeSheetController extends Controller
         return view('Project::TimeSheet.edit', compact('projectActivity', 'timesheet'));
     }
 
+    public function show(ActivityTimeSheet $timesheet)
+    {
+        $projectActivity = $timesheet->activity;
+        return view('Project::TimeSheet.show', compact('projectActivity', 'timesheet'));
+    }
+
     public function update(UpdateRequest $request, ActivityTimeSheet $timesheet)
     {
         $inputs = $request->validated();

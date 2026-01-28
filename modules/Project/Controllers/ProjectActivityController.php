@@ -5,13 +5,14 @@ namespace Modules\Project\Controllers;
 use Illuminate\Http\Request;
 use Modules\Project\Models\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Requests\ProjectActivity\StoreRequest;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Requests\ProjectActivity\UpdateRequest;
-use Illuminate\Support\Facades\Gate;
 
 class ProjectActivityController extends Controller
 {
@@ -88,13 +89,14 @@ class ProjectActivityController extends Controller
     public function create(Project $project)
     {
         $activityLevels = ActivityLevel::cases();
+        $status = ActivityStatus::cases();
         $stages = $project->stages;
 
         $allProjectMembers = $project->load('members', 'focalPerson', 'teamLead')->allMembers()->pluck('full_name', 'id');
 
         $parentActivities = $this->projectActivity->where('project_id', '=', $project->id)->get();
 
-        return view('Project::ProjectActivity.create', compact('activityLevels', 'stages', 'project', 'parentActivities', 'allProjectMembers'));
+        return view('Project::ProjectActivity.create', compact('activityLevels', 'stages', 'project', 'parentActivities', 'allProjectMembers', 'status'));
     }
 
     public function store(StoreRequest $request, Project $project)
@@ -127,13 +129,14 @@ class ProjectActivityController extends Controller
     {
         $projectActivity = $this->projectActivity->find($id);
         $activityLevels = ActivityLevel::cases();
+        $status = ActivityStatus::cases();
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
         $project = $projectActivity->project;
 
         $allProjectMembers = $project->load('members', 'focalPerson', 'teamLead')->allMembers()->pluck('full_name', 'id');
 
-        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project', 'allProjectMembers'));
+        return view('Project::ProjectActivity.edit', compact('projectActivity', 'activityLevels', 'stages', 'parentActivities', 'project', 'allProjectMembers', 'status'));
     }
 
     public function update(UpdateRequest $request, ProjectActivity $projectActivity)

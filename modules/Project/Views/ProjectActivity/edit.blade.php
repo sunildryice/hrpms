@@ -64,8 +64,7 @@
                     <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
                         <option @if (old('parent_id', $projectActivity->parent_id) == $activity->id) selected @endif value="{{ $activity->id }}"
-                            data-level="{{ $activity->activity_level }}" 
-                            data-stage="{{ $activity->activity_stage_id }}"
+                            data-level="{{ $activity->activity_level }}" data-stage="{{ $activity->activity_stage_id }}"
                             data-title="{{ $activity->title }}">
                             {{ $activity->title }}</option>
                     @endforeach
@@ -110,6 +109,23 @@
                     @foreach ($allProjectMembers as $id => $fullName)
                         <option @if (in_array($id, old('members', $projectActivity->members->pluck('id')->toArray() ?? []))) selected @endif value="{{ $id }}">
                             {{ $fullName }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Status</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="status" class="select2 form-control" data-width="100%">
+                    <option value="">Select Status</option>
+                    @foreach ($status as $st)
+                        <option @if (old('status', $projectActivity->status) == $st->value) selected @endif value="{{ $st->value }}">
+                            {{ $st->name }}</option>
                     @endforeach
                 </select>
             </div>

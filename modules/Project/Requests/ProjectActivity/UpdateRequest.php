@@ -19,6 +19,7 @@ class UpdateRequest extends FormRequest
             'completion_date' => 'nullable|date|after_or_equal:start_date',
             'members' => 'nullable|array|min:1',
             'members.*' => 'exists:users,id',
+            'status' => 'nullable|string|max:255',
         ];
     }
 }

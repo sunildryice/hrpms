@@ -77,6 +77,41 @@
                             });
                     });
 
+                    $('#project_id').on('change', function() {
+                        const projectId = $(this).val();
+                        const $activitySelect = $('#activity_id');
+
+                        $.ajax({
+                            url: '{{ route('timesheet.get-activities-by-project') }}',
+                            method: 'GET',
+                            data: {
+                                project_id: projectId
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                $activitySelect.html(
+                                    '<option value="">Select Activity / Sub Activity</option>'
+                                );
+
+                                $.each(response.activities, function(index,
+                                    activity) {
+                                    $activitySelect.append(
+                                        $('<option>', {
+                                            value: activity.id,
+                                            text: activity.title
+                                        })
+                                    );
+                                });
+
+                                $activitySelect.trigger(
+                                    'change');
+                            },
+                            error: function() {
+                                toastr.error('Failed to load activities');
+                            }
+                        });
+                    });
+
                     const fv = FormValidation.formValidation(form, {
                         fields: {
                             project_id: {

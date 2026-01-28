@@ -24,7 +24,7 @@ class MonthlyTimeSheetController extends Controller
 
         if ($request->ajax()) {
             $data = $this->timeSheets
-                ->getMonthlyTimeSheets();
+                ->getMonthlyTimeSheets($authUser->id);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -65,17 +65,9 @@ class MonthlyTimeSheetController extends Controller
 
     public function show($yearMonth)
     {
-        $timeSheets = $this->timeSheets
-            ->whereRaw('DATE_FORMAT(timesheet_date, "%Y-%m") = ?', [$yearMonth])
-            ->with(['project', 'activity'])
-            ->get();
-
-
-
+        $timeSheets = $this->timeSheets->getTimeSheetsByMonth($yearMonth, auth()->id());
 
         $yearMonthFormatted = date('F Y', strtotime($yearMonth . '-01'));
-
-
 
         $stats = [
             'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),

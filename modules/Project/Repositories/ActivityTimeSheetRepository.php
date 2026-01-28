@@ -66,14 +66,14 @@ class ActivityTimeSheetRepository extends Repository
         }
     }
 
-    public function getMonthlyTimeSheets()
+    public function getMonthlyTimeSheets($userId = null)
     {
         return $this->model
             ->from($this->model->getTable() . ' as tst')
             ->join('projects as p', 'tst.project_id', '=', 'p.id')
             ->selectRaw("
             DATE_FORMAT(tst.timesheet_date, '%Y-%m')           AS month,
-            ANY_VALUE(DATE_FORMAT(tst.timesheet_date, '%M %Y')) AS month_name,
+            MIN(DATE_FORMAT(tst.timesheet_date, '%M %Y'))      AS month_name,  
             
             COUNT(*)                                           AS total_entries,
             ROUND(SUM(tst.hours_spent), 2)                     AS total_hours,
@@ -83,8 +83,24 @@ class ActivityTimeSheetRepository extends Repository
                          ORDER BY p.short_name 
                          SEPARATOR ', ')                       AS project_short_names
         ")
+            ->when($userId, function ($query) use ($userId) {
+                return $query->where('tst.created_by', $userId);
+            })
             ->groupBy('month')
             ->orderBy('month', 'desc')
+            ->get();
+    }
+
+    public function getTimeSheetsByMonth($yearMonth, $userId = null)
+    {
+        return $this->model
+            ->when($yearMonth, function ($query) use ($yearMonth) {
+                $query->whereRaw('DATE_FORMAT(timesheet_date, "%Y-%m") = ?', [$yearMonth]);
+            })
+            ->when($userId, function ($query) use ($userId) {
+                return $query->where('created_by', $userId);
+            })
+            ->with(['project', 'activity'])
             ->get();
     }
 }

@@ -11,7 +11,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="project_id" class="select2 form-control" data-width="100%">
+                <select name="project_id" id="project_id" class="select2 form-control" data-width="100%">
                     <option value="">Select Project</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->title }}</option>
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="activity_id" class="select2 form-control" data-width="100%">
+                <select name="activity_id" id="activity_id" class="select2 form-control" data-width="100%">
                     <option value="">Select Activity / Sub Activity</option>
                     @foreach ($activities as $activity)
                         <option value="{{ $activity->id }}">{{ $activity->title }}</option>

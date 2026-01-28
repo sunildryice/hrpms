@@ -3,6 +3,7 @@
 namespace Modules\Project\Models;
 
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Privilege\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Project\Models\ProjectActivity;
@@ -72,5 +73,15 @@ class Project extends Model
     public function activities()
     {
         return $this->hasMany(ProjectActivity::class, 'project_id', 'id');
+    }
+
+    public function getFormattedCompletionDateAttribute()
+    {
+        return $this->completion_date ? $this->completion_date->format('M d, Y') : '';
+    }
+
+    public function getFormattedStartDateAttribute()
+    {
+        return $this->start_date ? $this->start_date->format('M d, Y') : '';
     }
 }

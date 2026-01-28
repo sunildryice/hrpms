@@ -16,8 +16,8 @@ use Modules\Project\Repositories\ActivityStageRepository;
 class ProjectController
 {
     public function __construct(
-        protected ProjectRepository $projectRepository,
-        protected UserRepository $userRepository,
+        protected ProjectRepository       $projectRepository,
+        protected UserRepository          $userRepository,
         protected ActivityStageRepository $activityStageRepository,
     ) {
     }
@@ -31,14 +31,12 @@ class ProjectController
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('start_date', function ($row) {
-                    return $row->start_date->format('M d, Y');
+                    return $row->formatted_start_date;
                 })
                 ->editColumn('completion_date', function ($row) {
-                    return $row->completion_date->format('M d, Y');
+                    return $row->formatted_completion_date;
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
-
-
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.dashboard', $row->id) . '" rel="tooltip" title="View Project">';
                     $btn .= '<i class="bi bi-eye"></i></a>';

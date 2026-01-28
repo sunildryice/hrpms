@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'PMS Dashboard')
+@section('title', 'Dashboard')
 
 @section('page_css')
     <style>
@@ -120,11 +120,11 @@
                                 <a href="{{ route('project.show', $project->id) }}"
                                     class="text-decoration-none text-dark">{{ $project->short_name ?? $project->title }}</a>
                             </li>
-                            <li class="breadcrumb-item active" aria-current="page">PMS Dashboard</li>
+                            <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                         </ol>
                     </nav>
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">
-                        PMS Dashboard – {{ $project->short_name ?? $project->title }}
+                        Dashboard – {{ $project->short_name ?? $project->title }}
                     </h4>
                 </div>
                 @include('Project::Partials.project-header-actions', ['project' => $project])

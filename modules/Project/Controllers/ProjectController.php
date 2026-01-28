@@ -40,7 +40,7 @@ class ProjectController
 
 
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('project.show', $row->id) . '" rel="tooltip" title="View Project">';
+                    $btn .= route('project.dashboard', $row->id) . '" rel="tooltip" title="View Project">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
 
                     if ($authUser->can('manage-pms')) {

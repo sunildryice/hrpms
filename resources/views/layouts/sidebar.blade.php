@@ -468,45 +468,46 @@
                         </a>
                     </div>
 
-                    @if ($authUser->can('manage-activity-stages'))
+                    @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
                         <div class="nav-item">
-                            <a class="nav-link" href="{{ route('activity-stages.index') }}" role="button"
-                                id="activity-stages-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Activity Stages">
+                            <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"
+                                data-bs-toggle="collapse" data-bs-target="#navbarActivitiesMenuName"
+                                aria-expanded="false" aria-controls="navbarActivitiesMenuName"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="Activities">
                                 <i class="bi bi-list-stars nav-icon"></i>
-                                <span class="nav-link-title">Activity Stages</span>
+                                <span class="nav-link-title">Activities</span>
                             </a>
-                        </div>
-                    @endif
-
-
-                    @if ($authUser->can('manage-activity-update-periods'))
-                        <div class="nav-item">
-                            <a class="nav-link" href="{{ route('activity-update-periods.index') }}" role="button"
-                                id="activity-update-periods-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Activity Update Periods">
-                                <i class="bi bi-list-stars nav-icon"></i>
-                                <span class="nav-link-title">Activity Update Periods</span>
-                            </a>
+                            <div id="navbarActivitiesMenuName" class="nav-collapse collapse"
+                                data-bs-parent="#navbarActivitiesMenu" hs-parent-area="#navbarActivitiesMenu"
+                                style="">
+                                @if ($authUser->can('manage-activity-stages'))
+                                    <a class="nav-link" href="{{ route('activity-stages.index') }}"
+                                        id="activity-stages-index">Activity Stages</a>
+                                @endif
+                                @if ($authUser->can('manage-activity-update-periods'))
+                                    <a class="nav-link" href="{{ route('activity-update-periods.index') }}"
+                                        id="activity-update-periods-index">Activity Update Periods</a>
+                                @endif
+                            </div>
                         </div>
                     @endif
 
                     <div class="nav-item">
-                        <a class="nav-link" href="{{ route('timesheet.index') }}" role="button"
-                            id="timesheets-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Timesheets">
+                        <a class="nav-link dropdown-toggle" href="#navbarTimesheetMenuName" role="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarTimesheetMenuName" aria-expanded="false"
+                            aria-controls="#navbarTimesheetMenuName" data-bs-toggle="tooltip"
+                            data-bs-placement="right" title="Timesheets">
                             <i class="bi bi-clock nav-icon"></i>
-                            <span class="nav-link-title"> Timesheets</span>
+                            <span class="nav-link-title">Timesheets</span>
                         </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('monthly-timesheet.index') }}" role="button"
-                            id="monthly-timesheets-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Monthly Timesheets">
-                            <i class="bi bi-journal-text nav-icon"></i>
-                            <span class="nav-link-title">Monthly Timesheets</span>
-                        </a>
+                        <div id="navbarTimesheetMenuName" class="nav-collapse collapse"
+                            data-bs-parent="#navbarTimesheetMenu" hs-parent-area="#navbarTimesheetMenu"
+                            style="">
+                            <a class="nav-link" href="{{ route('timesheet.index') }}"
+                                id="timesheets-index">Timesheet</a>
+                            <a class="nav-link" href="{{ route('monthly-timesheet.index') }}"
+                                id="monthly-timesheets-index">Monthly Timesheets</a>
+                        </div>
                     </div>
 
                     @if (

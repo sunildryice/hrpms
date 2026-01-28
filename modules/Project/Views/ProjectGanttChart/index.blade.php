@@ -337,9 +337,7 @@
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Gantt</h4>
             </div>
 
-            <div>
-                <button class="btn btn-primary btn-sm">Gantt</button>
-            </div>
+            @include('Project::Partials.project-header-actions', ['project' => $project])
         </div>
     </div>
 

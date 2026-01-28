@@ -46,9 +46,8 @@ class ProjectGanttChartSeeder extends Seeder
         $teamLead = $users->first();
         $focalPerson = $users->skip(1)->first() ?: $teamLead;
 
-        // Example: "National Health Systems Innovation 2026"
-        $domainWord = $faker->randomElement(['Health Systems', 'Maternal & Child Health', 'Infectious Disease', 'Nutrition', 'Digital Health']);
-        $title = 'National ' . $domainWord . ' Research & Development 2026';
+        $domainWord = $faker->catchPhrase();
+        $title = 'National ' . $domainWord . ' Research & Development';
 
         $project = Project::create([
             'title'            => $title,

@@ -19,6 +19,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/projects/store', [ProjectController::class, 'store'])->name('project.store');
     Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('project.edit');
     Route::get('/projects/{id}/show', [ProjectController::class, 'show'])->name('project.show');
+    Route::get('/projects/{id}/dashboard', [ProjectController::class, 'dashboard'])->name('project.dashboard');
     Route::post('/projects/{id}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
 

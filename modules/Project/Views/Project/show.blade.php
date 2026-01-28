@@ -12,21 +12,6 @@
         .deliverable-row .btn {
             padding-inline: .35rem;
         }
-
-        /* Activity status chart UI */
-        .activity-status-card .card-header h5 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            letter-spacing: .2px;
-        }
-
-        .activity-status-kpis .badge {
-            font-weight: 600;
-        }
-
-        .activity-status-chart {
-            min-height: 320px;
-        }
     </style>
 @endsection
 
@@ -456,119 +441,6 @@
 
 @endsection
 
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            var options = {
-                series: [
-                    {{ $statusDistribution['completed'] }},
-                    {{ $statusDistribution['under_progress'] }},
-                    {{ $statusDistribution['not_started'] }},
-                    {{ $statusDistribution['no_required'] }}
-                ],
-                chart: {
-                    width: '100%',
-                    height: 340,
-                    type: 'donut',
-                },
-                labels: ['Completed', 'Under Progress', 'Not Started', 'No Longer Required'],
-                colors: ['#198754', '#0d6efd', '#ffc107', '#6c757d'],
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['#ffffff']
-                },
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '68%',
-                            labels: {
-                                show: true,
-                                name: {
-                                    show: true,
-                                    offsetY: -2
-                                },
-                                value: {
-                                    show: true,
-                                    fontSize: '22px',
-                                    fontWeight: 700,
-                                    offsetY: 6,
-                                    formatter: function(val) {
-                                        return Math.round(val);
-                                    }
-                                },
-                                total: {
-                                    show: true,
-                                    showAlways: true,
-                                    label: 'Total',
-                                    fontSize: '12px',
-                                    formatter: function(w) {
-                                        return w.globals.seriesTotals.reduce(function(a, b) {
-                                            return a + b;
-                                        }, 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                legend: {
-                    position: 'bottom',
-                    horizontalAlign: 'center',
-                    fontSize: '14px',
-                    markers: {
-                        width: 12,
-                        height: 12,
-                        radius: 12,
-                    },
-                    itemMargin: {
-                        horizontal: 10,
-                        vertical: 4
-                    },
-                    formatter: function(seriesName, opts) {
-                        var value = opts.w.globals.series[opts.seriesIndex];
-                        var total = opts.w.globals.seriesTotals.reduce(function(a, b) {
-                            return a + b;
-                        }, 0) || 0;
-                        var pct = total ? (value / total) * 100 : 0;
-                        return seriesName + ': ' + value + ' (' + pct.toFixed(1) + '%)';
-                    },
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                tooltip: {
-                    y: {
-                        formatter: function(val, opts) {
-                            var total = opts.w.globals.seriesTotals.reduce(function(a, b) {
-                                return a + b;
-                            }, 0) || 0;
-                            var pct = total ? (val / total) * 100 : 0;
-                            return val + ' activities (' + pct.toFixed(1) + '%)';
-                        },
-                    }
-                },
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: {
-                            height: 300
-                        },
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }],
-            };
-
-            var chart = new ApexCharts(document.querySelector("#activityStatusChart"), options);
-            chart.render();
-        });
-    </script>
-@endpush
-
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
         <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
@@ -587,15 +459,7 @@
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>
             </div>
 
-            <div>
-                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}"
-                    class="btn btn-primary btn-sm">Overview</a>
-                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}" class="btn btn-primary btn-sm">Project
-                    Activites</a>
-                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}"
-                    class="btn btn-primary btn-sm">Gantt</a>
-
-            </div>
+            @include('Project::Partials.project-header-actions', ['project' => $project])
         </div>
     </div>
 
@@ -650,25 +514,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
-    <div class="card shadow mb-4 activity-status-card">
-        <div class="card-header">
-            <div
-                class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
-                <h5 class="mb-0">Project Activity Status</h5>
-            </div>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div id="activityStatusChart" class="activity-status-chart"></div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
 @endsection

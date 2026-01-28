@@ -31,16 +31,7 @@ class TimeSheetController extends Controller
         if ($request->ajax()) {
             $data = $this->timeSheets->getQuery()
                 ->with(['project', 'activity'])
-                ->where(function ($q) use ($authUser) {
-                    $q->whereHas('project', function ($pq) use ($authUser) {
-                        $pq->where('focal_person_id', $authUser->id)
-                            ->orWhere('team_lead_id', $authUser->id)
-                            ->orWhereHas('members', fn($m) => $m->where('user_id', $authUser->id));
-                    })
-                        ->orWhereHas('activity', function ($aq) use ($authUser) {
-                            $aq->whereHas('members', fn($m) => $m->where('user_id', $authUser->id));
-                        });
-                })
+                ->where('created_by', $authUser->id)
                 ->get();
             return DataTables::of($data)
                 ->addIndexColumn()

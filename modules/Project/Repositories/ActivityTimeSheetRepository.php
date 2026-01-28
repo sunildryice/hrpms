@@ -73,7 +73,7 @@ class ActivityTimeSheetRepository extends Repository
             ->join('projects as p', 'tst.project_id', '=', 'p.id')
             ->selectRaw("
             DATE_FORMAT(tst.timesheet_date, '%Y-%m')           AS month,
-            ANY_VALUE(DATE_FORMAT(tst.timesheet_date, '%M %Y')) AS month_name,
+            MIN(DATE_FORMAT(tst.timesheet_date, '%M %Y'))      AS month_name,  
             
             COUNT(*)                                           AS total_entries,
             ROUND(SUM(tst.hours_spent), 2)                     AS total_hours,

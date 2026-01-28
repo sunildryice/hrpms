@@ -132,6 +132,44 @@ class ProjectController
         ));
     }
 
+    public function dashboard($id)
+    {
+        $project = $this->projectRepository->find($id);
+
+        // Aggregate activities excluding theme level
+        $activitiesQuery = $project->activities()
+            ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+        $statusCounts = $activitiesQuery
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $statusDistribution = [
+            ActivityStatus::Completed->value => $statusCounts[ActivityStatus::Completed->value] ?? 0,
+            ActivityStatus::UnderProgess->value => $statusCounts[ActivityStatus::UnderProgess->value] ?? 0,
+            ActivityStatus::NotStarted->value => $statusCounts[ActivityStatus::NotStarted->value] ?? 0,
+            ActivityStatus::NoRequired->value => $statusCounts[ActivityStatus::NoRequired->value] ?? 0,
+        ];
+
+        $totalActivities = array_sum($statusDistribution);
+        $completed = $statusDistribution[ActivityStatus::Completed->value] ?? 0;
+        $completionRate = $totalActivities ? round($completed / $totalActivities * 100, 1) : 0;
+
+        $totalStages = $project->stages()->count();
+        $totalMembers = $project->members()->count();
+
+        return view('Project::Project.dashboard', compact(
+            'project',
+            'statusDistribution',
+            'totalActivities',
+            'completionRate',
+            'totalStages',
+            'totalMembers'
+        ));
+    }
+
 
     public function edit($id)
     {

@@ -607,6 +607,11 @@
                         <span class="fw-bold">Project Activity</span>
                         <div class="justify-content-end d-flex gap-2">
 
+                            <a href="{{ route('project.dashboard', $project->id) }}"
+                                class="btn btn-outline-secondary btn-sm">
+                                PMS Dashboard
+                            </a>
+
                             @can('manage-project-activity-on-certain-time', $project)
                                 <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
                                     href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">

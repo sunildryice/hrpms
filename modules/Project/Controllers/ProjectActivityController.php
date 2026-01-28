@@ -100,10 +100,10 @@ class ProjectActivityController extends Controller
     public function store(StoreRequest $request, Project $project)
     {
         $authUser = auth()->user();
-        $input = $request->validated();
-        $input['project_id'] = $project->id;
+        $inputs = $request->validated();
+        $inputs['project_id'] = $project->id;
         $inputs['created_by'] = $authUser->id;
-        $this->projectActivity->create($input);
+        $this->projectActivity->create($inputs);
 
         return response()->json([
             'message' => 'Project Activity created successfully.',

@@ -48,10 +48,10 @@ class ProjectController
                         $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
                         $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
-                        data-href="' . route('project.destroy', $row->id) . '"
-                        data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
-                        $btn .= '<i class="bi bi-trash"></i></button>';
+                        // $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                        // data-href="' . route('project.destroy', $row->id) . '"
+                        // data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                        // $btn .= '<i class="bi bi-trash"></i></button>';
                     }
 
                     return $btn;

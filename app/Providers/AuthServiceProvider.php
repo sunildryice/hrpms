@@ -97,7 +97,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        /**
+
         $permissions = Permission::all();
         foreach ($permissions as $permission) {
             Gate::define($permission->guard_name, function ($user) use ($permission) {
@@ -131,6 +131,6 @@ class AuthServiceProvider extends ServiceProvider
 
             return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id)) && $checkCurrentActivePeriod;
         });
-        */
+        
     }
 }

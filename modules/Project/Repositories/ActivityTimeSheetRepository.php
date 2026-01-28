@@ -66,7 +66,7 @@ class ActivityTimeSheetRepository extends Repository
         }
     }
 
-    public function getMonthlyTimeSheets()
+    public function getMonthlyTimeSheets($userId = null)
     {
         return $this->model
             ->from($this->model->getTable() . ' as tst')
@@ -83,8 +83,24 @@ class ActivityTimeSheetRepository extends Repository
                          ORDER BY p.short_name 
                          SEPARATOR ', ')                       AS project_short_names
         ")
+            ->when($userId, function ($query) use ($userId) {
+                return $query->where('tst.created_by', $userId);
+            })
             ->groupBy('month')
             ->orderBy('month', 'desc')
+            ->get();
+    }
+
+    public function getTimeSheetsByMonth($yearMonth, $userId = null)
+    {
+        return $this->model
+            ->when($yearMonth, function ($query) use ($yearMonth) {
+                $query->whereRaw('DATE_FORMAT(timesheet_date, "%Y-%m") = ?', [$yearMonth]);
+            })
+            ->when($userId, function ($query) use ($userId) {
+                return $query->where('created_by', $userId);
+            })
+            ->with(['project', 'activity'])
             ->get();
     }
 }

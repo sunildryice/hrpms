@@ -239,7 +239,7 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('start_date')) is-invalid @endif"
-                                    name="start_date" value="{!! old('start_date', $project->start_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
+                                    name="start_date" value="{!! old('start_date', $project->start_date?->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('start_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">
@@ -257,7 +257,7 @@
                             <div class="col-lg-9">
                                 <input type="text" data-toggle="datepicker"
                                     class="form-control @if ($errors->has('completion_date')) is-invalid @endif"
-                                    name="completion_date" value="{!! old('completion_date', $project->completion_date->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
+                                    name="completion_date" value="{!! old('completion_date', $project->completion_date?->format('Y-m-d')) !!}" placeholder="yyyy-mm-dd"
                                     onfocus="this.blur()" />
                                 @if ($errors->has('completion_date'))
                                     <div class="fv-plugins-message-container invalid-feedback">

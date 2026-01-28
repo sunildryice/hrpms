@@ -7,6 +7,7 @@ use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;
 use Modules\Project\Controllers\ActivityUpdatePeriodController;
+use Modules\Project\Controllers\MonthlyTimeSheetController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
@@ -49,7 +50,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
     Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
-    
+
     Route::get('/project-activity/{projectActivity}/timesheet/data', [ProjectActivityTimeSheetController::class, 'index'])->name('project-activity-timesheet.index');
     Route::get('/project-activity/{projectActivity}/timesheet/create', [ProjectActivityTimeSheetController::class, 'create'])->name('project-activity.timesheet.create');
     Route::get('/project-activity/timesheet/{timesheet}/edit', [ProjectActivityTimeSheetController::class, 'edit'])->name('project-activity.timesheet.edit');
@@ -64,5 +65,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/timesheet/{timesheet}/show', [TimeSheetController::class, 'show'])->name('timesheet.show');
     Route::put('/timesheet/{timesheet}/update', [TimeSheetController::class, 'update'])->name('timesheet.update');
     Route::delete('/timesheet/{timesheet}/delete', [TimeSheetController::class, 'destroy'])->name('timesheet.destroy');
-    
+
+    Route::get('/monthly-timesheet/index', [MonthlyTimeSheetController::class, 'index'])->name('monthly-timesheet.index');
+    Route::get('/monthly-timesheet/{month}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
 });

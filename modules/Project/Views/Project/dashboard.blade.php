@@ -62,9 +62,6 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var rootStyles = getComputedStyle(document.documentElement);
-            var brand = (rootStyles.getPropertyValue('--ohw-blue') || '').trim() || '#01AEF0';
-            var secondary = (rootStyles.getPropertyValue('--ohw--secondary') || '').trim() || '#997a5b';
             var brandDark = '#0288c0';
             var brandMid = '#0198d6';
             var brandLight = '#7ad7f7';
@@ -86,7 +83,7 @@
                     },
                 },
                 labels: ['Completed', 'Under Progress', 'Not Started', 'No Longer Required'],
-                colors: [brandMid, brandDark, brandLight, secondary || neutral],
+                colors: [brandMid, brandDark, brandLight, neutral],
                 responsive: [{
                     breakpoint: 480,
                     options: {

@@ -49,7 +49,7 @@
         }
 
         .stat-card-nr {
-            background:  #2f4f4f;
+            background: #2f4f4f;
         }
 
         .activity-status-chart {
@@ -184,7 +184,7 @@
             </div>
 
             <div class="col-lg-6">
-                <div class="card shadow-sm h-100">
+                <div class="card shadow-sm">
                     <div class="card-header">
                         <h6 class="mb-0 fw-bold">Project Detail</h6>
                     </div>
@@ -202,11 +202,27 @@
                                 {{ optional($project->completion_date)->format('M d, Y') }}
                             </dd>
 
-                            <dt class="col-sm-4">Stages</dt>
-                            <dd class="col-sm-8">{{ $totalStages }}</dd>
+                            <dt class="col-sm-4">{{ __('label.description') }}</dt>
+                            <dd class="col-sm-8">
+                                {{ $project->description ? Str::limit($project->description, 180) : '-' }}</dd>
+
+                            <dt class="col-sm-4">{{ __('label.team-lead') }}</dt>
+                            <dd class="col-sm-8">
+                                {{ isset($users) ? $users[$project->team_lead_id] ?? '-' : $project->teamLead->name ?? '-' }}
+                            </dd>
+
+                            <dt class="col-sm-4">{{ __('label.focal-person') }}</dt>
+                            <dd class="col-sm-8">
+                                {{ isset($users) ? $users[$project->focal_person_id] ?? '-' : $project->focalPerson->name ?? '-' }}
+                            </dd>
 
                             <dt class="col-sm-4">Members</dt>
-                            <dd class="col-sm-8">{{ $totalMembers }}</dd>
+                            <dd class="col-sm-8">@php($memberNames = $project->members->pluck('full_name')->filter()->implode(', '))
+                                {{ $memberNames ?: '-' }} ({{ $totalMembers }})</dd>
+
+                            <dt class="col-sm-4">Stages</dt>
+                            <dd class="col-sm-8">@php($stageTitles = $project->stages->pluck('title')->filter()->implode(', '))
+                                {{ $stageTitles ?: '-' }} ({{ $totalStages }})</dd>
 
                             <dt class="col-sm-4">Completion rate</dt>
                             <dd class="col-sm-8">{{ $completionRate }}%</dd>
@@ -217,4 +233,3 @@
         </div>
     </div>
 @endsection
-

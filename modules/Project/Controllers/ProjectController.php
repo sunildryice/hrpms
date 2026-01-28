@@ -84,56 +84,19 @@ class ProjectController
         return redirect()->back()->withInput()->withErrorMessage('Failed to create Project.');
     }
 
-    // public function show($id)
-    // {
-    //     $project = $this->projectRepository->find($id);
-    //     $users = $this->userRepository->pluck('full_name', 'id');
-    //     $stages = $this->activityStageRepository->all();
-    //     $projectActivity = $project->activities;
-    //     $authUser = auth()->user();
-    //     return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
-    // }
-
     public function show($id)
     {
         $project = $this->projectRepository->find($id);
         $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
         $projectActivity = $project->activities;
-
-        // Add status distribution for the chart
-        $statusCounts = $project->activities()
-            ->where('activity_level', '!=', ActivityLevel::Theme->value)
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
-
-        // Make sure all statuses exist (even if count = 0)
-        $statusDistribution = [
-            ActivityStatus::Completed->value => $statusCounts[ActivityStatus::Completed->value] ?? 0,
-            ActivityStatus::UnderProgess->value => $statusCounts[ActivityStatus::UnderProgess->value] ?? 0,
-            ActivityStatus::NotStarted->value => $statusCounts[ActivityStatus::NotStarted->value] ?? 0,
-            ActivityStatus::NoRequired->value => $statusCounts[ActivityStatus::NoRequired->value] ?? 0,
-        ];
-
-        $totalActivities = array_sum($statusDistribution);
-
         $authUser = auth()->user();
-
-        return view('Project::Project.show', compact(
-            'project',
-            'users',
-            'stages',
-            'authUser',
-            'projectActivity',
-            'statusDistribution',
-            'totalActivities'
-        ));
+        return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
     }
 
     public function dashboard($id)
     {
+        $users = $this->userRepository->pluck('full_name', 'id');
         $project = $this->projectRepository->find($id);
 
         // Aggregate activities excluding theme level
@@ -166,7 +129,8 @@ class ProjectController
             'totalActivities',
             'completionRate',
             'totalStages',
-            'totalMembers'
+            'totalMembers',
+            'users',
         ));
     }
 

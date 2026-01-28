@@ -130,28 +130,22 @@
                                     }
                                 }
                             },
-                            // start_date: {
-                            //     validators: {
-                            //         notEmpty: {
-                            //             message: 'The start date is required'
-                            //         },
-                            //         date: {
-                            //             format: 'YYYY-MM-DD',
-                            //             message: 'The start date is not a valid date'
-                            //         }
-                            //     },
-                            // },
-                            // completion_date: {
-                            //     validators: {
-                            //         notEmpty: {
-                            //             message: 'The completion date is required'
-                            //         },
-                            //         date: {
-                            //             format: 'YYYY-MM-DD',
-                            //             message: 'The completion date is not a valid date'
-                            //         }
-                            //     },
-                            // },
+                            'completion_date': {
+                                validators: {
+                                    callback: {
+                                        message: 'End date must be on or after start date',
+                                        callback: function(input) {
+                                            const startVal = $('[name="start_date"]')
+                                                .val();
+                                            const endVal = input.value;
+                                            if (!startVal || !endVal) {
+                                                return true;
+                                            }
+                                            return endVal >= startVal;
+                                        }
+                                    }
+                                }
+                            },
                             'members[]': {
                                 validators: {
                                     callback: {
@@ -193,9 +187,12 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
+                        startDate: new Date(
+                            '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         endDate: new Date(
-                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         zIndex: 2048,
                     });
 
@@ -203,11 +200,23 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
+                        startDate: new Date(
+                            '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         endDate: new Date(
-                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         zIndex: 2048,
                     });
+
+                    const $startInput = $('[name="start_date"]');
+                    const $endInput = $('[name="completion_date"]');
+                    const $startHint = $('#start-date-hint');
+                    const $endHint = $('#end-date-hint');
+                    const defaultMinDate =
+                        '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}';
+                    const defaultMaxDate =
+                        '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}';
 
                     // Filter Partent Activity Based on the Activity Level and Stage, and Toggle Parent Activity and Members fields based on the Activity Level
 
@@ -219,6 +228,96 @@
                     const $membersSelect = $('#members_select');
 
                     const allParentOptions = $parentSelect.html();
+
+                    function formatHintDate(dateStr) {
+                        if (!dateStr) {
+                            return '';
+                        }
+
+                        const clean = String(dateStr).substring(0, 10); // keep YYYY-MM-DD
+                        const parts = clean.split('-');
+                        if (parts.length !== 3) {
+                            return dateStr;
+                        }
+
+                        const d = new Date(clean);
+                        if (isNaN(d.getTime())) {
+                            return dateStr;
+                        }
+
+                        const options = {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit'
+                        };
+                        return d.toLocaleDateString('en-GB', options);
+                    }
+
+                    function setDateRange(minDate, maxDate) {
+                        if (!minDate || !maxDate) {
+                            return;
+                        }
+
+                        const min = new Date(minDate);
+                        const max = new Date(maxDate);
+
+                        $startInput.datepicker('setStartDate', min);
+                        $startInput.datepicker('setEndDate', max);
+                        $endInput.datepicker('setStartDate', min);
+                        $endInput.datepicker('setEndDate', max);
+
+                        $startInput.data('range-min', minDate);
+                        $startInput.data('range-max', maxDate);
+                        $endInput.data('range-min', minDate);
+                        $endInput.data('range-max', maxDate);
+
+                        const minLabel = formatHintDate(minDate);
+                        const maxLabel = formatHintDate(maxDate);
+
+                        if ($startHint.length) {
+                            $startHint.text('Allowed: ' + minLabel + ' to ' + maxLabel);
+                        }
+                        if ($endHint.length) {
+                            $endHint.text('Allowed: ' + minLabel + ' to ' + maxLabel);
+                        }
+                    }
+
+                    function updateRangeFromParent() {
+                        const level = $activityLevelSelect.val();
+                        if (level === 'theme') {
+                            setDateRange(defaultMinDate, defaultMaxDate);
+                            return;
+                        }
+
+                        const $selected = $parentSelect.find('option:selected');
+                        const pStart = $selected.data('start-date');
+                        const pEnd = $selected.data('end-date');
+
+                        if (pStart && pEnd) {
+                            setDateRange(pStart, pEnd);
+                        } else {
+                            setDateRange(defaultMinDate, defaultMaxDate);
+                        }
+                    }
+
+                    function updateEndMinFromStart() {
+                        const startVal = $startInput.val();
+                        const rangeMin = $endInput.data('range-min') || defaultMinDate;
+
+                        let newMin = rangeMin;
+                        if (startVal && startVal > newMin) {
+                            newMin = startVal;
+                        }
+
+                        $endInput.datepicker('setStartDate', new Date(newMin));
+
+                        const endVal = $endInput.val();
+                        if (endVal && startVal && endVal < startVal) {
+                            $endInput.val(startVal);
+                        }
+
+                        fv.revalidateField('completion_date');
+                    }
 
                     function updateParentOptions() {
                         const level = $activityLevelSelect.val();
@@ -275,10 +374,12 @@
                             $membersRow.hide();
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
+                            setDateRange(defaultMinDate, defaultMaxDate);
                         } else {
                             $parentRow.show();
                             $membersRow.show();
                             updateParentOptions();
+                            updateRangeFromParent();
                         }
                     }
 
@@ -310,6 +411,18 @@
                     $membersSelect.select2({
                         dropdownParent: $membersSelect.parent(),
                         width: '100%'
+                    });
+
+                    // Initial date range and listeners
+                    setDateRange(defaultMinDate, defaultMaxDate);
+                    updateRangeFromParent();
+                    $parentSelect.on('change', function() {
+                        updateRangeFromParent();
+                        updateEndMinFromStart();
+                    });
+
+                    $startInput.on('change', function() {
+                        updateEndMinFromStart();
                     });
                 });
             });

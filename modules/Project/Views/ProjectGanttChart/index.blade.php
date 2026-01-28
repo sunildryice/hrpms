@@ -331,10 +331,10 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Project Gantt</li>
+                        <li class="breadcrumb-item active" aria-current="page">Project Gantt Chart</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Gantt</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Gantt Chart</h4>
             </div>
 
             @include('Project::Partials.project-header-actions', ['project' => $project])

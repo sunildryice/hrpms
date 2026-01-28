@@ -13,9 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('construction_installments', function (Blueprint $table) {
-            $table->renameColumn('report_date', 'advance_release_date');
-        });
+        
     }
 
     /**
@@ -25,8 +23,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('construction_installments', function (Blueprint $table) {
-            $table->renameColumn('advance_release_date', 'report_date');
-        });
+
     }
 };

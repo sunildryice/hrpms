@@ -457,6 +457,16 @@
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>
             </div>
+
+            <div>
+                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}"
+                    class="btn btn-primary btn-sm">Overview</a>
+                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}" class="btn btn-primary btn-sm">Project
+                    Activites</a>
+                <a href="{{ route('project.gantt.index', ['id' => $project->id]) }}"
+                    class="btn btn-primary btn-sm">Gantt</a>
+
+            </div>
         </div>
     </div>
 

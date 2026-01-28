@@ -982,10 +982,10 @@
                                         id="holidays-menu">Office Holidays </a>
                                 @endif
 
-                                @if ($authUser->can('manage-projects'))
-                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}"
-                                        id="project-codes-menu">{{ __('label.projects') }}</a>
-                                @endif
+{{--                                @if ($authUser->can('manage-projects'))--}}
+{{--                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}"--}}
+{{--                                        id="project-codes-menu">{{ __('label.projects') }}</a>--}}
+{{--                                @endif--}}
 
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"

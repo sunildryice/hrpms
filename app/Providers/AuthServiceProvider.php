@@ -131,6 +131,6 @@ class AuthServiceProvider extends ServiceProvider
 
             return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id)) && $checkCurrentActivePeriod;
         });
-        
+
     }
 }

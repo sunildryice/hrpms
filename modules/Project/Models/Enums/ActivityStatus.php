@@ -6,6 +6,6 @@ enum ActivityStatus: string
 {
     case NotStarted = 'not_started';
     case UnderProgess = 'under_progress';
-    case InProgress = 'in_progress';
+    case NoRequired = 'no_required';
     case Completed = 'completed';
 }

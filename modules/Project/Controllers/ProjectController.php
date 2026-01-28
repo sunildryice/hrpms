@@ -3,13 +3,15 @@
 namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
-use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Models\Project;
-use Modules\Project\Repositories\ActivityStageRepository;
-use Modules\Project\Repositories\ProjectRepository;
-use Modules\Project\Requests\Project\StoreRequest;
-use Modules\Project\Requests\Project\UpdateRequest;
 use Yajra\DataTables\Facades\DataTables;
+use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Models\Enums\ActivityStatus;
+use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Requests\Project\StoreRequest;
+use Modules\Project\Repositories\ProjectRepository;
+use Modules\Project\Requests\Project\UpdateRequest;
+use Modules\Project\Repositories\ActivityStageRepository;
 
 class ProjectController
 {
@@ -17,8 +19,7 @@ class ProjectController
         protected ProjectRepository       $projectRepository,
         protected UserRepository          $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    )
-    {
+    ) {
     }
 
     public function index(Request $request)
@@ -37,7 +38,7 @@ class ProjectController
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('project.show', $row->id) . '" rel="tooltip" title="View Project">';
+                    $btn .= route('project.dashboard', $row->id) . '" rel="tooltip" title="View Project">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
 
                     if ($authUser->can('manage-pms')) {
@@ -45,10 +46,10 @@ class ProjectController
                         $btn .= route('project.edit', $row->id) . '" rel="tooltip" title="Edit Project">';
                         $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
-                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
-                        data-href="' . route('project.destroy', $row->id) . '"
-                        data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
-                        $btn .= '<i class="bi bi-trash"></i></button>';
+                        // $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project delete-record"
+                        // data-href="' . route('project.destroy', $row->id) . '"
+                        // data-id="' . $row->id . '" rel="tooltip" title="Delete Project">';
+                        // $btn .= '<i class="bi bi-trash"></i></button>';
                     }
 
                     return $btn;
@@ -89,6 +90,46 @@ class ProjectController
         $projectActivity = $project->activities;
         $authUser = auth()->user();
         return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
+    }
+
+    public function dashboard($id)
+    {
+        $users = $this->userRepository->pluck('full_name', 'id');
+        $project = $this->projectRepository->find($id);
+
+        // Aggregate activities excluding theme level
+        $activitiesQuery = $project->activities()
+            ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+        $statusCounts = $activitiesQuery
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $statusDistribution = [
+            ActivityStatus::Completed->value => $statusCounts[ActivityStatus::Completed->value] ?? 0,
+            ActivityStatus::UnderProgess->value => $statusCounts[ActivityStatus::UnderProgess->value] ?? 0,
+            ActivityStatus::NotStarted->value => $statusCounts[ActivityStatus::NotStarted->value] ?? 0,
+            ActivityStatus::NoRequired->value => $statusCounts[ActivityStatus::NoRequired->value] ?? 0,
+        ];
+
+        $totalActivities = array_sum($statusDistribution);
+        $completed = $statusDistribution[ActivityStatus::Completed->value] ?? 0;
+        $completionRate = $totalActivities ? round($completed / $totalActivities * 100, 1) : 0;
+
+        $totalStages = $project->stages()->count();
+        $totalMembers = $project->members()->count();
+
+        return view('Project::Project.dashboard', compact(
+            'project',
+            'statusDistribution',
+            'totalActivities',
+            'completionRate',
+            'totalStages',
+            'totalMembers',
+            'users',
+        ));
     }
 
 

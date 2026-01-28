@@ -11,6 +11,7 @@ use Modules\Project\Controllers\MonthlyTimeSheetController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
+use Modules\Project\Controllers\ProjectGanttChartController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -18,6 +19,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/projects/store', [ProjectController::class, 'store'])->name('project.store');
     Route::get('/projects/{id}/edit', [ProjectController::class, 'edit'])->name('project.edit');
     Route::get('/projects/{id}/show', [ProjectController::class, 'show'])->name('project.show');
+    Route::get('/projects/{id}/dashboard', [ProjectController::class, 'dashboard'])->name('project.dashboard');
     Route::post('/projects/{id}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
 
@@ -29,6 +31,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
+
+
 
     Route::get('/activity-update-periods', [ActivityUpdatePeriodController::class, 'index'])->name('activity-update-periods.index');
     Route::get('/activity-update-periods/create', [ActivityUpdatePeriodController::class, 'create'])->name('activity-update-periods.create');
@@ -50,6 +54,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
     Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
+
+    Route::get('/projects/{id}/gantt', [ProjectGanttChartController::class, 'index'])->name('project.gantt.index');
 
     Route::get('/project-activity/{projectActivity}/timesheet/data', [ProjectActivityTimeSheetController::class, 'index'])->name('project-activity-timesheet.index');
     Route::get('/project-activity/{projectActivity}/timesheet/create', [ProjectActivityTimeSheetController::class, 'create'])->name('project-activity.timesheet.create');

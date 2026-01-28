@@ -438,6 +438,7 @@
             });
         });
     </script>
+
 @endsection
 
 @section('page-content')
@@ -457,10 +458,12 @@
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>
             </div>
+
+            @include('Project::Partials.project-header-actions', ['project' => $project])
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-2">
         <div class="col-lg-3">
             <div class="card">
                 <div class="card-header fw-bold">Project Information</div>
@@ -511,11 +514,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="project-activity-modal-container"></div>
         </div>
-    </div>
-
-    <div id="project-activity-modal-container">
     </div>
 @endsection

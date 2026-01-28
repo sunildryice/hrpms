@@ -656,7 +656,8 @@
 
     <div class="card shadow mb-4 activity-status-card">
         <div class="card-header">
-            <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
+            <div
+                class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-2">
                 <h5 class="mb-0">Project Activity Status</h5>
             </div>
         </div>
@@ -665,7 +666,7 @@
                 <div class="col-md-12">
                     <div id="activityStatusChart" class="activity-status-chart"></div>
                 </div>
-                
+
             </div>
         </div>
     </div>

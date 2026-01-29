@@ -46,7 +46,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('project-activity.index', $project->id) }}",
-                bFilter: false,
+                bFilter: true,
                 bPaginate: true,
                 bInfo: false,
                 columns: [{
@@ -243,7 +243,7 @@
                             'parent_id': {
                                 validators: {
                                     callback: {
-                                        message: 'Parent activity is required',
+                                        message: 'Activity is required',
                                         callback: function(input) {
                                             const level = $activityLevelSelect.val();
                                             if (level === 'theme') return true;
@@ -340,12 +340,12 @@
                     const defaultMaxDate =
                         '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}';
 
-                    // Filter Partent Activity Based on the Activity Level and Stage, and Toggle Parent Activity and Members fields based on the Activity Level
+                    // Filter Theme/Partent Activity Based on the Activity Level, and Toggle Parent Activity, Stage and Members fields based on the Activity Level
 
                     const $activityLevelSelect = $('[name="activity_level"]');
-                    const $stageSelect = $('[name="activity_stage_id"]');
                     const $parentRow = $('#parent-activity-row');
                     const $membersRow = $('#members-row');
+                    const $stageRow = $('#stage-row');
                     const $parentSelect = $('#parent_activity_select');
                     const $membersSelect = $('#members_select');
 
@@ -441,9 +441,23 @@
                         fv.revalidateField('completion_date');
                     }
 
+                    const $parentLabel = $('#parent-activity-row .form-label');
+
+                    function updateParentLabel() {
+                        const level = $activityLevelSelect.val();
+
+                        let newLabel = 'Parent Activity';
+
+                        if (level === 'activity') {
+                            newLabel = 'Theme Activity';
+                        } else if (level === 'sub_activity') {
+                            newLabel = 'Parent Activity';
+                        }
+                        $parentLabel.text(newLabel);
+                    }
+
                     function updateParentOptions() {
                         const level = $activityLevelSelect.val();
-                        const stage = $stageSelect.val();
 
                         $parentSelect.html('<option value="">Select Parent Activity</option>');
                         if (level === 'theme') {
@@ -472,12 +486,6 @@
                             return $opt.data('level') === allowedParentLevel;
                         });
 
-                        if (stage) {
-                            filtered = filtered.filter(function() {
-                                const $opt = $(this);
-                                return String($opt.data('stage')) === String(stage);
-                            });
-                        }
                         $parentSelect.html('<option value="">' + placeholderText + '</option>');
 
                         if (filtered.length === 0) {
@@ -490,16 +498,42 @@
                         $parentSelect.trigger('change');
                     }
 
-                    function toggleFieldsBasedOnLevel(level) {
+                    function updateStageFromParent() {
+                        const level = $activityLevelSelect.val();
                         if (level === 'theme') {
+                            // For theme → user selects stage manually → do nothing here
+                            return;
+                        }
+                        const $selectedParent = $parentSelect.find('option:selected');
+                        const parentStageId = $selectedParent.data('stage');
+                        if (parentStageId) {
+                            $('[name="activity_stage_id"]').val(parentStageId).trigger('change');
+                        } else {
+                            $('[name="activity_stage_id"]').val('').trigger('change');
+                        }
+                    }
+
+                    function toggleFieldsBasedOnLevel(level) {
+                        if (!level) {
+                            $stageRow.show();
+                            $parentRow.hide();
+                            $membersRow.hide();
+                            $parentSelect.val(null).trigger('change');
+                            $membersSelect.val(null).trigger('change');
+                            return;
+                        }
+                        if (level === 'theme') {
+                            $stageRow.show();
                             $parentRow.hide();
                             $membersRow.hide();
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
                             setDateRange(defaultMinDate, defaultMaxDate);
                         } else {
+                            $stageRow.hide();
                             $parentRow.show();
                             $membersRow.show();
+                            updateParentLabel();
                             updateParentOptions();
                             updateRangeFromParent();
                         }
@@ -508,13 +542,6 @@
                     $activityLevelSelect.on('change', function() {
                         const level = $(this).val();
                         toggleFieldsBasedOnLevel(level);
-                    });
-
-                    $stageSelect.on('change', function() {
-                        const level = $activityLevelSelect.val();
-                        if (level && level !== 'theme') {
-                            updateParentOptions();
-                        }
                     });
 
                     const initialLevel = $activityLevelSelect.val();
@@ -538,14 +565,22 @@
                     // Initial date range and listeners
                     setDateRange(defaultMinDate, defaultMaxDate);
                     updateRangeFromParent();
+
                     $parentSelect.on('change', function() {
                         updateRangeFromParent();
                         updateEndMinFromStart();
+                        updateStageFromParent();
                     });
 
                     $startInput.on('change', function() {
                         updateEndMinFromStart();
                     });
+                    $activityLevelSelect.on('change', function() {
+                        const level = $(this).val();
+                        toggleFieldsBasedOnLevel(level);
+                        updateStageFromParent();
+                    });
+                    updateStageFromParent();
                 });
             });
 

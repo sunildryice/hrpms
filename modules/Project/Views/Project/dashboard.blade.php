@@ -32,7 +32,7 @@
         }
 
         .stat-card-total {
-            background: #01AEF0;
+            background: #01b1f7;
         }
 
         .stat-card-completed {
@@ -44,12 +44,12 @@
         }
 
         .stat-card-pending {
-            background: #7ad7f7;
-            color: #053246;
+            background: #01AEF0;
         }
 
         .stat-card-nr {
-            background: #2f4f4f;
+            background: #7ad7f7;
+            color: #053246;
         }
 
         .activity-status-chart {
@@ -64,8 +64,8 @@
         document.addEventListener("DOMContentLoaded", function() {
             var brandDark = '#0288c0';
             var brandMid = '#0198d6';
-            var brandLight = '#7ad7f7';
-            var neutral = '#2f4f4f';
+            var brandLight = '#01AEF0';
+            var neutral = '#7ad7f7';
 
             var options = {
                 series: [
@@ -132,16 +132,16 @@
         </div>
 
         <div class="row g-3 mb-3">
-            <div class="col-md-3">
+            {{-- <div class="col-md-3">
                 <div class="stat-card stat-card-total">
-                    <small>Total planned activities</small>
+                    <small>Total</small>
                     <h3 class="mb-1">{{ $totalActivities }}</h3>
                     <span class="badge rounded-pill mt-1">
                         {{ optional($project->start_date)->format('M d, Y') }} –
                         {{ optional($project->completion_date)->format('M d, Y') }}
                     </span>
                 </div>
-            </div>
+            </div> --}}
             <div class="col-md-3">
                 <div class="stat-card stat-card-completed">
                     <small>Completed</small>
@@ -157,14 +157,17 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="stat-card stat-card-pending mb-2">
+                <div class="stat-card stat-card-pending">
                     <small>Not started</small>
                     <h3 class="mb-1">{{ $statusDistribution['not_started'] }}</h3>
                     <span class="badge rounded-pill mt-1">{{ $totalMembers }} project members</span>
                 </div>
+            </div>
+            <div class="col-md-3">
                 <div class="stat-card stat-card-nr">
                     <small>No longer required</small>
-                    <h3 class="mb-0">{{ $statusDistribution['no_required'] }}</h3>
+                    <h3 class="mb-4">{{ $statusDistribution['no_required'] }}</h3>
+                    {{-- <span class="badge rounded-pill mt-1">{{ $totalMembers }} project members</span> --}}
                 </div>
             </div>
         </div>

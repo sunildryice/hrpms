@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
+use Modules\Project\Models\ProjectActivityStatusLog;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Requests\ProjectActivity\StoreRequest;
@@ -53,6 +54,21 @@ class ProjectActivityController extends Controller
             })
             ->addColumn('activity_level', function ($row) {
                 return ucfirst(str_replace('_', ' ', $row->activity_level));
+            })
+            ->editColumn('status', function ($row) {
+
+                $selectInput = '';
+                if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
+                    $selectInput .= '<select class="form-select form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
+                    foreach (ActivityStatus::cases() as $status) {
+                        $selected = $row->status === $status->value ? 'selected' : '';
+                        $selectInput .= '<option value="' . $status->value . '" ' . $selected . '>' . ucfirst(str_replace('_', ' ', $status->value)) . '</option>';
+                    }
+                    $selectInput .= '</select>';
+                } else {
+                    $selectInput .= '<span class="' . ActivityStatus::from($row->status)->colorClass() . '">' . ActivityStatus::from($row->status)->label() . '</span>';
+                }
+                return $selectInput;
             })
             ->addColumn('action', function ($row) use ($authUser) {
                 $btn = '<a class="btn btn-outline-primary btn-sm" href="';
@@ -116,6 +132,7 @@ class ProjectActivityController extends Controller
     public function show($id)
     {
         $projectActivity = $this->projectActivity->find($id);
+        $projectActivity->load('latestStatusLog');
         $activityLevels = ActivityLevel::cases();
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
@@ -169,5 +186,31 @@ class ProjectActivityController extends Controller
             'message' => 'Project Activity can not deleted.',
             'redirect' => route('project.show', $projectId),
         ], 422);
+    }
+
+    public function updateStatus(Request $request, ProjectActivity $projectActivity)
+    {
+        $request->validate([
+            'status' => 'required|string|in:not_started,under_progress,no_required,completed',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $oldStatus = $projectActivity->status;
+        $newStatus = $request->input('status');
+
+        $projectActivity->status = $newStatus;
+        $projectActivity->save();
+
+        ProjectActivityStatusLog::create([
+            'project_activity_id' => $projectActivity->id,
+            'changed_by' => auth()->id(),
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'remarks' => $request->input('remarks'),
+        ]);
+
+        return response()->json([
+            'message' => 'Project Activity status updated successfully.',
+        ]);
     }
 }

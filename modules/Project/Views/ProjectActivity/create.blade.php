@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        <div class="row mb-2" id="stage-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Stage</label>
@@ -54,7 +54,7 @@
         <div class="row mb-2" id="parent-activity-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label m-0">Parent Activity</label>
+                    <label class="form-label required-label m-0">Parent Activity</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -64,6 +64,8 @@
                         <option value="{{ $activity->id }}" 
                             data-level="{{ $activity->activity_level }}"
                             data-stage="{{ $activity->activity_stage_id }}"
+                            data-start-date="{{ $activity->start_date }}"
+                            data-end-date="{{ $activity->completion_date }}" 
                             data-title="{{ $activity->title }}">
                             {{ $activity->title }}
                         </option>
@@ -81,6 +83,7 @@
             <div class="col-lg-9">
                 <input type="text" name="start_date" class="form-control" placeholder="yyyy-mm-dd"
                     onfocus="this.blur()" autocomplete="off" />
+                <div id="start-date-hint" class="form-text small text-muted mt-1"></div>
             </div>
         </div>
 
@@ -93,6 +96,7 @@
             <div class="col-lg-9">
                 <input type="text" name="completion_date" class="form-control" placeholder="yyyy-mm-dd"
                     onfocus="this.blur()" autocomplete="off" />
+                <div id="end-date-hint" class="form-text small text-muted mt-1"></div>
             </div>
         </div>
 
@@ -111,21 +115,6 @@
             </div>
         </div>
 
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label class="form-label m-0">Status</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select name="status" class="select2 form-control" data-width="100%">
-                    <option value="">Select Status</option>
-                    @foreach ($status as $st)
-                        <option value="{{ $st->value }}">{{ $st->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
     </div>
 
     <div class="modal-footer">

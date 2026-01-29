@@ -5,6 +5,7 @@ namespace Modules\Project\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Project\Models\ActivityStage;
+use Modules\Project\Models\ProjectActivityStatusLog;
 
 class ProjectActivity extends Model
 {
@@ -53,6 +54,16 @@ class ProjectActivity extends Model
     public function timesheets()
     {
         return $this->hasMany(ActivityTimeSheet::class, 'activity_id');
+    }
+
+    public function statusLogs()
+    {
+        return $this->hasMany(ProjectActivityStatusLog::class, 'project_activity_id');
+    }
+
+    public function latestStatusLog()
+    {
+        return $this->hasOne(ProjectActivityStatusLog::class, 'project_activity_id')->latestOfMany();
     }
 
     public function parentName()

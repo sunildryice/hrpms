@@ -604,7 +604,7 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">Project Details</li>
+                        <li class="breadcrumb-item active" aria-current="page">Project Details : {{ $project?->title ?? $project?->short_name }}</li>
                     </ol>
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>

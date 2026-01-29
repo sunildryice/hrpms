@@ -105,23 +105,23 @@ class AuthServiceProvider extends ServiceProvider
             });
         }
 
-        Gate::define('approve-advance-settlement-form', function ($user) use ($permission) {
+        Gate::define('approve-advance-settlement-form', function ($user)  {
             return $user->can('approve-advance-request') || $user->can('approve-recommended-advance-settlement');
         });
 
-        Gate::define('approve-payment-sheet-form', function ($user) use ($permission) {
+        Gate::define('approve-payment-sheet-form', function ($user)  {
             return $user->can('approve-payment-sheet') || $user->can('approve-recommended-payment-sheet');
         });
 
-        Gate::define('approve-purchase-request-form', function ($user) use ($permission) {
+        Gate::define('approve-purchase-request-form', function ($user)  {
             return $user->can('approve-purchase-request') || $user->can('approve-recommended-purchase-request');
         });
 
-        Gate::define('approve-travel-form', function ($user) use ($permission) {
+        Gate::define('approve-travel-form', function ($user)  {
             return $user->can('approve-travel-request') || $user->can('approve-recommended-travel-request');
         });
 
-        Gate::define('approve-event-form', function ($user) use ($permission) {
+        Gate::define('approve-event-form', function ($user)  {
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
         });
 

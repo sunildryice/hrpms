@@ -1,4 +1,8 @@
 <div class="card-body">
+    @php
+        $latestLog = $projectActivity->latestStatusLog;
+        $isNoRequiredStatus = $latestLog && $latestLog->new_status && $latestLog->new_status->value === 'no_required';
+    @endphp
     <div class="mb-2 d-flex align-items-start gap-2">
         <i class="bi-card-text text-dark" title="{{ __('label.title') }}" aria -label="{{ __('label.title') }}"
             data-bs-toggle="tooltip"></i>
@@ -53,4 +57,16 @@
             </div>
         </div>
     </div>
+
+    @if ($latestLog && $latestLog->remarks)
+        @php($labelText = $isNoRequiredStatus ? 'Reason' : 'Remarks')
+        <div class="mb-2 d-flex align-items-start gap-2">
+            <i class="bi-chat-left-text text-dark" title="{{ $labelText }}" aria-label="{{ $labelText }}"
+                data-bs-toggle="tooltip"></i>
+            <div class="w-100">
+                <div class="fw-semibold small text-muted mb-1">{{ $labelText }}</div>
+                <div>{{ $latestLog->remarks }}</div>
+            </div>
+        </div>
+    @endif
 </div>

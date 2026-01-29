@@ -12,6 +12,27 @@
         .deliverable-row .btn {
             padding-inline: .35rem;
         }
+
+        #projectActivityTable th:nth-child(8),
+        #projectActivityTable td:nth-child(8) {
+            min-width: 140px;
+            width: 140px !important;
+        }
+
+        /* Bootstrap modal styling for status change */
+        #activityStatusModalLabel {
+            font-weight: 600;
+        }
+
+        #activityStatusMessageLabel {
+            text-align: left;
+            width: 100%;
+        }
+
+        #activityStatusModal .btn-status-save {
+            background-color: var(--ohw-blue);
+            border-color: var(--ohw-blue);
+        }
     </style>
 @endsection
 
@@ -25,7 +46,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('project-activity.index', $project->id) }}",
-                bFilter: false,
+                bFilter: true,
                 bPaginate: true,
                 bInfo: false,
                 columns: [{
@@ -35,12 +56,12 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_level',
-                        name: 'activity_level'
-                    },
-                    {
                         data: 'activity_stage',
                         name: 'activity_stage'
+                    },
+                    {
+                        data: 'activity_level',
+                        name: 'activity_level'
                     },
                     {
                         data: 'title',
@@ -57,6 +78,9 @@
                     {
                         data: 'completion_date',
                         name: 'completion_date'
+                    },
+                    {
+                        data: 'status',
                     },
                     {
                         data: 'action',
@@ -79,6 +103,104 @@
                     oTable.ajax.reload();
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
+            });
+
+            // Track previous status value before change
+            $('#projectActivityTable').on('focus', '.activity-status-change', function() {
+                $(this).data('previous', this.value);
+            });
+
+            // Handle status change with Bootstrap modal for Reason/Remarks
+            $('#projectActivityTable').on('change', '.activity-status-change', function() {
+                const $select = $(this);
+                const newStatus = $select.val();
+                const oldStatus = $select.data('previous');
+                const activityId = $select.data('activity-id');
+
+                if (!activityId) {
+                    return;
+                }
+
+                const url = "{{ url('/project-activity') }}/" + activityId + "/status";
+
+                // For Not Required and Completed open Bootstrap modal
+                if (newStatus === 'no_required' || newStatus === 'completed') {
+                    const $modal = $('#activityStatusModal');
+
+                    const title = newStatus === 'no_required' ?
+                        'Mark activity as Not Required' :
+                        'Mark activity as Completed';
+                    const label = newStatus === 'no_required' ? 'Reason' : 'Remarks';
+
+                    $modal.data('url', url);
+                    $modal.data('select', $select);
+                    $modal.data('oldStatus', oldStatus);
+                    $modal.data('status', newStatus);
+                    $modal.data('updated', false);
+
+                    $('#activityStatusModalLabel').text(title);
+                    $('#activityStatusMessageLabel').text(label);
+                    $('#activityStatusMessage').val('').removeClass('is-invalid');
+
+                    $modal.modal('show');
+                } else {
+                    // For other statuses, just update directly without extra input
+                    ajaxSubmit(url, 'POST', {
+                        status: newStatus
+                    }, function(response) {
+                        toastr.success(response.message || 'Status updated successfully');
+                        $('#projectActivityTable').DataTable().ajax.reload(null, false);
+                    });
+                }
+            });
+
+            // Submit handler for Bootstrap status modal
+            $('#activityStatusForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const $modal = $('#activityStatusModal');
+                const url = $modal.data('url');
+                const statusValue = $modal.data('status');
+                const message = $('#activityStatusMessage').val().trim();
+
+                if (!url || !statusValue) {
+                    return;
+                }
+
+                if (!message) {
+                    $('#activityStatusMessage').addClass('is-invalid');
+                    return;
+                }
+
+                const data = {
+                    status: statusValue,
+                    // Backend will always receive this as `remarks`,
+                    // label text (Reason/Remarks) is only for display.
+                    remarks: message,
+                };
+
+                ajaxSubmit(url, 'POST', data, function(response) {
+                    $modal.data('updated', true);
+                    $modal.modal('hide');
+                    toastr.success(response.message || 'Status updated successfully');
+                    $('#projectActivityTable').DataTable().ajax.reload(null, false);
+                });
+            });
+
+            $('#activityStatusMessage').on('input', function() {
+                $(this).removeClass('is-invalid');
+            });
+
+            // On modal close without update, revert dropdown to previous value
+            $('#activityStatusModal').on('hidden.bs.modal', function() {
+                const $modal = $(this);
+                const updated = $modal.data('updated');
+                const $select = $modal.data('select');
+                const oldStatus = $modal.data('oldStatus');
+
+                if (!updated && $select && typeof oldStatus !== 'undefined') {
+                    $select.val(oldStatus);
+                }
             });
 
             $(document).on('click', '.open-project-activity-modal-form', function(e) {
@@ -121,7 +243,7 @@
                             'parent_id': {
                                 validators: {
                                     callback: {
-                                        message: 'Parent activity is required',
+                                        message: 'Activity is required',
                                         callback: function(input) {
                                             const level = $activityLevelSelect.val();
                                             if (level === 'theme') return true;
@@ -130,28 +252,22 @@
                                     }
                                 }
                             },
-                            // start_date: {
-                            //     validators: {
-                            //         notEmpty: {
-                            //             message: 'The start date is required'
-                            //         },
-                            //         date: {
-                            //             format: 'YYYY-MM-DD',
-                            //             message: 'The start date is not a valid date'
-                            //         }
-                            //     },
-                            // },
-                            // completion_date: {
-                            //     validators: {
-                            //         notEmpty: {
-                            //             message: 'The completion date is required'
-                            //         },
-                            //         date: {
-                            //             format: 'YYYY-MM-DD',
-                            //             message: 'The completion date is not a valid date'
-                            //         }
-                            //     },
-                            // },
+                            'completion_date': {
+                                validators: {
+                                    callback: {
+                                        message: 'End date must be on or after start date',
+                                        callback: function(input) {
+                                            const startVal = $('[name="start_date"]')
+                                                .val();
+                                            const endVal = input.value;
+                                            if (!startVal || !endVal) {
+                                                return true;
+                                            }
+                                            return endVal >= startVal;
+                                        }
+                                    }
+                                }
+                            },
                             'members[]': {
                                 validators: {
                                     callback: {
@@ -193,9 +309,12 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
+                        startDate: new Date(
+                            '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         endDate: new Date(
-                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         zIndex: 2048,
                     });
 
@@ -203,26 +322,142 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date('{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'),
+                        startDate: new Date(
+                            '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         endDate: new Date(
-                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'),
+                            '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}'
+                        ),
                         zIndex: 2048,
                     });
 
-                    // Filter Partent Activity Based on the Activity Level and Stage, and Toggle Parent Activity and Members fields based on the Activity Level
+                    const $startInput = $('[name="start_date"]');
+                    const $endInput = $('[name="completion_date"]');
+                    const $startHint = $('#start-date-hint');
+                    const $endHint = $('#end-date-hint');
+                    const defaultMinDate =
+                        '{{ $project->start_date ? $project->start_date->format('Y-m-d') : date('Y-m-d') }}';
+                    const defaultMaxDate =
+                        '{{ $project->completion_date ? $project->completion_date->format('Y-m-d') : date('Y-m-d') }}';
+
+                    // Filter Theme/Partent Activity Based on the Activity Level, and Toggle Parent Activity, Stage and Members fields based on the Activity Level
 
                     const $activityLevelSelect = $('[name="activity_level"]');
-                    const $stageSelect = $('[name="activity_stage_id"]');
                     const $parentRow = $('#parent-activity-row');
                     const $membersRow = $('#members-row');
+                    const $stageRow = $('#stage-row');
                     const $parentSelect = $('#parent_activity_select');
                     const $membersSelect = $('#members_select');
 
                     const allParentOptions = $parentSelect.html();
 
+                    function formatHintDate(dateStr) {
+                        if (!dateStr) {
+                            return '';
+                        }
+
+                        const clean = String(dateStr).substring(0, 10); // keep YYYY-MM-DD
+                        const parts = clean.split('-');
+                        if (parts.length !== 3) {
+                            return dateStr;
+                        }
+
+                        const d = new Date(clean);
+                        if (isNaN(d.getTime())) {
+                            return dateStr;
+                        }
+
+                        const options = {
+                            year: 'numeric',
+                            month: 'short',
+                            day: '2-digit'
+                        };
+                        return d.toLocaleDateString('en-GB', options);
+                    }
+
+                    function setDateRange(minDate, maxDate) {
+                        if (!minDate || !maxDate) {
+                            return;
+                        }
+
+                        const min = new Date(minDate);
+                        const max = new Date(maxDate);
+
+                        $startInput.datepicker('setStartDate', min);
+                        $startInput.datepicker('setEndDate', max);
+                        $endInput.datepicker('setStartDate', min);
+                        $endInput.datepicker('setEndDate', max);
+
+                        $startInput.data('range-min', minDate);
+                        $startInput.data('range-max', maxDate);
+                        $endInput.data('range-min', minDate);
+                        $endInput.data('range-max', maxDate);
+
+                        const minLabel = formatHintDate(minDate);
+                        const maxLabel = formatHintDate(maxDate);
+
+                        if ($startHint.length) {
+                            $startHint.text('Allowed: ' + minLabel + ' to ' + maxLabel);
+                        }
+                        if ($endHint.length) {
+                            $endHint.text('Allowed: ' + minLabel + ' to ' + maxLabel);
+                        }
+                    }
+
+                    function updateRangeFromParent() {
+                        const level = $activityLevelSelect.val();
+                        if (level === 'theme') {
+                            setDateRange(defaultMinDate, defaultMaxDate);
+                            return;
+                        }
+
+                        const $selected = $parentSelect.find('option:selected');
+                        const pStart = $selected.data('start-date');
+                        const pEnd = $selected.data('end-date');
+
+                        if (pStart && pEnd) {
+                            setDateRange(pStart, pEnd);
+                        } else {
+                            setDateRange(defaultMinDate, defaultMaxDate);
+                        }
+                    }
+
+                    function updateEndMinFromStart() {
+                        const startVal = $startInput.val();
+                        const rangeMin = $endInput.data('range-min') || defaultMinDate;
+
+                        let newMin = rangeMin;
+                        if (startVal && startVal > newMin) {
+                            newMin = startVal;
+                        }
+
+                        $endInput.datepicker('setStartDate', new Date(newMin));
+
+                        const endVal = $endInput.val();
+                        if (endVal && startVal && endVal < startVal) {
+                            $endInput.val(startVal);
+                        }
+
+                        fv.revalidateField('completion_date');
+                    }
+
+                    const $parentLabel = $('#parent-activity-row .form-label');
+
+                    function updateParentLabel() {
+                        const level = $activityLevelSelect.val();
+
+                        let newLabel = 'Parent Activity';
+
+                        if (level === 'activity') {
+                            newLabel = 'Theme Activity';
+                        } else if (level === 'sub_activity') {
+                            newLabel = 'Parent Activity';
+                        }
+                        $parentLabel.text(newLabel);
+                    }
+
                     function updateParentOptions() {
                         const level = $activityLevelSelect.val();
-                        const stage = $stageSelect.val();
 
                         $parentSelect.html('<option value="">Select Parent Activity</option>');
                         if (level === 'theme') {
@@ -251,12 +486,6 @@
                             return $opt.data('level') === allowedParentLevel;
                         });
 
-                        if (stage) {
-                            filtered = filtered.filter(function() {
-                                const $opt = $(this);
-                                return String($opt.data('stage')) === String(stage);
-                            });
-                        }
                         $parentSelect.html('<option value="">' + placeholderText + '</option>');
 
                         if (filtered.length === 0) {
@@ -269,29 +498,50 @@
                         $parentSelect.trigger('change');
                     }
 
-                    function toggleFieldsBasedOnLevel(level) {
+                    function updateStageFromParent() {
+                        const level = $activityLevelSelect.val();
                         if (level === 'theme') {
+                            // For theme → user selects stage manually → do nothing here
+                            return;
+                        }
+                        const $selectedParent = $parentSelect.find('option:selected');
+                        const parentStageId = $selectedParent.data('stage');
+                        if (parentStageId) {
+                            $('[name="activity_stage_id"]').val(parentStageId).trigger('change');
+                        } else {
+                            $('[name="activity_stage_id"]').val('').trigger('change');
+                        }
+                    }
+
+                    function toggleFieldsBasedOnLevel(level) {
+                        if (!level) {
+                            $stageRow.show();
                             $parentRow.hide();
                             $membersRow.hide();
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
+                            return;
+                        }
+                        if (level === 'theme') {
+                            $stageRow.show();
+                            $parentRow.hide();
+                            $membersRow.hide();
+                            $parentSelect.val(null).trigger('change');
+                            $membersSelect.val(null).trigger('change');
+                            setDateRange(defaultMinDate, defaultMaxDate);
                         } else {
+                            $stageRow.hide();
                             $parentRow.show();
                             $membersRow.show();
+                            updateParentLabel();
                             updateParentOptions();
+                            updateRangeFromParent();
                         }
                     }
 
                     $activityLevelSelect.on('change', function() {
                         const level = $(this).val();
                         toggleFieldsBasedOnLevel(level);
-                    });
-
-                    $stageSelect.on('change', function() {
-                        const level = $activityLevelSelect.val();
-                        if (level && level !== 'theme') {
-                            updateParentOptions();
-                        }
                     });
 
                     const initialLevel = $activityLevelSelect.val();
@@ -311,6 +561,26 @@
                         dropdownParent: $membersSelect.parent(),
                         width: '100%'
                     });
+
+                    // Initial date range and listeners
+                    setDateRange(defaultMinDate, defaultMaxDate);
+                    updateRangeFromParent();
+
+                    $parentSelect.on('change', function() {
+                        updateRangeFromParent();
+                        updateEndMinFromStart();
+                        updateStageFromParent();
+                    });
+
+                    $startInput.on('change', function() {
+                        updateEndMinFromStart();
+                    });
+                    $activityLevelSelect.on('change', function() {
+                        const level = $(this).val();
+                        toggleFieldsBasedOnLevel(level);
+                        updateStageFromParent();
+                    });
+                    updateStageFromParent();
                 });
             });
 
@@ -453,10 +723,18 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
                         </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('project.dashboard', ['id' => $project->id]) }}"
+                                class="text-decoration-none text-dark">
+                                {{ $project->short_name }}
+                            </a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">Project Details</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details -
+                    {{ $project->short_name }}
+                </h4>
             </div>
 
             @include('Project::Partials.project-header-actions', ['project' => $project])
@@ -464,17 +742,8 @@
     </div>
 
     <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="card">
-                <div class="card-header fw-bold">Project Information</div>
-                <div class="card-body">
-                    @include('Project::Partials.detail')
-                </div>
-            </div>
-        </div>
 
-
-        <div class="col-lg-9">
+        <div class="col-lg-12">
             <div class="card h-100">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
@@ -500,12 +769,13 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>SN</th>
-                                    <th>Activity Level</th>
                                     <th>Stage</th>
-                                    <th>Activity Title</th>
+                                    <th>Activity Level</th>
+                                    <th>Activity Name</th>
                                     <th>Parent Activity</th>
                                     <th>Start Date</th>
                                     <th>Completion Date</th>
+                                    <th width="100">Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -513,6 +783,33 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Activity Status Reason/Remarks Modal --}}
+    <div class="modal fade" id="activityStatusModal" tabindex="-1" aria-labelledby="activityStatusModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="activityStatusModalContent">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title mb-0 fs-6" id="activityStatusModalLabel">Update Activity Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="activityStatusForm" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" id="activityStatusMessageLabel"
+                                for="activityStatusMessage">Reason</label>
+                            <textarea class="form-control" id="activityStatusMessage" rows="3"></textarea>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-status-save">OK</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

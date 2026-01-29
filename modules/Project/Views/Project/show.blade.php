@@ -12,6 +12,27 @@
         .deliverable-row .btn {
             padding-inline: .35rem;
         }
+
+        #projectActivityTable th:nth-child(8),
+        #projectActivityTable td:nth-child(8) {
+            min-width: 140px;
+            width: 140px !important;
+        }
+
+        /* Bootstrap modal styling for status change */
+        #activityStatusModalLabel {
+            font-weight: 600;
+        }
+
+        #activityStatusMessageLabel {
+            text-align: left;
+            width: 100%;
+        }
+
+        #activityStatusModal .btn-status-save {
+            background-color: var(--ohw-blue);
+            border-color: var(--ohw-blue);
+        }
     </style>
 @endsection
 
@@ -82,6 +103,104 @@
                     oTable.ajax.reload();
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
+            });
+
+            // Track previous status value before change
+            $('#projectActivityTable').on('focus', '.activity-status-change', function() {
+                $(this).data('previous', this.value);
+            });
+
+            // Handle status change with Bootstrap modal for Reason/Remarks
+            $('#projectActivityTable').on('change', '.activity-status-change', function() {
+                const $select = $(this);
+                const newStatus = $select.val();
+                const oldStatus = $select.data('previous');
+                const activityId = $select.data('activity-id');
+
+                if (!activityId) {
+                    return;
+                }
+
+                const url = "{{ url('/project-activity') }}/" + activityId + "/status";
+
+                // For Not Required and Completed open Bootstrap modal
+                if (newStatus === 'no_required' || newStatus === 'completed') {
+                    const $modal = $('#activityStatusModal');
+
+                    const title = newStatus === 'no_required' ?
+                        'Mark activity as Not Required' :
+                        'Mark activity as Completed';
+                    const label = newStatus === 'no_required' ? 'Reason' : 'Remarks';
+
+                    $modal.data('url', url);
+                    $modal.data('select', $select);
+                    $modal.data('oldStatus', oldStatus);
+                    $modal.data('status', newStatus);
+                    $modal.data('updated', false);
+
+                    $('#activityStatusModalLabel').text(title);
+                    $('#activityStatusMessageLabel').text(label);
+                    $('#activityStatusMessage').val('').removeClass('is-invalid');
+
+                    $modal.modal('show');
+                } else {
+                    // For other statuses, just update directly without extra input
+                    ajaxSubmit(url, 'POST', {
+                        status: newStatus
+                    }, function(response) {
+                        toastr.success(response.message || 'Status updated successfully');
+                        $('#projectActivityTable').DataTable().ajax.reload(null, false);
+                    });
+                }
+            });
+
+            // Submit handler for Bootstrap status modal
+            $('#activityStatusForm').on('submit', function(e) {
+                e.preventDefault();
+
+                const $modal = $('#activityStatusModal');
+                const url = $modal.data('url');
+                const statusValue = $modal.data('status');
+                const message = $('#activityStatusMessage').val().trim();
+
+                if (!url || !statusValue) {
+                    return;
+                }
+
+                if (!message) {
+                    $('#activityStatusMessage').addClass('is-invalid');
+                    return;
+                }
+
+                const data = {
+                    status: statusValue,
+                    // Backend will always receive this as `remarks`,
+                    // label text (Reason/Remarks) is only for display.
+                    remarks: message,
+                };
+
+                ajaxSubmit(url, 'POST', data, function(response) {
+                    $modal.data('updated', true);
+                    $modal.modal('hide');
+                    toastr.success(response.message || 'Status updated successfully');
+                    $('#projectActivityTable').DataTable().ajax.reload(null, false);
+                });
+            });
+
+            $('#activityStatusMessage').on('input', function() {
+                $(this).removeClass('is-invalid');
+            });
+
+            // On modal close without update, revert dropdown to previous value
+            $('#activityStatusModal').on('hidden.bs.modal', function() {
+                const $modal = $(this);
+                const updated = $modal.data('updated');
+                const $select = $modal.data('select');
+                const oldStatus = $modal.data('oldStatus');
+
+                if (!updated && $select && typeof oldStatus !== 'undefined') {
+                    $select.val(oldStatus);
+                }
             });
 
             $(document).on('click', '.open-project-activity-modal-form', function(e) {
@@ -569,10 +688,18 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
                         </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('project.dashboard', ['id' => $project->id]) }}"
+                                class="text-decoration-none text-dark">
+                                {{ $project->short_name }}
+                            </a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">Project Details</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Project Details -
+                    {{ $project->short_name }}
+                </h4>
             </div>
 
             @include('Project::Partials.project-header-actions', ['project' => $project])
@@ -613,7 +740,7 @@
                                     <th>Parent Activity</th>
                                     <th>Start Date</th>
                                     <th>Completion Date</th>
-                                    <th>Status</th>
+                                    <th width="100">Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -621,6 +748,33 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Activity Status Reason/Remarks Modal --}}
+    <div class="modal fade" id="activityStatusModal" tabindex="-1" aria-labelledby="activityStatusModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="activityStatusModalContent">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title mb-0 fs-6" id="activityStatusModalLabel">Update Activity Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="activityStatusForm" autocomplete="off">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" id="activityStatusMessageLabel"
+                                for="activityStatusMessage">Reason</label>
+                            <textarea class="form-control" id="activityStatusMessage" rows="3"></textarea>
+                            <div class="invalid-feedback">This field is required.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-status-save">OK</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

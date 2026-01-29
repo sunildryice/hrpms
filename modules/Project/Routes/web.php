@@ -55,6 +55,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
 
+    Route::post('/project-activity/{projectActivity}/status', [ProjectActivityController::class, 'updateStatus'])->name('project-activity.status.update');
+
     Route::get('/projects/{id}/gantt', [ProjectGanttChartController::class, 'index'])->name('project.gantt.index');
 
     Route::get('/project-activity/{projectActivity}/timesheet/data', [ProjectActivityTimeSheetController::class, 'index'])->name('project-activity-timesheet.index');

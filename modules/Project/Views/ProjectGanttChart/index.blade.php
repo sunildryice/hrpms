@@ -331,6 +331,12 @@
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.index') }}" class="text-decoration-none text-dark">Project</a>
                         </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('project.dashboard', ['id' => $project->id]) }}"
+                                class="text-decoration-none text-dark">
+                                {{ $project->short_name }}
+                            </a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">Project Gantt Chart</li>
                     </ol>
                 </nav>

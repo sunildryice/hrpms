@@ -35,12 +35,12 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_level',
-                        name: 'activity_level'
-                    },
-                    {
                         data: 'activity_stage',
                         name: 'activity_stage'
+                    },
+                    {
+                        data: 'activity_level',
+                        name: 'activity_level'
                     },
                     {
                         data: 'title',
@@ -57,6 +57,9 @@
                     {
                         data: 'completion_date',
                         name: 'completion_date'
+                    },
+                    {
+                        data: 'status',
                     },
                     {
                         data: 'action',
@@ -577,17 +580,8 @@
     </div>
 
     <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="card">
-                <div class="card-header fw-bold">Project Information</div>
-                <div class="card-body">
-                    @include('Project::Partials.detail')
-                </div>
-            </div>
-        </div>
 
-
-        <div class="col-lg-9">
+        <div class="col-lg-12">
             <div class="card h-100">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
@@ -613,12 +607,13 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>SN</th>
-                                    <th>Activity Level</th>
                                     <th>Stage</th>
-                                    <th>Activity Title</th>
+                                    <th>Activity Level</th>
+                                    <th>Activity Name</th>
                                     <th>Parent Activity</th>
                                     <th>Start Date</th>
                                     <th>Completion Date</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

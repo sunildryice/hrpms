@@ -11,7 +11,8 @@
     <title>@yield('title')</title>
     <!--Core CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
-    @if(app()->environment('staging'))
+    @if(app()->environment('staging'))x
+        <link rel="stylesheet" href="http://hrpms.example/css/app.css">
         <link rel="stylesheet" href="http://202.79.34.201:8080/css/app.css">
         <link rel="stylesheet" href="http://202.79.34.201:8080/stylesheets/style.css">
     @else
@@ -24,11 +25,7 @@
 
 <div class="container">
     <div class="mx-auto d-flex align-items-center justify-content-center " style="max-width: 30rem; height: 100vh;">
-
-
         @yield('page-content')
-
-
     </div>
 </div>
 

@@ -208,17 +208,19 @@ class ProjectActivityController extends Controller
         $request->validate([
             'status' => 'required|string|in:not_started,under_progress,no_required,completed',
             'remarks' => 'nullable|string',
+            'status_date' => 'nullable|date',
         ]);
 
         $oldStatus = $projectActivity->status;
         $newStatus = $request->input('status');
+        $statusDate = $request->input('status_date');
 
         if ($newStatus == ActivityStatus::UnderProgress->value) {
-            $projectActivity->actual_start_date = now();
+            $projectActivity->actual_start_date = $statusDate ?? now();
         }
 
         if ($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value) {
-            $projectActivity->actual_completion_date = now();
+            $projectActivity->actual_completion_date = $statusDate ?? now();
         }
 
         $projectActivity->status = $newStatus;

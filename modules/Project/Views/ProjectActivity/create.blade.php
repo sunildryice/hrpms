@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        <div class="row mb-2" id="stage-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Stage</label>
@@ -61,10 +61,12 @@
                 <select name="parent_id" id="parent_activity_select" class="select2 form-control" data-width="100%">
                     <option value="">Select Parent Activity</option>
                     @foreach ($parentActivities as $activity)
-                        <option value="{{ $activity->id }}" data-level="{{ $activity->activity_level }}"
+                        <option value="{{ $activity->id }}" 
+                            data-level="{{ $activity->activity_level }}"
                             data-stage="{{ $activity->activity_stage_id }}"
                             data-start-date="{{ $activity->start_date }}"
-                            data-end-date="{{ $activity->completion_date }}" data-title="{{ $activity->title }}">
+                            data-end-date="{{ $activity->completion_date }}" 
+                            data-title="{{ $activity->title }}">
                             {{ $activity->title }}
                         </option>
                     @endforeach

@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        <div class="row mb-2" id="stage-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Stage</label>
@@ -117,26 +117,10 @@
             </div>
         </div>
 
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label class="form-label m-0">Status</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select name="status" class="select2 form-control" data-width="100%">
-                    <option value="">Select Status</option>
-                    @foreach ($status as $st)
-                        <option @if (old('status', $projectActivity->status) == $st->value) selected @endif value="{{ $st->value }}">
-                            {{ $st->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" class="btn btn-primary">Update</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
     </div>
 </form>

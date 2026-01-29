@@ -5,7 +5,7 @@ namespace Modules\Project\Models\Enums;
 enum ActivityStatus: string
 {
     case NotStarted = 'not_started';
-    case UnderProgess = 'under_progress';
+    case UnderProgress = 'under_progress';
     case NoRequired = 'no_required';
     case Completed = 'completed';
 
@@ -13,7 +13,7 @@ enum ActivityStatus: string
     {
         return match ($this) {
             ActivityStatus::NotStarted => 'Not Started',
-            ActivityStatus::UnderProgess => 'Under Progress',
+            ActivityStatus::UnderProgress => 'Under Progress',
             ActivityStatus::NoRequired => 'No Required',
             ActivityStatus::Completed => 'Completed',
         };
@@ -23,7 +23,7 @@ enum ActivityStatus: string
     {
         return match ($this) {
             ActivityStatus::NotStarted => 'badge bg-secondary',
-            ActivityStatus::UnderProgess => 'badge bg-primary',
+            ActivityStatus::UnderProgress => 'badge bg-primary',
             ActivityStatus::NoRequired => 'badge bg-warning text-dark',
             ActivityStatus::Completed => 'badge bg-success',
         };

@@ -214,6 +214,14 @@ class ProjectActivityController extends Controller
         $oldStatus = $projectActivity->status;
         $newStatus = $request->input('status');
 
+        if ($newStatus == ActivityStatus::UnderProgress->value) {
+            $projectActivity->actual_start_date = now();
+        }
+
+        if ($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value) {
+            $projectActivity->actual_completion_date = now();
+        }
+
         $projectActivity->status = $newStatus;
         $projectActivity->save();
 

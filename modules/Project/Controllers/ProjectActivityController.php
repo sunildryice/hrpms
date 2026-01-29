@@ -136,7 +136,6 @@ class ProjectActivityController extends Controller
         $inputs = $request->validated();
         $inputs['project_id'] = $project->id;
         $inputs['created_by'] = $authUser->id;
-        $inputs['status'] = ActivityStatus::NotStarted->value;
         $this->projectActivity->create($inputs);
 
         return response()->json([

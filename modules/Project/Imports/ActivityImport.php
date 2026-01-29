@@ -59,7 +59,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 // Try to find existing activity by title + start date + project 
                 $existing = ProjectActivity::where('project_id', $this->project->id)
                     ->where('title', $title)
-                    ->whereDate('start_date', $start_date->startOfDay())
+                    // ->whereDate('start_date', $start_date->startOfDay())
                     // ->whereDate('completion_date', $end_date->endOfDay())
                     ->first();
 
@@ -152,7 +152,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         $normalized = trim(strtolower($raw));
 
         return match ($normalized) {
-            'theme', 'themes' => 'theme',
+            'theme', 'themes', 'activity_theme', 'activity theme' => 'theme',
             'activity', 'activities', 'act' => 'activity',
             'sub activity', 'sub-activity', 'sub_activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
             default => 'activity',

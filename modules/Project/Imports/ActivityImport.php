@@ -24,10 +24,10 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
     public function __construct($project)
     {
         $this->project = $project;
-        
+
         // Pre-load stages into cache
         $this->stageCache = ActivityStage::pluck('id', 'title')->toArray();
-        
+
         // Pre-load users into cache
         $this->userCache = \App\Models\User::pluck('id', 'full_name')->toArray();
     }
@@ -111,13 +111,13 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
             // Bulk insert new activities
             if (!empty($activitiesToInsert)) {
                 ProjectActivity::insert($activitiesToInsert);
-                
+
                 // Reload to get IDs for newly inserted
                 $newActivities = ProjectActivity::where('project_id', $this->project->id)
                     ->whereIn('title', array_column($activitiesToInsert, 'title'))
                     ->pluck('id', 'title')
                     ->toArray();
-                    
+
                 $this->activityMap = array_merge($this->activityMap, $newActivities);
             }
 
@@ -151,13 +151,13 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
             if (!empty($memberSyncData)) {
                 $memberSyncBulk = [];
                 $processedPairs = []; // Track unique activity-user pairs
-                
+
                 foreach ($memberSyncData as $title => $userIds) {
                     $activityId = $this->activityMap[$title] ?? null;
                     if ($activityId && !empty($userIds)) {
                         foreach ($userIds as $userId) {
                             $pairKey = $activityId . '-' . $userId;
-                            
+
                             // Only add if this pair hasn't been added yet
                             if (!isset($processedPairs[$pairKey])) {
                                 $memberSyncBulk[] = [
@@ -175,7 +175,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                     DB::table('project_activity_members')
                         ->whereIn('activity_id', array_values($this->activityMap))
                         ->delete();
-                    
+
                     // Insert new member relations
                     DB::table('project_activity_members')->insert($memberSyncBulk);
                 }

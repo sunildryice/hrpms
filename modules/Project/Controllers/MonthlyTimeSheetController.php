@@ -69,6 +69,24 @@ class MonthlyTimeSheetController extends Controller
 
         $yearMonthFormatted = date('F Y', strtotime($yearMonth . '-01'));
 
+        // Generate all dates for the month
+        $startDate = \Carbon\Carbon::parse($yearMonth . '-01')->startOfMonth();
+        $endDate = \Carbon\Carbon::parse($yearMonth . '-01')->endOfMonth();
+
+        // Group timesheets by date
+        $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
+            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
+        });
+
+        // Create array of all dates with their timesheets
+        $allDates = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateKey = $currentDate->format('Y-m-d');
+            $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
+            $currentDate->addDay();
+        }
+
         $stats = [
             'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),
             'activities' => $timeSheets->pluck('activity_id')->filter()->unique()->count(),
@@ -76,6 +94,6 @@ class MonthlyTimeSheetController extends Controller
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
 
-        return view('Project::MonthlyTimeSheet.show', compact('timeSheets', 'yearMonthFormatted', 'yearMonth', 'stats'));
+        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats'));
     }
 }

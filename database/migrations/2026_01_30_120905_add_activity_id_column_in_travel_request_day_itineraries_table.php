@@ -13,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('travel_request_day_itineraries', function (Blueprint $table) {
-            $table->unsignedBigInteger('activity_id')->after('travel_request_id');
+            $table->unsignedBigInteger('activity_id')->nullable()->default(null)->after('travel_request_id');
             $table->foreign('activity_id')->references('id')->on('project_activities');
         });
     }
@@ -26,7 +26,8 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('travel_request_day_itineraries', function (Blueprint $table) {
-            $table->dropColumn(['activity_id']);
+            $table->dropForeign('travel_request_day_itineraries_activity_id_foreign');
+            $table->dropColumn('activity_id');
         });
     }
 };

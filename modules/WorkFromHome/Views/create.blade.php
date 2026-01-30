@@ -65,8 +65,8 @@
                             <select class="form-select project-select"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
-                                @foreach ($projects as $id => $project)
-                                    <option value="{{ $project->id }}">{{ $project->short_name ?: $project->title }}</option>
+                                @foreach ($projects as $id => $title)
+                                    <option value="{{ $id }}">{{ $title }}</option>
                                 @endforeach
                             </select>
                         </td>
@@ -232,7 +232,7 @@
                 @csrf
 
                 <div class="row">
-                    <div class="mb-3 col-3">
+                    <div class="mb-3 col-6">
                         <label for="start_date" class="form-label required-label">Start Date</label>
                         <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date"
                             name="start_date" value="{{ old('start_date') }}" required>
@@ -240,7 +240,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="mb-3 col-3">
+                    <div class="mb-3 col-6">
                         <label for="end_date" class="form-label required-label">End Date</label>
                         <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date"
                             name="end_date" value="{{ old('end_date') }}" required>
@@ -267,7 +267,6 @@
                         <thead>
                             <tr>
                                 <th style="width: 15%;">Project</th>
-                                <th>Activity</th>
                                 <th>Task</th>
                                 <th style="width: 12%;">Action</th>
                             </tr>
@@ -291,22 +290,16 @@
                                                 {{ empty($deliverable['project_id']) ? 'selected' : '' }}>
                                                 Select Project
                                             </option>
-                                            @foreach ($projects as $id => $project)
-                                                <option value="{{ $project->id }}"
-                                                    data-activities='@json($project->activities)'
-                                                    {{ (string) $project->id === (string) ($deliverable['project_id'] ?? '') ? 'selected' : '' }}>
-                                                    {{ $project->short_name ?: $project->title }}
+                                            @foreach ($projects as $id => $title)
+                                                <option value="{{ $id }}"
+                                                    {{ (string) $id === (string) ($deliverable['project_id'] ?? '') ? 'selected' : '' }}>
+                                                    {{ $title }}
                                                 </option>
                                             @endforeach
                                         </select>
                                         @error($projectErrorKey)
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
-                                    </td>
-                                    <td>
-                                        <select class="form-control">
-                                            <option value="">1</option>
-                                        </select>
                                     </td>
                                     <td>
                                         <input type="text"
@@ -340,7 +333,7 @@
                     </table>
                 </div>
 
-                <div class="mb-3 col-3">
+                <div class="mb-3">
                     <label for="send_to" class="form-label required-label">{{ __('label.approval') }}</label>
                     <select class="form-control @error('send_to') is-invalid @enderror" id="send_to" name="send_to"
                         required>

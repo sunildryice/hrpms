@@ -892,8 +892,8 @@
                 <form id="activityStatusForm" autocomplete="off">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label" id="activityStatusDateLabel" for="activityStatusDate">Date <span
-                                    class="text-danger">*</span></label>
+                            <label class="form-label required-label" id="activityStatusDateLabel"
+                                for="activityStatusDate">Date <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="activityStatusDate" readonly />
                             <div class="invalid-feedback" style="display: none;">This field is required.</div>
                         </div>

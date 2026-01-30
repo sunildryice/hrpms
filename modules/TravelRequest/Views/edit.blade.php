@@ -221,6 +221,7 @@
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
 
                 toggleAirTicketFieldsInModal(!!data.air_ticket);
+                clearAllErrors();
                 $('#editItineraryModal').modal('show');
             }
 
@@ -258,6 +259,7 @@
                 document.querySelectorAll('.is-invalid').forEach(el => {
                     el.classList.remove('is-invalid');
                 });
+                $('.select2-container').removeClass('is-invalid');
             }
 
             // Activity dropdown handling
@@ -318,6 +320,7 @@
 
             // When modal opens → load correct activities + fix dropdown position
             $('#editItineraryModal').on('shown.bs.modal', function() {
+                clearAllErrors();
                 const projectId = $projectSelect.val();
                 loadActivitiesForProject(projectId);
 
@@ -338,10 +341,6 @@
                 clearAllErrors();
 
                 const selectedActivityId = $('#activity_id').val();
-
-                console.log('Activity validation check:');
-                console.log('Selected value:', selectedActivityId);
-                console.log('Error element exists?', !!document.getElementById('error-activity-id'));
 
                 const updatedRow = {
                     date: itineraryData[index].date,

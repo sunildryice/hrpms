@@ -90,12 +90,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
 
-                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
+                    if ($row->children->isEmpty()) {
+                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';
-                    $btn .= route('project-activity.destroy', $row->id) . '"
+                        $btn .= route('project-activity.destroy', $row->id) . '"
                 data-id="';
-                    $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
-                    $btn .= '<i class="bi bi-trash"></i></button>';
+                        $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
+                        $btn .= '<i class="bi bi-trash"></i></button>';
+                    }
                 }
                 if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);

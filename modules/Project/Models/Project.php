@@ -75,6 +75,18 @@ class Project extends Model
         return $this->hasMany(ProjectActivity::class, 'project_id', 'id');
     }
 
+    public function assignedActivities()
+    {
+        return $this->hasManyThrough(
+            ProjectActivity::class,
+            User::class,
+            'user_id',
+            'project_id',
+            'id',
+            'project_id'
+        );
+    }
+
     public function getFormattedCompletionDateAttribute()
     {
         return $this->completion_date ? $this->completion_date->format('M d, Y') : '';
@@ -85,7 +97,7 @@ class Project extends Model
         return $this->start_date ? $this->start_date->format('M d, Y') : '';
     }
 
-     public function getProjectNameWithShortName()
+    public function getProjectNameWithShortName()
     {
         return $this->title . ' (' . $this->short_name . ')';
     }

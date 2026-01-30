@@ -90,11 +90,9 @@ class RequestController extends Controller
         $authUser = auth()->user();
 
         $projects = $this->projects
-            ->with('activities')
-            ->whereHas('members', function ($q) use ($authUser) {
-                $q->where('user_id', $authUser->id);
-            })
-            ->get();
+            ->getAssignedProjects($authUser);
+
+
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::create', [

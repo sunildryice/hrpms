@@ -134,7 +134,7 @@
         <div class="row g-3 mb-3">
             {{-- <div class="col-md-3">
                 <div class="stat-card stat-card-total">
-                    <small>Total</small>
+                    <small class="text-capitalize">Total</small>
                     <h3 class="mb-1">{{ $totalActivities }}</h3>
                     <span class="badge rounded-pill mt-1">
                         {{ optional($project->start_date)->format('M d, Y') }} –
@@ -144,41 +144,44 @@
             </div> --}}
             <div class="col-md-3">
                 <div class="stat-card stat-card-completed">
-                    <small>Completed</small>
+                    <small class="text-capitalize">Completed</small>
                     <h3 class="mb-1">{{ $statusDistribution['completed'] }}</h3>
-                    <span class="badge rounded-pill mt-1">{{ $completionRate }}% completion</span>
+                    <span class="badge rounded-pill mt-1">{{ $percentages['completed'] }}% completion</span>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card stat-card-progress">
-                    <small>Under progress</small>
+                    <small class="text-capitalize">Under progress</small>
                     <h3 class="mb-1">{{ $statusDistribution['under_progress'] }}</h3>
-                    <span class="badge rounded-pill mt-1">{{ $totalStages }} stages</span>
+                    <span class="badge rounded-pill mt-1">{{ $percentages['under_progress'] }}%</span>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card stat-card-pending">
-                    <small>Not started</small>
+                    <small class="text-capitalize">Not started</small>
                     <h3 class="mb-1">{{ $statusDistribution['not_started'] }}</h3>
-                    <span class="badge rounded-pill mt-1">{{ $totalMembers }} project members</span>
+                    <span class="badge rounded-pill mt-1">{{ $percentages['not_started'] }}%</span>
                 </div>
             </div>
+
             <div class="col-md-3">
                 <div class="stat-card stat-card-nr">
-                    <small>No longer required</small>
-                    <h3 class="mb-4">{{ $statusDistribution['no_required'] }}</h3>
-                    {{-- <span class="badge rounded-pill mt-1">{{ $totalMembers }} project members</span> --}}
+                    <small class="text-capitalize">No longer required</small>
+                    <h3 class="mb-1">{{ $statusDistribution['no_required'] }}</h3>
+                    <span class="badge rounded-pill mt-1 text-dark">{{ $percentages['no_required'] }}%</span>
                 </div>
             </div>
         </div>
 
         <div class="row g-3">
-            <div class="col-lg-6">
-                <div class="card shadow-sm">
+            <div class="col-lg-6 d-flex">
+                <div class="card shadow-sm flex-fill h-100">
                     <div class="card-header">
-                        <h6 class="mb-0 fw-bold">Activity status distribution</h6>
+                        <h6 class="mb-0 fw-bold text-capitalize">Activity status distribution</h6>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body d-flex flex-column">
                         <div class="mb-2 fs-6 text-muted">
                             Total planned activities ({{ $totalActivities }})
                         </div>
@@ -187,18 +190,15 @@
                 </div>
             </div>
 
-            <div class="col-lg-6">
-                <div class="card shadow-sm">
+            <div class="col-lg-6 d-flex">
+                <div class="card shadow-sm flex-fill h-100">
                     <div class="card-header">
-                        <h6 class="mb-0 fw-bold">Project Detail</h6>
+                        <h6 class="mb-0 fw-bold text-capitalize">Project Detail</h6>
                     </div>
                     <div class="card-body">
                         <dl class="row mb-0">
                             <dt class="col-sm-4">Project</dt>
-                            <dd class="col-sm-8">{{ $project->title }}</dd>
-
-                            <dt class="col-sm-4">Short name</dt>
-                            <dd class="col-sm-8">{{ $project->short_name ?? '—' }}</dd>
+                            <dd class="col-sm-8">{{ $project->title }} ({{ $project?->short_name }})</dd>
 
                             <dt class="col-sm-4">Duration</dt>
                             <dd class="col-sm-8">
@@ -228,8 +228,8 @@
                             <dd class="col-sm-8">@php($stageTitles = $project->stages->pluck('title')->filter()->implode(', '))
                                 {{ $stageTitles ?: '-' }} ({{ $totalStages }})</dd>
 
-                            <dt class="col-sm-4">Completion rate</dt>
-                            <dd class="col-sm-8">{{ $completionRate }}%</dd>
+                            {{-- <dt class="col-sm-4">Completion rate</dt>
+                            <dd class="col-sm-8">{{ $completionRate }}%</dd> --}}
                         </dl>
                     </div>
                 </div>

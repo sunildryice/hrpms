@@ -16,10 +16,11 @@ use Modules\Project\Repositories\ActivityStageRepository;
 class ProjectController
 {
     public function __construct(
-        protected ProjectRepository       $projectRepository,
-        protected UserRepository          $userRepository,
+        protected ProjectRepository $projectRepository,
+        protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -114,15 +115,32 @@ class ProjectController
         ];
 
         $totalActivities = array_sum($statusDistribution);
-        $completed = $statusDistribution[ActivityStatus::Completed->value] ?? 0;
-        $completionRate = $totalActivities ? round($completed / $totalActivities * 100, 1) : 0;
 
+        // Calculate percentages (avoid division by zero)
+        if ($totalActivities > 0) {
+            $percentages = [
+                'completed' => round(($statusDistribution[ActivityStatus::Completed->value] / $totalActivities) * 100, 1),
+                'under_progress' => round(($statusDistribution[ActivityStatus::UnderProgress->value] / $totalActivities) * 100, 1),
+                'not_started' => round(($statusDistribution[ActivityStatus::NotStarted->value] / $totalActivities) * 100, 1),
+                'no_required' => round(($statusDistribution[ActivityStatus::NoRequired->value] / $totalActivities) * 100, 1),
+            ];
+        } else {
+            $percentages = [
+                'completed' => 0,
+                'under_progress' => 0,
+                'not_started' => 0,
+                'no_required' => 0,
+            ];
+        }
+
+        $completionRate = $percentages['completed'];
         $totalStages = $project->stages()->count();
         $totalMembers = $project->members()->count();
 
         return view('Project::Project.dashboard', compact(
             'project',
             'statusDistribution',
+            'percentages',
             'totalActivities',
             'completionRate',
             'totalStages',
@@ -130,7 +148,6 @@ class ProjectController
             'users',
         ));
     }
-
 
     public function edit($id)
     {

@@ -649,8 +649,10 @@
 
             $(document).on('click', '.open-import-modal-form', function(e) {
                 e.preventDefault();
+                document.querySelector(".preloader").style.display = "block";
                 $('#openModal').find('.modal-content').html('');
                 $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    document.querySelector(".preloader").style.display = "none";
                     const form = document.getElementById('activityImportForm');
                     const fv = FormValidation.formValidation(form, {
                         fields: {
@@ -682,29 +684,7 @@
                         const $form = fv.form;
                         const data = new FormData($form);
 
-                        // Get submit button and add loading state
-                        const submitBtn = $form.querySelector('button[type="submit"]');
-                        const originalBtnText = submitBtn.innerHTML;
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML =
-                            '<span class="spinner-border spinner-border-sm me-2"></span> Importing...';
-
-                        // Disable modal close buttons
-                        $('#openModal').find('[data-bs-dismiss="modal"]').prop('disabled',
-                            true);
-                        $('#openModal').find('.btn-close').prop('disabled', true);
-                        $('#openModal').data('bs-backdrop', 'static');
-                        $('#openModal').data('bs-keyboard', false);
-
                         const successCallback = function(response) {
-                            // Restore button state
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalBtnText;
-
-                            // Re-enable modal close buttons
-                            $('#openModal').find('[data-bs-dismiss="modal"]').prop(
-                                'disabled', false);
-                            $('#openModal').find('.btn-close').prop('disabled', false);
 
                             $('#openModal').modal('hide');
                             toastr.success(response.message, 'Success', {
@@ -712,21 +692,12 @@
                             });
                             $('#projectActivityTable').DataTable().ajax.reload();
                         };
-
-                        const errorCallback = function() {
-                            // Restore button state on error
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = originalBtnText;
-
-                            // Re-enable modal close buttons
-                            $('#openModal').find('[data-bs-dismiss="modal"]').prop(
-                                'disabled', false);
-                            $('#openModal').find('.btn-close').prop('disabled', false);
-                        };
-
+                        document.querySelector(".preloader").style.display = "block";
                         ajaxSubmitFormData($url, 'POST', data, function(response) {
                             successCallback(response);
-                        }, errorCallback);
+                            document.querySelector(".preloader").style.display =
+                                "none";
+                        });
                     });
                 });
             });

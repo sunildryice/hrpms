@@ -241,13 +241,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-lg-3">
-                <div class="card">
-                </div>
-            </div>
-            <div class="col-lg-9">
                 <div class="card">
                     <div class="card-header fw-bold"></div>
                     <div class="card-body">

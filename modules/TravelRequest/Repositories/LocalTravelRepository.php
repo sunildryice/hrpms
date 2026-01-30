@@ -111,7 +111,6 @@ class LocalTravelRepository extends Repository
             DB::commit();
             return $localTravel;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             DB::rollback();
             return false;
         }

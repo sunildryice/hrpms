@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'activity_code_id'=>'required|exists:lkup_activity_codes,id',
+            'activity_code_id'=>'required|exists:project_activities,id',
             'expense_date'=>'required|date',
             'expense_amount'=>'required|numeric|min:0.01',
             'invoice_bill_number'=> 'nullable',

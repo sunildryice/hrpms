@@ -172,7 +172,7 @@
                                                 'Deleted successfully!');
                                             if (response.itineraryCount ==
                                                 response.totalTravelDurationDays
-                                                ) {
+                                            ) {
                                                 $('.submit-record').show();
                                             } else {
                                                 $('.submit-record').hide();
@@ -248,6 +248,83 @@
                     el.classList.remove('is-invalid');
                 });
             }
+
+            // Activity dropdown handling
+            const $projectSelect = $('#project_id');
+            const $activitySelect = $('#activity_id');
+
+            // Load activities
+            function loadActivitiesForProject(projectId) {
+                if (!projectId) {
+                    $activitySelect.html('<option value="">Select Activity</option>').trigger('change');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('timesheet.get-activities-by-project') }}',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
+                    },
+                    dataType: 'json',
+                    beforeSend: () => {
+                        $activitySelect.html('<option value="">Loading...</option>').prop('disabled',
+                            true);
+                    },
+                    success: (response) => {
+                        $activitySelect.html('<option value="">Select Activity</option>');
+
+                        if (response?.activities?.length) {
+                            response.activities.forEach(act => {
+                                $activitySelect.append(
+                                    `<option value="${act.id}">${act.title}</option>`
+                                );
+                            });
+                        }
+
+                        // Try to restore previously selected value
+                        const index = $('#editRowIndex').val();
+                        if (index && itineraryData[index]?.activity_id) {
+                            $activitySelect.val(itineraryData[index].activity_id);
+                        }
+
+                        $activitySelect.trigger('change');
+                    },
+                    error: () => {
+                        toastr.error('Failed to load project activities');
+                        $activitySelect.html('<option value="">Select Activity</option>');
+                    },
+                    complete: () => {
+                        $activitySelect.prop('disabled', false);
+                    }
+                });
+            }
+
+            // Project change → reload activities
+            $projectSelect.on('change', () => {
+                loadActivitiesForProject($projectSelect.val());
+            });
+
+            // When modal opens → load correct activities + fix dropdown position
+            $('#editItineraryModal').on('shown.bs.modal', function() {
+                const projectId = $projectSelect.val();
+                loadActivitiesForProject(projectId);
+
+                // Fix Select2 dropdown position
+                if ($.fn.select2) {
+                    $('#activity_id').select2({
+                        dropdownParent: $('#editItineraryModal .modal-content'),
+                        width: '100%'
+                    });
+                }
+
+                // Optional: force reopen to recalculate position
+                setTimeout(() => {
+                    $('#activity_id').select2('close');
+                    // $('#activity_id').select2('open'); // if you want it open automatically
+                }, 150);
+            });
+
 
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
@@ -1156,7 +1233,7 @@
                         </div>
                         @php $selectedProjectCodeId =  old('project_code_id') ?: $travelRequest->project_code_id  @endphp
                         <div class="col-lg-9">
-                            <select name="project_code_id"
+                            <select name="project_code_id" id="project_id"
                                 class="select2 form-control
                                                     @if ($errors->has('project_code_id')) is-invalid @endif"
                                 data-width="100%">
@@ -1177,6 +1254,7 @@
                             @endif
                         </div>
                     </div>
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -1440,6 +1518,18 @@
                                     <label class="col-md-3 col-form-label">{{ __('label.date') }}</label>
                                     <div class="col-md-9">
                                         <input type="date" id="editDate" class="form-control" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label">Activity</label>
+                                    <div class="col-lg-9">
+                                        <select name="activity_id" id="activity_id" class="select2 form-control">
+                                            <option value="">Select Activity</option>
+                                            @foreach ($activities as $activity)
+                                                <option value="{{ $activity->id }}">{{ $activity->title }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 

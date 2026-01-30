@@ -25,6 +25,7 @@ class TravelRequestDayItinerary extends Model
      */
     protected $fillable = [
         'travel_request_id',
+        'activity_id',
         'date',
         'planned_activities',
         'accommodation',

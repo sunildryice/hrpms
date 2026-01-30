@@ -24,6 +24,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
+            'activity_id' => 'required|exists:project_activities,id',
             'date' => 'required|date',
             'planned_activities' => 'nullable|string|max:2000',
             'accommodation' => 'boolean',

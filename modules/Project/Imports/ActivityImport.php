@@ -5,14 +5,15 @@ namespace Modules\Project\Imports;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Project\Models\ActivityStage;
+use Modules\Project\Models\ProjectActivity;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
-use Modules\Project\Models\ActivityStage;
-use Modules\Project\Models\ProjectActivity;
+use Modules\Project\Models\Enums\ActivityStatus;
 use PhpOffice\PhpSpreadsheet\Shared\Date as PhpDate;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 
 class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, WithChunkReading, WithCalculatedFormulas
 {
@@ -82,6 +83,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                     'parent_id' => null,
                     'start_date' => $start_date,
                     'completion_date' => $end_date,
+                    'status' => ActivityStatus::NotStarted->value,
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ];

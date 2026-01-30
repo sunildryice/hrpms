@@ -14,6 +14,8 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Modules\Project\Models\Enums\ActivityStatus;
 use PhpOffice\PhpSpreadsheet\Shared\Date as PhpDate;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, WithChunkReading, WithCalculatedFormulas
 {
@@ -22,14 +24,13 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
     protected $stageCache = [];
     protected $userCache = [];
 
+    protected $errors = [];
+    protected $rowNumber = 0;
+
     public function __construct($project)
     {
         $this->project = $project;
-
-        // Pre-load stages into cache
         $this->stageCache = ActivityStage::pluck('id', 'title')->toArray();
-
-        // Pre-load users into cache
         $this->userCache = \App\Models\User::pluck('id', 'full_name')->toArray();
     }
 
@@ -50,6 +51,9 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
 
             // Process all rows and prepare bulk operations
             foreach ($rows as $row) {
+
+                $this->rowNumber++;
+
                 if ($row->filter()->isEmpty()) {
                     continue;
                 }
@@ -74,6 +78,16 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 }
 
                 $stage_id = $this->stageCache[$stage_name] ?? null;
+
+                if ($stage_name !== '' && $stage_id === null) {
+                    $this->errors[] = [
+                        'row' => $this->rowNumber,
+                        'field' => 'stage_name',
+                        'value' => $stage_name,
+                        'message' => "Invalid stage name: '$stage_name'. Please use an existing stage."
+                    ];
+                    continue;
+                }
 
                 $data = [
                     'project_id' => $this->project->id,
@@ -108,6 +122,15 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 if ($parent_title) {
                     $parentRelations[$title] = $parent_title;
                 }
+            }
+
+            if (!empty($this->errors)) {
+                $validator = Validator::make([], []);           
+                foreach ($this->errors as $error) {
+                    $key = "row_{$error['row']}.{$error['field']}";
+                    $validator->errors()->add($key, $error['message']);
+                }
+                throw new ValidationException($validator);
             }
 
             // Bulk insert new activities
@@ -184,9 +207,15 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
             }
 
             DB::commit();
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Activity import failed', ['error' => $e->getMessage()]);
+            Log::error('Activity import failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             throw $e;
         }
     }

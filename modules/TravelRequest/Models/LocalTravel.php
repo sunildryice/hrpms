@@ -6,6 +6,7 @@ use App\Traits\ModelEventLogger;
 use Modules\Master\Models\Office;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
 use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
@@ -79,6 +80,11 @@ class LocalTravel extends Model
     public function projectCode()
     {
         return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_code_id')->withDefault();
     }
 
     /**

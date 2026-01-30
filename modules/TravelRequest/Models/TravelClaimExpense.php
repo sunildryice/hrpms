@@ -2,15 +2,16 @@
 
 namespace Modules\TravelRequest\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
 use App\Traits\ModelEventLogger;
-
-use Modules\Master\Models\ActivityCode;
-use Modules\Master\Models\DonorCode;
 use Modules\Master\Models\Office;
+
+use Modules\Master\Models\DonorCode;
+
+use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\ActivityCode;
+use Modules\Project\Models\ProjectActivity;
 use Modules\TravelRequest\Models\TravelRequest;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelClaimExpense extends Model
 {
@@ -65,6 +66,11 @@ class TravelClaimExpense extends Model
     public function activityCode()
     {
         return $this->belongsTo(ActivityCode::class, 'activity_code_id')->withDefault();
+    }
+
+    public function activity()
+    {
+        return $this->belongsTo(ProjectActivity::class, 'activity_code_id')->withDefault();
     }
 
     public function donorCode()

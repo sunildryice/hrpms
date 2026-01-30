@@ -5,6 +5,7 @@ namespace Modules\TravelRequest\Models;
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\ActivityCode;
+use Modules\Project\Models\ProjectActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelClaimLocalTravel extends Model
@@ -61,6 +62,10 @@ class TravelClaimLocalTravel extends Model
     public function activityCode()
     {
         return $this->belongsTo(ActivityCode::class, 'activity_code_id')->withDefault();
+    }
+    public function activity()
+    {
+        return $this->belongsTo(ProjectActivity::class, 'activity_code_id')->withDefault();
     }
 
     public function getTravelDate()

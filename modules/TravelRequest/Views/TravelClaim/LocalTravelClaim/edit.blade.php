@@ -16,7 +16,7 @@
                     <option value="">Select Activity</option>
                     @foreach ($activityCodes as $activityCode)
                         <option value="{!! $activityCode->id !!}" @if ($localTravelClaim->activity_code_id == $activityCode->id) selected @endif>
-                            {{ $activityCode->getActivityCodeDescription() }}</option>
+                            {{ $activityCode->title }}</option>
                     @endforeach
                 </select>
             </div>

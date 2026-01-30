@@ -53,7 +53,7 @@ class ClaimExpenseController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->travelExpenses->select(['*'])->with(['activityCode','donorCode','office'])
+            $data = $this->travelExpenses->select(['*'])->with(['activity','donorCode','office'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
@@ -81,7 +81,7 @@ class ClaimExpenseController extends Controller
                     return $btn;
                 });
             return $datatable->addColumn('activity', function ($row) {
-                return $row->activityCode?->getActivityCodeDescription();
+                return $row->activity?->title;
             })->addColumn('donor', function ($row) {
                 return $row->donorCode->description;
             })->rawColumns(['action', 'attachment'])

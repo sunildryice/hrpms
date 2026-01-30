@@ -25,7 +25,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'activity_code_id' => 'required|exists:lkup_activity_codes,id',
+            'activity_code_id' => 'required|exists:project_activities,id',
             'purpose' => 'required',
             'travel_date' => 'required|date_format:Y-m-d',
             'departure_place' => 'required',

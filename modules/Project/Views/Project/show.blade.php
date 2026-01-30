@@ -403,6 +403,7 @@
                     const $activityLevelSelect = $('[name="activity_level"]');
                     const $parentRow = $('#parent-activity-row');
                     const $membersRow = $('#members-row');
+                    const $deliverablesRow = $('#deliverables-row');
                     const $stageRow = $('#stage-row');
                     const $parentSelect = $('#parent_activity_select');
                     const $membersSelect = $('#members_select');
@@ -576,6 +577,7 @@
                             $stageRow.show();
                             $parentRow.hide();
                             $membersRow.hide();
+                            $deliverablesRow.hide();
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
                             return;
@@ -584,6 +586,7 @@
                             $stageRow.show();
                             $parentRow.hide();
                             $membersRow.hide();
+                            $deliverablesRow.hide();
                             $parentSelect.val(null).trigger('change');
                             $membersSelect.val(null).trigger('change');
                             setDateRange(defaultMinDate, defaultMaxDate);
@@ -591,6 +594,7 @@
                             $stageRow.hide();
                             $parentRow.show();
                             $membersRow.show();
+                            $deliverablesRow.show();
                             updateParentLabel();
                             updateParentOptions();
                             updateRangeFromParent();
@@ -608,6 +612,7 @@
                     } else {
                         $parentRow.hide();
                         $membersRow.hide();
+                        $deliverablesRow.hide();
                     }
 
                     $parentSelect.select2({

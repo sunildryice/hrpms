@@ -42,6 +42,8 @@ class TravelRequestDayItineraryController extends Controller
                         return [
                             'id' => $row->id,
                             'date' => $row->date?->format('Y-m-d'),
+                            'activity_id' => $row->activity_id,
+                            'activity_title'  => $row->activity?->title ?? '',
                             'planned_activities' => $row->planned_activities,
                             'accommodation' => (bool) $row->accommodation,
                             'air_ticket' => (bool) $row->air_ticket,
@@ -57,6 +59,7 @@ class TravelRequestDayItineraryController extends Controller
             $datatable = DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('date', fn($row) => $row->date?->format('d M Y'))
+                ->addColumn('activity_title', fn($row) => $row->activity?->title)
                 ->addColumn('planned_activities', fn($row) => $row->planned_activities ?: '<em class="text-muted">No activities</em>')
                 ->addColumn(
                     'accommodation',

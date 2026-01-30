@@ -84,4 +84,9 @@ class Project extends Model
     {
         return $this->start_date ? $this->start_date->format('M d, Y') : '';
     }
+
+     public function getProjectNameWithShortName()
+    {
+        return $this->title . ' (' . $this->short_name . ')';
+    }
 }

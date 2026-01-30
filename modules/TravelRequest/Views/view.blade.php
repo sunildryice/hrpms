@@ -20,6 +20,10 @@
                     name: 'date'
                 },
                 {
+                    data: 'activity_title',
+                    name: 'activity_title'
+                },
+                {
                     data: 'planned_activities',
                     name: 'planned_activities'
                 },
@@ -137,6 +141,7 @@
                             <table class="table" id="itineraryTable">
                                 <thead class="thead-light">
                                     <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th style="width: 120px;">{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
                                     <th class="text-center">{{ __('label.air-ticket') }}</th>

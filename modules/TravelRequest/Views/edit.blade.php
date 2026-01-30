@@ -41,6 +41,8 @@
                         return [
                             'id' => $item->id,
                             'date' => $item->date ? $item->date->format('Y-m-d') : null,
+                            'activity_title' => $item->activity?->title ?? '',
+                            'activity_id' => $item->activity_id,
                             'activities' => $item->planned_activities ?? '',
                             'accommodation' => !!$item->accommodation,
                             'air_ticket' => !!$item->air_ticket,
@@ -61,6 +63,8 @@
                     } else {
                         return {
                             date: date,
+                            activity_id: null,
+                            activity_title: '',
                             activities: '',
                             accommodation: false,
                             air_ticket: false,
@@ -106,7 +110,8 @@
 
                     tr.innerHTML = `
                     <td>${row.date}</td>
-                    <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
+                    <td>${row.activity_title || '<em class="text-muted">Activity</em>'}</td>
+                    <td>${row.activities || '<em class="text-muted">No planned activities</em>'}</td>
                     <td class="text-center">
                         ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
@@ -231,20 +236,26 @@
 
             function showFieldError(fieldId, message) {
                 const errorEl = document.getElementById(`error-${fieldId}`);
-                const inputEl = document.getElementById(
-                    `edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`); // e.g. editActivities
-
-                if (errorEl && inputEl) {
+                const inputEl = document.getElementById(`edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+                if (errorEl) {
                     errorEl.textContent = message;
+                    errorEl.style.display = 'block';
+                }
+                if (inputEl) {
                     inputEl.classList.add('is-invalid');
+                    const $container = $(inputEl).next('.select2-container');
+                    if ($container.length) {
+                        $container.addClass('is-invalid');
+                    }
                 }
             }
 
             function clearAllErrors() {
                 document.querySelectorAll('.invalid-feedback').forEach(el => {
                     el.textContent = '';
+                    el.style.display = 'none';
                 });
-                document.querySelectorAll('.form-control, .form-check-input').forEach(el => {
+                document.querySelectorAll('.is-invalid').forEach(el => {
                     el.classList.remove('is-invalid');
                 });
             }
@@ -267,10 +278,6 @@
                         project_id: projectId
                     },
                     dataType: 'json',
-                    beforeSend: () => {
-                        $activitySelect.html('<option value="">Loading...</option>').prop('disabled',
-                            true);
-                    },
                     success: (response) => {
                         $activitySelect.html('<option value="">Select Activity</option>');
 
@@ -282,16 +289,20 @@
                             });
                         }
 
-                        // Try to restore previously selected value
-                        const index = $('#editRowIndex').val();
-                        if (index && itineraryData[index]?.activity_id) {
-                            $activitySelect.val(itineraryData[index].activity_id);
+                        const rowIndex = $('#editRowIndex').val();
+                        if (rowIndex && itineraryData[rowIndex]?.activity_id) {
+                            const targetId = itineraryData[rowIndex].activity_id;
+                            $activitySelect.val(targetId);
+
+                            if ($.fn.select2) {
+                                $activitySelect.trigger('change');
+                            }
                         }
 
                         $activitySelect.trigger('change');
                     },
                     error: () => {
-                        toastr.error('Failed to load project activities');
+                        toastr.error('Failed to load activities');
                         $activitySelect.html('<option value="">Select Activity</option>');
                     },
                     complete: () => {
@@ -317,12 +328,6 @@
                         width: '100%'
                     });
                 }
-
-                // Optional: force reopen to recalculate position
-                setTimeout(() => {
-                    $('#activity_id').select2('close');
-                    // $('#activity_id').select2('open'); // if you want it open automatically
-                }, 150);
             });
 
 
@@ -331,6 +336,12 @@
                 const isAirTicket = document.getElementById('editAirTicket').checked;
                 // Clear previous errors
                 clearAllErrors();
+
+                const selectedActivityId = $('#activity_id').val();
+
+                console.log('Activity validation check:');
+                console.log('Selected value:', selectedActivityId);
+                console.log('Error element exists?', !!document.getElementById('error-activity-id'));
 
                 const updatedRow = {
                     date: itineraryData[index].date,
@@ -347,8 +358,16 @@
                 };
                 // Client-side validation
                 let hasError = false;
+
+                // Required: Planned activities
                 if (!updatedRow.planned_activities) {
                     showFieldError('activities', 'Planned activities are required!');
+                    hasError = true;
+                }
+
+                // Required: Activity
+                if (!selectedActivityId) {
+                    showFieldError('activity_id', 'The activity is required!');
                     hasError = true;
                 }
 
@@ -383,6 +402,7 @@
                         'content');
                     const payload = {
                         date: updatedRow.date,
+                        activity_id: $('#activity_id').val() || null,
                         planned_activities: updatedRow.planned_activities,
                         accommodation: updatedRow.accommodation,
                         air_ticket: updatedRow.air_ticket,
@@ -491,6 +511,8 @@
                             savedMap[item.date] = {
                                 id: item.id,
                                 date: item.date,
+                                activity_id: item.activity_id || null,
+                                activity_title: item.activity_title || '',
                                 activities: item.planned_activities || '',
                                 accommodation: !!item.accommodation,
                                 air_ticket: !!item.air_ticket,
@@ -504,6 +526,8 @@
                     const dates = generateDateRange(departureDateStr, returnDateStr);
                     itineraryData = dates.map(date => savedMap[date] || {
                         date: date,
+                        activity_id: null,
+                        activity_title: '',
                         activities: '',
                         accommodation: false,
                         air_ticket: false,
@@ -538,6 +562,10 @@
                 columns: [{
                         data: 'date',
                         name: 'date'
+                    },
+                    {
+                        data: 'activity_title',
+                        name: 'activity_title'
                     },
                     {
                         data: 'planned_activities',
@@ -1458,6 +1486,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th style="width: 120px;">{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
                                     <th class="text-center">{{ __('label.air-ticket') }}</th>
@@ -1488,6 +1517,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
                                     <th class="text-center">{{ __('label.air-ticket') }}</th>
@@ -1522,7 +1552,7 @@
                                 </div>
 
                                 <div class="row mb-3">
-                                    <label class="col-md-3 col-form-label">Activity</label>
+                                    <label class="col-md-3 col-form-label required-label">Activity</label>
                                     <div class="col-lg-9">
                                         <select name="activity_id" id="activity_id" class="select2 form-control">
                                             <option value="">Select Activity</option>
@@ -1530,6 +1560,7 @@
                                                 <option value="{{ $activity->id }}">{{ $activity->title }}</option>
                                             @endforeach
                                         </select>
+                                        <div class="invalid-feedback" id="error-activity_id"></div>
                                     </div>
                                 </div>
 

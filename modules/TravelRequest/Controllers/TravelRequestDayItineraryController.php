@@ -42,6 +42,7 @@ class TravelRequestDayItineraryController extends Controller
                         return [
                             'id' => $row->id,
                             'date' => $row->date?->format('Y-m-d'),
+                            'activity_id' => $row->activity_id,
                             'planned_activities' => $row->planned_activities,
                             'accommodation' => (bool) $row->accommodation,
                             'air_ticket' => (bool) $row->air_ticket,

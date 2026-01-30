@@ -19,8 +19,7 @@ class ProjectController
         protected ProjectRepository       $projectRepository,
         protected UserRepository          $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
@@ -109,7 +108,7 @@ class ProjectController
 
         $statusDistribution = [
             ActivityStatus::Completed->value => $statusCounts[ActivityStatus::Completed->value] ?? 0,
-            ActivityStatus::UnderProgess->value => $statusCounts[ActivityStatus::UnderProgess->value] ?? 0,
+            ActivityStatus::UnderProgress->value => $statusCounts[ActivityStatus::UnderProgress->value] ?? 0,
             ActivityStatus::NotStarted->value => $statusCounts[ActivityStatus::NotStarted->value] ?? 0,
             ActivityStatus::NoRequired->value => $statusCounts[ActivityStatus::NoRequired->value] ?? 0,
         ];

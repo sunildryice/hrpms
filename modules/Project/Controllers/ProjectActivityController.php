@@ -58,7 +58,8 @@ class ProjectActivityController extends Controller
             ->editColumn('status', function ($row) {
 
                 $selectInput = '';
-                if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
+
+                if ($this->checkStatusDisplay($row)) {
                     $selectInput .= '<select class="form-select form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
                     foreach (ActivityStatus::cases() as $status) {
                         $selected = $row->status === $status->value ? 'selected' : '';
@@ -100,6 +101,20 @@ class ProjectActivityController extends Controller
             })
             ->rawColumns(['action', 'status'])
             ->make(true);
+    }
+
+    public function checkStatusDisplay(ProjectActivity $projectActivity)
+    {
+        $authUser = auth()->user();
+
+        $notIsNoRequired = $projectActivity->status != ActivityStatus::NoRequired->value;
+        $notIsCompleted = $projectActivity->status != ActivityStatus::Completed->value;
+
+        if (Gate::allows('manage-project-activity-on-certain-time', $projectActivity->project) && ($notIsNoRequired && $notIsCompleted)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function create(Project $project)
@@ -193,10 +208,20 @@ class ProjectActivityController extends Controller
         $request->validate([
             'status' => 'required|string|in:not_started,under_progress,no_required,completed',
             'remarks' => 'nullable|string',
+            'status_date' => 'nullable|date',
         ]);
 
         $oldStatus = $projectActivity->status;
         $newStatus = $request->input('status');
+        $statusDate = $request->input('status_date');
+
+        if ($newStatus == ActivityStatus::UnderProgress->value) {
+            $projectActivity->actual_start_date = $statusDate ?? now();
+        }
+
+        if ($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value) {
+            $projectActivity->actual_completion_date = $statusDate ?? now();
+        }
 
         $projectActivity->status = $newStatus;
         $projectActivity->save();

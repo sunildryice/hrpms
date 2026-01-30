@@ -12,19 +12,24 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Repositories\ProjectActivityRepository;
 use PhpOffice\PhpSpreadsheet\Shared\Date as PhpDate;
 
 class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, WithChunkReading, WithCalculatedFormulas
 {
     protected $project;
-    protected $repository;
     protected $activityMap = [];
+    protected $stageCache = [];
+    protected $userCache = [];
 
     public function __construct($project)
     {
         $this->project = $project;
-        $this->repository = app(ProjectActivityRepository::class);
+
+        // Pre-load stages into cache
+        $this->stageCache = ActivityStage::pluck('id', 'title')->toArray();
+
+        // Pre-load users into cache
+        $this->userCache = \App\Models\User::pluck('id', 'full_name')->toArray();
     }
 
     public function collection($rows)
@@ -32,7 +37,17 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         DB::beginTransaction();
 
         try {
-            // First pass: create / update activities without setting parent_id
+            // Pre-load existing activities for this project
+            $existingActivities = ProjectActivity::where('project_id', $this->project->id)
+                ->pluck('id', 'title')
+                ->toArray();
+
+            $activitiesToInsert = [];
+            $activitiesToUpdate = [];
+            $memberSyncData = [];
+            $parentRelations = [];
+
+            // Process all rows and prepare bulk operations
             foreach ($rows as $row) {
                 if ($row->filter()->isEmpty()) {
                     continue;
@@ -44,6 +59,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 $start_raw = $row['start_date'] ?? null;
                 $end_raw = $row['end_date'] ?? null;
                 $members_str = trim($row['members'] ?? '');
+                $parent_title = trim($row['parent_activity'] ?? $row['parent-activity'] ?? '');
 
                 if (empty($title) || empty($start_raw) || empty($end_raw)) {
                     continue;
@@ -56,72 +72,118 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                     continue;
                 }
 
-                // Try to find existing activity by title + start date + project 
-                $existing = ProjectActivity::where('project_id', $this->project->id)
-                    ->where('title', $title)
-                    ->whereDate('start_date', $start_date->startOfDay())
-                    // ->whereDate('completion_date', $end_date->endOfDay())
-                    ->first();
-
-                $stage_id = null;
-                if ($stage_name) {
-                    $stage = ActivityStage::where('title', $stage_name)->first();
-                    $stage_id = $stage?->id;
-                }
-
-                $parent_id = null;
+                $stage_id = $this->stageCache[$stage_name] ?? null;
 
                 $data = [
                     'project_id' => $this->project->id,
                     'title' => $title,
                     'activity_stage_id' => $stage_id,
                     'activity_level' => $level ?: null,
-                    'parent_id' => $parent_id,
+                    'parent_id' => null,
                     'start_date' => $start_date,
                     'completion_date' => $end_date,
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ];
 
-                if ($existing) {
-                    $activity = $this->repository->update($existing->id, $data);
+                if (isset($existingActivities[$title])) {
+                    $activityId = $existingActivities[$title];
+                    $activitiesToUpdate[$activityId] = $data;
+                    $this->activityMap[$title] = $activityId;
                 } else {
-                    $activity = $this->repository->create($data);
+                    $activitiesToInsert[] = array_merge($data, [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
                 }
 
-                if ($members_str && $activity) {
-                    $this->syncMembersFromString($activity, $members_str);
+                // Store member sync data for later
+                if ($members_str) {
+                    $memberSyncData[$title] = $this->parseMembers($members_str);
                 }
 
-                $this->activityMap[$title] = $activity->id;
+                // Store parent relationship for later
+                if ($parent_title) {
+                    $parentRelations[$title] = $parent_title;
+                }
             }
 
-            // Second pass: assign parent_id
-            foreach ($rows as $row) {
-                if ($row->filter()->isEmpty()) {
-                    continue;
+            // Bulk insert new activities
+            if (!empty($activitiesToInsert)) {
+                ProjectActivity::insert($activitiesToInsert);
+
+                // Reload to get IDs for newly inserted
+                $newActivities = ProjectActivity::where('project_id', $this->project->id)
+                    ->whereIn('title', array_column($activitiesToInsert, 'title'))
+                    ->pluck('id', 'title')
+                    ->toArray();
+
+                $this->activityMap = array_merge($this->activityMap, $newActivities);
+            }
+
+            // Bulk update existing activities
+            if (!empty($activitiesToUpdate)) {
+                foreach ($activitiesToUpdate as $id => $data) {
+                    ProjectActivity::where('id', $id)->update($data);
+                }
+            }
+
+            // Update parent relationships in bulk
+            if (!empty($parentRelations)) {
+                $parentUpdates = [];
+                foreach ($parentRelations as $childTitle => $parentTitle) {
+                    $childId = $this->activityMap[$childTitle] ?? null;
+                    $parentId = $this->activityMap[$parentTitle] ?? null;
+
+                    if ($childId && $parentId && $childId !== $parentId) {
+                        $parentUpdates[] = ['id' => $childId, 'parent_id' => $parentId];
+                    }
                 }
 
-                $title = trim($row['activity_name'] ?? $row['activity-name'] ?? $row['activity name'] ?? '');
-                $parent_title = trim($row['parent_activity'] ?? $row['parent-activity'] ?? '');
+                // Batch update parent_ids
+                foreach ($parentUpdates as $update) {
+                    ProjectActivity::where('id', $update['id'])
+                        ->update(['parent_id' => $update['parent_id']]);
+                }
+            }
 
-                if (empty($title) || empty($parent_title)) {
-                    continue;
+            // Sync members in bulk
+            if (!empty($memberSyncData)) {
+                $memberSyncBulk = [];
+                $processedPairs = []; // Track unique activity-user pairs
+
+                foreach ($memberSyncData as $title => $userIds) {
+                    $activityId = $this->activityMap[$title] ?? null;
+                    if ($activityId && !empty($userIds)) {
+                        foreach ($userIds as $userId) {
+                            $pairKey = $activityId . '-' . $userId;
+
+                            // Only add if this pair hasn't been added yet
+                            if (!isset($processedPairs[$pairKey])) {
+                                $memberSyncBulk[] = [
+                                    'activity_id' => $activityId,
+                                    'user_id' => $userId,
+                                ];
+                                $processedPairs[$pairKey] = true;
+                            }
+                        }
+                    }
                 }
 
-                $childId = $this->activityMap[$title] ?? null;
-                $parentId = $this->activityMap[$parent_title] ?? null;
+                if (!empty($memberSyncBulk)) {
+                    // Delete existing member relations for these activities
+                    DB::table('project_activity_members')
+                        ->whereIn('activity_id', array_values($this->activityMap))
+                        ->delete();
 
-                if ($childId && $parentId && $childId !== $parentId) {
-                    ProjectActivity::where('id', $childId)
-                        ->update(['parent_id' => $parentId]);
+                    // Insert new member relations
+                    DB::table('project_activity_members')->insert($memberSyncBulk);
                 }
             }
 
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e);
             Log::error('Activity import failed', ['error' => $e->getMessage()]);
             throw $e;
         }
@@ -152,36 +214,39 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         $normalized = trim(strtolower($raw));
 
         return match ($normalized) {
-            'theme', 'themes' => 'theme',
+            'theme', 'themes', 'activity_theme', 'activity theme' => 'theme',
             'activity', 'activities', 'act' => 'activity',
             'sub activity', 'sub-activity', 'sub_activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
             default => 'activity',
         };
     }
 
-    private function syncMembersFromString(ProjectActivity $activity, string $namesCsv): void
+    private function parseMembers(string $namesCsv): array
     {
         $names = array_filter(array_map('trim', explode(',', $namesCsv)));
 
         if (empty($names)) {
-            $activity->members()->sync([]);
-            return;
+            return [];
         }
 
-        $userIds = \App\Models\User::whereIn('full_name', $names)
-            ->pluck('id')
-            ->toArray();
+        $userIds = [];
+        foreach ($names as $name) {
+            if (isset($this->userCache[$name])) {
+                $userIds[] = $this->userCache[$name];
+            }
+        }
 
-        $activity->members()->sync($userIds);
+        // Remove duplicates and reindex
+        return array_values(array_unique($userIds));
     }
 
     public function batchSize(): int
     {
-        return 400;
+        return 100;
     }
 
     public function chunkSize(): int
     {
-        return 400;
+        return 100;
     }
 }

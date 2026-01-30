@@ -93,10 +93,18 @@
                         </thead>
                         <tbody>
                             @php $sn = 1; @endphp
-                            @foreach (collect($timeSheets)->groupBy(function ($ts) {
-            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
-        }) as $date => $itemsByDate)
+                            @foreach ($allDates as $date => $itemsByDate)
                                 @php
+                                    // If no data for this date, show empty row
+                                    if ($itemsByDate->isEmpty()) {
+                                        echo '<tr' . ($loop->first ? '' : ' class="date-group-divider"') . '>';
+                                        echo '<td>' . $sn++ . '</td>';
+                                        echo '<td>' . \Carbon\Carbon::parse($date)->format('d, M Y') . '</td>';
+                                        echo '<td colspan="4" class="text-center text-muted">No timesheet entries</td>';
+                                        echo '</tr>';
+                                        continue;
+                                    }
+
                                     $dateRowCount = $itemsByDate->count();
                                     $datePrinted = false;
                                     $projectGroups = collect($itemsByDate)->groupBy(function ($ts) {

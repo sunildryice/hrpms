@@ -48,7 +48,7 @@
                 ajax: "{{ route('project-activity.index', $project->id) }}",
                 bFilter: true,
                 bPaginate: true,
-                bInfo: false,
+                bInfo: true,
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -123,14 +123,25 @@
 
                 const url = "{{ url('/project-activity') }}/" + activityId + "/status";
 
-                // For Not Required and Completed open Bootstrap modal
-                if (newStatus === 'no_required' || newStatus === 'completed') {
+
+                if (newStatus === 'no_required' || newStatus === 'completed' || newStatus ===
+                    'under_progress') {
                     const $modal = $('#activityStatusModal');
 
-                    const title = newStatus === 'no_required' ?
-                        'Mark activity as Not Required' :
-                        'Mark activity as Completed';
-                    const label = newStatus === 'no_required' ? 'Reason' : 'Remarks';
+                    let title, label, dateLabel;
+                    if (newStatus === 'no_required') {
+                        title = 'Mark activity as Not Required';
+                        label = 'Reason';
+                        dateLabel = 'Completion Date';
+                    } else if (newStatus === 'completed') {
+                        title = 'Mark activity as Completed';
+                        label = 'Remarks';
+                        dateLabel = 'Completion Date';
+                    } else if (newStatus === 'under_progress') {
+                        title = 'Mark activity as Under Progress';
+                        label = 'Remarks';
+                        dateLabel = 'Actual Start Date';
+                    }
 
                     $modal.data('url', url);
                     $modal.data('select', $select);
@@ -140,7 +151,32 @@
 
                     $('#activityStatusModalLabel').text(title);
                     $('#activityStatusMessageLabel').text(label);
+                    $('#activityStatusDateLabel').text(dateLabel);
                     $('#activityStatusMessage').val('').removeClass('is-invalid');
+
+                    // Set default date to today and initialize datepicker
+                    const today = new Date();
+                    const formattedDate = today.getFullYear() + '-' +
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(today.getDate()).padStart(2, '0');
+
+                    $('#activityStatusDate').val(formattedDate).removeClass('is-invalid');
+
+                    // Destroy existing datepicker if any and reinitialize
+                    $('#activityStatusDate').datepicker('destroy');
+                    $('#activityStatusDate').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        zIndex: 2048,
+                    });
+
+                    // Hide remarks field for under_progress
+                    if (newStatus === 'under_progress') {
+                        $('#activityStatusMessageContainer').hide();
+                    } else {
+                        $('#activityStatusMessageContainer').show();
+                    }
 
                     $modal.modal('show');
                 } else {
@@ -162,13 +198,28 @@
                 const url = $modal.data('url');
                 const statusValue = $modal.data('status');
                 const message = $('#activityStatusMessage').val().trim();
+                const dateValue = $('#activityStatusDate').val().trim();
 
                 if (!url || !statusValue) {
                     return;
                 }
 
-                if (!message) {
+                let isValid = true;
+
+                // Remarks is only required for no_required and completed
+                if (statusValue !== 'under_progress' && !message) {
                     $('#activityStatusMessage').addClass('is-invalid');
+                    $('#activityStatusMessage').siblings('.invalid-feedback').show();
+                    isValid = false;
+                }
+
+                if (!dateValue) {
+                    $('#activityStatusDate').addClass('is-invalid');
+                    $('#activityStatusDate').siblings('.invalid-feedback').show();
+                    isValid = false;
+                }
+
+                if (!isValid) {
                     return;
                 }
 
@@ -176,7 +227,8 @@
                     status: statusValue,
                     // Backend will always receive this as `remarks`,
                     // label text (Reason/Remarks) is only for display.
-                    remarks: message,
+                    remarks: message || null,
+                    status_date: dateValue,
                 };
 
                 ajaxSubmit(url, 'POST', data, function(response) {
@@ -189,6 +241,12 @@
 
             $('#activityStatusMessage').on('input', function() {
                 $(this).removeClass('is-invalid');
+                $(this).siblings('.invalid-feedback').hide();
+            });
+
+            $('#activityStatusDate').on('change', function() {
+                $(this).removeClass('is-invalid');
+                $(this).siblings('.invalid-feedback').hide();
             });
 
             // On modal close without update, revert dropdown to previous value
@@ -619,16 +677,51 @@
                         const $form = fv.form;
                         const data = new FormData($form);
 
+                        // Get submit button and add loading state
+                        const submitBtn = $form.querySelector('button[type="submit"]');
+                        const originalBtnText = submitBtn.innerHTML;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML =
+                            '<span class="spinner-border spinner-border-sm me-2"></span> Importing...';
+
+                        // Disable modal close buttons
+                        $('#openModal').find('[data-bs-dismiss="modal"]').prop('disabled',
+                            true);
+                        $('#openModal').find('.btn-close').prop('disabled', true);
+                        $('#openModal').data('bs-backdrop', 'static');
+                        $('#openModal').data('bs-keyboard', false);
+
                         const successCallback = function(response) {
+                            // Restore button state
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+
+                            // Re-enable modal close buttons
+                            $('#openModal').find('[data-bs-dismiss="modal"]').prop(
+                                'disabled', false);
+                            $('#openModal').find('.btn-close').prop('disabled', false);
+
                             $('#openModal').modal('hide');
                             toastr.success(response.message, 'Success', {
                                 timeOut: 5000
                             });
                             $('#projectActivityTable').DataTable().ajax.reload();
                         };
+
+                        const errorCallback = function() {
+                            // Restore button state on error
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = originalBtnText;
+
+                            // Re-enable modal close buttons
+                            $('#openModal').find('[data-bs-dismiss="modal"]').prop(
+                                'disabled', false);
+                            $('#openModal').find('.btn-close').prop('disabled', false);
+                        };
+
                         ajaxSubmitFormData($url, 'POST', data, function(response) {
                             successCallback(response);
-                        });
+                        }, errorCallback);
                     });
                 });
             });
@@ -799,10 +892,16 @@
                 <form id="activityStatusForm" autocomplete="off">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label" id="activityStatusMessageLabel"
-                                for="activityStatusMessage">Reason</label>
+                            <label class="form-label" id="activityStatusDateLabel" for="activityStatusDate">Date <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="activityStatusDate" readonly />
+                            <div class="invalid-feedback" style="display: none;">This field is required.</div>
+                        </div>
+                        <div class="mb-3" id="activityStatusMessageContainer">
+                            <label class="form-label" id="activityStatusMessageLabel" for="activityStatusMessage">Reason
+                                <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="activityStatusMessage" rows="3"></textarea>
-                            <div class="invalid-feedback">This field is required.</div>
+                            <div class="invalid-feedback" style="display: none;">This field is required.</div>
                         </div>
                     </div>
                     <div class="modal-footer">

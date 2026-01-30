@@ -47,6 +47,32 @@
             text-decoration: underline;
             fill: var(--ohw-blue);
         }
+
+        /* Week filter button styling */
+        #gantt-week-buttons .btn {
+            background-color: #fff;
+            border: 1px solid var(--ohw-blue);
+            color: var(--ohw-blue);
+            box-shadow: none;
+        }
+
+        #gantt-week-buttons .btn:hover {
+            background-color: rgba(var(--ohw-blue-rgb, 0, 123, 255), 0.1);
+            border-color: var(--ohw-blue);
+            color: var(--ohw-blue);
+        }
+
+        #gantt-week-buttons .btn.active {
+            background-color: var(--ohw-blue);
+            border-color: var(--ohw-blue);
+            color: #fff;
+        }
+
+        #gantt-week-buttons .btn:focus,
+        #gantt-week-buttons .btn:active {
+            box-shadow: none;
+            outline: none;
+        }
     </style>
 @endsection
 
@@ -107,6 +133,12 @@
 
             const allTasks = tasks.slice();
             const ganttSelector = '#gantt';
+            const weekFilterContainer = document.getElementById('gantt-week-filter');
+            const weekButtonsContainer = document.getElementById('gantt-week-buttons');
+
+            // Store current month/year when a month is selected
+            let currentSelectedMonth = null;
+            let currentSelectedYear = null;
 
             // Precompute earliest task start for mapping month headers to real calendar months
             const allTaskStarts = allTasks.map(function(task) {
@@ -116,6 +148,35 @@
             });
             const minTaskStart = allTaskStarts.length ? moment.min(allTaskStarts) : null;
 
+            function ensureGanttPopupInView() {
+                const popup = document.querySelector('.gantt .popup-wrapper');
+                if (!popup) {
+                    return;
+                }
+
+                const rect = popup.getBoundingClientRect();
+                const padding = 16;
+                let dx = 0;
+                let dy = 0;
+
+                if (rect.right > window.innerWidth - padding) {
+                    dx = rect.right - (window.innerWidth - padding);
+                } else if (rect.left < padding) {
+                    dx = rect.left - padding;
+                }
+
+                if (rect.top < padding) {
+                    dy = rect.top - padding;
+                }
+
+                if (dx !== 0 || dy !== 0) {
+                    const currentLeft = parseFloat(popup.style.left || '0');
+                    const currentTop = parseFloat(popup.style.top || '0');
+                    popup.style.left = (currentLeft - dx) + 'px';
+                    popup.style.top = (currentTop - dy) + 'px';
+                }
+            }
+
             const ganttOptions = {
                 view_mode: 'Month',
                 language: 'en',
@@ -123,7 +184,8 @@
                 padding: 22,
                 column_width: 35,
                 on_click: function(task) {
-                    console.log(task);
+                    // Reposition popup so it stays fully within viewport
+                    setTimeout(ensureGanttPopupInView, 0);
                 },
                 custom_popup_html: function(task) {
                     const startDate = moment(task._start).format('MMM DD');
@@ -145,6 +207,14 @@
                     );
                 }
             };
+
+            function clearWeekFilter() {
+                if (!weekFilterContainer || !weekButtonsContainer) {
+                    return;
+                }
+                weekButtonsContainer.innerHTML = '';
+                weekFilterContainer.classList.add('d-none');
+            }
 
             function attachMonthClickHandlers() {
                 if (!minTaskStart) {
@@ -270,12 +340,75 @@
                 renderGantt(allTasks);
             }
 
+            function buildWeeksForMonth(monthStart, monthEnd) {
+                const weeks = [];
+                if (!monthStart || !monthEnd) {
+                    return weeks;
+                }
+
+                let index = 1;
+                let currentStart = monthStart.clone();
+
+                while (currentStart.isSameOrBefore(monthEnd, 'day')) {
+                    let currentEnd = currentStart.clone().endOf('week');
+                    if (currentEnd.isAfter(monthEnd, 'day')) {
+                        currentEnd = monthEnd.clone();
+                    }
+
+                    weeks.push({
+                        index: index,
+                        start: currentStart.clone(),
+                        end: currentEnd.clone(),
+                    });
+
+                    index++;
+                    currentStart = currentEnd.clone().add(1, 'day');
+                }
+
+                return weeks;
+            }
+
+            function renderWeeksForMonth(weeks, month, year) {
+                if (!weekFilterContainer || !weekButtonsContainer) {
+                    return;
+                }
+
+                weekButtonsContainer.innerHTML = '';
+
+                weeks.forEach(function(week) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-primary btn-sm';
+                    btn.textContent = 'Week ' + week.index;
+                    btn.dataset.weekIndex = String(week.index);
+                    btn.addEventListener('click', function() {
+                        // Set active state
+                        Array.from(weekButtonsContainer.querySelectorAll('button')).forEach(
+                            function(b) {
+                                b.classList.remove('active', 'bg-primary', 'text-white');
+                            });
+                        btn.classList.add('active', 'bg-primary', 'text-white');
+
+                        filterByWeek(week.start, week.end, month, year, week.index);
+                    });
+                    weekButtonsContainer.appendChild(btn);
+                });
+
+                if (weeks.length) {
+                    weekFilterContainer.classList.remove('d-none');
+                } else {
+                    weekFilterContainer.classList.add('d-none');
+                }
+            }
+
             function filterByMonth(month, year) {
                 hideNoDataMessage();
 
                 if (!month || !year) {
                     highlightSelectedMonth(null, null);
                     updateFilterLabel(null, null);
+                    clearWeekFilter();
+                    ganttOptions.view_mode = 'Month';
                     renderGantt(allTasks);
                     return;
                 }
@@ -299,19 +432,85 @@
                     // No activities in this month/year; keep existing chart and show a message
                     highlightSelectedMonth(month, year);
                     updateFilterLabel(month, year);
+                    clearWeekFilter();
                     showNoDataMessage();
                     return;
                 }
 
+                const weeks = buildWeeksForMonth(monthStart, monthEnd);
+                renderWeeksForMonth(weeks, month, year);
+
+                // Store current selection
+                currentSelectedMonth = month;
+                currentSelectedYear = year;
+
+                // Show full month data by default; weeks are just filters
+                ganttOptions.view_mode = 'Month';
                 renderGantt(filtered);
                 highlightSelectedMonth(month, year);
                 updateFilterLabel(month, year);
+
+                // Clear any active week selection
+                if (weekButtonsContainer) {
+                    Array.from(weekButtonsContainer.querySelectorAll('button')).forEach(function(b) {
+                        b.classList.remove('active');
+                    });
+                }
+            }
+
+            function filterByWeek(weekStart, weekEnd, month, year, weekIndex) {
+                hideNoDataMessage();
+
+                const filtered = allTasks.filter(function(task) {
+                    const taskStart = moment(task.start);
+                    const taskEnd = moment(task.end);
+
+                    return taskStart.isSameOrBefore(weekEnd, 'day') &&
+                        taskEnd.isSameOrAfter(weekStart, 'day');
+                });
+
+                if (!filtered.length) {
+                    highlightSelectedMonth(month, year);
+
+                    const labelEl = document.getElementById('gantt-filter-label');
+                    if (labelEl) {
+                        const m = weekStart.clone();
+                        labelEl.textContent = 'Filtered: ' + m.format('MMMM YYYY') + ' - Week ' + weekIndex +
+                            ' (no data)';
+                        labelEl.classList.remove('d-none');
+                    }
+
+                    showNoDataMessage();
+                    return;
+                }
+
+                ganttOptions.view_mode = 'Week';
+                renderGantt(filtered);
+                highlightSelectedMonth(month, year);
+
+                const labelEl = document.getElementById('gantt-filter-label');
+                if (labelEl) {
+                    labelEl.textContent =
+                        'Filtered: ' + weekStart.format('MMM D') + ' - ' + weekEnd.format('MMM D, YYYY') +
+                        ' (Week ' + weekIndex + ')';
+                    labelEl.classList.remove('d-none');
+                }
             }
 
             const resetButton = document.getElementById('gantt-reset-filter');
             if (resetButton) {
                 resetButton.addEventListener('click', function() {
                     filterByMonth(null, null);
+                });
+            }
+
+            const resetWeekButton = document.getElementById('gantt-reset-week-filter');
+            if (resetWeekButton) {
+                resetWeekButton.addEventListener('click', function() {
+                    // Use stored month/year to reset to full month view
+                    if (currentSelectedMonth && currentSelectedYear) {
+                        filterByMonth(currentSelectedMonth, currentSelectedYear);
+                    }
                 });
             }
 
@@ -369,6 +568,16 @@
                 </div>
                 <div class="card-body">
                     <div id="gantt-no-data-message" class="alert alert-warning py-2 px-3 small d-none mb-2"></div>
+                    <div id="gantt-week-filter" class="mb-2 d-none">
+                        <div class="d-flex align-items-center gap-2 flex-wrap justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="small text-muted">Weeks:</span>
+                                <div id="gantt-week-buttons" class="btn-group btn-group-sm" role="group"></div>
+                            </div>
+                            <button id="gantt-reset-week-filter" type="button" class="btn btn-outline-primary btn-sm">Reset
+                                Week Filter</button>
+                        </div>
+                    </div>
                     <div id="gantt"></div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ namespace Modules\Project\Repositories;
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Models\ProjectActivity;
 
 class ProjectActivityRepository extends Repository
@@ -31,6 +32,7 @@ class ProjectActivityRepository extends Repository
     {
         DB::beginTransaction();
         try {
+            $inputs['status'] = ActivityStatus::NotStarted->value;
             $record = $this->model->create($inputs);
             if (isset($inputs['members']) && is_array($inputs['members'])) {
                 $record->members()->sync($inputs['members']);

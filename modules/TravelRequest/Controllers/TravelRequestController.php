@@ -2,28 +2,29 @@
 
 namespace Modules\TravelRequest\Controllers;
 
-use App\Http\Controllers\Controller;
 use DataTables;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Modules\TravelRequest\Requests\StoreRequest;
+use Modules\Master\Repositories\OfficeRepository;
+use Modules\Master\Repositories\StatusRepository;
+use Modules\TravelRequest\Requests\UpdateRequest;
+use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Repositories\ProjectRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\DepartmentRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\ProjectCodeRepository;
-use Modules\Master\Repositories\StatusRepository;
 use Modules\Master\Repositories\TravelTypeRepository;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\TravelRequest\Notifications\TravelAdvanceRequestSubmitted;
-use Modules\TravelRequest\Notifications\TravelRequestCancelSubmitted;
+use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\TravelRequest\Notifications\TravelRequestSubmitted;
+use Modules\TravelRequest\Repositories\TravelRequestRepository;
+use Modules\TravelRequest\Notifications\TravelRequestCancelSubmitted;
+use Modules\TravelRequest\Notifications\TravelAdvanceRequestSubmitted;
 use Modules\TravelRequest\Repositories\TravelRequestEstimateRepository;
 use Modules\TravelRequest\Repositories\TravelRequestItineraryRepository;
-use Modules\TravelRequest\Repositories\TravelRequestRepository;
-use Modules\TravelRequest\Requests\Advance\StoreRequest as AdvanceStoreRequest;
 use Modules\TravelRequest\Requests\Cancel\StoreRequest as CancelStoreRequest;
-use Modules\TravelRequest\Requests\StoreRequest;
-use Modules\TravelRequest\Requests\UpdateRequest;
+use Modules\TravelRequest\Requests\Advance\StoreRequest as AdvanceStoreRequest;
 
 class TravelRequestController extends Controller
 {
@@ -40,6 +41,7 @@ class TravelRequestController extends Controller
         protected FiscalYearRepository $fiscalYear,
         protected OfficeRepository $offices,
         protected ProjectCodeRepository $projectCodes,
+        protected ProjectRepository $projects,
         protected TravelRequestRepository $travelRequests,
         protected TravelRequestEstimateRepository $travelRequestEstimate,
         protected TravelRequestItineraryRepository $travelRequestItinerary,
@@ -156,7 +158,8 @@ class TravelRequestController extends Controller
     {
         $authUser = auth()->user();
         $employee = $authUser->employee;
-        $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        $projects = $this->projects->getAssignedProjects($authUser);
         $accompanyingStaffs = $this->employees->getActiveEmployees();
         $substitutes = $accompanyingStaffs->reject(function ($staff) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -164,7 +167,7 @@ class TravelRequestController extends Controller
         $consultants = $this->employees->getActiveConsultants();
 
         return view('TravelRequest::create')
-            ->withProjects($projectCodes)
+            ->withProjects($projects)
             ->withSubstitutes($substitutes)
             ->with('consultants', $consultants)
             ->withTravelTypes($this->travelTypes->get())
@@ -248,7 +251,8 @@ class TravelRequestController extends Controller
         $this->authorize('update', $travelRequest);
         $authUser = auth()->user();
         $employee = $authUser->employee;
-        $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        $projects = $this->projects->getAssignedProjects($authUser);
         $accompanyingStaffs = $this->employees->getActiveEmployees();
         $substitutes = $accompanyingStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -257,7 +261,7 @@ class TravelRequestController extends Controller
 
         return view('TravelRequest::edit')
             ->withAuthUser(auth()->user())
-            ->withProjects($projectCodes)
+            ->withProjects($projects)
             ->withSupervisors($supervisors)
             ->withSubstitutes($substitutes)
             ->withTravelRequest($travelRequest)

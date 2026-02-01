@@ -49,9 +49,8 @@
             aria-label="{{ __('label.start-date') }} - {{ __('label.end-date') }}" data-bs-toggle="tooltip"></i>
         <div class="w-100">
             @php($sd = $projectActivity->start_date ? \Carbon\Carbon::parse($projectActivity->start_date) : null)
-            @php($ed = $projectActivity->completion_date ? \Carbon\Carbon::parse($projectActivity->completion_date) : null)
             <div>
-                {{ $sd ? $sd->format('M d, Y') : '-' }} @if ($sd || $ed)
+                {{ $sd ? $sd->format('M d, Y') : '-' }} @if ($sd)
                     -
                 @endif
                 {{ $projectActivity->display_completion_date }}

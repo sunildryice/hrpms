@@ -5,6 +5,7 @@ namespace Modules\Project\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Project\Models\ActivityStage;
+use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\ProjectActivityStatusLog;
 
 class ProjectActivity extends Model
@@ -34,6 +35,62 @@ class ProjectActivity extends Model
     public function parent()
     {
         return $this->belongsTo(ProjectActivity::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(ProjectActivity::class, 'parent_id');
+    }
+
+    public function parentTheme()
+    {
+        $parentTheme = $this->parent()->where('activity_level', '=', ActivityLevel::Theme->value);
+
+        return $parentTheme;
+    }
+
+    public function parentActivity()
+    {
+        return $this->parent()->where('activity_level', '=', ActivityLevel::Activity->value);
+    }
+
+
+    public function scopeThemes($query)
+    {
+        return $query->where('activity_level', ActivityLevel::Theme->value);
+    }
+
+    public function scopeWithFullHierarchy($query)
+    {
+        return $query->with([
+            'children.activityChildren.subActivityChildren',
+            'parentTheme',
+            'parentActivity'
+        ]);
+    }
+
+    public function allChildren()
+    {
+        return $this->children()->with('allChildren');
+    }
+
+    public function activityChildren()
+    {
+        return $this->hasMany(ProjectActivity::class, 'parent_id')
+            ->where('activity_level', ActivityLevel::Activity->value);
+    }
+
+    public function getAncestryAttribute()
+    {
+        $ancestry = collect();
+        $activity = $this;
+
+        while ($activity->parent_id) {
+            $activity = $activity->parent;
+            $ancestry->prepend($activity);
+        }
+
+        return $ancestry;
     }
 
     public function stage()

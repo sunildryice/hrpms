@@ -15,7 +15,7 @@
                 <select class="form-control select2" data-width="100%" name="activity_code_id">
                     <option value="">Select Activity</option>
                     @foreach ($activityCodes as $activityCode)
-                        <option value="{!! $activityCode->id !!}">{{ $activityCode->getActivityCodeDescription() }}
+                        <option value="{!! $activityCode->id !!}">{{ $activityCode->title }}
                         </option>
                     @endforeach
                 </select>

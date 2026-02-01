@@ -3,9 +3,10 @@
 namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Project\Models\ProjectActivity;
 use Modules\TravelRequest\Models\TravelRequest;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class TravelRequestDayItinerary extends Model
 {
@@ -25,6 +26,7 @@ class TravelRequestDayItinerary extends Model
      */
     protected $fillable = [
         'travel_request_id',
+        'activity_id',
         'date',
         'planned_activities',
         'accommodation',
@@ -65,6 +67,11 @@ class TravelRequestDayItinerary extends Model
     public function travelRequest()
     {
         return $this->belongsTo(TravelRequest::class, 'travel_request_id');
+    }
+
+    public function activity()
+    {
+        return $this->belongsTo(ProjectActivity::class, 'activity_id');
     }
 
     /**

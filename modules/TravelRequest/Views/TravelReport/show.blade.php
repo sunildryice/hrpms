@@ -66,10 +66,12 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th style="width: 10%">Day</th>
+                                                {{-- <th style="width: 10%">Day</th> --}}
                                                 <th style="width: 15%">Date</th>
+                                                {{-- <th>{{ __('label.activity') }}</th> --}}
+                                                <th>Planned Activities</th>
                                                 <th>Carried Activities / Completed Tasks</th>
-                                                <th style="width: 25%">Remarks</th>
+                                                <th style="width: 20%">Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -86,8 +88,10 @@
                                                 @endphp
 
                                                 <tr>
-                                                    <td class="text-center fw-bold">{{ $weekday }}</td>
+                                                    {{-- <td class="text-center fw-bold">{{ $weekday }}</td> --}}
                                                     <td class="text-nowrap">{{ $formattedDate }}</td>
+                                                    {{-- <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td> --}}
+                                                    <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
                                                     <td>
                                                         {!! $itinerary->completed_tasks
                                                             ? nl2br(e($itinerary->completed_tasks))

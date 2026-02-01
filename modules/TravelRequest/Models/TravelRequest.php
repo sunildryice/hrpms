@@ -3,16 +3,17 @@
 namespace Modules\TravelRequest\Models;
 
 use App\Traits\ModelEventLogger;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Modules\Master\Models\Office;
+use Modules\Master\Models\Status;
+use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
 use Modules\Employee\Models\Employee;
 use Modules\Master\Models\Department;
 use Modules\Master\Models\FiscalYear;
-use Modules\Master\Models\Office;
-use Modules\Master\Models\ProjectCode;
-use Modules\Master\Models\Status;
 use Modules\Master\Models\TravelType;
-use Modules\Privilege\Models\User;
+use Modules\Master\Models\ProjectCode;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TravelRequest extends Model
 {
@@ -169,6 +170,13 @@ class TravelRequest extends Model
     public function projectCode()
     {
         return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
+    }
+     /**
+     * Get the project code of travel request from PMS Project.
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_code_id')->withDefault();
     }
 
     /**
@@ -368,7 +376,8 @@ class TravelRequest extends Model
 
     public function getProjectCode()
     {
-        return $this->projectCode->getProjectCodeWithDescription();
+        // return $this->projectCode->getProjectCodeWithDescription();
+        return $this->project->getProjectNameWithShortName();
     }
 
     public function getRequesterName()

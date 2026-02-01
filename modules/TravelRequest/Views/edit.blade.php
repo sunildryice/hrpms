@@ -41,6 +41,8 @@
                         return [
                             'id' => $item->id,
                             'date' => $item->date ? $item->date->format('Y-m-d') : null,
+                            'activity_title' => $item->activity?->title ?? '',
+                            'activity_id' => $item->activity_id,
                             'activities' => $item->planned_activities ?? '',
                             'accommodation' => !!$item->accommodation,
                             'air_ticket' => !!$item->air_ticket,
@@ -61,6 +63,8 @@
                     } else {
                         return {
                             date: date,
+                            activity_id: null,
+                            activity_title: '',
                             activities: '',
                             accommodation: false,
                             air_ticket: false,
@@ -106,7 +110,8 @@
 
                     tr.innerHTML = `
                     <td>${row.date}</td>
-                    <td>${row.activities || '<em class="text-muted">No activities</em>'}</td>
+                    <td>${row.activity_title || '<em class="text-muted">Activity</em>'}</td>
+                    <td>${row.activities || '<em class="text-muted">No planned activities</em>'}</td>
                     <td class="text-center">
                         ${row.accommodation ? '<span class="text fw-bold">Yes</span>' : '<span class="text-muted fw-bold">No</span>'}
                     </td>
@@ -172,7 +177,7 @@
                                                 'Deleted successfully!');
                                             if (response.itineraryCount ==
                                                 response.totalTravelDurationDays
-                                                ) {
+                                            ) {
                                                 $('.submit-record').show();
                                             } else {
                                                 $('.submit-record').hide();
@@ -216,6 +221,7 @@
                 document.getElementById('editDepartureTime').value = data.departure_time || '';
 
                 toggleAirTicketFieldsInModal(!!data.air_ticket);
+                clearAllErrors();
                 $('#editItineraryModal').modal('show');
             }
 
@@ -231,29 +237,110 @@
 
             function showFieldError(fieldId, message) {
                 const errorEl = document.getElementById(`error-${fieldId}`);
-                const inputEl = document.getElementById(
-                    `edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`); // e.g. editActivities
-
-                if (errorEl && inputEl) {
+                const inputEl = document.getElementById(`edit${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`);
+                if (errorEl) {
                     errorEl.textContent = message;
+                    errorEl.style.display = 'block';
+                }
+                if (inputEl) {
                     inputEl.classList.add('is-invalid');
+                    const $container = $(inputEl).next('.select2-container');
+                    if ($container.length) {
+                        $container.addClass('is-invalid');
+                    }
                 }
             }
 
             function clearAllErrors() {
                 document.querySelectorAll('.invalid-feedback').forEach(el => {
                     el.textContent = '';
+                    el.style.display = 'none';
                 });
-                document.querySelectorAll('.form-control, .form-check-input').forEach(el => {
+                document.querySelectorAll('.is-invalid').forEach(el => {
                     el.classList.remove('is-invalid');
                 });
+                $('.select2-container').removeClass('is-invalid');
             }
+
+            // Activity dropdown handling
+            const $projectSelect = $('#project_id');
+            const $activitySelect = $('#activity_id');
+
+            // Load activities
+            function loadActivitiesForProject(projectId) {
+                if (!projectId) {
+                    $activitySelect.html('<option value="">Select Activity</option>').trigger('change');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('timesheet.get-activities-by-project') }}',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
+                    },
+                    dataType: 'json',
+                    success: (response) => {
+                        $activitySelect.html('<option value="">Select Activity</option>');
+
+                        if (response?.activities?.length) {
+                            response.activities.forEach(act => {
+                                $activitySelect.append(
+                                    `<option value="${act.id}">${act.title}</option>`
+                                );
+                            });
+                        }
+
+                        const rowIndex = $('#editRowIndex').val();
+                        if (rowIndex && itineraryData[rowIndex]?.activity_id) {
+                            const targetId = itineraryData[rowIndex].activity_id;
+                            $activitySelect.val(targetId);
+
+                            if ($.fn.select2) {
+                                $activitySelect.trigger('change');
+                            }
+                        }
+
+                        $activitySelect.trigger('change');
+                    },
+                    error: () => {
+                        toastr.error('Failed to load activities');
+                        $activitySelect.html('<option value="">Select Activity</option>');
+                    },
+                    complete: () => {
+                        $activitySelect.prop('disabled', false);
+                    }
+                });
+            }
+
+            // Project change → reload activities
+            $projectSelect.on('change', () => {
+                loadActivitiesForProject($projectSelect.val());
+            });
+
+            // When modal opens → load correct activities + fix dropdown position
+            $('#editItineraryModal').on('shown.bs.modal', function() {
+                clearAllErrors();
+                const projectId = $projectSelect.val();
+                loadActivitiesForProject(projectId);
+
+                // Fix Select2 dropdown position
+                if ($.fn.select2) {
+                    $('#activity_id').select2({
+                        dropdownParent: $('#editItineraryModal .modal-content'),
+                        width: '100%'
+                    });
+                }
+            });
+
 
             document.getElementById('saveEditBtn').addEventListener('click', async function() {
                 const index = parseInt(document.getElementById('editRowIndex').value);
                 const isAirTicket = document.getElementById('editAirTicket').checked;
                 // Clear previous errors
                 clearAllErrors();
+
+                const selectedActivityId = $('#activity_id').val();
 
                 const updatedRow = {
                     date: itineraryData[index].date,
@@ -270,8 +357,16 @@
                 };
                 // Client-side validation
                 let hasError = false;
+
+                // Required: Planned activities
                 if (!updatedRow.planned_activities) {
                     showFieldError('activities', 'Planned activities are required!');
+                    hasError = true;
+                }
+
+                // Required: Activity
+                if (!selectedActivityId) {
+                    showFieldError('activity_id', 'The activity is required!');
                     hasError = true;
                 }
 
@@ -306,6 +401,7 @@
                         'content');
                     const payload = {
                         date: updatedRow.date,
+                        activity_id: $('#activity_id').val() || null,
                         planned_activities: updatedRow.planned_activities,
                         accommodation: updatedRow.accommodation,
                         air_ticket: updatedRow.air_ticket,
@@ -414,6 +510,8 @@
                             savedMap[item.date] = {
                                 id: item.id,
                                 date: item.date,
+                                activity_id: item.activity_id || null,
+                                activity_title: item.activity_title || '',
                                 activities: item.planned_activities || '',
                                 accommodation: !!item.accommodation,
                                 air_ticket: !!item.air_ticket,
@@ -427,6 +525,8 @@
                     const dates = generateDateRange(departureDateStr, returnDateStr);
                     itineraryData = dates.map(date => savedMap[date] || {
                         date: date,
+                        activity_id: null,
+                        activity_title: '',
                         activities: '',
                         accommodation: false,
                         air_ticket: false,
@@ -461,6 +561,10 @@
                 columns: [{
                         data: 'date',
                         name: 'date'
+                    },
+                    {
+                        data: 'activity_title',
+                        name: 'activity_title'
                     },
                     {
                         data: 'planned_activities',
@@ -1156,7 +1260,7 @@
                         </div>
                         @php $selectedProjectCodeId =  old('project_code_id') ?: $travelRequest->project_code_id  @endphp
                         <div class="col-lg-9">
-                            <select name="project_code_id"
+                            <select name="project_code_id" id="project_id"
                                 class="select2 form-control
                                                     @if ($errors->has('project_code_id')) is-invalid @endif"
                                 data-width="100%">
@@ -1177,6 +1281,7 @@
                             @endif
                         </div>
                     </div>
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -1380,6 +1485,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th style="width: 120px;">{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
                                     <th class="text-center">{{ __('label.air-ticket') }}</th>
@@ -1410,6 +1516,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th style="width: 120px;">{{ __('label.date') }}</th>
+                                    <th>{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
                                     <th class="text-center">{{ __('label.air-ticket') }}</th>
@@ -1440,6 +1547,19 @@
                                     <label class="col-md-3 col-form-label">{{ __('label.date') }}</label>
                                     <div class="col-md-9">
                                         <input type="date" id="editDate" class="form-control" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label required-label">Activity</label>
+                                    <div class="col-lg-9">
+                                        <select name="activity_id" id="activity_id" class="select2 form-control">
+                                            <option value="">Select Activity</option>
+                                            @foreach ($activities as $activity)
+                                                <option value="{{ $activity->id }}">{{ $activity->title }}</option>
+                                            @endforeach
+                                        </select>
+                                        <div class="invalid-feedback" id="error-activity_id"></div>
                                     </div>
                                 </div>
 

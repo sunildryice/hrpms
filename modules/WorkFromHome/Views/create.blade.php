@@ -65,9 +65,14 @@
                             <select class="form-select project-select"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
-                                @foreach ($projects as $id => $title)
-                                    <option value="{{ $id }}">{{ $title }}</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}" data-activities='@json($project->activities)'>{{ $project->short_name ?: $project->title }}</option>
                                 @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <select class="form-select activities-select" name="deliverables[${idx}][activity_id]" required>
+                                <option value="">Select Activity</option>
                             </select>
                         </td>
                         <td>
@@ -91,6 +96,38 @@
                     </tr>
                 `;
             }
+            // Populate activities select based on selected project
+            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId = null) {
+                const activitiesData = $projectSelect.find('option:selected').data('activities');
+                $activitiesSelect.empty();
+                $activitiesSelect.append('<option value="">Select Activity</option>');
+                if (activitiesData && Array.isArray(activitiesData)) {
+                    activitiesData.forEach(function(activity) {
+                        const selected = selectedActivityId && String(activity.id) === String(
+                            selectedActivityId) ? 'selected' : '';
+                        $activitiesSelect.append(
+                            `<option value="${activity.id}" ${selected}>${activity.name || activity.title || activity.activity_name}</option>`
+                        );
+                    });
+                }
+            }
+
+            // On project change, update activities select
+            $(document).on('change', '.project-select', function() {
+                const $row = $(this).closest('tr');
+                const $activitiesSelect = $row.find('.activities-select');
+                populateActivities($(this), $activitiesSelect);
+            });
+
+            // On page load, initialize activities selects for existing rows
+            $('#deliverables-body .deliverable-row').each(function() {
+                const $row = $(this);
+                const $projectSelect = $row.find('.project-select');
+                const $activitiesSelect = $row.find('.activities-select');
+                // If old value exists, set it
+                const selectedActivityId = $activitiesSelect.data('selected');
+                populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
+            });
 
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
@@ -267,19 +304,25 @@
                         <thead>
                             <tr>
                                 <th style="width: 15%;">Project</th>
+                                <th style="width:15%;">Activities</th>
                                 <th>Task</th>
                                 <th style="width: 12%;">Action</th>
                             </tr>
                         </thead>
                         <tbody id="deliverables-body">
                             @php
-                                $oldDeliverables = old('deliverables', [['project_id' => null, 'task' => null]]);
+                                $oldDeliverables = old('deliverables', [
+                                    ['project_id' => null, 'activity_id' => null, 'task' => null],
+                                ]);
                             @endphp
 
                             @foreach ($oldDeliverables as $idx => $deliverable)
                                 @php
                                     $projectErrorKey = "deliverables.$idx.project_id";
+                                    $activityErrorKey = "deliverables.$idx.activity_id";
                                     $taskErrorKey = "deliverables.$idx.task";
+                                    $selectedProject = $projects[$deliverable['project_id'] ?? ''] ?? null;
+                                    $activities = $selectedProject ? $selectedProject->activities : [];
                                 @endphp
                                 <tr class="deliverable-row" data-row-index="{{ $idx }}">
                                     <td style="width: 15%;">
@@ -290,14 +333,34 @@
                                                 {{ empty($deliverable['project_id']) ? 'selected' : '' }}>
                                                 Select Project
                                             </option>
-                                            @foreach ($projects as $id => $title)
-                                                <option value="{{ $id }}"
-                                                    {{ (string) $id === (string) ($deliverable['project_id'] ?? '') ? 'selected' : '' }}>
-                                                    {{ $title }}
+                                            @foreach ($projects as $project)
+                                                <option value="{{ $project->id }}"
+                                                    data-activities='@json($project->activities)'
+                                                    {{ (string) $project->id === (string) ($deliverable['project_id'] ?? '') ? 'selected' : '' }}>
+                                                    {{ $project->short_name ?: $project->title }}
                                                 </option>
                                             @endforeach
                                         </select>
                                         @error($projectErrorKey)
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </td>
+                                    <td>
+                                        <select
+                                            class="form-select activities-select @error($activityErrorKey) is-invalid @enderror"
+                                            name="deliverables[{{ $idx }}][activity_id]"
+                                            data-selected="{{ $deliverable['activity_id'] ?? '' }}" required>
+                                            <option value="">Select Activity</option>
+                                            @if (!empty($activities))
+                                                @foreach ($activities as $activity)
+                                                    <option value="{{ $activity['id'] ?? $activity->id }}"
+                                                        {{ (string) ($activity['id'] ?? $activity->id) === (string) ($deliverable['activity_id'] ?? '') ? 'selected' : '' }}>
+                                                        {{ $activity['name'] ?? ($activity['title'] ?? ($activity['activity_name'] ?? '')) }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        @error($activityErrorKey)
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>

@@ -110,10 +110,12 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th style="width: 10%">Day</th>
+                                {{-- <th style="width: 10%">Day</th> --}}
                                 <th style="width: 15%">Date</th>
+                                {{-- <th>{{ __('label.activity') }}</th> --}}
+                                <th>Planned Activities</th>
                                 <th>Carried Activities / Completed Tasks</th>
-                                <th style="width: 25%">Remarks</th>
+                                <th style="width: 20%">Remarks</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,16 +129,19 @@
                                     $weekday = $date->format('l');
                                     $formattedDate = $date->format('d M Y');
                                 @endphp
+
                                 <tr>
-                                    <td class="text-center">{{ $weekday }}</td>
+                                    {{-- <td class="text-center fw-bold">{{ $weekday }}</td> --}}
                                     <td class="text-nowrap">{{ $formattedDate }}</td>
-                                    <td>{!! $itinerary->completed_tasks? nl2br(e($itinerary->completed_tasks)) : '<span class="text-muted">Not filled</span>' !!}</td>
+                                    {{-- <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td> --}}
+                                    <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
+                                    <td>{!! $itinerary->completed_tasks ? nl2br(e($itinerary->completed_tasks)): '<em class="text-muted">Not filled</em>' !!}</td>
                                     <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-3 text-muted">
-                                        No itinerary days recorded for this travel request.
+                                    <td colspan="4" class="text-center text-muted">
+                                        No itinerary days available for this travel request.
                                     </td>
                                 </tr>
                             @endforelse

@@ -17,6 +17,7 @@ use Modules\Master\Repositories\DepartmentRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\TravelTypeRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
+use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\TravelRequest\Notifications\TravelRequestSubmitted;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\TravelRequest\Notifications\TravelRequestCancelSubmitted;
@@ -42,6 +43,7 @@ class TravelRequestController extends Controller
         protected OfficeRepository $offices,
         protected ProjectCodeRepository $projectCodes,
         protected ProjectRepository $projects,
+        protected ProjectActivityRepository $projectActivities,
         protected TravelRequestRepository $travelRequests,
         protected TravelRequestEstimateRepository $travelRequestEstimate,
         protected TravelRequestItineraryRepository $travelRequestItinerary,
@@ -160,6 +162,7 @@ class TravelRequestController extends Controller
         $employee = $authUser->employee;
         // $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $projects = $this->projects->getAssignedProjects($authUser);
+        $activities = $this->projectActivities->getActivitiesByProject($authUser);
         $accompanyingStaffs = $this->employees->getActiveEmployees();
         $substitutes = $accompanyingStaffs->reject(function ($staff) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -168,6 +171,7 @@ class TravelRequestController extends Controller
 
         return view('TravelRequest::create')
             ->withProjects($projects)
+            ->withActivities($activities)
             ->withSubstitutes($substitutes)
             ->with('consultants', $consultants)
             ->withTravelTypes($this->travelTypes->get())
@@ -253,6 +257,7 @@ class TravelRequestController extends Controller
         $employee = $authUser->employee;
         // $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $projects = $this->projects->getAssignedProjects($authUser);
+        $activities = $this->projectActivities->getActivitiesByProject($authUser);
         $accompanyingStaffs = $this->employees->getActiveEmployees();
         $substitutes = $accompanyingStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -262,6 +267,7 @@ class TravelRequestController extends Controller
         return view('TravelRequest::edit')
             ->withAuthUser(auth()->user())
             ->withProjects($projects)
+            ->withActivities($activities)
             ->withSupervisors($supervisors)
             ->withSubstitutes($substitutes)
             ->withTravelRequest($travelRequest)

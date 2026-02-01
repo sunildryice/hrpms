@@ -62,8 +62,12 @@ class ProjectActivityController extends Controller
                 if ($this->checkStatusDisplay($row)) {
                     $selectInput .= '<select class="form-select form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
                     foreach (ActivityStatus::cases() as $status) {
+
                         $selected = $row->status === $status->value ? 'selected' : '';
-                        $selectInput .= '<option value="' . $status->value . '" ' . $selected . '>' . ucfirst(str_replace('_', ' ', $status->value)) . '</option>';
+
+                        $disabled = $this->checkSelectDisableStatus($row, $status);
+
+                        $selectInput .= '<option value="' . $status->value . '" ' . $selected . ' ' . $disabled . '>' . ucfirst(str_replace('_', ' ', $status->value)) . '</option>';
                     }
                     $selectInput .= '</select>';
                 } else {
@@ -72,9 +76,13 @@ class ProjectActivityController extends Controller
                 return $selectInput;
             })
             ->addColumn('action', function ($row) use ($authUser) {
-                $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
-                $btn .= '<i class="bi bi-eye"></i></a>';
+
+                $btn = '';
+                if ($row->activity_level != ActivityLevel::Theme->value) {
+                    $btn .= '<a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
+                    $btn .= '<i class="bi bi-eye"></i></a>';
+                }
 
                 if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
                     $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
@@ -82,12 +90,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
 
-                    $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
+                    if ($row->children->isEmpty()) {
+                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';
-                    $btn .= route('project-activity.destroy', $row->id) . '"
+                        $btn .= route('project-activity.destroy', $row->id) . '"
                 data-id="';
-                    $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
-                    $btn .= '<i class="bi bi-trash"></i></button>';
+                        $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
+                        $btn .= '<i class="bi bi-trash"></i></button>';
+                    }
                 }
                 if ($row->activity_level !== ActivityLevel::Theme->value) {
                     // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
@@ -103,14 +113,20 @@ class ProjectActivityController extends Controller
             ->make(true);
     }
 
+    public function checkSelectDisableStatus($row, $status)
+    {
+        return ($status->value == ActivityStatus::Completed->value && $row->status != ActivityStatus::UnderProgress->value) ? 'disabled' : '';
+    }
+
     public function checkStatusDisplay(ProjectActivity $projectActivity)
     {
         $authUser = auth()->user();
 
         $notIsNoRequired = $projectActivity->status != ActivityStatus::NoRequired->value;
         $notIsCompleted = $projectActivity->status != ActivityStatus::Completed->value;
+        $isTheme = $projectActivity->activity_level == ActivityLevel::Theme->value;
 
-        if (Gate::allows('manage-project-activity-on-certain-time', $projectActivity->project) && ($notIsNoRequired && $notIsCompleted)) {
+        if (Gate::allows('manage-project-activity-on-certain-time', $projectActivity->project) && ($notIsNoRequired && $notIsCompleted && !$isTheme)) {
             return true;
         }
 
@@ -213,19 +229,27 @@ class ProjectActivityController extends Controller
 
         $oldStatus = $projectActivity->status;
         $newStatus = $request->input('status');
-        $statusDate = $request->input('status_date');
+        $statusDate = $request->input('status_date') ?? now();
 
-        if ($newStatus == ActivityStatus::UnderProgress->value) {
-            $projectActivity->actual_start_date = $statusDate ?? now();
+        // Update actual_start_date and actual_completion_date based on status
+        if ($newStatus == ActivityStatus::UnderProgress->value && !$projectActivity->actual_start_date) {
+            $projectActivity->actual_start_date = $statusDate;
         }
-
-        if ($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value) {
-            $projectActivity->actual_completion_date = $statusDate ?? now();
+        if (($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value)) {
+            $projectActivity->actual_completion_date = $statusDate;
+            if (!$projectActivity->actual_start_date) {
+                $projectActivity->actual_start_date = $statusDate;
+            }
+        }
+        if ($newStatus == ActivityStatus::NotStarted->value) {
+            $projectActivity->actual_start_date = null;
+            $projectActivity->actual_completion_date = null;
         }
 
         $projectActivity->status = $newStatus;
         $projectActivity->save();
 
+        // Log status change
         ProjectActivityStatusLog::create([
             'project_activity_id' => $projectActivity->id,
             'changed_by' => auth()->id(),
@@ -234,8 +258,86 @@ class ProjectActivityController extends Controller
             'remarks' => $request->input('remarks'),
         ]);
 
+        // Propagate status to parent if needed
+        $this->updateParentActivity($projectActivity, $statusDate);
+
         return response()->json([
             'message' => 'Project Activity status updated successfully.',
         ]);
+    }
+
+    /**
+     * Update parent activity status and actual dates based on children.
+     *
+     * @param ProjectActivity $projectActivity
+     * @param string|\Carbon\Carbon $statusDate
+     */
+    public function updateParentActivity(ProjectActivity $projectActivity, $statusDate = null)
+    {
+        // Only update parent if there is one
+        if (!$projectActivity->parent_id) {
+            return;
+        }
+
+        $parent = $projectActivity->parent;
+        if (!$parent) {
+            return;
+        }
+
+        $children = $parent->children;
+        $statuses = $children->pluck('status')->unique();
+
+        $oldParentStatus = $parent->status;
+        $newParentStatus = null;
+
+        // If all children have the same status, propagate to parent
+        if ($statuses->count() === 1) {
+            $newParentStatus = $statuses->first();
+        } else {
+            // If any child is under_progress, parent should be under_progress
+            if ($children->contains('status', ActivityStatus::UnderProgress->value)) {
+                $newParentStatus = ActivityStatus::UnderProgress->value;
+            } elseif ($children->contains('status', ActivityStatus::Completed->value) || $children->contains('status', ActivityStatus::NoRequired->value)) {
+                // If all children are completed or no_required, set parent accordingly
+                if ($children->every(function ($c) {
+                    return in_array($c->status, [ActivityStatus::Completed->value, ActivityStatus::NoRequired->value]);
+                })) {
+                    $newParentStatus = ActivityStatus::Completed->value;
+                }
+            } elseif ($children->contains('status', ActivityStatus::NotStarted->value)) {
+                $newParentStatus = ActivityStatus::NotStarted->value;
+            }
+        }
+
+        if ($newParentStatus && $oldParentStatus !== $newParentStatus) {
+            // Update actual dates for parent
+            if ($newParentStatus == ActivityStatus::UnderProgress->value && !$parent->actual_start_date) {
+                $parent->actual_start_date = $statusDate ?? now();
+            }
+            if (in_array($newParentStatus, [ActivityStatus::Completed->value, ActivityStatus::NoRequired->value])) {
+                $parent->actual_completion_date = $statusDate ?? now();
+                if (!$parent->actual_start_date) {
+                    $parent->actual_start_date = $statusDate ?? now();
+                }
+            }
+            if ($newParentStatus == ActivityStatus::NotStarted->value) {
+                $parent->actual_start_date = null;
+                $parent->actual_completion_date = null;
+            }
+
+            $parent->status = $newParentStatus;
+            $parent->save();
+
+            ProjectActivityStatusLog::create([
+                'project_activity_id' => $parent->id,
+                'changed_by' => auth()->id(),
+                'old_status' => $oldParentStatus,
+                'new_status' => $newParentStatus,
+                'remarks' => 'Auto-updated based on children status',
+            ]);
+
+            // Recursively update up the chain
+            $this->updateParentActivity($parent, $statusDate);
+        }
     }
 }

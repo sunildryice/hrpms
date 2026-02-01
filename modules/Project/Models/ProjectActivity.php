@@ -4,6 +4,7 @@ namespace Modules\Project\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\ProjectActivityStatusLog;
@@ -115,13 +116,21 @@ class ProjectActivity extends Model
 
     public function extensions()
     {
-        return $this->hasMany(ProjectActivityExtension::class, 'activity_id')->orderBy('created_at', 'desc');
+        return $this->hasMany(ProjectActivityExtension::class, 'activity_id')
+            ->orderBy('created_at', 'desc');
+    }
+
+    public function latestExtension()
+    {
+        return $this->hasOne(ProjectActivityExtension::class, 'activity_id')
+            ->orderBy('extended_completion_date', 'desc')
+            ->first();
     }
 
     public function getDisplayCompletionDateAttribute()
     {
         $latestExtension = $this->extensions()->latest('created_at')->first();
-        return $latestExtension ? $latestExtension->extended_completion_date : $this->completion_date;
+        return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : $this->completion_date->format('M d, Y');
     }
 
     public function statusLogs()

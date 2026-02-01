@@ -202,7 +202,7 @@ class AttendanceController extends Controller
                     //     $btn .= 'data-href="' . route('attendance.delete', $row->id) . '">';
                     //     $btn .= '<i class="bi-trash"></i></a>';
                     // }
-    
+
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -347,7 +347,7 @@ class AttendanceController extends Controller
                 'requester_id' => auth()->id(),
                 'updated_by' => auth()->id(),
                 'status_id' => config('constant.CREATED_STATUS') ?? 1,
-                'donor_codes' => '', 
+                'donor_codes' => '',
             ];
             $attendance = $this->attendance->create($inputs);
             if (!$attendance) {
@@ -366,9 +366,8 @@ class AttendanceController extends Controller
                 'checkin' => $now,
                 'created_by' => auth()->id(),
                 'updated_by' => auth()->id(),
+                'checkin_from'=>'Manual',
                 'worked_hours' => 0,
-                'unrestricted_hours' => 0,
-                'charged_hours' => 0,
             ]);
         } else {
             $this->attendanceDetail->update($detail->id, [
@@ -421,8 +420,7 @@ class AttendanceController extends Controller
 
         $this->attendanceDetail->update($detail->id, [
             'worked_hours' => $workedHours,
-            'unrestricted_hours' => $workedHours,
-            'charged_hours' => 0,
+            'checkout_from' => 'Manual',
         ]);
 
         return response()->json([

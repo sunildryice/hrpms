@@ -59,7 +59,6 @@ class AttendanceDetailRepository extends Repository
             return $attendanceDetail;
         } catch (QueryException $e) {
             DB::rollBack();
-
             return false;
         }
     }

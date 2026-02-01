@@ -726,14 +726,6 @@
                                     notEmpty: {
                                         message: 'The hours spent is required'
                                     },
-                                    numeric: {
-                                        message: 'The hours spent must be a number'
-                                    },
-                                    between: {
-                                        min: 0.1,
-                                        max: 24,
-                                        message: 'Hours spent should be between 0.1 and 24'
-                                    }
                                 },
                             },
                         },
@@ -772,6 +764,70 @@
                         zIndex: 2048,
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
+                    });
+                });
+            });
+
+            $(document).on('click', '.open-project-activity-extension-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                    const form = document.getElementById('ProjectActivityExtensionForm');
+
+                    const fv = FormValidation.formValidation(form, {
+                        fields: {
+                            extended_completion_date: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The extended completion date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'The date is not a valid date'
+                                    }
+                                },
+                            },
+                            reason: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The reason is required'
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            icon: new FormValidation.plugins.Icon({
+                                valid: 'bi bi-check2-square',
+                                invalid: 'bi bi-x-lg',
+                                validating: 'bi bi-arrow-repeat',
+                            }),
+                        },
+                    }).on('core.form.valid', function() {
+                        const $url = fv.form.action;
+                        const formData = new FormData(form);
+
+                        const successCallback = function(response) {
+                            $('#openModal').modal('hide');
+                            toastr.success(response.message || 'Saved successfully');
+                            oTable.ajax.reload();
+                        };
+
+                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
+                    });
+
+
+                    $('[name="extended_completion_date"]').datepicker({
+                        language: 'en-GB',
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        zIndex: 2048,
+                        startDate: new Date(
+                            '{{ $projectActivity->min('completion_date') ?? '' }}'),
+                    }).on('change', function(e) {
+                        fv.revalidateField('extended_completion_date');
                     });
                 });
             });

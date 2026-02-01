@@ -19,7 +19,8 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {}
+    ) {
+    }
     public function index(Request $request, Project $project)
     {
         $authUser = auth()->user();
@@ -106,6 +107,10 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
+                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
+                    . route('project-activity.extension.create', $row->id)
+                    . '" rel="tooltip" title="Request Extension">'
+                    . '<i class="bi bi-calendar-plus"></i></a>';
 
                 return $btn;
             })
@@ -299,9 +304,11 @@ class ProjectActivityController extends Controller
                 $newParentStatus = ActivityStatus::UnderProgress->value;
             } elseif ($children->contains('status', ActivityStatus::Completed->value) || $children->contains('status', ActivityStatus::NoRequired->value)) {
                 // If all children are completed or no_required, set parent accordingly
-                if ($children->every(function ($c) {
-                    return in_array($c->status, [ActivityStatus::Completed->value, ActivityStatus::NoRequired->value]);
-                })) {
+                if (
+                    $children->every(function ($c) {
+                        return in_array($c->status, [ActivityStatus::Completed->value, ActivityStatus::NoRequired->value]);
+                    })
+                ) {
                     $newParentStatus = ActivityStatus::Completed->value;
                 }
             } elseif ($children->contains('status', ActivityStatus::NotStarted->value)) {

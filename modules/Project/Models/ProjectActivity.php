@@ -129,8 +129,8 @@ class ProjectActivity extends Model
 
     public function getDisplayCompletionDateAttribute()
     {
-        $latestExtension = $this->extensions()->latest('created_at')->first();
-        return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : $this->completion_date->format('M d, Y');
+        $latestExtension = $this->extensions()->orderBy('extended_completion_date', 'desc')->first();
+        return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : ($this->completion_date ? $this->completion_date->format('M d, Y') : "");
     }
 
     public function statusLogs()

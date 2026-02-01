@@ -53,7 +53,7 @@
             <div>
                 {{ $sd ? $sd->format('M d, Y') : '-' }} @if ($sd || $ed)
                     -
-                @endif {{ $ed ? $ed->format('M d, Y') : '-' }}
+                @endif
                 {{ $projectActivity->display_completion_date }}
             </div>
         </div>

@@ -6,12 +6,13 @@ use Modules\Project\Controllers\TimeSheetController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\ProjectActivityController;
-use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\MonthlyTimeSheetController;
+use Modules\Project\Controllers\ProjectGanttChartController;
+use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
+use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
-use Modules\Project\Controllers\ProjectGanttChartController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -56,6 +57,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
 
     Route::post('/project-activity/{projectActivity}/status', [ProjectActivityController::class, 'updateStatus'])->name('project-activity.status.update');
+
+    Route::get('/project-activity/{projectActivity}/extension/create', [ProjectActivityExtensionController::class, 'create'])->name('project-activity.extension.create');
+    Route::post('/project-activity/{projectActivity}/extension/store', [ProjectActivityExtensionController::class, 'store'])->name('project-activity.extension.store');
 
     Route::get('/projects/{id}/gantt', [ProjectGanttChartController::class, 'index'])->name('project.gantt.index');
 

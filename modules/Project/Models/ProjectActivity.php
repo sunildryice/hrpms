@@ -113,6 +113,17 @@ class ProjectActivity extends Model
         return $this->hasMany(ActivityTimeSheet::class, 'activity_id');
     }
 
+    public function extensions()
+    {
+        return $this->hasMany(ProjectActivityExtension::class, 'activity_id')->orderBy('created_at', 'desc');
+    }
+
+    public function getDisplayCompletionDateAttribute()
+    {
+        $latestExtension = $this->extensions()->latest('created_at')->first();
+        return $latestExtension ? $latestExtension->extended_completion_date : $this->completion_date;
+    }
+
     public function statusLogs()
     {
         return $this->hasMany(ProjectActivityStatusLog::class, 'project_activity_id');

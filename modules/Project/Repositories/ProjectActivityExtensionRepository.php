@@ -45,19 +45,4 @@ class ProjectActivityExtensionRepository extends Repository
         }
     }
 
-    public function destroy($id)
-    {
-        DB::beginTransaction();
-        try {
-            $record = $this->model->findOrFail($id);
-            $record->delete();
-
-            DB::commit();
-            return true;
-        } catch (QueryException $e) {
-            logger()->error($e->getMessage());
-            DB::rollback();
-            throw $e;
-        }
-    }
 }

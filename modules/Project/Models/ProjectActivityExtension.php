@@ -31,5 +31,4 @@ class ProjectActivityExtension extends Model
         return $this->belongsTo(ProjectActivity::class, 'activity_id');
 
     }
-
 }

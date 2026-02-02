@@ -106,10 +106,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
-                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
-                    . route('project-activity.extension.create', $row->id)
-                    . '" rel="tooltip" title="Request Extension">'
-                    . '<i class="bi bi-calendar-plus"></i></a>';
+
+                if (($row->status != ActivityStatus::Completed->value && $row->status != ActivityStatus::NoRequired->value)) {
+
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
+                        . route('project-activity.extension.create', $row->id)
+                        . '" rel="tooltip" title="Request Extension">'
+                        . '<i class="bi bi-calendar-plus"></i></a>';
+                }
 
                 return $btn;
             })

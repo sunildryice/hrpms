@@ -36,22 +36,21 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet = $event->sheet->getDelegate();
 
                 // Column widths
-                $sheet->getColumnDimension('A')->setWidth(6);   // SN
-                $sheet->getColumnDimension('B')->setWidth(35);  // Activities
-                $sheet->getColumnDimension('C')->setWidth(14);  // Type
-                $sheet->getColumnDimension('D')->setWidth(28);  // Deliverables
-                $sheet->getColumnDimension('E')->setWidth(24);  // Timeline
-                $sheet->getColumnDimension('F')->setWidth(22);  // Members
-                $sheet->getColumnDimension('G')->setWidth(14);  // Status
-                $sheet->getColumnDimension('H')->setWidth(18);  // Extended
-                $sheet->getColumnDimension('I')->setWidth(32);  // Remarks
-                $sheet->getColumnDimension('J')->setWidth(12);  // Days left
+                $sheet->getColumnDimension('A')->setWidth(40);   // Activities
+                $sheet->getColumnDimension('B')->setWidth(16);   // Type
+                $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
+                $sheet->getColumnDimension('D')->setWidth(26);   // Timeline
+                $sheet->getColumnDimension('E')->setWidth(24);   // Members
+                $sheet->getColumnDimension('F')->setWidth(14);   // Status
+                $sheet->getColumnDimension('G')->setWidth(20);   // Extended
+                $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
+                $sheet->getColumnDimension('I')->setWidth(14);   // Days left
     
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                for ($col = 11; $col <= $highestColumnIndex; $col++) { // K = 11
+                for ($col = 10; $col <= $highestColumnIndex; $col++) { // K = 11
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
@@ -96,7 +95,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 foreach ($sheet->getRowIterator(4, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
-                    foreach (range(11, $highestColumnIndex) as $colIdx) {
+                    foreach (range(10, $highestColumnIndex) as $colIdx) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
                         $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
                         $value = trim((string) $cell->getValue());

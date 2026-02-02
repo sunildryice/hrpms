@@ -25,7 +25,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
     {
         return view('Project::Excel.activity-export', [
             'project' => $this->project,
-            'today'   => now(),
+            'today' => now(),
         ]);
     }
 
@@ -40,13 +40,13 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('B')->setWidth(35);  // Activities
                 $sheet->getColumnDimension('C')->setWidth(14);  // Type
                 $sheet->getColumnDimension('D')->setWidth(28);  // Deliverables
-                $sheet->getColumnDimension('E')->setWidth(22);  // Timeline
+                $sheet->getColumnDimension('E')->setWidth(24);  // Timeline
                 $sheet->getColumnDimension('F')->setWidth(22);  // Members
                 $sheet->getColumnDimension('G')->setWidth(14);  // Status
                 $sheet->getColumnDimension('H')->setWidth(18);  // Extended
                 $sheet->getColumnDimension('I')->setWidth(32);  // Remarks
                 $sheet->getColumnDimension('J')->setWidth(12);  // Days left
-
+    
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
@@ -85,37 +85,31 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-                // Default style for Gantt area
-                $sheet->getStyle('K4:' . $highestColumn . $highestRow)->applyFromArray([
-                    'alignment' => [
-                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                        'vertical'   => Alignment::VERTICAL_CENTER,
-                    ],
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'F9FAFB'], // very light gray background
-                    ],
-                ]);
+                // Monospace font for Gantt area
+                $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
 
-                // Convert marker '█' → colored bar
+                // Convert '█' or '██' markers to full colored background
+                $activeColor = '5B9BD5'; // nice blue (you can change)
+    
                 foreach ($sheet->getRowIterator(4, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
                     foreach (range(11, $highestColumnIndex) as $colIdx) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
                         $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
-                        $value = trim($cell->getValue() ?? '');
+                        $value = trim((string) $cell->getValue());
 
                         if ($value !== '') {
-                            // Remove the character
+                            // Clear the text (hide █ or ██)
                             $cell->setValue('');
 
-                            // Apply filled bar color
+                            // Apply solid color background
                             $cell->getStyle()->applyFromArray([
                                 'fill' => [
                                     'fillType' => Fill::FILL_SOLID,
-                                    'startColor' => ['rgb' => '5B9BD5'], // medium blue
+                                    'startColor' => ['rgb' => $activeColor],
                                 ],
                             ]);
                         }

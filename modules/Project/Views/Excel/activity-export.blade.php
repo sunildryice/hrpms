@@ -2,7 +2,7 @@
     <!-- Title -->
     <tr>
         <td colspan="13">
-            {{ $project->title ?? $project->name ?? 'Project' }} — Activity Plan
+            {{ $project->title ?? 'Project' }} — Activity Plan
         </td>
     </tr>
 

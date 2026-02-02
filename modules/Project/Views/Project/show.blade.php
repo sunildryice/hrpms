@@ -33,6 +33,11 @@
             background-color: var(--ohw-blue);
             border-color: var(--ohw-blue);
         }
+
+        .bg-orange {
+            background-color: #fd7e14 !important;
+            color: #fff;
+        }
     </style>
 @endsection
 

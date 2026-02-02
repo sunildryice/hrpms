@@ -5,11 +5,8 @@
 
 <form id="ProjectActivityExtensionForm" method="post"
     action="{{ route('project-activity.extension.store', [$projectActivity->id]) }}" autocomplete="off">
-
     {!! csrf_field() !!}
-
     <div class="modal-body">
-
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -22,7 +19,6 @@
                 </div>
             </div>
         </div>
-
         @if ($projectActivity->extensions && $projectActivity->extensions->isNotEmpty())
             <div class="row mb-3">
                 <div class="col-lg-3">

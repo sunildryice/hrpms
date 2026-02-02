@@ -29,15 +29,21 @@ class ProjectActivityExtensionController extends Controller
 
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
-        $inputs = $request->validated();
-        $inputs['activity_id'] = $projectActivity->id;
-        $inputs['project_id'] = $projectActivity->project_id;
-        $inputs['created_by'] = auth()->id();
+        $data = $request->validated();
 
-        $this->projectActivityExtension->create($inputs);
+        $data['activity_id'] = $projectActivity->id;
+        $data['project_id'] = $projectActivity->project_id;
+        $data['created_by'] = auth()->id();
+
+        $extension = $this->projectActivityExtension->create($data);
+
+        $projectActivity->update([
+            'actual_completion_date' => $extension->extended_completion_date,
+            'updated_by' => auth()->id(),
+        ]);
 
         return response()->json([
-            'message' => 'Project Activity Extension created successfully.',
+            'message' => 'Extension added successfully.',
         ]);
     }
 }

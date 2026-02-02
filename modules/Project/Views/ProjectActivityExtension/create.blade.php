@@ -15,7 +15,14 @@
             </div>
             <div class="col-lg-9">
                 <div class="form-control-plaintext pt-2">
-                    {{ $projectActivity->completion_date ? $projectActivity->completion_date->format('Y-m-d') : 'Not set' }}
+                    @if ($projectActivity->actual_completion_date)
+                        {{ $projectActivity->actual_completion_date->format('Y-m-d') }}
+                        <small class="text-muted ms-2">(extended)</small>
+                    @elseif($projectActivity->completion_date)
+                        {{ $projectActivity->completion_date->format('Y-m-d') }}
+                    @else
+                        Not set
+                    @endif
                 </div>
             </div>
         </div>

@@ -24,6 +24,8 @@ class ProjectActivity extends Model
         'status',
         'start_date',
         'completion_date',
+        'actual_start_date',
+        'actual_completion_date',
         'created_by',
         'updated_by',
     ];
@@ -31,6 +33,8 @@ class ProjectActivity extends Model
     protected $dates = [
         'start_date',
         'completion_date',
+        'actual_start_date',
+        'actual_completion_date'
     ];
 
     public function parent()

@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Dashboard')
+@section('title', 'PMS Dashboard')
 
 @section('page_css')
     <style>
@@ -36,20 +36,19 @@
         }
 
         .stat-card-completed {
-            background: #0198d6;
+            background: #27ae60;
         }
 
         .stat-card-progress {
-            background: #0288c0;
+            background: #f8c90c;
         }
 
         .stat-card-pending {
-            background: #01AEF0;
+            background: #eb7d1d;
         }
 
         .stat-card-nr {
-            background: #7ad7f7;
-            color: #053246;
+            background: #e74c3c;
         }
 
         .activity-status-chart {
@@ -62,10 +61,10 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            var brandDark = '#0288c0';
-            var brandMid = '#0198d6';
-            var brandLight = '#01AEF0';
-            var neutral = '#7ad7f7';
+            var Completed = '#27ae60';
+            var UnderProgress = '#f8c90c';
+            var NotStarted = '#eb7d1d';
+            var NoLongerRequired = '#e74c3c';
 
             var options = {
                 series: [
@@ -83,7 +82,7 @@
                     },
                 },
                 labels: ['Completed', 'Under Progress', 'Not Started', 'No Longer Required'],
-                colors: [brandMid, brandDark, brandLight, neutral],
+                colors: [Completed, UnderProgress, NotStarted, NoLongerRequired],
                 responsive: [{
                     breakpoint: 480,
                     options: {
@@ -170,7 +169,7 @@
                 <div class="stat-card stat-card-nr">
                     <small class="text-capitalize">No longer required</small>
                     <h3 class="mb-1">{{ $statusDistribution['no_required'] }}</h3>
-                    <span class="badge rounded-pill mt-1 text-dark">{{ $percentages['no_required'] }}%</span>
+                    <span class="badge rounded-pill mt-1">{{ $percentages['no_required'] }}%</span>
                 </div>
             </div>
         </div>

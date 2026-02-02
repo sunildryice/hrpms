@@ -137,6 +137,16 @@ class ProjectActivity extends Model
         return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : ($this->completion_date ? $this->completion_date->format('M d, Y') : "");
     }
 
+    public function getLatestExtensionAttribute()
+    {
+        return $this->extensions()->orderBy('extended_completion_date', 'desc')->first();
+    }
+
+    public function getEffectiveEndDateAttribute()
+    {
+        return $this->latest_extension?->extended_completion_date ?? $this->completion_date;
+    }
+
     public function statusLogs()
     {
         return $this->hasMany(ProjectActivityStatusLog::class, 'project_activity_id');

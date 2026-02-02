@@ -21,20 +21,17 @@
 
         <!-- Dynamic year-month-week columns -->
         @php
-            // Find min and max dates from all activities
             $allDates = collect();
             $project->activities->each(function ($theme) use ($allDates) {
                 if ($theme->start_date) $allDates->push($theme->start_date);
                 if ($theme->completion_date) $allDates->push($theme->completion_date);
-                if ($theme->latest_extension) {
-                    if ($theme->latest_extension->extended_completion_date) {
-                        $allDates->push($theme->latest_extension->extended_completion_date);
-                    }
+                if ($theme->latest_extension?->extended_completion_date) {
+                    $allDates->push($theme->latest_extension->extended_completion_date);
                 }
                 $theme->activityChildren->each(function ($act) use ($allDates) {
                     if ($act->start_date) $allDates->push($act->start_date);
                     if ($act->completion_date) $allDates->push($act->completion_date);
-                    if ($act->latest_extension && $act->latest_extension->extended_completion_date) {
+                    if ($act->latest_extension?->extended_completion_date) {
                         $allDates->push($act->latest_extension->extended_completion_date);
                     }
                 });
@@ -43,7 +40,6 @@
             $minDate = $allDates->min() ? $allDates->min()->startOfMonth() : now()->startOfYear();
             $maxDate = $allDates->max() ? $allDates->max()->endOfMonth() : now()->endOfYear();
 
-            // Generate months between min and max
             $months = [];
             $current = $minDate->copy();
             while ($current->lte($maxDate)) {
@@ -51,7 +47,6 @@
                 $current->addMonthNoOverflow();
             }
 
-            // Prepare week labels: I, II, III, IV repeated for each month
             $weekLabels = ['I', 'II', 'III', 'IV'];
         @endphp
 
@@ -60,9 +55,9 @@
         @endforeach
     </tr>
 
-    <!-- Week row (I, II, III, IV for each month) -->
+    <!-- Week row -->
     <tr>
-        <td colspan="10"></td> <!-- empty cells for left columns -->
+        <td colspan="10"></td>
         @foreach ($months as $month)
             @foreach ($weekLabels as $week)
                 <th style="font-size:10px; text-align:center;">{{ $week }}</th>
@@ -100,24 +95,17 @@
                 @endif
             </td>
 
-            <!-- One cell per week slot (4 per month) -->
             @foreach ($months as $monthLabel)
                 @foreach ($weekLabels as $weekIndex => $weekLabel)
                     @php
                         $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
                         $monthEnd  = $monthDate->copy()->endOfMonth();
-
-                        // Approximate week start/end within month
                         $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                         $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                        $active = $start && $end &&
-                                  $weekEnd->gte($start) &&
-                                  $weekStart->lte($end);
+                        $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                     @endphp
-                    <td style="font-family:Consolas; text-align:center;">
-                        {{ $active ? '██' : '' }}
-                    </td>
+                    <td>{{ $active ? '█' : '' }}</td>
                 @endforeach
             @endforeach
         </tr>
@@ -155,17 +143,12 @@
                         @php
                             $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
                             $monthEnd  = $monthDate->copy()->endOfMonth();
-
                             $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                             $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                            $active = $start && $end &&
-                                      $weekEnd->gte($start) &&
-                                      $weekStart->lte($end);
+                            $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                         @endphp
-                        <td style="font-family:Consolas; text-align:center;">
-                            {{ $active ? '██' : '' }}
-                        </td>
+                        <td>{{ $active ? '█' : '' }}</td>
                     @endforeach
                 @endforeach
             </tr>
@@ -203,17 +186,12 @@
                             @php
                                 $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
                                 $monthEnd  = $monthDate->copy()->endOfMonth();
-
                                 $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                                 $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                                $active = $start && $end &&
-                                          $weekEnd->gte($start) &&
-                                          $weekStart->lte($end);
+                                $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                             @endphp
-                            <td style="font-family:Consolas; text-align:center;">
-                                {{ $active ? '██' : '' }}
-                            </td>
+                            <td>{{ $active ? '█' : '' }}</td>
                         @endforeach
                     @endforeach
                 </tr>
@@ -228,7 +206,7 @@
         @php $sn++; @endphp
     @empty
         <tr>
-            <td colspan="{{ 10 + count($weekCells) }}" style="text-align:center;">
+            <td colspan="{{ 10 + (count($months) * 4) }}" style="text-align:center;">
                 No activities found
             </td>
         </tr>

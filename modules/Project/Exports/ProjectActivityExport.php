@@ -35,41 +35,42 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                // Fixed widths for main columns (narrow & balanced)
-                $sheet->getColumnDimension('A')->setWidth(8);      // SN
-                $sheet->getColumnDimension('B')->setWidth(32);     // Activities
-                $sheet->getColumnDimension('C')->setWidth(14);     // Type
-                $sheet->getColumnDimension('D')->setWidth(26);     // Deliverables
-                $sheet->getColumnDimension('E')->setWidth(20);     // Timeline
-                $sheet->getColumnDimension('F')->setWidth(20);     // Members
-                $sheet->getColumnDimension('G')->setWidth(14);     // Status
-                $sheet->getColumnDimension('H')->setWidth(16);     // Extended
-                $sheet->getColumnDimension('I')->setWidth(32);     // Remarks
-                $sheet->getColumnDimension('J')->setWidth(12);     // Days left
-                $sheet->getColumnDimension('K')->setWidth(18);     // Planned Period
+                // Column widths
+                $sheet->getColumnDimension('A')->setWidth(6);   // SN
+                $sheet->getColumnDimension('B')->setWidth(35);  // Activities
+                $sheet->getColumnDimension('C')->setWidth(14);  // Type
+                $sheet->getColumnDimension('D')->setWidth(28);  // Deliverables
+                $sheet->getColumnDimension('E')->setWidth(22);  // Timeline
+                $sheet->getColumnDimension('F')->setWidth(22);  // Members
+                $sheet->getColumnDimension('G')->setWidth(14);  // Status
+                $sheet->getColumnDimension('H')->setWidth(18);  // Extended
+                $sheet->getColumnDimension('I')->setWidth(32);  // Remarks
+                $sheet->getColumnDimension('J')->setWidth(12);  // Days left
 
-                // Very narrow width for Gantt week columns (starting from column L)
+                // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                // Assume Gantt starts from column L (12) onward
-                for ($col = 11; $col <= $highestColumnIndex; $col++) {
+                for ($col = 11; $col <= $highestColumnIndex; $col++) { // K = 11
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
-                    $sheet->getColumnDimension($columnLetter)->setWidth(3); // very narrow for weeks
+                    $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
 
-                // Freeze header rows (first 3 rows: title + year + month/week)
+                // Freeze header (title + months + weeks)
                 $sheet->freezePane('A4');
 
-                // Light blue header background (title + main headers)
+                // Header background + bold
                 $sheet->getStyle('A1:' . $highestColumn . '3')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'E6F3FF'],
                     ],
+                    'font' => [
+                        'bold' => true,
+                    ],
                 ]);
 
-                // Thin borders for whole sheet
+                // Thin borders everywhere
                 $highestRow = $sheet->getHighestRow();
                 $sheet->getStyle("A1:{$highestColumn}{$highestRow}")->applyFromArray([
                     'borders' => [
@@ -79,16 +80,49 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                     ],
                 ]);
 
-                // Alignments for main columns
+                // Alignments
                 $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('L:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                // Monospace font for all Gantt columns (week cells)
-                $sheet->getStyle('L:' . $highestColumn)->getFont()->setName('Consolas');
+                // Default style for Gantt area
+                $sheet->getStyle('K4:' . $highestColumn . $highestRow)->applyFromArray([
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical'   => Alignment::VERTICAL_CENTER,
+                    ],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F9FAFB'], // very light gray background
+                    ],
+                ]);
 
-                // Red background for overdue tasks (Days left < 0)
+                // Convert marker '█' → colored bar
+                foreach ($sheet->getRowIterator(4, $highestRow) as $row) {
+                    $rowIndex = $row->getRowIndex();
+
+                    foreach (range(11, $highestColumnIndex) as $colIdx) {
+                        $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
+                        $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
+                        $value = trim($cell->getValue() ?? '');
+
+                        if ($value !== '') {
+                            // Remove the character
+                            $cell->setValue('');
+
+                            // Apply filled bar color
+                            $cell->getStyle()->applyFromArray([
+                                'fill' => [
+                                    'fillType' => Fill::FILL_SOLID,
+                                    'startColor' => ['rgb' => '5B9BD5'], // medium blue
+                                ],
+                            ]);
+                        }
+                    }
+                }
+
+                // Overdue conditional formatting (Days left < 0)
                 $conditional = new Conditional();
                 $conditional->setConditionType(Conditional::CONDITION_CELLIS);
                 $conditional->setOperatorType(Conditional::OPERATOR_LESSTHAN);

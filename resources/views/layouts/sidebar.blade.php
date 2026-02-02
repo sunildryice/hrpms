@@ -916,10 +916,10 @@
                             </a>
                             <div id="navbarMasterMenuName" class="nav-collapse collapse"
                                 data-bs-parent="#navbarMasterMenu" hs-parent-area="#navbarMasterMenu">
-                                @if ($authUser->can('manage-activity-area'))
+                                {{-- @if ($authUser->can('manage-activity-area'))
                                     <a class="nav-link" href="{{ route('master.activity.areas.index') }}"
                                         id="activity-areas-menu">{{ __('label.activity-stages') }}</a>
-                                @endif
+                                @endif --}}
                                 @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"
                                         id="activity-codes-menu">{{ __('label.activities') }}</a>
@@ -982,10 +982,10 @@
                                         id="holidays-menu">Office Holidays </a>
                                 @endif
 
-{{--                                @if ($authUser->can('manage-projects'))--}}
-{{--                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}"--}}
-{{--                                        id="project-codes-menu">{{ __('label.projects') }}</a>--}}
-{{--                                @endif--}}
+                                {{--                                @if ($authUser->can('manage-projects')) --}}
+                                {{--                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}" --}}
+                                {{--                                        id="project-codes-menu">{{ __('label.projects') }}</a> --}}
+                                {{--                                @endif --}}
 
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"

@@ -8,8 +8,7 @@ use App\Http\Controllers\Controller;
 use Modules\Master\Repositories\ActivityAreaRepository;
 use Modules\Master\Requests\ActivityArea\StoreRequest;
 use Modules\Master\Requests\ActivityArea\UpdateRequest;
-
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class ActivityAreaController extends Controller
 {
@@ -21,11 +20,8 @@ class ActivityAreaController extends Controller
      * @return void
      */
     public function __construct(
-        ActivityAreaRepository $activityAreas
-    )
-    {
-        $this->activityAreas = $activityAreas;
-    }
+        protected ActivityAreaRepository $activityAreas
+    ) {}
 
     /**
      * Display a listing of the activity code.
@@ -37,7 +33,11 @@ class ActivityAreaController extends Controller
     {
         if ($request->ajax()) {
             $data = $this->activityAreas->select([
-                'id', 'title', 'activated_at', 'created_by', 'updated_at'
+                'id',
+                'title',
+                'activated_at',
+                'created_by',
+                'updated_at'
             ]);
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -85,12 +85,16 @@ class ActivityAreaController extends Controller
         $inputs['activated_at'] = date('Y-m-d H:i:s');
         $activityArea = $this->activityAreas->create($inputs);
         if ($activityArea) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'activity code' => $activityArea,
-                'message' => 'Activity area is successfully added.'], 200);
+                'message' => 'Activity area is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Activity area can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Activity area can not be added.'
+        ], 422);
     }
 
     /**
@@ -133,12 +137,16 @@ class ActivityAreaController extends Controller
         $inputs['updated_by'] = auth()->id();
         $activityArea = $this->activityAreas->update($id, $inputs);
         if ($activityArea) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'activityArea' => $activityArea,
-                'message' => 'Activity area is successfully updated.'], 200);
+                'message' => 'Activity area is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Activity area can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Activity area can not be updated.'
+        ], 422);
     }
 
     /**

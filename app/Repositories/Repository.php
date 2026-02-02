@@ -122,6 +122,11 @@ class Repository
         return $this->model->whereRaw($sql, $bindings);
     }
 
+    public function when($value, $callback)
+    {
+        return $this->model->when($value, $callback);
+    }
+
     public function orderby($field, $type = 'desc')
     {
         return $this->model->orderby($field, $type);

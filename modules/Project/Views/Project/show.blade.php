@@ -880,6 +880,7 @@
                                     href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                     <i class="bi-plus"></i> Import Activity
                                 </button>
+                                <a class="btn btn-secondary btn-sm text-capitalize" href="{{ route('project-activity.export.activities', $project) }}" target="_blank">Export</a>
                                 <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
                                     href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
                                         class="bi-plus"></i> Add Project Activity

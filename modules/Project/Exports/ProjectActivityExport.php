@@ -6,7 +6,7 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class ActivityExport implements FromView
+class ProjectActivityExport implements FromView
 {
     protected $project;
 
@@ -17,7 +17,7 @@ class ActivityExport implements FromView
 
     public function view(): View
     {
-        return view('Project::Excel.export_sample', [
+        return view('Project::Excel.activity-export', [
             'project' => $this->project,
         ]);
     }

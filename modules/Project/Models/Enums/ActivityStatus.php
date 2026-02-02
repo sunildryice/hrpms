@@ -22,10 +22,10 @@ enum ActivityStatus: string
     public function colorClass(): string
     {
         return match ($this) {
-            ActivityStatus::NotStarted => 'badge bg-secondary',
-            ActivityStatus::UnderProgress => 'badge bg-primary',
-            ActivityStatus::NoRequired => 'badge bg-warning text-dark',
-            ActivityStatus::Completed => 'badge bg-success',
+            self::Completed => 'badge bg-success',
+            self::UnderProgress => 'badge bg-warning',
+            self::NotStarted => 'badge bg-orange text-white',
+            self::NoRequired => 'badge bg-danger',
         };
     }
 }

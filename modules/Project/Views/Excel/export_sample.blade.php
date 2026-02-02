@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($project->activities as $activity)
+        {{-- @foreach ($project->activities as $activity)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $activity->activity_level }}</td>
@@ -23,7 +23,7 @@
                 <td>{{ $activity->completion_date?->format('Y-m-d') }}</td>
                 <td>{{ $activity->memberNames() }}</td>
             </tr>
-        @endforeach
+        @endforeach --}}
     </tbody>
 </table>
 

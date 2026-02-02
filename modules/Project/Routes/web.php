@@ -47,6 +47,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/project-activity/import/{project}/store', [ProjectActivityImportController::class, 'store'])->name('project-activity.import.store');
 
     Route::get('/project-activity/export/{project}', [ProjectActivityExportController::class, 'export'])->name('project-activity.export');
+    Route::get('/project-activity/export/{project}/activities', [ProjectActivityExportController::class, 'exportActivity'])->name('project-activity.export.activities');
 
     Route::get('/project-activity/{project}', [ProjectActivityController::class, 'index'])->name('project-activity.index');
     Route::get('/project-activity/{project}/create', [ProjectActivityController::class, 'create'])->name('project-activity.create');

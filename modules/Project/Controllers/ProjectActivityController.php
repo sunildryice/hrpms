@@ -19,8 +19,7 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
-    }
+    ) {}
     public function index(Request $request, Project $project)
     {
         $authUser = auth()->user();
@@ -107,10 +106,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
-                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
-                    . route('project-activity.extension.create', $row->id)
-                    . '" rel="tooltip" title="Request Extension">'
-                    . '<i class="bi bi-calendar-plus"></i></a>';
+
+                if (($row->status != ActivityStatus::Completed->value && $row->status != ActivityStatus::NoRequired->value)) {
+
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
+                        . route('project-activity.extension.create', $row->id)
+                        . '" rel="tooltip" title="Request Extension">'
+                        . '<i class="bi bi-calendar-plus"></i></a>';
+                }
 
                 return $btn;
             })
@@ -264,7 +267,10 @@ class ProjectActivityController extends Controller
         ]);
 
         // Propagate status to parent if needed
-        $this->updateParentActivity($projectActivity, $statusDate);
+
+        if ($projectActivity->activity_level == ActivityLevel::Activity->value) {
+            $this->updateParentActivity($projectActivity, $statusDate);
+        }
 
         return response()->json([
             'message' => 'Project Activity status updated successfully.',

@@ -191,10 +191,12 @@
                                                             Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        <th style="width: 10%">Day</th>
+                                                        {{-- <th style="width: 10%">Day</th> --}}
                                                         <th style="width: 15%">Date</th>
+                                                        {{-- <th>{{ __('label.activity') }}</th> --}}
+                                                        <th>Planned Activities</th>
                                                         <th>Carried Activities / Completed Tasks</th>
-                                                        <th style="width: 25%">Remarks</th>
+                                                        <th style="width: 20%">Remarks</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -210,18 +212,21 @@
                                                         @endphp
 
                                                         <tr>
-                                                            <td>
-                                                                <input type="text"
-                                                                    class="form-control text-center fw-bold"
-                                                                    value="{{ $weekdayName }}" readonly>
-                                                            </td>
+                                                            {{-- <td>
+                                                                <input type="text" class="form-control text-center fw-bold" value="{{ $weekdayName }}" readonly>
+                                                            </td> --}}
 
                                                             <td>
-                                                                <input type="text" class="form-control"
-                                                                    value="{{ $formattedDate }}" readonly>
-                                                                <input type="hidden"
-                                                                    name="itinerary[itinerary_id][{{ $index }}]"
-                                                                    value="{{ $itinerary->id }}">
+                                                                <input type="text" class="form-control" value="{{ $formattedDate }}" readonly>
+                                                                <input type="hidden" name="itinerary[itinerary_id][{{ $index }}]" value="{{ $itinerary->id }}">
+                                                            </td>
+
+                                                             {{-- <td>
+                                                                <input type="text" class="form-control" value="{{ $itinerary?->activity?->title }}" readonly>
+                                                            </td> --}}
+
+                                                            <td>
+                                                                <textarea class="form-control" rows="3" readonly>{{ $itinerary->planned_activities ?? '' }}</textarea>
                                                             </td>
 
                                                             <td>

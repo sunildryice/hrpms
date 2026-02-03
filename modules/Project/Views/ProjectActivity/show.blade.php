@@ -139,6 +139,13 @@
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });
+
+                     // Auto-select today only if the field is empty (create mode)
+                    if (!$('[name="timesheet_date"]').val().trim()) {
+                        const today = new Date().toISOString().split('T')[0];
+                        $('[name="timesheet_date"]').val(today);
+                        $('[name="timesheet_date"]').datepicker('setDate', today);
+                    }
                 });
             });
         });

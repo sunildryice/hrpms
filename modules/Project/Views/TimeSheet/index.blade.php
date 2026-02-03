@@ -196,7 +196,7 @@
                         zIndex: 2048,
                         endDate: new Date(),
                         todayHighlight: true,
-                        todayBtn: 'linked'
+                        todayBtn: 'true'
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });

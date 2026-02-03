@@ -38,7 +38,7 @@
         <div class="col-lg-9">
             <select name="activity_id" class="select2 form-control" data-width="100%" disabled>
                 @foreach ($activities as $activity)
-                    <option @if (old('project_id', $timesheet->activity_id) == $activity->id) selected @endif value="{{ $activity->id }}">
+                    <option @if (old('activity_id', $timesheet->activity_id) == $activity->id) selected @endif value="{{ $activity->id }}">
                         {{ $activity->title }}</option>
                 @endforeach
             </select>
@@ -55,16 +55,19 @@
             <div class="span-mimic-text-input">{{ $timesheet->hours_spent }}</div>
         </div>
     </div>
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label m-0">Description</label>
+
+    @if ($timesheet->description)
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Description</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="span-mimic-text-input">{{ $timesheet->description }}</div>
             </div>
         </div>
-        <div class="col-lg-9">
-            <div class="span-mimic-text-input">{{ $timesheet->description }}</div>
-        </div>
-    </div>
+    @endif
 
     @if ($timesheet->attachment)
         <div class="row mb-2">

@@ -16,7 +16,7 @@
                     value="{{ $timesheet->timesheet_date->format('Y-m-d') }}" />
             </div>
         </div>
-        
+
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -43,7 +43,7 @@
                 <select name="activity_id" id="activity_id" class="select2 form-control" data-width="100%">
                     <option value="">Select Activity / Sub Activity</option>
                     @foreach ($activities as $activity)
-                        <option @if (old('project_id', $timesheet->activity_id) == $activity->id) selected @endif value="{{ $activity->id }}">
+                        <option @if (old('activity_id', $timesheet->activity_id) == $activity->id) selected @endif value="{{ $activity->id }}">
                             {{ $activity->title }}</option>
                     @endforeach
                 </select>

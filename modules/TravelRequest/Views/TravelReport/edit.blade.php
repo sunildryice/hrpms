@@ -227,8 +227,8 @@
                                                                 <input type="text" class="form-control fw-bold text-center" value="{{ $weekday }}" readonly>
                                                             </td> --}}
 
-                                                            <td>
-                                                                <input type="text" class="form-control"value="{{ $formattedDate }}" readonly>
+                                                            <td class="text-center">
+                                                                {{ $formattedDate }}
                                                                 <input type="hidden" name="itinerary[itinerary_id][{{ $index }}]" value="{{ $itinerary->id }}">
                                                             </td>
 

@@ -14,7 +14,7 @@ use Modules\OffDayWork\Requests\StoreRequest;
 use Modules\OffDayWork\Requests\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\HolidayRepository;
-use Modules\Master\Repositories\ProjectCodeRepository;
+use Modules\Project\Repositories\ProjectRepository;
 use Modules\OffDayWork\Repositories\OffDayWorkLogRepository;
 use Modules\Privilege\Models\User;
 use Modules\Privilege\Repositories\UserRepository;
@@ -24,7 +24,7 @@ class RequestController extends Controller
 {
 
     public function __construct(
-        protected ProjectCodeRepository $projects,
+        protected ProjectRepository $projects,
         protected UserRepository $users,
         protected OffDayWorkRepository $offDayWork,
         protected OffDayWorkLogRepository $offDayWorkLogs,
@@ -83,9 +83,9 @@ class RequestController extends Controller
 
     public function create()
     {
-        $authUser = User::find(auth()->id());
+        $authUser = auth()->user();
 
-        $projects = $this->projects->pluck('short_name', 'id');
+        $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
 
@@ -183,9 +183,12 @@ class RequestController extends Controller
 
         $deliverables = $offDayWork->getDeliverablesWithProjectNames();
 
+        $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
+
         return view('OffDayWork::edit', [
             'offDayWork'         => $offDayWork,
-            'projects'           => $this->projects->pluck('short_name', 'id'),
+            'projects'           => $projects,
             'supervisors'        => $this->users
                 ->getSupervisors(auth()->user())
                 ->pluck('full_name', 'id'),

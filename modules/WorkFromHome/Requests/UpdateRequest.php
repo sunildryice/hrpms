@@ -20,7 +20,8 @@ class UpdateRequest extends FormRequest
             'send_to' => ['required', 'integer', 'exists:users,id'],
 
             'deliverables'                  => ['required', 'array', 'min:1'],
-            'deliverables.*.project_id'     => ['required', 'integer', 'exists:lkup_project_codes,id'],
+            'deliverables.*.project_id'     => ['required', 'integer', 'exists:projects,id'],
+            'deliverables.*.activity_id'           => ['required', 'string'],
             'deliverables.*.task'           => ['required', 'string'],
 
             'btn' => ['nullable', 'string', 'in:save,submit'],

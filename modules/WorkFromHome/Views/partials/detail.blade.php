@@ -46,34 +46,7 @@
                     </div>
                     <span class="stretched-link" rel="tooltip" title="Duration"></span>
                 </li>
-                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Deliverables</span></li>
-                <li class="position-relative">
-                    <div class="gap-2 d-flex align-items-start">
-                        <div class="icon-section">
-                            <i class="bi-list-task dropdown-item-icon"></i>
-                        </div>
-                        <div class="d-content-section">
 
-                            @if ($deliverables)
-                                @foreach ($deliverables as $item)
-                                    <strong>{{ $item['project_name'] ?? 'N/A' }}:</strong>
-                                    @if (!empty($item['tasks']))
-                                        <ul class="list-unstyled mb-2">
-                                            @foreach ($item['tasks'] as $task)
-                                                <li><i class="bi-dot"></i> {{ $task }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @else
-                                        <em>No deliverables listed.</em>
-                                    @endif
-                                @endforeach
-                            @else
-                                <em>No deliverables listed.</em>
-                            @endif
-                        </div>
-                    </div>
-                    <span class="stretched-link" rel="tooltip" title="Deliverables"></span>
-                </li>
                 <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason for Work From
                         Home</span></li>
                 <li class="position-relative">

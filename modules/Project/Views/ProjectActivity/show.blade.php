@@ -22,12 +22,12 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_title',
-                        name: 'activity_title'
-                    },
-                    {
                         data: 'timesheet_date',
                         name: 'timesheet_date'
+                    },
+                    {
+                        data: 'activity_title',
+                        name: 'activity_title'
                     },
                     {
                         data: 'hours_spent',
@@ -132,14 +132,20 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date(
-                            '{{ $projectActivity->min('start_date') ?? '' }}'),
-                        endDate: new Date(
-                            '{{ $projectActivity->max('completion_date') ?? '' }}'),
                         zIndex: 2048,
+                        endDate: new Date(),
+                        todayHighlight: true,
+                        todayBtn: true
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });
+
+                     // Auto-select today only if the field is empty (create mode)
+                    if (!$('[name="timesheet_date"]').val().trim()) {
+                        const today = new Date().toISOString().split('T')[0];
+                        $('[name="timesheet_date"]').val(today);
+                        $('[name="timesheet_date"]').datepicker('setDate', today);
+                    }
                 });
             });
         });
@@ -197,9 +203,9 @@
                         <table class="table table-bordered" id="activityTimeSheetTable">
                             <thead class="thead-light">
                                 <tr>
-                                     <th>{{ __('label.sn') }}</th>
-                                    <th>Activity Title</th>
-                                    <th>Timesheet Date</th>
+                                    <th>{{ __('label.sn') }}</th>
+                                    <th>{{ __('label.date') }}</th>
+                                    <th>{{ __('label.activity') }}</th>
                                     <th>Hours Spent</th>
                                     <th>{{ __('label.attachment') }}</th>
                                     <th>{{ __('label.action') }}</th>

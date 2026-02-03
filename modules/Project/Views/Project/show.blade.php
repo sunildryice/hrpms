@@ -38,6 +38,16 @@
             background-color: #fd7e14 !important;
             color: #fff;
         }
+
+        .sticky-pagination {
+            position: sticky;
+            left: 0;
+            bottom: 0;
+            background: #fff;
+            z-index: 10;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            padding: 8px 0 0 0;
+        }
     </style>
 @endsection
 
@@ -95,7 +105,18 @@
                         className: 'sticky-col'
                     },
                 ],
+            }).on('draw', function() {
+                var $pagination = $(this).closest('.dataTables_wrapper').find(
+                    '.dataTables_paginate');
+                $pagination.addClass('sticky-pagination');
             });
+
+            // Initial move on page load
+            var $paginate = $('#projectActivityTable_paginate');
+            if ($paginate.length && !$paginate.hasClass('sticky-pagination')) {
+                $paginate.addClass('sticky-pagination');
+                $('.table-responsive').append($paginate);
+            }
 
             $('#projectActivityTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();

@@ -2,6 +2,17 @@
 
 @section('title', 'Projects')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            max-width: 200px;
+            overflow-wrap: break-word;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -20,7 +31,8 @@
                     },
                     {
                         data: 'title',
-                        name: 'title'
+                        name: 'title',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'short_name',
@@ -107,7 +119,7 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
-                                <th>{{ __('label.project') }}</th>
+                                <th class="wrap-text">{{ __('label.project') }}</th>
                                 <th>{{ __('label.short-name') }}</th>
                                 <th>{{ __('label.start-date') }}</th>
                                 <th>{{ __('label.completion-date') }}</th>

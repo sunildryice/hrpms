@@ -179,8 +179,8 @@ class RequestController extends Controller
     {
         $workFromHome = $this->workFromHomes->find($id);
 
-        $projects = $this->projects->pluck('short_name', 'id')->toArray();
         $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::edit', compact(

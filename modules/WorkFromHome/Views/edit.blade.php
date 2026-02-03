@@ -17,6 +17,18 @@
         .task-item .btn {
             padding-inline: .35rem;
         }
+
+        .select2-container .select2-selection--single {
+            height: 38px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 36px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
     </style>
 @endsection
 
@@ -26,6 +38,12 @@
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
             $('#send_to').addClass('select2').select2({
+                width: '100%',
+                dropdownAutoWidth: true
+            });
+
+            // Initialize select2 for project and activities
+            $('.project-select, .activities-select').select2({
                 width: '100%',
                 dropdownAutoWidth: true
             });
@@ -111,6 +129,8 @@
                         );
                     });
                 }
+                // Notify Select2 of updates
+                $activitiesSelect.trigger('change');
             }
 
             // On project change, update activities select
@@ -132,7 +152,14 @@
 
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
-                $tbody.append(buildDeliverableRow(rowIndex));
+                const $newRow = $(buildDeliverableRow(rowIndex));
+                $tbody.append($newRow);
+
+                // Initialize select2 on new row
+                $newRow.find('.project-select, .activities-select').select2({
+                    width: '100%',
+                    dropdownAutoWidth: true
+                });
 
                 if (window.fv) {
                     fv.revalidateField('deliverables');

@@ -6,9 +6,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\FiscalYear;
-use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
+use Modules\Project\Models\ProjectActivity;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
@@ -72,7 +73,7 @@ class OffDayWork extends Model
             return [];
         }
 
-        return ProjectCode::whereIn('id', $projectIds)
+        return Project::whereIn('id', $projectIds)
             ->pluck('short_name')
             ->values()
             ->all();
@@ -81,14 +82,16 @@ class OffDayWork extends Model
     public function getDeliverablesWithProjectNames(): array
     {
         return collect($this->deliverables ?? [])
-            ->groupBy('project_id')
-            ->map(function ($items, $projectId) {
-                $project = ProjectCode::find($projectId);
+            ->map(function ($item, $projectId) {
+                $project = Project::find($item['project_id']);
+                $activity = ProjectActivity::find($item['activity_id']);
+
 
                 return [
                     'project_id'   => (int) $projectId,
-                    'project_name' => $project ? $project->short_name : 'N/A',
-                    'tasks'        => $items->pluck('task')->values()->all(),
+                    'project_name' => $project ? $project->short_name : $project?->title,
+                    'task'        => $item['task'],
+                    'activity_name' => $activity ? $activity->title : 'N/A',
                 ];
             })
             ->values()

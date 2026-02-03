@@ -103,6 +103,8 @@ class WorkFromHome extends Model
             ->values()
             ->all();
     }
+
+
     public function status()
     {
         return $this->belongsTo(Status::class, 'status_id');

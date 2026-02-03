@@ -2,14 +2,14 @@
     <!-- Title -->
     <tr>
         <td colspan="12">
-            {{ $project->title ?? ($project->name ?? 'Project') }} — Activity Plan
+            {{ $project->title ?? 'Project' }} — Activity Plan
         </td>
     </tr>
 
     <!-- Headers -->
     <tr>
         <th>Activities</th>
-        <th>Type</th>
+        <th>Activity Type</th>
         <th>Output / Deliverables</th>
         <th>Timeline</th>
         <th>Members</th>
@@ -21,14 +21,22 @@
         @php
             $allDates = collect();
             $project->activities->each(function ($theme) use ($allDates) {
-                if ($theme->start_date) $allDates->push($theme->start_date);
-                if ($theme->completion_date) $allDates->push($theme->completion_date);
+                if ($theme->start_date) {
+                    $allDates->push($theme->start_date);
+                }
+                if ($theme->completion_date) {
+                    $allDates->push($theme->completion_date);
+                }
                 if ($theme->latest_extension?->extended_completion_date) {
                     $allDates->push($theme->latest_extension->extended_completion_date);
                 }
                 $theme->activityChildren->each(function ($act) use ($allDates) {
-                    if ($act->start_date) $allDates->push($act->start_date);
-                    if ($act->completion_date) $allDates->push($act->completion_date);
+                    if ($act->start_date) {
+                        $allDates->push($act->start_date);
+                    }
+                    if ($act->completion_date) {
+                        $allDates->push($act->completion_date);
+                    }
                     if ($act->latest_extension?->extended_completion_date) {
                         $allDates->push($act->latest_extension->extended_completion_date);
                     }
@@ -83,7 +91,10 @@
             @endforeach
         </tr>
 
-        @php $rowType = 'theme'; $sn = $globalSn; @endphp
+        @php
+            $rowType = 'theme';
+            $sn = $globalSn;
+        @endphp
 
         @foreach ($themesInStage as $theme)
             <tr class="theme-row">
@@ -93,16 +104,16 @@
 
                 @php
                     $start = $theme->start_date;
-                    $end   = $theme->latest_extension?->extended_completion_date ?? $theme->completion_date;
+                    $end = $theme->latest_extension?->extended_completion_date ?? $theme->completion_date;
                 @endphp
 
                 <td>
-                    @if($start && $end)
+                    @if ($start && $end)
                         {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
                     @endif
                 </td>
                 <td>{{ $theme->memberNames() }}</td>
-                <td>{{ $theme->status ?? 'Not Started' }}</td>
+                <td>{{ ucwords(str_replace('_', ' ', $theme->status ?? 'not started')) }}</td>
                 <td>{{ $theme->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                 <td>{{ $theme->latest_extension?->reason ?? '' }}</td>
                 <td>
@@ -115,13 +126,11 @@
                     @foreach ($weekLabels as $weekIndex => $weekLabel)
                         @php
                             $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
-                            $monthEnd  = $monthDate->copy()->endOfMonth();
+                            $monthEnd = $monthDate->copy()->endOfMonth();
                             $weekStart = $monthDate->copy()->addWeeks($weekIndex);
-                            $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
+                            $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                            $active = $start && $end &&
-                                      $weekEnd->gte($start) &&
-                                      $weekStart->lte($end);
+                            $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                         @endphp
                         <td>{{ $active ? '█' : '' }}</td>
                     @endforeach
@@ -137,16 +146,16 @@
 
                     @php
                         $start = $activity->start_date;
-                        $end   = $activity->latest_extension?->extended_completion_date ?? $activity->completion_date;
+                        $end = $activity->latest_extension?->extended_completion_date ?? $activity->completion_date;
                     @endphp
 
                     <td>
-                        @if($start && $end)
+                        @if ($start && $end)
                             {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
                         @endif
                     </td>
                     <td>{{ $activity->memberNames() }}</td>
-                    <td>{{ $activity->status ?? 'Not Started' }}</td>
+                    <td>{{ ucwords(str_replace('_', ' ', $activity->status ?? 'not started')) }}</td>
                     <td>{{ $activity->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                     <td>{{ $activity->latest_extension?->reason ?? '' }}</td>
                     <td>
@@ -159,13 +168,11 @@
                         @foreach ($weekLabels as $weekIndex => $weekLabel)
                             @php
                                 $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
-                                $monthEnd  = $monthDate->copy()->endOfMonth();
+                                $monthEnd = $monthDate->copy()->endOfMonth();
                                 $weekStart = $monthDate->copy()->addWeeks($weekIndex);
-                                $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
+                                $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                                $active = $start && $end &&
-                                          $weekEnd->gte($start) &&
-                                          $weekStart->lte($end);
+                                $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                             @endphp
                             <td>{{ $active ? '█' : '' }}</td>
                         @endforeach
@@ -176,21 +183,21 @@
                 @forelse ($activity->children as $sub)
                     <tr>
                         <td>{{ $sub->title }}</td>
-                        <td>Sub_activity</td>
+                        <td>Sub Activity</td>
                         <td>{{ $sub->deliverables ?? '' }}</td>
 
                         @php
                             $start = $sub->start_date;
-                            $end   = $sub->latest_extension?->extended_completion_date ?? $sub->completion_date;
+                            $end = $sub->latest_extension?->extended_completion_date ?? $sub->completion_date;
                         @endphp
 
                         <td>
-                            @if($start && $end)
+                            @if ($start && $end)
                                 {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
                             @endif
                         </td>
                         <td>{{ $sub->memberNames() }}</td>
-                        <td>{{ $sub->status ?? 'Not Started' }}</td>
+                        <td>{{ ucwords(str_replace('_', ' ', $sub->status ?? 'not started')) }}</td>
                         <td>{{ $sub->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                         <td>{{ $sub->latest_extension?->reason ?? '' }}</td>
                         <td>
@@ -203,13 +210,11 @@
                             @foreach ($weekLabels as $weekIndex => $weekLabel)
                                 @php
                                     $monthDate = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->startOfMonth();
-                                    $monthEnd  = $monthDate->copy()->endOfMonth();
+                                    $monthEnd = $monthDate->copy()->endOfMonth();
                                     $weekStart = $monthDate->copy()->addWeeks($weekIndex);
-                                    $weekEnd   = $weekStart->copy()->addDays(6)->min($monthEnd);
+                                    $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                                    $active = $start && $end &&
-                                              $weekEnd->gte($start) &&
-                                              $weekStart->lte($end);
+                                    $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
                                 @endphp
                                 <td>{{ $active ? '█' : '' }}</td>
                             @endforeach

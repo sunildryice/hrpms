@@ -220,7 +220,7 @@
                     </tbody>
                 </table>
 
-                <h6 class="fw-bold mt-4">Claim Expenses</h6>
+                <h6 class="fw-bold mt-4">{{ __('label.other-expense') }}</h6>
                 <table class="table table-bordered">
                     <thead class="thead-light">
                         <tr>

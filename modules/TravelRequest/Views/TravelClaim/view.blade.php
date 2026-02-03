@@ -311,7 +311,7 @@
 
                     <div class="card">
                         <div class="card-header fw-bold">
-                            Claim Expenses
+                            {{ __('label.other-expense') }}
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">

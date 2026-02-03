@@ -22,12 +22,12 @@
                         searchable: false
                     },
                     {
-                        data: 'activity_title',
-                        name: 'activity_title'
-                    },
-                    {
                         data: 'timesheet_date',
                         name: 'timesheet_date'
+                    },
+                    {
+                        data: 'activity_title',
+                        name: 'activity_title'
                     },
                     {
                         data: 'hours_spent',
@@ -204,8 +204,8 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>{{ __('label.sn') }}</th>
-                                    <th>Activity Title</th>
-                                    <th>Timesheet Date</th>
+                                    <th>{{ __('label.date') }}</th>
+                                    <th>{{ __('label.activity') }}</th>
                                     <th>Hours Spent</th>
                                     <th>{{ __('label.attachment') }}</th>
                                     <th>{{ __('label.action') }}</th>

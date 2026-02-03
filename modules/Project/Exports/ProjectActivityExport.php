@@ -50,12 +50,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                for ($col = 10; $col <= $highestColumnIndex; $col++) { // K = 11
+                for ($col = 10; $col <= $highestColumnIndex; $col++) { 
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
 
-                // Freeze header (title + months + weeks)
+                // Freeze header (title + years + months + weeks)
                 $sheet->freezePane('A5');
 
                 // Header background + bold
@@ -90,7 +90,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
 
                 // Convert '█' or '██' markers to full colored background
-                $activeColor = '5B9BD5'; // nice blue (you can change)
+                $activeColor = '5B9BD5'; 
     
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();

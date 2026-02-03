@@ -1,8 +1,5 @@
 @php
-    // ────────────────────────────────────────────────
     // Prepare all data needed for header & table
-    // ────────────────────────────────────────────────
-
     $allDates = collect();
 
     $project->activities->each(function ($theme) use ($allDates) {
@@ -104,7 +101,7 @@
 
         @foreach ($yearGroups as $group)
             <td colspan="{{ $group['colspan'] * 4 }}">
-                {{ $group['year'] }}
+                Year[{{ $group['year'] }}]
             </td>
         @endforeach
     </tr>

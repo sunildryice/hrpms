@@ -45,12 +45,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('G')->setWidth(20);   // Extended
                 $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
                 $sheet->getColumnDimension('I')->setWidth(14);   // Days left
-    
+
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                for ($col = 10; $col <= $highestColumnIndex; $col++) { 
+                for ($col = 10; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
@@ -89,9 +89,47 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // Monospace font for Gantt area
                 $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
 
-                // Convert '█' or '██' markers to full colored background
-                $activeColor = '5B9BD5'; 
-    
+                $stageStyle = [
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'e6e6e6'],
+                    ],
+                    'font' => [
+                        'bold' => true,
+                    ],
+                ];
+
+                $themeNameStyle = [
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'ffeee6'], 
+                    ],
+                ];
+
+                // === Style Stage rows and Activity Theme name cells ===
+                foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
+                    $rowIndex = $row->getRowIndex();
+
+                    $cellA = $sheet->getCell("A{$rowIndex}");
+                    $cellB = $sheet->getCell("B{$rowIndex}");
+
+                    // Check if this is a stage row (merged cells in A and B)
+                    if ($cellA->getMergeRange() && $cellA->getMergeRange() === $cellB->getMergeRange()) {
+                        $sheet->getStyle("A{$rowIndex}:{$highestColumn}{$rowIndex}")->applyFromArray($stageStyle);
+                        continue;
+                    }
+
+                    // Check if this is an Activity Theme row
+                    $cellBValue = trim((string) $cellB->getValue());
+                    if (strtolower($cellBValue) === 'activity theme') {
+                        // Apply style **only to column A** (the name cell)
+                        $sheet->getStyle("A{$rowIndex}")->applyFromArray($themeNameStyle);
+                    }
+                }
+
+                // Convert '█' or '██' markers to full colored background (Gantt bars)
+                $activeColor = '7699bc';
+
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
@@ -130,7 +168,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                     ],
                 ]);
 
-                $sheet->getStyle("J5:J{$highestRow}")->setConditionalStyles([$conditional]);
+                $sheet->getStyle("I5:I{$highestRow}")->setConditionalStyles([$conditional]);
             },
         ];
     }

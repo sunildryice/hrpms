@@ -41,7 +41,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
                 $sheet->getColumnDimension('D')->setWidth(26);   // Timeline
                 $sheet->getColumnDimension('E')->setWidth(24);   // Members
-                $sheet->getColumnDimension('F')->setWidth(14);   // Status
+                $sheet->getColumnDimension('F')->setWidth(20);   // Status
                 $sheet->getColumnDimension('G')->setWidth(20);   // Extended
                 $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
                 $sheet->getColumnDimension('I')->setWidth(14);   // Days left

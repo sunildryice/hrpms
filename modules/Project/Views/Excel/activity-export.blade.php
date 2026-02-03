@@ -65,7 +65,7 @@
         <th rowspan="3">Output / Deliverables</th>
         <th rowspan="3">Timeline</th>
         <th rowspan="3">Members</th>
-        <th rowspan="3">Status</th>
+        <th rowspan="3">Completion status</th>
         <th rowspan="3">Extended Deadline</th>
         <th rowspan="3">Remarks</th>
         <th rowspan="3">Days left</th>

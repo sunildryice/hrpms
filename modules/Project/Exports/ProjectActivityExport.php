@@ -44,13 +44,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('F')->setWidth(20);   // Status
                 $sheet->getColumnDimension('G')->setWidth(20);   // Extended
                 $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
-                $sheet->getColumnDimension('I')->setWidth(14);   // Days left
     
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                for ($col = 10; $col <= $highestColumnIndex; $col++) {
+                for ($col = 9; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
@@ -82,12 +81,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // Alignments
                 $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle('I:I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 // $sheet->getStyle('A:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
                 $sheet->getStyle("A2:{$highestColumn}4")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 
                 // Monospace font for Gantt area
-                $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
+                $sheet->getStyle('I:' . $highestColumn)->getFont()->setName('Consolas');
 
                 $stageStyle = [
                     'fill' => [
@@ -133,7 +132,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
-                    foreach (range(10, $highestColumnIndex) as $colIdx) {
+                    foreach (range(9, $highestColumnIndex) as $colIdx) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
                         $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
                         $value = trim((string) $cell->getValue());

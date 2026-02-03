@@ -51,7 +51,7 @@
 
     <!-- 1. Project Title -->
     <tr>
-        <td colspan="{{ 9 + $totalWeekColumns }}">
+        <td colspan="{{ 8 + $totalWeekColumns }}">
             Project: {{ $project?->title ?? 'Project Activity Plan' }}<br>
             Period: [{{ $project?->start_date?->format('M d, Y') ?? '' }} to
             {{ $project?->completion_date?->format('M d, Y') ?? '' }}]
@@ -68,7 +68,6 @@
         <th rowspan="3">Completion status</th>
         <th rowspan="3">Extended Deadline</th>
         <th rowspan="3">Remarks</th>
-        <th rowspan="3">Days left</th>
 
         @php
             $yearGroups = [];
@@ -140,7 +139,7 @@
             <td colspan="2">
                 <strong>{{ json_decode($stageName)->title ?? 'No Stage' }}</strong>
             </td>
-            <td colspan="{{ 7 + $totalWeekColumns }}"></td>
+            <td colspan="{{ 6 + $totalWeekColumns }}"></td>
             @foreach ($months as $monthLabel)
                 @foreach ($weekLabels as $_)
                     <td></td>
@@ -170,11 +169,6 @@
                 <td>{{ ucwords(str_replace('_', ' ', $theme->status ?? 'not started')) }}</td>
                 <td>{{ $theme->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                 <td>{{ $theme->latest_extension?->reason ?? '' }}</td>
-                <td>
-                    @if ($theme->completion_date)
-                        {{ now()->diffInDays($theme->completion_date, false) }}
-                    @endif
-                </td>
 
                 @foreach ($months as $monthLabel)
                     @foreach ($weekLabels as $weekIndex => $weekLabel)
@@ -213,11 +207,6 @@
                     <td>{{ ucwords(str_replace('_', ' ', $activity->status ?? 'not started')) }}</td>
                     <td>{{ $activity->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                     <td>{{ $activity->latest_extension?->reason ?? '' }}</td>
-                    <td>
-                        @if ($activity->completion_date)
-                            {{ now()->diffInDays($activity->completion_date, false) }}
-                        @endif
-                    </td>
 
                     @foreach ($months as $monthLabel)
                         @foreach ($weekLabels as $weekIndex => $weekLabel)
@@ -256,11 +245,6 @@
                         <td>{{ ucwords(str_replace('_', ' ', $sub->status ?? 'not started')) }}</td>
                         <td>{{ $sub->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
                         <td>{{ $sub->latest_extension?->reason ?? '' }}</td>
-                        <td>
-                            @if ($sub->completion_date)
-                                {{ now()->diffInDays($sub->completion_date, false) }}
-                            @endif
-                        </td>
 
                         @foreach ($months as $monthLabel)
                             @foreach ($weekLabels as $weekIndex => $weekLabel)

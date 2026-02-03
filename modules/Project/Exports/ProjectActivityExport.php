@@ -45,7 +45,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('G')->setWidth(20);   // Extended
                 $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
                 $sheet->getColumnDimension('I')->setWidth(14);   // Days left
-
+    
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
@@ -83,8 +83,8 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                // $sheet->getStyle('A:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle("A2:{$highestColumn}4")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 
                 // Monospace font for Gantt area
                 $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
@@ -102,7 +102,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $themeNameStyle = [
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'ffeee6'], 
+                        'startColor' => ['rgb' => 'ffeee6'],
                     ],
                 ];
 

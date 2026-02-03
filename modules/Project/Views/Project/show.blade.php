@@ -33,6 +33,21 @@
             background-color: var(--ohw-blue);
             border-color: var(--ohw-blue);
         }
+
+        .bg-orange {
+            background-color: #fd7e14 !important;
+            color: #fff;
+        }
+
+        .sticky-pagination {
+            position: sticky;
+            left: 0;
+            bottom: 0;
+            background: #fff;
+            z-index: 10;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+            padding: 8px 0 0 0;
+        }
     </style>
 @endsection
 
@@ -90,7 +105,18 @@
                         className: 'sticky-col'
                     },
                 ],
+            }).on('draw', function() {
+                var $pagination = $(this).closest('.dataTables_wrapper').find(
+                    '.dataTables_paginate');
+                $pagination.addClass('sticky-pagination');
             });
+
+            // Initial move on page load
+            var $paginate = $('#projectActivityTable_paginate');
+            if ($paginate.length && !$paginate.hasClass('sticky-pagination')) {
+                $paginate.addClass('sticky-pagination');
+                $('.table-responsive').append($paginate);
+            }
 
             $('#projectActivityTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
@@ -757,14 +783,20 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date(
-                            '{{ $projectActivity->min('start_date') ?? '' }}'),
-                        endDate: new Date(
-                            '{{ $projectActivity->max('completion_date') ?? '' }}'),
                         zIndex: 2048,
+                        endDate: new Date(),
+                        todayHighlight: true,
+                        todayBtn: true
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });
+
+                    // Auto-select today only if the field is empty (create mode)
+                    if (!$('[name="timesheet_date"]').val().trim()) {
+                        const today = new Date().toISOString().split('T')[0];
+                        $('[name="timesheet_date"]').val(today);
+                        $('[name="timesheet_date"]').datepicker('setDate', today);
+                    }
                 });
             });
 
@@ -880,6 +912,9 @@
                                     href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                     <i class="bi-plus"></i> Import Activity
                                 </button>
+                                <a class="btn btn-secondary btn-sm text-capitalize"
+                                    href="{{ route('project-activity.export.activities', $project) }}" target="_blank"><i
+                                        class="bi bi-download"></i> Export Activity</a>
                                 <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
                                     href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
                                         class="bi-plus"></i> Add Project Activity

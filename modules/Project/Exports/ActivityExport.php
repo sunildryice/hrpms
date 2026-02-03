@@ -17,7 +17,7 @@ class ActivityExport implements FromView
 
     public function view(): View
     {
-        return view('Project::Excel.activity-export', [
+        return view('Project::Excel.export_sample', [
             'project' => $this->project,
         ]);
     }

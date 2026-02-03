@@ -19,8 +19,7 @@ class ProjectActivityController extends Controller
 {
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
-    }
+    ) {}
     public function index(Request $request, Project $project)
     {
         $authUser = auth()->user();
@@ -57,22 +56,25 @@ class ProjectActivityController extends Controller
                 return ucfirst(str_replace('_', ' ', $row->activity_level));
             })
             ->editColumn('status', function ($row) {
-
                 $selectInput = '';
-
                 if ($this->checkStatusDisplay($row)) {
                     $selectInput .= '<select class="form-select form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
                     foreach (ActivityStatus::cases() as $status) {
-
-                        $selected = $row->status === $status->value ? 'selected' : '';
-
+                        $selected = $row?->status === $status?->value ? 'selected' : '';
                         $disabled = $this->checkSelectDisableStatus($row, $status);
-
-                        $selectInput .= '<option value="' . $status->value . '" ' . $selected . ' ' . $disabled . '>' . ucfirst(str_replace('_', ' ', $status->value)) . '</option>';
+                        $selectInput .= '<option value="' . $status?->value . '" ' . $selected . ' ' . $disabled . '>' . ucfirst(str_replace('_', ' ', $status?->value)) . '</option>';
                     }
                     $selectInput .= '</select>';
                 } else {
-                    $selectInput .= '<span class="' . ActivityStatus::from($row->status)->colorClass() . '">' . ActivityStatus::from($row->status)->label() . '</span>';
+                    // Fallback for invalid enum value
+                    $statusObj = null;
+                    try {
+                        $statusObj = ActivityStatus::from($row?->status);
+                    } catch (\ValueError $e) {
+                        // Invalid value, fallback to NotStarted
+                        $statusObj = ActivityStatus::NotStarted;
+                    }
+                    $selectInput .= '<span class="' . $statusObj->colorClass() . '">' . $statusObj->label() . '</span>';
                 }
                 return $selectInput;
             })
@@ -85,7 +87,7 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-eye"></i></a>';
                 }
 
-                if (Gate::allows('manage-project-activity-on-certain-time', $row->project)) {
+                if (Gate::allows('manage-project-activity-on-certain-time', $row->project) && ($row->status != ActivityStatus::NoRequired->value && $row->status != ActivityStatus::Completed->value)) {
                     $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
                     $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
                     $btn .= '<i class="bi bi-pencil-square"></i></a>';
@@ -107,10 +109,14 @@ class ProjectActivityController extends Controller
                     $btn .= '<i class="bi bi-clock"></i></a>';
                     // }
                 }
-                $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
-                    . route('project-activity.extension.create', $row->id)
-                    . '" rel="tooltip" title="Request Extension">'
-                    . '<i class="bi bi-calendar-plus"></i></a>';
+
+                if (($row->status != ActivityStatus::Completed->value && $row->status != ActivityStatus::NoRequired->value)) {
+
+                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
+                        . route('project-activity.extension.create', $row->id)
+                        . '" rel="tooltip" title="Request Extension">'
+                        . '<i class="bi bi-calendar-plus"></i></a>';
+                }
 
                 return $btn;
             })
@@ -232,7 +238,7 @@ class ProjectActivityController extends Controller
             'status_date' => 'nullable|date',
         ]);
 
-        $oldStatus = $projectActivity->status;
+        $oldStatus = $projectActivity->status ?? ActivityStatus::NotStarted->value;
         $newStatus = $request->input('status');
         $statusDate = $request->input('status_date') ?? now();
 
@@ -264,7 +270,10 @@ class ProjectActivityController extends Controller
         ]);
 
         // Propagate status to parent if needed
-        $this->updateParentActivity($projectActivity, $statusDate);
+
+        if ($projectActivity->activity_level == ActivityLevel::Activity->value) {
+            $this->updateParentActivity($projectActivity, $statusDate);
+        }
 
         return response()->json([
             'message' => 'Project Activity status updated successfully.',

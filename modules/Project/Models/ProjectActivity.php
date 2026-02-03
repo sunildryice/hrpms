@@ -24,6 +24,8 @@ class ProjectActivity extends Model
         'status',
         'start_date',
         'completion_date',
+        'actual_start_date',
+        'actual_completion_date',
         'created_by',
         'updated_by',
     ];
@@ -31,6 +33,8 @@ class ProjectActivity extends Model
     protected $dates = [
         'start_date',
         'completion_date',
+        'actual_start_date',
+        'actual_completion_date'
     ];
 
     public function parent()
@@ -131,6 +135,16 @@ class ProjectActivity extends Model
     {
         $latestExtension = $this->extensions()->orderBy('extended_completion_date', 'desc')->first();
         return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : ($this->completion_date ? $this->completion_date->format('M d, Y') : "");
+    }
+
+    public function getLatestExtensionAttribute()
+    {
+        return $this->extensions()->orderBy('extended_completion_date', 'desc')->first();
+    }
+
+    public function getEffectiveEndDateAttribute()
+    {
+        return $this->latest_extension?->extended_completion_date ?? $this->completion_date;
     }
 
     public function statusLogs()

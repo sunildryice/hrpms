@@ -49,7 +49,6 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
             $memberSyncData = [];
             $parentRelations = [];
 
-            // Process all rows and prepare bulk operations
             foreach ($rows as $row) {
 
                 $this->rowNumber++;

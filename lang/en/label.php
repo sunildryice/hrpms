@@ -263,6 +263,7 @@ return [
     'organization-name' => 'Organization Name',
     'other-activities' => 'Other Activities',
     'other-comments' => 'Other Comments',
+    'other-expense' => 'Other Expense',
     'overnights' => 'Overnights',
     'paid-date' => 'Paid Date',
     'parent' => 'Parent',

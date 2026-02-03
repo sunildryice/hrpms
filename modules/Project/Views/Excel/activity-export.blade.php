@@ -1,75 +1,133 @@
+@php
+    // ────────────────────────────────────────────────
+    // Prepare all data needed for header & table
+    // ────────────────────────────────────────────────
+
+    $allDates = collect();
+
+    $project->activities->each(function ($theme) use ($allDates) {
+        if ($theme->start_date) {
+            $allDates->push($theme->start_date);
+        }
+        if ($theme->completion_date) {
+            $allDates->push($theme->completion_date);
+        }
+        if ($theme->latest_extension?->extended_completion_date) {
+            $allDates->push($theme->latest_extension->extended_completion_date);
+        }
+
+        $theme->activityChildren->each(function ($act) use ($allDates) {
+            if ($act->start_date) {
+                $allDates->push($act->start_date);
+            }
+            if ($act->completion_date) {
+                $allDates->push($act->completion_date);
+            }
+            if ($act->latest_extension?->extended_completion_date) {
+                $allDates->push($act->latest_extension->extended_completion_date);
+            }
+        });
+    });
+
+    if ($allDates->isEmpty()) {
+        $minDate = now()->startOfYear();
+        $maxDate = now()->endOfYear();
+    } else {
+        $minDate = $allDates->min()->startOfMonth();
+        $maxDate = $allDates->max()->endOfMonth();
+    }
+
+    $months = [];
+    $current = $minDate->copy();
+    while ($current->lte($maxDate)) {
+        $months[] = $current->format('M Y');
+        $current->addMonthNoOverflow();
+    }
+
+    $weekLabels = ['I', 'II', 'III', 'IV'];
+
+    // Total number of week columns
+    $totalWeekColumns = count($months) * 4;
+@endphp
+
 <table border="1">
-    <!-- Title -->
+
+    <!-- 1. Project Title -->
     <tr>
-        <td colspan="12">
+        <td colspan="{{ 9 + $totalWeekColumns }}">
             {{ $project->title ?? 'Project' }} — Activity Plan
         </td>
     </tr>
 
-    <!-- Headers -->
+    <!-- 2. Year Row (merged per year) -->
     <tr>
-        <th>Activities</th>
-        <th>Activity Type</th>
-        <th>Output / Deliverables</th>
-        <th>Timeline</th>
-        <th>Members</th>
-        <th>Status</th>
-        <th>Extended Deadline</th>
-        <th>Remarks</th>
-        <th>Days left</th>
+        <th rowspan="3">Activities</th>
+        <th rowspan="3">Activity Type</th>
+        <th rowspan="3">Output / Deliverables</th>
+        <th rowspan="3">Timeline</th>
+        <th rowspan="3">Members</th>
+        <th rowspan="3">Status</th>
+        <th rowspan="3">Extended Deadline</th>
+        <th rowspan="3">Remarks</th>
+        <th rowspan="3">Days left</th>
 
         @php
-            $allDates = collect();
-            $project->activities->each(function ($theme) use ($allDates) {
-                if ($theme->start_date) {
-                    $allDates->push($theme->start_date);
-                }
-                if ($theme->completion_date) {
-                    $allDates->push($theme->completion_date);
-                }
-                if ($theme->latest_extension?->extended_completion_date) {
-                    $allDates->push($theme->latest_extension->extended_completion_date);
-                }
-                $theme->activityChildren->each(function ($act) use ($allDates) {
-                    if ($act->start_date) {
-                        $allDates->push($act->start_date);
-                    }
-                    if ($act->completion_date) {
-                        $allDates->push($act->completion_date);
-                    }
-                    if ($act->latest_extension?->extended_completion_date) {
-                        $allDates->push($act->latest_extension->extended_completion_date);
-                    }
-                });
-            });
+            $yearGroups = [];
+            $currentYear = null;
+            $colspanCount = 0;
 
-            $minDate = $allDates->min() ? $allDates->min()->startOfMonth() : now()->startOfYear();
-            $maxDate = $allDates->max() ? $allDates->max()->endOfMonth() : now()->endOfYear();
+            foreach ($months as $monthLabel) {
+                $year = \Carbon\Carbon::createFromFormat('M Y', $monthLabel)->year;
 
-            $months = [];
-            $current = $minDate->copy();
-            while ($current->lte($maxDate)) {
-                $months[] = $current->format('M Y');
-                $current->addMonthNoOverflow();
+                if ($year !== $currentYear) {
+                    if ($currentYear !== null) {
+                        $yearGroups[] = [
+                            'year' => $currentYear,
+                            'colspan' => $colspanCount,
+                        ];
+                    }
+                    $currentYear = $year;
+                    $colspanCount = 1;
+                } else {
+                    $colspanCount++;
+                }
             }
 
-            $weekLabels = ['I', 'II', 'III', 'IV'];
+            // Last group
+            if ($currentYear !== null) {
+                $yearGroups[] = [
+                    'year' => $currentYear,
+                    'colspan' => $colspanCount,
+                ];
+            }
         @endphp
 
-        @foreach ($months as $monthLabel)
-            <th colspan="4">{{ $monthLabel }}</th>
+        @foreach ($yearGroups as $group)
+            <td colspan="{{ $group['colspan'] * 4 }}">
+                {{ $group['year'] }}
+            </td>
         @endforeach
     </tr>
 
-    <!-- Week labels -->
+    <!-- 3. Month Row -->
     <tr>
-        <td colspan="9"></td>
+        @foreach ($months as $monthLabel)
+            @php
+                $monthName = explode(' ', $monthLabel)[0];
+            @endphp
+            <td colspan="4">{{ $monthName }}</td>
+        @endforeach
+    </tr>
+
+    <!-- 4. Week Labels Row -->
+    <tr>
         @foreach ($months as $month)
             @foreach ($weekLabels as $week)
-                <th style="font-size:10px; text-align:center;">{{ $week }}</th>
+                <td style="padding: 4px 0;">{{ $week }}</td>
             @endforeach
         @endforeach
     </tr>
+
 
     <!-- === Main content - grouped by stage === -->
     @php
@@ -78,12 +136,12 @@
     @endphp
 
     @forelse ($grouped as $stageName => $themesInStage)
-        <!-- Stage row – light background (will be styled in AfterSheet too) -->
-        <tr class="stage-row">
+        <!-- Stage row -->
+        <tr style="background:#f0f4f8;">
             <td colspan="2">
                 <strong>{{ json_decode($stageName)->title ?? 'No Stage' }}</strong>
             </td>
-            <td colspan="7"></td>
+            <td colspan="{{ 7 + $totalWeekColumns }}" ></td>
             @foreach ($months as $monthLabel)
                 @foreach ($weekLabels as $_)
                     <td></td>
@@ -91,13 +149,10 @@
             @endforeach
         </tr>
 
-        @php
-            $rowType = 'theme';
-            $sn = $globalSn;
-        @endphp
+        @php $sn = $globalSn; @endphp
 
         @foreach ($themesInStage as $theme)
-            <tr class="theme-row">
+            <tr>
                 <td>{{ $theme->title }}</td>
                 <td>Activity Theme</td>
                 <td>{{ $theme->deliverables ?? '' }}</td>
@@ -138,8 +193,9 @@
             </tr>
 
             @php $activitySn = 1; @endphp
+
             @forelse ($theme->activityChildren as $activity)
-                <tr class="activity-row">
+                <tr>
                     <td>{{ $activity->title }}</td>
                     <td>Activity</td>
                     <td>{{ $activity->deliverables ?? '' }}</td>
@@ -180,6 +236,7 @@
                 </tr>
 
                 @php $subSn = 1; @endphp
+
                 @forelse ($activity->children as $sub)
                     <tr>
                         <td>{{ $sub->title }}</td>
@@ -234,7 +291,10 @@
         @php $globalSn = $sn; @endphp
     @empty
         <tr>
-            <td colspan="12" style="text-align:center;">No activities found</td>
+            <td colspan="{{ 9 + count($months) * 4 }}" style="text-align:center; padding:20px;">
+                No activities found
+            </td>
         </tr>
     @endforelse
+
 </table>

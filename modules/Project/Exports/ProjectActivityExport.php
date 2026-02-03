@@ -56,10 +56,10 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 }
 
                 // Freeze header (title + months + weeks)
-                $sheet->freezePane('A4');
+                $sheet->freezePane('A5');
 
                 // Header background + bold
-                $sheet->getStyle('A1:' . $highestColumn . '3')->applyFromArray([
+                $sheet->getStyle('A1:' . $highestColumn . '4')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'E6F3FF'],
@@ -92,7 +92,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // Convert '█' or '██' markers to full colored background
                 $activeColor = '5B9BD5'; // nice blue (you can change)
     
-                foreach ($sheet->getRowIterator(4, $highestRow) as $row) {
+                foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
                     foreach (range(10, $highestColumnIndex) as $colIdx) {
@@ -130,7 +130,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                     ],
                 ]);
 
-                $sheet->getStyle("J4:J{$highestRow}")->setConditionalStyles([$conditional]);
+                $sheet->getStyle("J5:J{$highestRow}")->setConditionalStyles([$conditional]);
             },
         ];
     }

@@ -7,6 +7,19 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Date</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
+                    onfocus="this.blur()" autocomplete="off"
+                    value="{{ $timesheet->timesheet_date->format('Y-m-d') }}" />
+            </div>
+        </div>
+        
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Project</label>
                 </div>
             </div>
@@ -36,18 +49,7 @@
                 </select>
             </div>
         </div>
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Date</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
-                    onfocus="this.blur()" autocomplete="off"
-                    value="{{ $timesheet->timesheet_date->format('Y-m-d') }}" />
-            </div>
-        </div>
+        
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

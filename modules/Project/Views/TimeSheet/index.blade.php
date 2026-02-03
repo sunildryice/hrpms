@@ -19,16 +19,16 @@
                         searchable: false
                     },
                     {
+                        data: 'timesheet_date',
+                        name: 'timesheet_date'
+                    },
+                    {
                         data: 'project_id',
                         name: 'project_id'
                     },
                     {
                         data: 'activity_id',
                         name: 'activity_id'
-                    },
-                    {
-                        data: 'timesheet_date',
-                        name: 'timesheet_date'
                     },
                     {
                         data: 'hours_spent',
@@ -238,9 +238,9 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
+                                <th>{{ __('label.date') }}</th>
                                 <th>{{ __('label.project') }}</th>
                                 <th>{{ __('label.activity') }}</th>
-                                <th>Timesheet Date</th>
                                 <th>Hours Spent</th>
                                 <th>{{ __('label.attachment') }}</th>
                                 <th>{{ __('label.action') }}</th>

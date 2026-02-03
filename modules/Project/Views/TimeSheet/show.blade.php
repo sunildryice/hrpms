@@ -6,6 +6,17 @@
     <div class="row mb-2">
         <div class="col-lg-3">
             <div class="d-flex align-items-start h-100">
+                <label class="form-label m-0">Date</label>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="span-mimic-text-input">{{ $timesheet->timesheet_date->format('Y-m-d') }}</div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-lg-3">
+            <div class="d-flex align-items-start h-100">
                 <label class="form-label m-0">Project</label>
             </div>
         </div>
@@ -33,16 +44,7 @@
             </select>
         </div>
     </div>
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label class="form-label m-0">Date</label>
-            </div>
-        </div>
-        <div class="col-lg-9">
-            <div class="span-mimic-text-input">{{ $timesheet->timesheet_date->format('Y-m-d') }}</div>
-        </div>
-    </div>
+
     <div class="row mb-2">
         <div class="col-lg-3">
             <div class="d-flex align-items-start h-100">
@@ -64,22 +66,24 @@
         </div>
     </div>
 
-    <div class="row mb-2">
-        <div class="col-lg-3">
-            <div class="d-flex align-items-start h-100">
-                <label for="" class="m-0">Attachment </label>
+    @if ($timesheet->attachment)
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Attachment </label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                @if (file_exists('storage/' . $timesheet->attachment) && $timesheet->attachment != '')
+                    <div class="media">
+                        <a href="{!! asset('storage/' . $timesheet->attachment) !!}" target="_blank" class="fs-5" title="View Attachment">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
-        <div class="col-lg-9">
-            @if (file_exists('storage/' . $timesheet->attachment) && $timesheet->attachment != '')
-                <div class="media">
-                    <a href="{!! asset('storage/' . $timesheet->attachment) !!}" target="_blank" class="fs-5" title="View Attachment">
-                        <i class="bi bi-file-earmark-medical"></i>
-                    </a>
-                </div>
-            @endif
-        </div>
-    </div>
+    @endif
 </div>
 </div>
 <div class="modal-footer">

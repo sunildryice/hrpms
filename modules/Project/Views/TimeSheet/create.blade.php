@@ -7,7 +7,19 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Projects</label>
+                    <label class="form-label required-label m-0">Date</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
+                    onfocus="this.blur()" autocomplete="off" />
+            </div>
+        </div>
+        
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Project</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -36,17 +48,7 @@
             </div>
         </div>
 
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Date</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
-                    onfocus="this.blur()" autocomplete="off" />
-            </div>
-        </div>
+        
 
         <div class="row mb-2">
             <div class="col-lg-3">

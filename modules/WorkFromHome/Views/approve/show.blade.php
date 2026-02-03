@@ -34,6 +34,35 @@
             </div>
             <div class="col-lg-8">
 
+                {{-- DELIVERABLES --}}
+                <div class="card mb-4">
+                    <div class="card-header fw-bold text-primary text-uppercase">
+                        Deliverables
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 25%;">Project</th>
+                                        <th style="width: 25%;">Activity</th>
+                                        <th>Task</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($deliverables as $task)
+                                        <tr>
+                                            <td title="Project">{{ $task['project_name'] }}</td>
+                                            <td title="Activity">{{ $task['activity_name'] }}</td>
+                                            <td title="Task">{{ $task['task'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- PROCESS LOGS --}}
                 <div class="card mb-4">
                     <div class="card-header fw-bold">Process Logs</div>

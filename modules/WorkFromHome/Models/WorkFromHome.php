@@ -89,14 +89,15 @@ class WorkFromHome extends Model
     public function getDeliverablesWithProjectNames(): array
     {
         return collect($this->deliverables ?? [])
-            ->groupBy('project_id')
-            ->map(function ($items, $projectId) {
-                $project = Project::find($projectId);
+            ->map(function ($item, $projectId) {
+                $project = Project::find($item['project_id']);
+                $activity = ProjectActivity::find($item['activity_id']);
 
                 return [
                     'project_id'   => (int) $projectId,
-                    'project_name' => $project ? $project->short_name : 'N/A',
-                    'tasks'        => $items->pluck('task')->values()->all(),
+                    'project_name' => $project ? $project->short_name : $project?->title,
+                    'task'        => $item['task'],
+                    'activity_name' => $activity ? $activity->title : 'N/A',
                 ];
             })
             ->values()

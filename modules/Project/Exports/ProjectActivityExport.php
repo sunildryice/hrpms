@@ -169,6 +169,9 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 ]);
 
                 $sheet->getStyle("I5:I{$highestRow}")->setConditionalStyles([$conditional]);
+
+                //Height for the first row
+                $sheet->getRowDimension(1)->setRowHeight(30);
             },
         ];
     }

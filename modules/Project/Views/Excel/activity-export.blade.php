@@ -52,7 +52,9 @@
     <!-- 1. Project Title -->
     <tr>
         <td colspan="{{ 9 + $totalWeekColumns }}">
-            {{ $project->title ?? 'Project' }} — Activity Plan
+            Project: {{ $project?->title ?? 'Project Activity Plan' }}<br>
+            Period: [{{ $project?->start_date?->format('M d, Y') ?? '' }} to
+            {{ $project?->completion_date?->format('M d, Y') ?? '' }}]
         </td>
     </tr>
 
@@ -138,7 +140,7 @@
             <td colspan="2">
                 <strong>{{ json_decode($stageName)->title ?? 'No Stage' }}</strong>
             </td>
-            <td colspan="{{ 7 + $totalWeekColumns }}" ></td>
+            <td colspan="{{ 7 + $totalWeekColumns }}"></td>
             @foreach ($months as $monthLabel)
                 @foreach ($weekLabels as $_)
                     <td></td>

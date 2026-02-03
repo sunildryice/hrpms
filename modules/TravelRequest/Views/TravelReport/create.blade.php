@@ -90,7 +90,7 @@
                     fv.revalidateField('completed_tasks');
                 });
             });
-            
+
             @if ($errors->any())
                 fv.revalidateField('completed_tasks');
             @endif
@@ -192,11 +192,11 @@
                                                     </tr>
                                                     <tr>
                                                         {{-- <th style="width: 10%">Day</th> --}}
-                                                        <th style="width: 15%">Date</th>
-                                                        {{-- <th>{{ __('label.activity') }}</th> --}}
-                                                        <th>Planned Activities</th>
-                                                        <th>Carried Activities / Completed Tasks</th>
-                                                        <th style="width: 20%">Remarks</th>
+                                                        <th style="width: 15%">{{ __('label.date') }}</th>
+                                                        <th style="width: 15%">{{ __('label.activity') }}</th>
+                                                        <th style="width: 25%">Planned Activities</th>
+                                                        <th style="width: 25%">Carried Activities / Completed Tasks</th>
+                                                        <th style="width: 20%">{{ __('label.remarks') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -218,12 +218,14 @@
 
                                                             <td class="text-center">
                                                                 {{ $formattedDate }}
-                                                                <input type="hidden" name="itinerary[itinerary_id][{{ $index }}]" value="{{ $itinerary->id }}">
+                                                                <input type="hidden"
+                                                                    name="itinerary[itinerary_id][{{ $index }}]"
+                                                                    value="{{ $itinerary->id }}">
                                                             </td>
 
-                                                             {{-- <td>
-                                                                <input type="text" class="form-control" value="{{ $itinerary?->activity?->title }}" readonly>
-                                                            </td> --}}
+                                                            <td>
+                                                                {{ $itinerary?->activity?->title }}
+                                                            </td>
 
                                                             <td>
                                                                 <textarea class="form-control" rows="3" readonly>{{ $itinerary->planned_activities ?? '' }}</textarea>

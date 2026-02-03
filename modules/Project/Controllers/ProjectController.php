@@ -19,15 +19,23 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = $this->projectRepository->query();
+            $data = $this->projectRepository
+                ->when(!$authUser->can('manage-pms'), function ($q) use ($authUser) {
+                    $q->where(function ($sq) use ($authUser) {
+                        $sq->where('focal_person_id', $authUser->id)
+                            ->orWhere('team_lead_id', $authUser->id)
+                            ->orWhereHas('members', function ($tq) use ($authUser) {
+                                $tq->where('user_id', $authUser->id);
+                            });
+                    });
+                });
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('start_date', function ($row) {

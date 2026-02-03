@@ -194,6 +194,9 @@
                         autoHide: true,
                         format: 'yyyy-mm-dd',
                         zIndex: 2048,
+                        endDate: new Date(), 
+                        todayHighlight: true,
+                        todayBtn: true
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });

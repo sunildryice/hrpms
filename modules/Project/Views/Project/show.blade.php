@@ -762,11 +762,10 @@
                         language: 'en-GB',
                         autoHide: true,
                         format: 'yyyy-mm-dd',
-                        startDate: new Date(
-                            '{{ $projectActivity->min('start_date') ?? '' }}'),
-                        endDate: new Date(
-                            '{{ $projectActivity->max('completion_date') ?? '' }}'),
                         zIndex: 2048,
+                        endDate: new Date(),
+                        todayHighlight: true,
+                        todayBtn: true
                     }).on('change', function(e) {
                         fv.revalidateField('timesheet_date');
                     });

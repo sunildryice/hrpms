@@ -122,6 +122,11 @@ class Repository
         return $this->model->whereRaw($sql, $bindings);
     }
 
+    public function whereYear($field, $value)
+    {
+        return $this->model->whereYear($field, $value);
+    }
+
     public function when($value, $callback)
     {
         return $this->model->when($value, $callback);

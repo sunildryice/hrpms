@@ -31,8 +31,7 @@ class ImportEmployeeAttendance extends Command
         protected AttendanceLog              $attendanceLog,
         protected AttendanceDetailRepository $attendanceDetails,
         protected EmployeeRepository         $employees
-    )
-    {
+    ) {
         parent::__construct();
     }
 

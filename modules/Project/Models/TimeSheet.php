@@ -80,4 +80,8 @@ class TimeSheet extends Model
     {
         return $this->status_id === config('constant.APPROVED_STATUS');
     }
+    public function logs()
+    {
+        return $this->hasMany(TimeSheetLog::class, 'timesheet_id');
+    }
 }

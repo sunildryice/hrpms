@@ -27,7 +27,6 @@ class TravelClaimExpenseRepository extends Repository
             DB::commit();
             return $claimExpense;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             DB::rollback();
             return false;
         }

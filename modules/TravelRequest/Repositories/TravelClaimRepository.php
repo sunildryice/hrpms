@@ -173,7 +173,6 @@ class TravelClaimRepository extends Repository
             DB::commit();
             return $travelClaim;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             DB::rollback();
             return false;
         }

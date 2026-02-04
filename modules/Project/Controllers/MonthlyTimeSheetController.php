@@ -4,10 +4,7 @@ namespace Modules\Project\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class MonthlyTimeSheetController extends Controller

@@ -168,57 +168,63 @@
                     </table>
                 </div>
             </div>
-            <div>
-                <form action="">
-                    @csrf
-                    @method('PUT')
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="row mb-2">
-                                    <div class="col-lg-3">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="" class="m-0">
-                                                {{ __('label.approval') }}
-                                            </label>
+            {{-- @if (now()->gt($timeSheet->end_date)) --}}
+                <div class="card-footer border-top">
+                    <form action="{{ route('monthly-timesheet.update', $timeSheet->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col-lg-3">
+                                            <label class="m-0">{{ __('label.approval') }}</label>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            @php $selectedApproverId = old('approver_id') ?: $timeSheet->approver_id; @endphp
+                                            <select name="approver_id"
+                                                class="select2 form-control @error('approver_id') is-invalid @enderror"
+                                                data-width="100%">
+                                                @if ($supervisors->count() !== 1)
+                                                    <option value="">Select an Approver</option>
+                                                @endif
+                                                @foreach ($supervisors as $approver)
+                                                    <option value="{{ $approver->id }}"
+                                                        {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>
+                                                        {{ $approver->getFullName() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('approver_id')
+                                                <div class="invalid-feedback">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
                                         </div>
                                     </div>
-                                    <div class="col-lg-9">
-                                        @php $selectedApproverId = old('approver_id') ?: $timeSheet->approver_id; @endphp
-                                        <select name="approver_id"
-                                            class="select2 form-control
-                                                @if ($errors->has('approver_id')) is-invalid @endif"
-                                            data-width="100%">
-                                            @if ($supervisors->count() !== 1)
-                                                <option value="">Select an Approver</option>
-                                            @endif
-                                            @foreach ($supervisors as $approver)
-                                                <option value="{{ $approver->id }}"
-                                                    {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>
-                                                    {{ $approver->getFullName() }}</option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('approver_id'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="approver_id">{!! $errors->first('approver_id') !!}</div>
-                                            </div>
-                                        @endif
-                                    </div>
                                 </div>
-
-                                {!! csrf_field() !!}
-                                {!! method_field('PUT') !!}
                             </div>
                         </div>
-                    </div>
-                    <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                        <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                            Submit
-                        </button>
-                        <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-danger btn-sm">Cancel</a>
-                    </div>
-                </form>
-            </div>
+
+                        <div class="card-footer border-0 d-flex justify-content-end gap-2">
+                            <button type="submit" name="action" value="submit" class="btn btn-success btn-sm">
+                                Submit
+                            </button>
+                            <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-secondary btn-sm">
+                                Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            {{-- @else
+                <div class="card-footer bg-light text-center py-3">
+                    <small class="text-muted">
+                        Approval form will be available after the period ends on
+                        <strong>{{ $timeSheet->end_date->format('d M Y') }}</strong>
+                    </small>
+                </div>
+            @endif --}}
         </div>
     </div>
 @stop

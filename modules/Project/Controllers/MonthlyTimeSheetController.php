@@ -3,6 +3,7 @@ namespace Modules\Project\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Modules\Project\Models\TimeSheet;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet;
@@ -88,5 +89,37 @@ class MonthlyTimeSheetController extends Controller
         ];
         $supervisors = $this->user->getSupervisors($authUser);
         return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $timeSheet = TimeSheet::where('id', $id)
+            ->where('requester_id', auth()->id())
+            ->firstOrFail();
+
+        // Only allow update if period has ended
+        if (now()->lte($timeSheet->end_date)) {
+            return redirect()->back()
+                ->with('error', 'You can only submit for approval after the timesheet period ends.');
+        }
+
+        $validated = $request->validate([
+            'approver_id' => 'required|exists:users,id',
+        ]);
+
+        if ($timeSheet->isApproved()) {
+            return redirect()->back()
+                ->with('warning', 'This timesheet is already approved.');
+        }
+
+        $timeSheet->update([
+            'approver_id' => $validated['approver_id'],
+            'status_id' => config('constant.PENDING_STATUS') ?? $timeSheet->status_id,
+            'updated_by' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route('monthly-timesheet.index')
+            ->with('success', 'Timesheet has been successfully submitted to the approver.');
     }
 }

@@ -1,38 +1,41 @@
 <?php
-
 namespace Modules\Project\Controllers;
-
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet;
+use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class MonthlyTimeSheetController extends Controller
 {
     public function __construct(
-        protected ActivityTimeSheetRepository $timeSheets
+        protected ActivityTimeSheetRepository $activityTimeSheets,
+        protected TimeSheetRepository $timeSheets,
+        protected UserRepository $user
+
     ) {
         $this->destinationPath = 'TimeSheet';
     }
-
     public function index(Request $request)
     {
         $authUser = auth()->user();
-
         if ($request->ajax()) {
-            $data = $this->timeSheets
+            $data = $this->activityTimeSheets
                 ->getMonthlyTimeSheets($authUser->id);
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('month_name', function ($row) {
                     return $row->month_name;
                 })
+                ->addColumn('status', function ($row) {
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
+                })
                 ->addColumn('projects', function ($row) {
-                    $projectShortNames = explode(',', $row->project_short_names);
+                    $projectShortNames = explode(', ', $row->project_short_names ?? '');
                     $badges = '';
                     foreach ($projectShortNames as $shortName) {
                         $badges .= '<span class="badge bg-info text-dark me-1 mb-1">' . trim($shortName) . '</span>';
@@ -40,44 +43,35 @@ class MonthlyTimeSheetController extends Controller
                     return $badges;
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
-
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .=  route('monthly-timesheet.show', $row->month) . '" rel="tooltip" title="View Timesheet Details">';
+                    $btn .= route('monthly-timesheet.show', $row->month) . '" rel="tooltip" title="View Timesheet Details">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
-
-                    // $btn .= ' <a class="btn btn-outline-primary btn-sm open-modal-form" href="';
-                    // $btn .= route('activity-stage.edit', $row->id) . '" rel="tooltip" title="Edit Activity Stage">';
-                    // $btn .= '<i class="bi bi-pencil-square"></i></a>';
-
-                    // $btn .= ' <a class="btn btn-outline-danger btn-sm delete-record" href="javascript:void(0)"';
-                    // $btn .= ' data-href="' . route('activity-stages.destroy', $row->id) . '" rel="tooltip"';
-                    // $btn .= ' title="Delete Activity Stage"><i class="bi bi-trash"></i></a>';
-
                     return $btn;
                 })
-                ->rawColumns(['action', 'projects'])
+                ->rawColumns(['action', 'projects', 'status'])
                 ->make(true);
         }
-
-
         return view('Project::MonthlyTimeSheet.index');
     }
-
     public function show($yearMonth)
     {
-        $timeSheets = $this->timeSheets->getTimeSheetsByMonth($yearMonth, auth()->id());
+        $authUser = auth()->user();
+        [$year, $monthNum] = explode('-', $yearMonth);
 
-        $yearMonthFormatted = date('F Y', strtotime($yearMonth . '-01'));
+        $timeSheet = \Modules\Project\Models\TimeSheet::where('year', $year)
+            ->whereRaw('MONTH(start_date) = ?', [(int) $monthNum])
+            ->where('requester_id', auth()->id())
+            ->firstOrFail();
 
-        // Generate all dates for the month
-        $startDate = \Carbon\Carbon::parse($yearMonth . '-01')->startOfMonth();
-        $endDate = \Carbon\Carbon::parse($yearMonth . '-01')->endOfMonth();
-
+        $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod($timeSheet->start_date, $timeSheet->end_date, auth()->id());
+        $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
+        // Generate all dates for the period
+        $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
+        $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
         // Group timesheets by date
         $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
             return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
         });
-
         // Create array of all dates with their timesheets
         $allDates = [];
         $currentDate = $startDate->copy();
@@ -86,14 +80,13 @@ class MonthlyTimeSheetController extends Controller
             $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
             $currentDate->addDay();
         }
-
         $stats = [
             'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),
             'activities' => $timeSheets->pluck('activity_id')->filter()->unique()->count(),
             'tasks' => $timeSheets->count(),
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
-
-        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats'));
+        $supervisors = $this->user->getSupervisors($authUser);
+        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors'));
     }
 }

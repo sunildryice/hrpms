@@ -1,12 +1,9 @@
 @extends('layouts.container')
-
 @section('title', 'Monthly Time Sheets')
-
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#monthly-timesheets-index').addClass('active');
-
             var oTable = $('#MonthlyTimeSheetTable').DataTable({
                 scrollX: true,
                 processing: true,
@@ -31,6 +28,10 @@
                         name: 'projects',
                     },
                     {
+                        data: 'status',
+                        name: 'status',
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -39,8 +40,6 @@
                     },
                 ]
             });
-
-
             $('#MonthlyTimeSheetTable').on('click', '.cancel-record', function(e) {
                 e.preventDefault();
                 let url = $(this).attr('data-href');
@@ -54,7 +53,6 @@
                 ajaxTextSweetAlert(url, 'POST', `Cancel ${number}?`, 'Remarks', 'log_remarks',
                     successCallback);
             })
-
             $('#MonthlyTimeSheetTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
@@ -67,7 +65,6 @@
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
             });
-
             // Open add/edit forms in modal (fallback if server doesn't emit .open-modal-form)
             $('#MonthlyTimeSheetTable').on('click', '.edit-record', function(e) {
                 e.preventDefault();
@@ -96,7 +93,6 @@
             </div>
         </div>
     </div>
-
     <div class="container-fluid">
         <div class="card shadow-sm border rounded c-tabs-content active" id="monthly-timesheet-table">
             <div class="card-body">
@@ -108,6 +104,7 @@
                                 <th>Month</th>
                                 <th>Total Hours</th>
                                 <th>Projects</th>
+                                <th>{{ __('label.status') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>
@@ -115,7 +112,6 @@
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     </div>

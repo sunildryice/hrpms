@@ -19,38 +19,6 @@ class TimeSheetRepository extends Repository
     {
         return $this->model;
     }
-
-    public function create($inputs)
-    {
-        DB::beginTransaction();
-        try {
-            $record = $this->model->create($inputs);
-            DB::commit();
-            return $record;
-        } catch (QueryException $e) {
-            logger()->error($e->getMessage());
-            DB::rollback();
-            throw $e;
-        }
-    }
-
-
-    public function destroy($id)
-    {
-        DB::beginTransaction();
-        try {
-            $record = $this->model->findOrFail($id);
-            $record->delete();
-
-            DB::commit();
-            return true;
-        } catch (QueryException $e) {
-            logger()->error($e->getMessage());
-            DB::rollback();
-            throw $e;
-        }
-    }
-
     public function forward($id, $inputs)
     {
         DB::beginTransaction();

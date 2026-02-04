@@ -1,12 +1,13 @@
 @extends('layouts.container')
-
 @section('title', 'Monthly Timesheet')
-
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#monthly-timesheets-index').addClass('active');
-
+            $('.select2').select2({
+                placeholder: "Select Status",
+                width: '100%'
+            });
         });
     </script>
 @endsection
@@ -28,14 +29,14 @@
             </div>
         </div>
     </div>
-
     <div class="container-fluid">
         <div class="">
             <div class="row g-3 mb-3">
                 <div class="col-md-12">
                     <div class="card border shadow-sm rounded h-100">
                         <div class="card-header">
-                            Timesheet Summary of {{ $yearMonthFormatted }}
+                            Timesheet Summary of {{ $yearMonthFormatted }} (Status:
+                            {{ $timeSheet->status->name ?? $timeSheet->status_id }})
                         </div>
                         <div class="card-body text-center">
                             <div class="row">
@@ -104,7 +105,6 @@
                                         echo '</tr>';
                                         continue;
                                     }
-
                                     $dateRowCount = $itemsByDate->count();
                                     $datePrinted = false;
                                     $projectGroups = collect($itemsByDate)->groupBy(function ($ts) {
@@ -146,19 +146,16 @@
                                                     </td>
                                                     @php $datePrinted = true; @endphp
                                                 @endif
-
                                                 @if (!$projectPrinted)
                                                     <td rowspan="{{ $projectItems->count() }}">
                                                         {{ optional($item->project)->short_name }}</td>
                                                     @php $projectPrinted = true; @endphp
                                                 @endif
-
                                                 @if (!$activityPrinted)
                                                     <td rowspan="{{ $activityItems->count() }}">
                                                         {{ optional($item->activity)->title ?? 'N/A' }}</td>
                                                     @php $activityPrinted = true; @endphp
                                                 @endif
-
                                                 <td>{{ $item->description }}</td>
                                                 <td>{{ is_numeric($item->hours_spent) ? number_format($item->hours_spent, 2) : $item->hours_spent }}
                                                 </td>
@@ -170,7 +167,57 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div>
+                <form action="">
+                    @csrf
+                    @method('PUT')
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row mb-2">
+                                    <div class="col-lg-3">
+                                        <div class="d-flex align-items-start h-100">
+                                            <label for="" class="m-0">
+                                                {{ __('label.approval') }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        @php $selectedApproverId = old('approver_id') ?: $timeSheet->approver_id; @endphp
+                                        <select name="approver_id"
+                                            class="select2 form-control
+                                                @if ($errors->has('approver_id')) is-invalid @endif"
+                                            data-width="100%">
+                                            @if ($supervisors->count() !== 1)
+                                                <option value="">Select an Approver</option>
+                                            @endif
+                                            @foreach ($supervisors as $approver)
+                                                <option value="{{ $approver->id }}"
+                                                    {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>
+                                                    {{ $approver->getFullName() }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->has('approver_id'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div data-field="approver_id">{!! $errors->first('approver_id') !!}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
 
+                                {!! csrf_field() !!}
+                                {!! method_field('PUT') !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer border-0 justify-content-end d-flex gap-2">
+                        <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                            Submit
+                        </button>
+                        <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

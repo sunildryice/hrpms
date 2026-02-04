@@ -63,7 +63,7 @@
                                             <tr>
                                                 {{-- <th style="width: 10%">Day</th> --}}
                                                 <th style="width: 15%">Date</th>
-                                                {{-- <th>{{ __('label.activity') }}</th> --}}
+                                                <th>{{ __('label.activity') }}</th>
                                                 <th>Planned Activities</th>
                                                 <th>Carried Activities / Completed Tasks</th>
                                                 <th style="width: 20%">Remarks</th>
@@ -85,7 +85,7 @@
                                                 <tr>
                                                     {{-- <td class="text-center fw-bold">{{ $weekday }}</td> --}}
                                                     <td class="text-nowrap">{{ $formattedDate }}</td>
-                                                    {{-- <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td> --}}
+                                                    <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
                                                     <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
                                                     <td>{!! $itinerary->completed_tasks ? nl2br(e($itinerary->completed_tasks)) : '<em class="text-muted">Not filled</em>' !!}</td>
                                                     <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>

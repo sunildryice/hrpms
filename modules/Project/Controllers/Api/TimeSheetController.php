@@ -18,6 +18,7 @@ class TimeSheetController extends Controller
 
     public function getActivitiesByProject(Request $request)
     {
+        $authUser = auth()->user();
         $projectId = $request->query('project_id');
 
         if (!$projectId) {
@@ -27,6 +28,10 @@ class TimeSheetController extends Controller
         $activities = ProjectActivity::query()
             ->where('project_id', $projectId)
             ->whereIn('activity_level', ['activity', 'sub_activity'])
+            ->whereHas('members', function ($q) use ($authUser) {
+                $q->where('user_id', $authUser->id);
+            })
+            ->orderBy('parent_id')
             ->orderBy('title')
             ->get(['id', 'title']);
 

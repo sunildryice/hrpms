@@ -918,7 +918,7 @@
 
                 <div class="card">
                     <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                        <span> Claim Expenses</span>
+                        <span> {{ __('label.other-expense') }}</span>
                         @if ($authUser->can('update', $travelClaim))
                             <button data-toggle="modal"
                                 class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"

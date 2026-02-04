@@ -1504,32 +1504,6 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header fw-bold">
-                    <div class="d-flex align-items-center add-info justify-content-between">
-                        <span> Travel Itinerary</span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="itineraryTable">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th style="width: 120px;">{{ __('label.date') }}</th>
-                                    <th>{{ __('label.activity') }}</th>
-                                    <th>{{ __('label.planned-activities') }}</th>
-                                    <th class="text-center">{{ __('label.accommodation') }}</th>
-                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
-                                    <th class="text-center">{{ __('label.vehicle') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-
             <div class="modal fade" id="editItineraryModal" tabindex="-1" aria-labelledby="editItineraryModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-lg">

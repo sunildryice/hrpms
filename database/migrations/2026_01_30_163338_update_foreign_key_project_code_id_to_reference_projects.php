@@ -14,7 +14,7 @@ return new class extends Migration {
     {
         Schema::table('local_travel_reimbursements', function (Blueprint $table) {
             $table->dropForeign('fk_local_travel_reimbursements_project_code');
-
+            // $table->dropForeign(['project_code_id']);
             $table->foreign('project_code_id')->references('id')->on('projects');
         });
     }

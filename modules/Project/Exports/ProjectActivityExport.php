@@ -41,25 +41,24 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
                 $sheet->getColumnDimension('D')->setWidth(26);   // Timeline
                 $sheet->getColumnDimension('E')->setWidth(24);   // Members
-                $sheet->getColumnDimension('F')->setWidth(14);   // Status
+                $sheet->getColumnDimension('F')->setWidth(20);   // Status
                 $sheet->getColumnDimension('G')->setWidth(20);   // Extended
                 $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
-                $sheet->getColumnDimension('I')->setWidth(14);   // Days left
     
                 // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
 
-                for ($col = 10; $col <= $highestColumnIndex; $col++) { // K = 11
+                for ($col = 9; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
 
-                // Freeze header (title + months + weeks)
-                $sheet->freezePane('A4');
+                // Freeze header (title + years + months + weeks)
+                $sheet->freezePane('A5');
 
                 // Header background + bold
-                $sheet->getStyle('A1:' . $highestColumn . '3')->applyFromArray([
+                $sheet->getStyle('A1:' . $highestColumn . '4')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'E6F3FF'],
@@ -82,20 +81,58 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // Alignments
                 $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('K:' . $highestColumn)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle('I:I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                // $sheet->getStyle('A:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle("A2:{$highestColumn}4")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 
                 // Monospace font for Gantt area
-                $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
+                $sheet->getStyle('I:' . $highestColumn)->getFont()->setName('Consolas');
 
-                // Convert '█' or '██' markers to full colored background
-                $activeColor = '5B9BD5'; // nice blue (you can change)
-    
-                foreach ($sheet->getRowIterator(4, $highestRow) as $row) {
+                $stageStyle = [
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'e6e6e6'],
+                    ],
+                    'font' => [
+                        'bold' => true,
+                    ],
+                ];
+
+                $themeNameStyle = [
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'ffeee6'],
+                    ],
+                ];
+
+                // === Style Stage rows and Activity Theme name cells ===
+                foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
-                    foreach (range(10, $highestColumnIndex) as $colIdx) {
+                    $cellA = $sheet->getCell("A{$rowIndex}");
+                    $cellB = $sheet->getCell("B{$rowIndex}");
+
+                    // Check if this is a stage row (merged cells in A and B)
+                    if ($cellA->getMergeRange() && $cellA->getMergeRange() === $cellB->getMergeRange()) {
+                        $sheet->getStyle("A{$rowIndex}:{$highestColumn}{$rowIndex}")->applyFromArray($stageStyle);
+                        continue;
+                    }
+
+                    // Check if this is an Activity Theme row
+                    $cellBValue = trim((string) $cellB->getValue());
+                    if (strtolower($cellBValue) === 'activity theme') {
+                        // Apply style **only to column A** (the name cell)
+                        $sheet->getStyle("A{$rowIndex}")->applyFromArray($themeNameStyle);
+                    }
+                }
+
+                // Convert '█' or '██' markers to full colored background (Gantt bars)
+                $activeColor = '7699bc';
+
+                foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
+                    $rowIndex = $row->getRowIndex();
+
+                    foreach (range(9, $highestColumnIndex) as $colIdx) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
                         $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
                         $value = trim((string) $cell->getValue());
@@ -130,7 +167,10 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                     ],
                 ]);
 
-                $sheet->getStyle("J4:J{$highestRow}")->setConditionalStyles([$conditional]);
+                $sheet->getStyle("I5:I{$highestRow}")->setConditionalStyles([$conditional]);
+
+                //Height for the first row
+                $sheet->getRowDimension(1)->setRowHeight(30);
             },
         ];
     }

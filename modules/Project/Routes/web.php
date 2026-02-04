@@ -15,6 +15,7 @@ use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
 use Modules\Project\Controllers\WeeklyPlanController;
 use Modules\Project\Controllers\WorkPlanController;
+use Modules\Project\Controllers\WorkPlanDetailController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -86,12 +87,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/work-plan', [WorkPlanController::class, 'index'])->name('work-plan.index');
-    Route::post('/work-plan/store', [WorkPlanController::class, 'store'])->name('work-plan.store');
-    Route::get('/work-plan/create', [WorkPlanController::class, 'create'])->name('work-plan.create');
-    Route::get('/work-plan/{id}/edit', [WorkPlanController::class, 'edit'])->name('work-plan.edit');
-    Route::put('/work-plan/{id}/update', [WorkPlanController::class, 'update'])->name('work-plan.update');
-    Route::put('/work-plan/{id}/update-status', [WorkPlanController::class, 'updateStatus'])->name('work-plan.update-status');
-    Route::delete('/work-plan/{id}/delete', [WorkPlanController::class, 'destroy'])->name('work-plan.destroy');
-    Route::get('/work-plan/get-activities', [WorkPlanController::class, 'getActivities'])->name('work-plan.get-activities');
-    Route::get('/work-plan/{start_of_week}/{end_of_week}/details', [WorkPlanController::class, 'details'])->name('work-plan.details');
+    Route::post('/work-plan/store', [WorkPlanDetailController::class, 'store'])->name('work-plan.store');
+    Route::get('/work-plan/create', [WorkPlanDetailController::class, 'create'])->name('work-plan.create');
+    Route::get('/work-plan/{id}/edit', [WorkPlanDetailController::class, 'edit'])->name('work-plan.edit');
+    Route::put('/work-plan/{id}/update', [WorkPlanDetailController::class, 'update'])->name('work-plan.update');
+    Route::put('/work-plan/{id}/update-status', [WorkPlanDetailController::class, 'updateStatus'])->name('work-plan.update-status');
+    Route::delete('/work-plan/{id}/delete', [WorkPlanDetailController::class, 'destroy'])->name('work-plan.destroy');
+    Route::get('/work-plan/get-activities', [WorkPlanDetailController::class, 'getActivities'])->name('work-plan.get-activities');
+    Route::get('/work-plan/{workPlan}/details', [WorkPlanDetailController::class, 'index'])->name('work-plan.details');
 });

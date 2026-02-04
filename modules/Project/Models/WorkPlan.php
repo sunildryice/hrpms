@@ -16,56 +16,26 @@ class WorkPlan extends Model
         'to_date',
     ];
 
-    public static function isEditable($startDate)
-    {
-        $now = Carbon::now();
-        $weekStart = Carbon::parse($startDate)->startOfDay();
+    protected $casts = [
+        'from_date' => 'date',
+        'to_date' => 'date',
+    ];
 
-        $daysToSaturday = 6 - $weekStart->dayOfWeek;
-        $weekEnd = $weekStart->copy()->addDays($daysToSaturday)->endOfDay();
-
-        // 1. Past Week
-        if ($now->gt($weekEnd)) {
-            return false;
-        }
-
-        // 2. Future Week
-        if ($now->lt($weekStart)) {
-            return true;
-        }
-
-        // 3. Current Week (Inside the range)
-        // Editable ONLY up to Monday.
-        return $now->dayOfWeekIso <= 1;
-    }
-
-    public static function isStatusUpdatable($startDate, $endDate = null)
+    public function getRowClassAttribute()
     {
         $now = Carbon::now()->startOfDay();
-        $start = Carbon::parse($startDate)->startOfDay();
 
-        if ($endDate) {
-            $end = Carbon::parse($endDate)->endOfDay();
-        } else {
-            // Fallback: Calculate end of the plan week (Saturday)
-            $daysToSaturday = 6 - $start->dayOfWeek;
-            $end = $start->copy()->addDays($daysToSaturday)->endOfDay();
+        if ($now->between($this->from_date, $this->to_date)) {
+            return 'current-week';
         }
 
-        // 1. Current Week: Now is within the plan duration
-        if ($now->between($start, $end)) {
-            return $now->isFriday();
+        if ($this->to_date->lt($now)) {
+            return 'past-week';
         }
 
-        // 2. Previous Week: Plan ended recently (within the last ~8 days to cover standard week transition)
-        // If we are in the week immediately following the plan, we should be able to update it.
-        if ($now->gt($end)) {
-            // Using 8 days buffer to ensure any day in the current week can edit the immediate past week
-            return $now->diffInDays($end) <= 8;
-        }
-
-        return false;
+        return 'future-week';
     }
+
 
     public function employee()
     {

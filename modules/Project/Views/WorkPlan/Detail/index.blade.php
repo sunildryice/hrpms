@@ -89,9 +89,18 @@
                 var status = $select.val();
                 var prev = $select.data('prev');
 
-                if (status === 'completed') {
+                if (status === 'completed' || status === 'no_required') {
                     currentStatusElement = $select;
                     currentStatusPreviousValue = prev;
+
+                    var labelText = status === 'completed' ? 'Remarks' : 'Reason';
+                    var placeholderText = status === 'completed' ? 'Please provide remarks...' :
+                        'Please provide a reason...';
+                    var titleText = status === 'completed' ? 'Mark As Completed' : 'Mark As No Required';
+
+                    $('#statusReasonModalLabel').text(titleText);
+                    $('label[for="status_reason"]').text(labelText);
+                    $('#status_reason').attr('placeholder', placeholderText);
 
                     $('#status_detail_id').val(id);
                     $('#status_value').val(status);
@@ -299,7 +308,7 @@
                             <th>Activity</th>
                             <th>Planned Tasks</th>
                             <th>Status</th>
-                            <th>Reason</th>
+                            <th>Remarks</th>
                             @if ($isEditable)
                                 <th>{{ __('label.action') }}</th>
                             @endif

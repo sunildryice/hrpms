@@ -51,29 +51,17 @@
                             <th>Week</th>
                             <th>Start Date</th>
                             <th>End Date</th>
-                            <th>Employee</th>
                             <th>{{ __('label.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($weeks as $week)
-                            @php
-                                $rowClass = '';
-                                if ($week['is_current']) {
-                                    $rowClass = 'current-week';
-                                } elseif ($week['is_past']) {
-                                    $rowClass = 'past-week';
-                                } else {
-                                    $rowClass = 'future-week';
-                                }
-                            @endphp
-                            <tr class="{{ $rowClass }}">
-                                <td>{{ $week['label'] }}</td>
-                                <td>{{ $week['start_date'] }}</td>
-                                <td>{{ $week['end_date'] }}</td>
-                                <td>{{ auth()->user()->name ?? 'N/A' }}</td>
+                        @foreach ($workPlans as $workPlan)
+                            <tr class="{{ $workPlan->row_class }}">
+                                <td>Week {{ $loop->iteration }}</td>
+                                <td>{{ $workPlan->from_date->format('M j, Y') }}</td>
+                                <td>{{ $workPlan->to_date->format('M j, Y') }}</td>
                                 <td>
-                                    <a href="{{ route('work-plan.details', ['start_of_week' => $week['start_date_raw'], 'end_of_week' => $week['end_date_raw']]) }}"
+                                    <a href="{{ route('work-plan.details', ['workPlan' => $workPlan->id]) }}"
                                         class="btn btn-primary btn-sm">
                                         <i class="bi bi-eye"></i>
                                     </a>

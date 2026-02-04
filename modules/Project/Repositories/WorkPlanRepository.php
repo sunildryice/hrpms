@@ -26,6 +26,21 @@ class WorkPlanRepository extends Repository
             ->first();
     }
 
+    public function findOrCreateWorkPlan($employeeId, $fromDate, $toDate)
+    {
+        $workPlan = $this->findByDateAndEmployee($fromDate, $employeeId);
+
+        if (!$workPlan) {
+            $workPlan = $this->createWorkPlan([
+                'employee_id' => $employeeId,
+                'from_date' => $fromDate,
+                'to_date' => $toDate,
+            ]);
+        }
+
+        return $workPlan;
+    }
+
     public function createWorkPlanDetail($workPlanId, $data)
     {
         return WorkPlanDetail::create([
@@ -35,5 +50,29 @@ class WorkPlanRepository extends Repository
             'plan_tasks' => $data['planned_task'],
             'status' => $data['status'] ?? 'not_started',
         ]);
+    }
+
+    public function getWorkPlanDetails($workPlanId)
+    {
+        return WorkPlanDetail::with(['project', 'activity'])
+            ->where('work_plan_id', $workPlanId);
+    }
+
+    public function findDetailById($id)
+    {
+        return WorkPlanDetail::with(['workPlan', 'project'])->findOrFail($id);
+    }
+
+    public function updateDetail($id, $data)
+    {
+        $detail = $this->findDetailById($id);
+        $detail->update($data);
+        return $detail;
+    }
+
+    public function deleteDetail($id)
+    {
+        $detail = $this->findDetailById($id);
+        return $detail->delete();
     }
 }

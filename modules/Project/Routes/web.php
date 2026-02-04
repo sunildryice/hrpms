@@ -13,6 +13,7 @@ use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
+use Modules\Project\Controllers\WeeklyPlanController;
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -81,4 +82,8 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/monthly-timesheet/index', [MonthlyTimeSheetController::class, 'index'])->name('monthly-timesheet.index');
     Route::get('/monthly-timesheet/{month}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
+
+
+    Route::get('/weekly-plan', [WeeklyPlanController::class, 'index'])->name('weekly-plan.index');
+    Route::get('/weekly-plan/{start_of_week}/{end_of_week}/details', [WeeklyPlanController::class, 'details'])->name('weekly-plan.details');
 });

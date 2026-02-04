@@ -468,6 +468,15 @@
                         </a>
                     </div>
 
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('weekly-plan.index') }}" role="button"
+                            id="weekly-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Weekly Plan">
+                            <i class="bi bi-journal-text nav-icon"></i>
+                            <span class="nav-link-title">Work Plan</span>
+                        </a>
+                    </div>
+
                     @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"

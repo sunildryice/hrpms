@@ -469,9 +469,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a class="nav-link" href="{{ route('weekly-plan.index') }}" role="button"
-                            id="weekly-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Weekly Plan">
+                        <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
+                            id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Work Plan">
                             <i class="bi bi-journal-text nav-icon"></i>
                             <span class="nav-link-title">Work Plan</span>
                         </a>

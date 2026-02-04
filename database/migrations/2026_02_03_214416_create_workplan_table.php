@@ -32,7 +32,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('project_id');
             $table->unsignedBigInteger('project_activity_id');
             $table->text('plan_tasks')->nullable();
-            $table->enum('status', ['not_started', 'under_progress', 'no_required', 'completed'])->nullable();
+            $table->enum('status', ['not_started', 'partially_completed', 'no_required', 'completed'])->nullable();
+            $table->text('reason')->nullable();
             $table->nullableTimestamps();
 
             $table->foreign('work_plan_id')->references('id')->on('work_plan');

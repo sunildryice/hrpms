@@ -6,6 +6,12 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#travel-report-menu').addClass('active');
+
+            $('.select2').select2({
+                placeholder: "Select Status",
+                // allowClear: true,
+                width: '100%'
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -13,31 +19,6 @@
 
             const form = document.getElementById('travelReportAddForm');
             const template = document.getElementById('template');
-
-            // const subjectValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Day is required'
-            //         }
-            //     }
-            // };
-            // const dateValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Date is required'
-            //         }
-            //     }
-            // };
-            // const taskValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Activities are required'
-            //         }
-            //     }
-            // };
-            // const remarkValidators = {
-            //     validators: {}
-            // };
 
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -62,18 +43,44 @@
                             }
                         }
                     },
-                    'completed_tasks': {
+                    // 'completed_tasks': {
+                    //     selector: '#activitiesErrorContainer',
+                    //     validators: {
+                    //         callback: {
+                    //             message: 'Activities are required',
+                    //             callback: function(input) {
+                    //                 const fields = form.querySelectorAll(
+                    //                     'textarea[name^="itinerary[completed_tasks]"]');
+                    //                 let allFilled = true;
+
+                    //                 fields.forEach(function(field) {
+                    //                     if (field.value.trim() === '') {
+                    //                         allFilled = false;
+                    //                         field.closest('tr').classList.add('table-danger');
+                    //                     } else {
+                    //                         field.closest('tr').classList.remove(
+                    //                             'table-danger');
+                    //                     }
+                    //                 });
+
+                    //                 return allFilled;
+                    //             }
+                    //         }
+                    //     }
+                    // },
+                    'itinerary.status.*': {
                         selector: '#activitiesErrorContainer',
                         validators: {
                             callback: {
-                                message: 'Activities are required',
+                                message: 'Please select a status for each day',
                                 callback: function(input) {
                                     const fields = form.querySelectorAll(
-                                        'textarea[name^="itinerary[completed_tasks]"]');
+                                        'select[name^="itinerary[status]"]'
+                                    );
                                     let allFilled = true;
 
                                     fields.forEach(function(field) {
-                                        if (field.value.trim() === '') {
+                                        if (!field.value || field.value.trim() === '') {
                                             allFilled = false;
                                             field.closest('tr').classList.add('table-danger');
                                         } else {
@@ -104,7 +111,7 @@
                     message: new FormValidation.plugins.Message({
                         clazz: 'invalid-feedback',
                         container: function(field, element) {
-                            if (field === 'completed_tasks') {
+                            if (field.startsWith('itinerary.status')) {
                                 return '#activitiesErrorContainer';
                             }
                             return FormValidation.plugins.Message.getParent(element);
@@ -113,16 +120,20 @@
                 },
             });
 
-            form.querySelectorAll('textarea[name^="itinerary[completed_tasks]"]').forEach(function(field) {
-                field.addEventListener('input', function() {
-                    fv.revalidateField('completed_tasks');
+            // Re-validate when any status changes (including Select2)
+            form.querySelectorAll('select[name^="itinerary[status]"]').forEach(function(field) {
+                field.addEventListener('change', function() {
+                    fv.revalidateField('itinerary.status.*');
+                });
+
+                $(field).on('select2:select select2:unselect', function() {
+                    fv.revalidateField('itinerary.status.*');
                 });
             });
 
             @if ($errors->any())
-                fv.revalidateField('completed_tasks');
+                fv.revalidateField('itinerary.status.*');
             @endif
-
         });
     </script>
 @endsection
@@ -201,11 +212,10 @@
                                                             Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        {{-- <th style="width: 10%">Day</th> --}}
                                                         <th style="width: 15%">{{ __('label.date') }}</th>
                                                         <th style="width: 15%">{{ __('label.activity') }}</th>
                                                         <th style="width: 25%">Planned Activities</th>
-                                                        <th style="width: 25%">Carried Activities / Completed Tasks</th>
+                                                        <th style="width: 25%">{{ __('label.status') }}</th>
                                                         <th style="width: 20%">{{ __('label.remarks') }}</th>
                                                     </tr>
                                                 </thead>
@@ -223,9 +233,6 @@
                                                         @endphp
 
                                                         <tr>
-                                                            {{-- <td class="text-center">
-                                                                <input type="text" class="form-control fw-bold text-center" value="{{ $weekday }}" readonly>
-                                                            </td> --}}
 
                                                             <td class="text-center">
                                                                 {{ $formattedDate }}
@@ -239,12 +246,20 @@
                                                             </td>
 
                                                             <td>
-                                                                <textarea class="form-control" rows="3" readonly>{{ $itinerary->planned_activities ?? '' }}</textarea>
-                                                            </td>
+                                                                {{ $itinerary->planned_activities ?? '' }}
 
                                                             <td>
-                                                                <textarea name="itinerary[completed_tasks][{{ $index }}]" rows="3"
-                                                                    class="form-control @error("itinerary.completed_tasks.{$index}") is-invalid @enderror">{{ old("itinerary.completed_tasks.{$index}", $itinerary->completed_tasks ?? '') }}</textarea>
+                                                                <select name="itinerary[status][{{ $index }}]"
+                                                                    class="form-select select2 @if (old("itinerary.status.$index", $itinerary->status ?? '') == '') is-invalid @endif">
+                                                                    <option value="">Select Status</option>
+                                                                    @foreach (\Modules\TravelRequest\Models\Enums\TravelReportStatus::cases() as $status)
+                                                                        <option value="{{ $status->value }}"
+                                                                            {{ old("itinerary.status.$index", $itinerary->status ?? '') === $status->value ? 'selected' : '' }}>
+                                                                            {{ $status->label() }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+
                                                             </td>
 
                                                             <td>

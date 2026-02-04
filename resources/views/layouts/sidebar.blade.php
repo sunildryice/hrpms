@@ -460,23 +460,6 @@
                     {{-- Project Management Menu --}}
                     <span class="dropdown-header fw-bold">Project Management</span>
 
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
-                            data-bs-toggle="tooltip" data-bs-placement="right" title="Projects">
-                            <i class="bi bi-kanban nav-icon"></i>
-                            <span class="nav-link-title">Projects</span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
-                            id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                            title="Work Plan">
-                            <i class="bi bi-journal-text nav-icon"></i>
-                            <span class="nav-link-title">Work Plan</span>
-                        </a>
-                    </div>
-
                     @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"
@@ -500,6 +483,41 @@
                             </div>
                         </div>
                     @endif
+
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Projects">
+                            <i class="bi bi-kanban nav-icon"></i>
+                            <span class="nav-link-title">Projects</span>
+                        </a>
+                    </div>
+
+
+                    <div class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#navbarPlansMenuName" role="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarPlansMenuName" aria-expanded="false"
+                            aria-controls="navbarPlansMenuName" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Plans">
+                            <i class="bi bi-journal-text nav-icon"></i>
+                            <span class="nav-link-title">Plans</span>
+                        </a>
+                        <div id="navbarPlansMenuName" class="nav-collapse collapse" data-bs-parent="#navbarPlansMenu"
+                            hs-parent-area="#navbarPlansMenu" style="">
+                            <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
+                                id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Work Plan">
+                                <span class="nav-link-title">Work Plan</span>
+                            </a>
+                            <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
+                                id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Employee Work Plan">
+                                <span class="nav-link-title">Employee Work Plan</span>
+                            </a>
+                        </div>
+                    </div>
+
+
+
 
                     <div class="nav-item">
                         <a class="nav-link dropdown-toggle" href="#navbarTimesheetMenuName" role="button"

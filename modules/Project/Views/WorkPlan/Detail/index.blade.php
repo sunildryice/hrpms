@@ -21,7 +21,7 @@
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#weekly-plan-index').addClass('active');
+            $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
 
             $('.activity-select').select2({
                 dropdownParent: $('#addPlanModal'),

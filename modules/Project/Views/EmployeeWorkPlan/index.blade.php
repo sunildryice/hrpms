@@ -1,28 +1,41 @@
 @extends('layouts.container')
 
-@section('title', 'Work Plan')
+@section('title', 'Employee Work Plans')
 
-@section('page_css')
-    <style>
-        .current-week {
-            background-color: rgb(209, 236, 241) !important;
-        }
-
-        .past-week {
-            background-color: rgba(226, 227, 229, 0.4) !important;
-            color: #6c757d;
-        }
-
-        .future-week {
-            background-color: #ffffff !important;
-        }
-    </style>
-@endsection
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
+
+            $('#WeeklyPlanTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('employee-work-plan.index') }}",
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'employee_full_name',
+                        name: 'employee_full_name',
+                        orderable: false
+                    },
+                    {
+                        data: 'projects',
+                        name: 'projects',
+                        orderable: false
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
         });
     </script>
 @endsection
@@ -48,24 +61,15 @@
                 <table class="table" id="WeeklyPlanTable">
                     <thead class="bg-light">
                         <tr>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            <th>SN</th>
+                            <th>Employee</th>
+                            <th>
+                                Projects
+                            </th>
                             <th>{{ __('label.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($workPlans as $workPlan)
-                            <tr class="{{ $workPlan->row_class }}">
-                                <td>{{ $workPlan->from_date->format('M j, Y') }}</td>
-                                <td>{{ $workPlan->to_date->format('M j, Y') }}</td>
-                                <td>
-                                    <a href="{{ route('work-plan.details', ['workPlan' => $workPlan->id]) }}"
-                                        class="btn btn-primary btn-sm">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
                     </tbody>
                 </table>
             </div>

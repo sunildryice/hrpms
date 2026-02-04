@@ -88,7 +88,7 @@ class MonthlyTimeSheetController extends Controller
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
         $supervisors = $this->user->getSupervisors($authUser);
-        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors'));
+        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors', 'authUser'));
     }
 
     public function update(Request $request, $id)

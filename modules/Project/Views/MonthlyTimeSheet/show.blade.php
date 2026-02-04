@@ -168,7 +168,7 @@
                     </table>
                 </div>
             </div>
-            {{-- @if (now()->gt($timeSheet->end_date)) --}}
+           @if ($authUser->can('submit', $timeSheet))
                 <div class="card-footer border-top">
                     <form action="{{ route('monthly-timesheet.update', $timeSheet->id) }}" method="POST">
                         @csrf
@@ -217,14 +217,14 @@
                         </div>
                     </form>
                 </div>
-            {{-- @else
+            @else
                 <div class="card-footer bg-light text-center py-3">
                     <small class="text-muted">
                         Approval form will be available after the period ends on
                         <strong>{{ $timeSheet->end_date->format('d M Y') }}</strong>
                     </small>
                 </div>
-            @endif --}}
+            @endif
         </div>
     </div>
 @stop

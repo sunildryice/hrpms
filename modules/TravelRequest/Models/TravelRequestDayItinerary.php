@@ -38,6 +38,7 @@ class TravelRequestDayItinerary extends Model
         'vehicle_request_form_link',
         'completed_tasks',
         'remarks',
+        'status',
         'created_by',
         'updated_by',
     ];

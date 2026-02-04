@@ -66,11 +66,10 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                {{-- <th style="width: 10%">Day</th> --}}
                                                 <th style="width: 15%">{{ __('label.date') }}</th>
                                                 <th>{{ __('label.activity') }}</th>
                                                 <th>Planned Activities</th>
-                                                <th>Carried Activities / Completed Tasks</th>
+                                                <th>{{ __('label.status') }}</th>
                                                 <th style="width: 20%">{{ __('label.remarks') }}</th>
                                             </tr>
                                         </thead>
@@ -88,14 +87,19 @@
                                                 @endphp
 
                                                 <tr>
-                                                    {{-- <td class="text-center fw-bold">{{ $weekday }}</td> --}}
                                                     <td class="text-nowrap">{{ $formattedDate }}</td>
                                                     <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
                                                     <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
                                                     <td>
-                                                        {!! $itinerary->completed_tasks
-                                                            ? nl2br(e($itinerary->completed_tasks))
-                                                            : '<em class="text-muted">Not filled</em>' !!}
+                                                        @if (
+                                                            $itinerary->status &&
+                                                                ($statusEnum = \Modules\TravelRequest\Models\Enums\TravelReportStatus::tryFrom($itinerary->status)))
+                                                            <span class="badge {{ $statusEnum->colorClass() }}">
+                                                                {{ $statusEnum->label() }}
+                                                            </span>
+                                                        @else
+                                                            <em class="text-muted"></em>
+                                                        @endif
                                                     </td>
                                                     <td>
                                                         {!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}

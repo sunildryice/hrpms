@@ -80,7 +80,7 @@ class TravelReportRepository extends Repository
                     $travelReport->travelRequest->travelRequestDayItineraries()
                         ->where('id', $update['itinerary_id'])
                         ->update([
-                            'completed_tasks' => $update['completed_tasks'],
+                            'status' => $update['status'],
                             'remarks' => $update['remarks'],
                             'updated_at' => now(),
                         ]);
@@ -154,7 +154,7 @@ class TravelReportRepository extends Repository
                     $travelReport->travelRequest->travelRequestDayItineraries()
                         ->where('id', $update['itinerary_id'])
                         ->update([
-                            'completed_tasks' => $update['completed_tasks'],
+                            'status' => $update['status'],
                             'remarks' => $update['remarks'],
                             'updated_at' => now(),
                         ]);

@@ -3,6 +3,7 @@
 namespace Modules\TravelRequest\Requests\TravelReport;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\TravelRequest\Models\Enums\TravelReportStatus;
 
 class StoreRequest extends FormRequest
 {
@@ -27,11 +28,12 @@ class StoreRequest extends FormRequest
             'objectives' => 'required|string',
             'major_achievement' => 'required|string',
             'not_completed_activities' => 'nullable|string',
-            'conclusion_recommendations' => 'nullable',
+            'conclusion_recommendations' => 'nullable|string',
             'total_travel_days' => 'nullable|integer|min:1',
 
             'itinerary.itinerary_id.*' => 'required|integer|exists:travel_request_day_itineraries,id',
-            'itinerary.completed_tasks.*' => 'nullable|string',
+            // 'itinerary.completed_tasks.*' => 'nullable|string',
+            'itinerary.status.*' => 'required|in:' . implode(',', array_column(TravelReportStatus::cases(), 'value')),
             'itinerary.remarks.*' => 'nullable|string',
 
             'btn' => 'required',

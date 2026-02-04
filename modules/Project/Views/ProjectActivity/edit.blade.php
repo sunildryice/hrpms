@@ -101,6 +101,17 @@
             </div>
         </div>
 
+        <div class="row mb-2" id="budget_description-row">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Budget description</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <textarea name="budget_description" id="id-budget_description" class="form-control" rows="4">{{ $projectActivity->budget_description }}</textarea>
+            </div>
+        </div>
+
         <div class="row mb-2" id="deliverables-row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

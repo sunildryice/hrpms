@@ -18,6 +18,7 @@ use Modules\Master\Repositories\StatusRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\TravelRequest\Requests\TravelReport\StoreRequest;
 use Modules\TravelRequest\Requests\TravelReport\UpdateRequest;
+use Modules\TravelRequest\Models\Enums\TravelReportStatus;
 
 
 class TravelReportController extends Controller
@@ -129,6 +130,7 @@ class TravelReportController extends Controller
     public function create($travelRequestId)
     {
         $authUser = auth()->user();
+        $status = TravelReportStatus::cases();
         $travelRequest = $this->travelRequest->find($travelRequestId);
         $travelReport = $this->travelReport->select('*')->where('travel_request_id', $travelRequestId)->first();
         $supervisors = $this->user->getSupervisors($authUser);
@@ -142,6 +144,7 @@ class TravelReportController extends Controller
             if (in_array($travelReport->status_id, [3, 6, 8])) {
                 return view('TravelRequest::TravelReport.view')
                     ->withAuthUser($authUser)
+                    ->withStatus($status)
                     ->withTravelReport($travelReport)
                     ->withTravelRequest($travelRequest)
                     ->withTravelReportRecommendation($travelReportRecommendation)
@@ -150,6 +153,7 @@ class TravelReportController extends Controller
 
             return view('TravelRequest::TravelReport.edit')
                 ->withAuthUser($authUser)
+                ->withStatus($status)
                 ->withSupervisors($supervisors)
                 ->withTravelReport($travelReport)
                 ->withTravelRequest($travelRequest)
@@ -158,6 +162,7 @@ class TravelReportController extends Controller
         } else {
             $this->authorize('createReport', $travelRequest);
             return view('TravelRequest::TravelReport.create')
+                ->withStatus($status)
                 ->withSupervisors($supervisors)
                 ->withTravelRequest($travelRequest);
         }
@@ -179,10 +184,11 @@ class TravelReportController extends Controller
         foreach ($inputs['itinerary']['itinerary_id'] as $index => $itineraryId) {
             $itineraryData = [
                 'itinerary_id' => $itineraryId,
-                'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                // 'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                'status' => $inputs['itinerary']['status'][$index] ?? null,
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
-            if (trim($itineraryData['completed_tasks'] . $itineraryData['remarks']) !== '') {
+            if (trim($itineraryData['remarks']) !== '') {
                 $inputs['itinerary_updates'][$index] = $itineraryData;
             }
         }
@@ -248,11 +254,12 @@ class TravelReportController extends Controller
         foreach ($inputs['itinerary']['itinerary_id'] ?? [] as $index => $itineraryId) {
             $itineraryData = [
                 'itinerary_id' => $itineraryId,
-                'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                // 'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
+                'status' => $inputs['itinerary']['status'][$index] ?? null,
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
 
-            if (trim($itineraryData['completed_tasks'] . $itineraryData['remarks']) !== '') {
+            if (trim($itineraryData['remarks']) !== '') {
                 $inputs['itinerary_updates'][$index] = $itineraryData;
             }
         }

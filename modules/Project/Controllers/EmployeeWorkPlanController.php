@@ -122,17 +122,6 @@ class EmployeeWorkPlanController extends Controller
                 ->make(true);
         }
 
-        $details = $workPlanDetail->details;
-        $stats = [
-            'total' => $details->count(),
-            'completed' => $details->where('status', WorkPlanStatus::Completed->value)->count(),
-            'partially_completed' => $details->where('status', WorkPlanStatus::PartiallyCompleted->value)->count(),
-            'no_required' => $details->where('status', WorkPlanStatus::NoRequired->value)->count(),
-            'not_started' => $details->filter(function ($detail) {
-                return is_null($detail->status) || $detail->status === WorkPlanStatus::NotStarted->value;
-            })->count(),
-        ];
-
 
         $week = [
             'start_date' => $workPlanDetail->from_date,
@@ -142,7 +131,6 @@ class EmployeeWorkPlanController extends Controller
         return view('Project::EmployeeWorkPlan.show', [
             'workPlan' => $workPlanDetail,
             'week' => $week,
-            'stats' => $stats,
         ]);
     }
 }

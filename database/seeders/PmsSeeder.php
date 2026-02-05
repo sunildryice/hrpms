@@ -44,7 +44,13 @@ class PmsSeeder extends Seeder
                 'guard_name' => 'manage-activity-update-periods',
                 'parent_id' => $pmsPermission->id,
                 'activated_at' => now(),
-            ]
+            ],
+            [
+                'permission_name' => 'Employee Work Plans',
+                'guard_name' => 'employee-work-plans',
+                'parent_id' => $pmsPermission->id,
+                'activated_at' => now(),
+            ],
         ];
 
         foreach ($subPermissions as $subPermission) {

@@ -48,7 +48,6 @@
                 <table class="table" id="WeeklyPlanTable">
                     <thead class="bg-light">
                         <tr>
-                            <th>Week</th>
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>{{ __('label.action') }}</th>
@@ -57,7 +56,6 @@
                     <tbody>
                         @foreach ($workPlans as $workPlan)
                             <tr class="{{ $workPlan->row_class }}">
-                                <td>Week {{ $loop->iteration }}</td>
                                 <td>{{ $workPlan->from_date->format('M j, Y') }}</td>
                                 <td>{{ $workPlan->to_date->format('M j, Y') }}</td>
                                 <td>

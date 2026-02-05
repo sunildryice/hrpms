@@ -46,4 +46,16 @@ class WorkPlan extends Model
     {
         return $this->hasMany(WorkPlanDetail::class);
     }
+
+    public function projects()
+    {
+        return $this->hasManyThrough(
+            Project::class,
+            WorkPlanDetail::class,
+            'work_plan_id',
+            'id',
+            'id',
+            'project_id'
+        );
+    }
 }

@@ -4,6 +4,7 @@ namespace Modules\Project\Repositories;
 
 use DB;
 use App\Repositories\Repository;
+use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Project;
 
 class ProjectRepository extends Repository
@@ -23,7 +24,8 @@ class ProjectRepository extends Repository
                 'activities' => function ($q) use ($authUser) {
                     $q->whereHas('members', function ($sq) use ($authUser) {
                         $sq->where('user_id', $authUser->id);
-                    });
+                    })
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
                 },
 
             ])

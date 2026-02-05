@@ -9,6 +9,7 @@ use Modules\Project\Controllers\ProjectActivityController;
 use Modules\Project\Controllers\MonthlyTimeSheetController;
 use Modules\Project\Controllers\ProjectGanttChartController;
 use Modules\Project\Controllers\ActivityUpdatePeriodController;
+use Modules\Project\Controllers\EmployeeWorkPlanController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
@@ -95,4 +96,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/work-plan/{id}/delete', [WorkPlanDetailController::class, 'destroy'])->name('work-plan.destroy');
     Route::get('/work-plan/get-activities', [WorkPlanDetailController::class, 'getActivities'])->name('work-plan.get-activities');
     Route::get('/work-plan/{workPlan}/details', [WorkPlanDetailController::class, 'index'])->name('work-plan.details');
+
+
+    Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');
 });

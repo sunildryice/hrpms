@@ -274,7 +274,7 @@
                 <div class="card-body text-center">
                     <div class="row">
                         <div class="col">
-                            <b class="text-muted d-block">Total Tasks</b>
+                            <b class="text-muted d-block">Total Plans</b>
                             <h5 class="my-3">{{ $stats['total'] ?? 0 }}</h5>
                         </div>
                         <div class="col">

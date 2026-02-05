@@ -99,4 +99,5 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');
+    Route::get('/employee-work-plan/{workPlan}/details', [EmployeeWorkPlanController::class, 'show'])->name('employee-work-plan.details');
 });

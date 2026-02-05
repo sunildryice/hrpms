@@ -34,7 +34,7 @@
                     {
                         data: 'employee_full_name',
                         name: 'employee_full_name',
-                        orderable: false
+                        orderable: true
                     },
                     {
                         data: 'projects',

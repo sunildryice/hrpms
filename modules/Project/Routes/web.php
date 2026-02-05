@@ -2,23 +2,25 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Project\Controllers\ProjectController;
+use Modules\Project\Controllers\WorkPlanController;
 use Modules\Project\Controllers\TimeSheetController;
+use Modules\Project\Controllers\WeeklyPlanController;
 use Modules\Project\Controllers\ActivityStageController;
 use Modules\Project\Controllers\ProjectMembersController;
+use Modules\Project\Controllers\WorkPlanDetailController;
 use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\EmployeeWorkPlanController;
 use Modules\Project\Controllers\MonthlyTimeSheetController;
 use Modules\Project\Controllers\ProjectGanttChartController;
 use Modules\Project\Controllers\ActivityUpdatePeriodController;
-use Modules\Project\Controllers\EmployeeWorkPlanController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
+use Modules\Project\Controllers\MonthlyTimeSheetApprovedController;
+use Modules\Project\Controllers\MonthlyTimeSheetApproverController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
-use Modules\Project\Controllers\WeeklyPlanController;
-use Modules\Project\Controllers\WorkPlanController;
-use Modules\Project\Controllers\WorkPlanDetailController;
 
-Route::middleware(['web', 'auth'])->group(function () {
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('project.create');
     Route::post('/projects/store', [ProjectController::class, 'store'])->name('project.store');
@@ -101,4 +103,22 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');
+});
+
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
+    Route::get('approve/monthly-timesheet', [MonthlyTimeSheetApproverController::class, 'index'])
+        ->name('approve.monthly-timesheet.index');
+    Route::get('approve/monthly-timesheet/{month}/create', [MonthlyTimeSheetApproverController::class, 'create'])
+        ->name('approve.monthly-timesheet.create');
+    Route::post('approve/monthly-timesheet/{id}', [MonthlyTimeSheetApproverController::class, 'store'])
+        ->name('approve.monthly-timesheet.store');
+});
+
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
+    Route::get('approved/monthly-timesheet', [MonthlyTimeSheetApprovedController::class, 'index'])
+        ->name('approved.monthly-timesheet.index');
+    Route::get('approved/monthly-timesheet/{month}/create', [MonthlyTimeSheetApprovedController::class, 'create'])
+        ->name('approved.monthly-timesheet.create');
+    Route::post('approved/monthly-timesheet/{id}', [MonthlyTimeSheetApprovedController::class, 'store'])
+        ->name('approved.monthly-timesheet.store');
 });

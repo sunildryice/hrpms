@@ -3,42 +3,43 @@
 namespace App\Http\ViewComposers;
 
 use Illuminate\View\View;
-use Modules\AdvanceRequest\Repositories\AdvanceRequestRepository;
-use Modules\AdvanceRequest\Repositories\SettlementRepository;
-use Modules\AssetDisposition\Repositories\DispositionRequestRepository;
-use Modules\DistributionRequest\Repositories\DistributionHandoverRepository;
-use Modules\DistributionRequest\Repositories\DistributionRequestRepository;
-use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
-use Modules\EmployeeExit\Repositories\EmployeeExitPayableRepository;
-use Modules\EmployeeExit\Repositories\ExitHandOverNoteRepository;
-use Modules\EmployeeExit\Repositories\ExitInterviewRepository;
-use Modules\EmployeeRequest\Repositories\EmployeeRequestRepository;
-use Modules\EventCompletion\Repositories\EventCompletionRepository;
+use Modules\Memo\Repositories\MemoRepository;
+use Modules\Privilege\Repositories\UserRepository;
+use Modules\Mfr\Repositories\TransactionRepository;
+use Modules\WorkLog\Repositories\WorkPlanRepository;
+use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 use Modules\FundRequest\Repositories\FundRequestRepository;
-use Modules\GoodRequest\Repositories\GoodRequestAssetRepository;
 use Modules\GoodRequest\Repositories\GoodRequestRepository;
 use Modules\LeaveRequest\Repositories\LeaveEncashRepository;
+use Modules\AdvanceRequest\Repositories\SettlementRepository;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
-use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
-use Modules\MaintenanceRequest\Repositories\MaintenanceRequestRepository;
-use Modules\Memo\Repositories\MemoRepository;
-use Modules\Mfr\Repositories\TransactionRepository;
-use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 use Modules\PaymentSheet\Repositories\PaymentSheetRepository;
-use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\PurchaseOrder\Repositories\PurchaseOrderRepository;
-use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
-use Modules\TrainingRequest\Repositories\TrainingRequestRepository;
-use Modules\TransportationBill\Repositories\TransportationBillRepository;
-use Modules\TravelAuthorization\Repositories\TravelAuthorizationRepository;
 use Modules\TravelRequest\Repositories\LocalTravelRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
-use Modules\TravelRequest\Repositories\TravelReportRepository;
-use Modules\TravelRequest\Repositories\TravelRequestRepository;
-use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
-use Modules\WorkLog\Repositories\WorkPlanRepository;
+use Modules\EmployeeExit\Repositories\ExitInterviewRepository;
+use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
+use Modules\TravelRequest\Repositories\TravelReportRepository;
+use Modules\PurchaseOrder\Repositories\PurchaseOrderRepository;
+use Modules\TravelRequest\Repositories\TravelRequestRepository;
+use Modules\GoodRequest\Repositories\GoodRequestAssetRepository;
+use Modules\AdvanceRequest\Repositories\AdvanceRequestRepository;
+use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
+use Modules\EmployeeExit\Repositories\ExitHandOverNoteRepository;
+use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
+use Modules\EmployeeRequest\Repositories\EmployeeRequestRepository;
+use Modules\EventCompletion\Repositories\EventCompletionRepository;
+use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
+use Modules\TrainingRequest\Repositories\TrainingRequestRepository;
+use Modules\EmployeeExit\Repositories\EmployeeExitPayableRepository;
+use Modules\AssetDisposition\Repositories\DispositionRequestRepository;
+use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
+use Modules\MaintenanceRequest\Repositories\MaintenanceRequestRepository;
+use Modules\TransportationBill\Repositories\TransportationBillRepository;
+use Modules\DistributionRequest\Repositories\DistributionRequestRepository;
+use Modules\TravelAuthorization\Repositories\TravelAuthorizationRepository;
+use Modules\DistributionRequest\Repositories\DistributionHandoverRepository;
 
 class SideBarComposer
 {
@@ -84,6 +85,7 @@ class SideBarComposer
         protected WorkFromHomeRepository         $workFromHomes,
         protected OffDayWorkRepository            $offDayWorks,
         protected LieuLeaveRequestRepository      $lieuLeaveRequests,
+        protected TimeSheetRepository             $timeSheets,
     ) {}
 
     /**
@@ -512,6 +514,12 @@ class SideBarComposer
             ->where('approver_id', '=', auth()->id())
             ->count();
 
+
+        $approveMonthlyTimeSheetCount = $this->timeSheets
+            ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
+            ->where('approver_id', '=', auth()->id())
+            ->count();
+
         $view->withUser($authUser)
             ->withApproveAdvanceRequestCount($approveAdvanceRequestCount)
             ->withApproveAssetHandoverCount($approveAssetHandoverCount)
@@ -584,7 +592,8 @@ class SideBarComposer
             ->withVerifySettlementCount($verifySettlementCount)
             ->withApproveWorkFromHomeRequestCount($approveWorkFromHomeRequestCount)
             ->withApproveOffDayWorkCount($approveOffDayWorkCount)
-            ->withApproveLieuLeaveRequestCount($approveLieuLeaveRequestCount);
+            ->withApproveLieuLeaveRequestCount($approveLieuLeaveRequestCount)
+            ->withApproveMonthlyTimeSheetCount($approveMonthlyTimeSheetCount);
 
         return $view;
     }

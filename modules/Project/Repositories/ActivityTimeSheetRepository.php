@@ -1,10 +1,8 @@
 <?php
-
-// repo for project activity timesheet
 namespace Modules\Project\Repositories;
-
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
+use Modules\Project\Models\TimeSheet;
 use Illuminate\Database\QueryException;
 use Modules\Project\Models\ActivityTimeSheet;
 
@@ -14,12 +12,10 @@ class ActivityTimeSheetRepository extends Repository
     {
         $this->model = $model;
     }
-
     public function getQuery()
     {
         return $this->model;
     }
-
     public function create($inputs)
     {
         DB::beginTransaction();
@@ -33,7 +29,6 @@ class ActivityTimeSheetRepository extends Repository
             throw $e;
         }
     }
-
     public function update($id, $inputs)
     {
         DB::beginTransaction();
@@ -49,14 +44,12 @@ class ActivityTimeSheetRepository extends Repository
             throw $e;
         }
     }
-
     public function destroy($id)
     {
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
             $record->delete();
-
             DB::commit();
             return true;
         } catch (QueryException $e) {
@@ -65,41 +58,105 @@ class ActivityTimeSheetRepository extends Repository
             throw $e;
         }
     }
-
     public function getMonthlyTimeSheets($userId = null)
     {
-        return $this->model
-            ->from($this->model->getTable() . ' as tst')
-            ->join('projects as p', 'tst.project_id', '=', 'p.id')
-            ->selectRaw("
-            DATE_FORMAT(tst.timesheet_date, '%Y-%m')           AS month,
-            MIN(DATE_FORMAT(tst.timesheet_date, '%M %Y'))      AS month_name,  
-            
-            COUNT(*)                                           AS total_entries,
-            ROUND(SUM(tst.hours_spent), 2)                     AS total_hours,
-            
-            COUNT(DISTINCT tst.project_id)                     AS unique_project_count,
-            GROUP_CONCAT(DISTINCT p.short_name 
-                         ORDER BY p.short_name 
-                         SEPARATOR ', ')                       AS project_short_names
-        ")
+        return TimeSheet::with('status')
+            ->select([
+                'timesheets.*',
+                DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
+                DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
+                      FROM project_activity_timesheet tst 
+                      JOIN projects p ON tst.project_id = p.id 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
+            ])
             ->when($userId, function ($query) use ($userId) {
-                return $query->where('tst.created_by', $userId);
+                return $query->where('timesheets.requester_id', $userId);
             })
-            ->groupBy('month')
-            ->orderBy('month', 'desc')
+            ->orderBy('timesheets.year', 'asc')
+            ->orderByRaw('MONTH(timesheets.start_date) asc')
             ->get();
     }
 
-    public function getTimeSheetsByMonth($yearMonth, $userId = null)
+    public function getApproverMonthlyTimeSheets($approverId = null)
+    {
+        return TimeSheet::with('status', 'requester')
+            ->select([
+                'timesheets.*',
+                DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
+                DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
+                      FROM project_activity_timesheet tst 
+                      JOIN projects p ON tst.project_id = p.id 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
+            ])
+            ->when($approverId, function ($query) use ($approverId) {
+                $query->where('approver_id', $approverId);
+            })
+            ->where('status_id', config('constant.SUBMITTED_STATUS'))
+            ->orderBy('timesheets.year', 'asc')
+            ->orderByRaw('MONTH(timesheets.start_date) asc')
+            ->get();
+    }
+
+    public function getApprovedMonthlyTimeSheets($userId = null)
+    {
+        return TimeSheet::with('status', 'requester', 'approver')
+            ->select([
+                'timesheets.*',
+                DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
+                DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
+                      FROM project_activity_timesheet tst 
+                      JOIN projects p ON tst.project_id = p.id 
+                      WHERE tst.created_by = timesheets.requester_id 
+                      AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
+            ])
+            ->when($userId, function ($query) use ($userId) {
+                $query->where('approver_id', $userId);
+            })
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->orderBy('timesheets.year', 'desc')
+            ->orderByRaw('MONTH(timesheets.start_date) desc')
+            ->get();
+    }
+
+    public function getTimeSheetsByPeriod($startDate, $endDate, $userId = null)
     {
         return $this->model
-            ->when($yearMonth, function ($query) use ($yearMonth) {
-                $query->whereRaw('DATE_FORMAT(timesheet_date, "%Y-%m") = ?', [$yearMonth]);
-            })
             ->when($userId, function ($query) use ($userId) {
                 return $query->where('created_by', $userId);
             })
+            ->whereBetween('timesheet_date', [$startDate, $endDate])
             ->with(['project', 'activity'])
             ->get();
     }

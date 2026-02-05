@@ -46,6 +46,9 @@ class EmployeeWorkPlanController extends Controller
                 ->addColumn('employee_full_name', function ($row) {
                     return $row->employee->full_name ?? 'N/A';
                 })
+                ->filterColumn('employee_full_name', function ($query, $keyword) {
+                    $query->where('employees.full_name', 'like', "%{$keyword}%");
+                })
                 ->addColumn('projects', function ($row) {
                     $projects = $row->projects->unique('id');
                     $badges = '';
@@ -99,6 +102,9 @@ class EmployeeWorkPlanController extends Controller
 
             $query = $this->workPlans->getWorkPlanDetails($id);
 
+
+
+
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('status', function ($row) {
@@ -116,17 +122,6 @@ class EmployeeWorkPlanController extends Controller
                 ->make(true);
         }
 
-        $details = $workPlanDetail->details;
-        $stats = [
-            'total' => $details->count(),
-            'completed' => $details->where('status', WorkPlanStatus::Completed->value)->count(),
-            'partially_completed' => $details->where('status', WorkPlanStatus::PartiallyCompleted->value)->count(),
-            'no_required' => $details->where('status', WorkPlanStatus::NoRequired->value)->count(),
-            'not_started' => $details->filter(function ($detail) {
-                return is_null($detail->status) || $detail->status === WorkPlanStatus::NotStarted->value;
-            })->count(),
-        ];
-
 
         $week = [
             'start_date' => $workPlanDetail->from_date,
@@ -136,7 +131,6 @@ class EmployeeWorkPlanController extends Controller
         return view('Project::EmployeeWorkPlan.show', [
             'workPlan' => $workPlanDetail,
             'week' => $week,
-            'stats' => $stats,
         ]);
     }
 }

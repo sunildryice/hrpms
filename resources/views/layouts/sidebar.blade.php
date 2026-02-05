@@ -508,11 +508,13 @@
                                 title="Work Plan">
                                 <span class="nav-link-title">Work Plan</span>
                             </a>
-                            <a class="nav-link" href="{{ route('employee-work-plan.index') }}" role="button"
-                                id="employee-work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
-                                title="Employee Work Plan">
-                                <span class="nav-link-title">Employee Work Plan</span>
-                            </a>
+                            @if ($authUser->can('employee-work-plans'))
+                                <a class="nav-link" href="{{ route('employee-work-plan.index') }}" role="button"
+                                    id="employee-work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                    title="Employee Work Plan">
+                                    <span class="nav-link-title">Employee Work Plan</span>
+                                </a>
+                            @endif
                         </div>
                     </div>
 
@@ -533,7 +535,12 @@
                             <a class="nav-link" href="{{ route('timesheet.index') }}"
                                 id="timesheets-index">Timesheet</a>
                             <a class="nav-link" href="{{ route('monthly-timesheet.index') }}"
-                                id="monthly-timesheets-index">Monthly Timesheets</a>
+                                id="monthly-timesheets-index">Monthly Timesheet</a>
+                            <a class="nav-link" href="{{ route('approve.monthly-timesheet.index') }}"
+                                id="approve-monthly-timesheets-menu">Approve Monthly Timesheet
+                                ({{ $approveMonthlyTimeSheetCount }})</a>
+                            <a class="nav-link" href="{{ route('approved.monthly-timesheet.index') }}"
+                                id="approved-monthly-timesheets-menu">Approved Monthly Timesheet</a>
                         </div>
                     </div>
 

@@ -8,12 +8,9 @@ use App\Http\Controllers\Controller;
 use Modules\Project\Models\TimeSheet;
 use Modules\Project\Models\TimeSheetLog;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Notifications\TimeSheetApproved;
 use Modules\Project\Notifications\TimeSheetReturned;
-use Modules\Project\Notifications\TimeSheetSubmitted;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 

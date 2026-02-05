@@ -3,122 +3,115 @@
 namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Modules\Project\Models\TimeSheet;
-use Modules\Project\Models\TimeSheetLog;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Models\ActivityTimeSheet;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\Project\Notifications\TimeSheetSubmitted;
+use Modules\Project\Models\TimeSheet;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
+use Modules\Privilege\Repositories\UserRepository;
 
 class MonthlyTimeSheetApprovedController extends Controller
 {
     public function __construct(
         protected ActivityTimeSheetRepository $activityTimeSheets,
         protected TimeSheetRepository $timeSheets,
-        protected UserRepository $user
-
+        protected UserRepository $userRepository
     ) {
     }
 
-    /**
-     * Display a listing of the travel request by employee id.
-     *
-     * @return mixed
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
     public function index(Request $request)
     {
-        $authUser = auth()->user();
-        if ($request->ajax()) {
-            $data = $this->travelReport->getApproved();
+        $authUser = Auth::user();
 
-            return DataTables::of($data)
+        if ($request->ajax()) {
+            $query = $this->activityTimeSheets->getApprovedMonthlyTimeSheets($authUser->id);
+
+            return DataTables::of($query)
                 ->addIndexColumn()
-                ->addColumn('departure_date', function ($row) {
-                    return $row->travelRequest->getDepartureDate();
-                })->addColumn('return_date', function ($row) {
-                    return $row->travelRequest->getReturnDate();
-                })->addColumn('final_destination', function ($row) {
-                    return $row->travelRequest->final_destination;
-                })->addColumn('travel_number', function ($row) {
-                    return $row->travelRequest->getTravelRequestNumber();
-                })->addColumn('requester', function ($row) {
-                    return $row->getReporterName();
-                })->addColumn('status', function ($row) {
-                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
-                })->addColumn('action', function ($row) use ($authUser) {
-                    $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('approved.travel.reports.show', $row->id) . '" rel="tooltip" title="View Travel Report">';
-                    $btn .= '<i class="bi bi-eye"></i></a>';
-                    if ($authUser->can('print', $row)) {
-                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('travel.report.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
-                    }
-                    return $btn;
-                })->rawColumns(['action', 'status'])
+                ->addColumn('month_year', fn($row) => $row->month . ' ' . $row->year)
+                ->addColumn(
+                    'period',
+                    fn($row) =>
+                    Carbon::parse($row->start_date)->format('d M') . ' — ' .
+                    Carbon::parse($row->end_date)->format('d M Y')
+                )
+                ->addColumn('requester', fn($row) => $row->requester?->getFullName() ?? '-')
+                ->addColumn('total_hours', fn($row) => number_format($row->total_hours ?? 0, 2) . ' hrs')
+                ->addColumn(
+                    'approved_at',
+                    fn($row) =>
+                    $row->approved_at
+                    ? Carbon::parse($row->approved_at)->format('d M Y • H:i')
+                    : '-'
+                )
+                ->addColumn('status', fn($row) => sprintf(
+                    '<span class="badge bg-success">Approved</span>'
+                ))
+                ->addColumn('action', function ($row) {
+                    return sprintf(
+                        '<a href="%s" class="btn btn-sm btn-outline-info" title="View Approved Timesheet">
+                            <i class="bi bi-eye"></i> View
+                        </a>',
+                        route('approved.monthly-timesheet.show', $row->id)
+                    );
+                })
+                ->rawColumns(['status', 'action'])
                 ->make(true);
         }
 
-        return view('TravelRequest::TravelReportApproved.index');
+        return view('Project::MonthlyTimeSheetApproved.index');
     }
 
-    /**
-     * Show the specified advance request in printable view
-     *
-     * @param $id
-     * @return mixed
-     */
-    public function print($id)
-    {
-        $authUser = auth()->user();
-        $travelReport = $this->travelReport->find($id);
-        // $this->authorize('print', $travelReport);
-        $travelReport = $this->travelReport->select('*')
-            ->with('status')
-            ->where('id', $id)
-            ->whereStatusId(config('constant.APPROVED_STATUS'))
-            ->first();
-        $approver = $this->employees->select('*')->where('id', $travelReport->approver->employee_id)->first();
-        $requester = $this->employees->select('*')->where('id', $travelReport->reporter->employee_id)->first();
-        $date['submitted_date'] = '';
-        $date['approved_date'] = '';
-        foreach ($travelReport->logs as $log) {
-            if ($log->status_id == 3) {
-                $date['submitted_date'] = $log->created_at;
-            }
-            if ($log->status_id == 6) {
-                $date['approved_date'] = $date['recommended_date'] = $log->created_at;
-            }
-        }
-
-        return view('TravelRequest::TravelReportApproved.print')
-            ->withApprover($approver)
-            ->withDates($date)
-            ->withRequester($requester)
-            ->withTravelReport($travelReport)
-            ->withTravelRequest($travelReport->travelRequest);
-    }
-
-
-    /**
-     * Show the specified travel report.
-     *
-     * @param $id
-     * @return mixed
-     */
     public function show($id)
     {
-        $authUser = auth()->user();
-        $travelReport = $this->travelReport->find($id);
-        // $this->authorize('print', $travelReport);
-        return view('TravelRequest::TravelReportApproved.show')
-            ->withTravelReport($travelReport)
-            ->withTravelRequest($travelReport->travelRequest);
-    }
+        $authUser = Auth::user();
 
+        $timeSheet = TimeSheet::query()
+            ->where('id', $id)
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->with([
+                'requester',
+                'approver',
+                'status',
+                'logs' => fn($q) => $q->latest(),
+            ])
+            ->firstOrFail();
+
+        $activities = $this->activityTimeSheets->getTimeSheetsByPeriod(
+            $timeSheet->start_date,
+            $timeSheet->end_date,
+            $timeSheet->requester_id
+        );
+
+        $groupedActivities = $activities->groupBy(fn($item) => $item->timesheet_date);
+
+        $calendar = [];
+        $currentDate = Carbon::parse($timeSheet->start_date);
+        $endDate = Carbon::parse($timeSheet->end_date);
+
+        while ($currentDate->lte($endDate)) {
+            $dateKey = $currentDate->format('Y-m-d');
+            $calendar[$dateKey] = $groupedActivities->get($dateKey, collect());
+            $currentDate->addDay();
+        }
+
+        $stats = [
+            'total_hours' => (float) $activities->sum('hours_spent'),
+            'project_count' => $activities->pluck('project_id')->filter()->unique()->count(),
+            'activity_count' => $activities->pluck('activity_id')->filter()->unique()->count(),
+            'days_recorded' => $activities->groupBy('timesheet_date')->count(),
+            'approved_by' => $timeSheet->approver?->getFullName(),
+            'approved_at' => $timeSheet->approved_at ? Carbon::parse($timeSheet->approved_at)->format('d M Y H:i') : null,
+        ];
+
+        return view('Project::MonthlyTimeSheetApproved.show', compact(
+            'timeSheet',
+            'calendar',
+            'stats',
+            'activities',
+            'authUser'
+        ));
+    }
 }

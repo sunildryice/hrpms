@@ -1,5 +1,5 @@
 @extends('layouts.container')
-@section('title', 'Monthly Time Sheets')
+@section('title', 'Monthly Timesheets')
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {

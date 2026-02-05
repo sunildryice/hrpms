@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Approve Monthly TimeSheet')
+@section('title', 'Approve Monthly TimeSheet Detail')
 
 @section('page_css')
     <style>
@@ -62,7 +62,7 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">Home</a></li>
-                            {{-- <li class="breadcrumb-item"><a href="#" class="text-decoration-none">HR</a></li> --}}
+                            <li class="breadcrumb-item"><a href="{{ route('approve.monthly-timesheet.index') }}" class="text-decoration-none text-dark">Approve Monthly Timesheet</a></li>
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
                     </nav>

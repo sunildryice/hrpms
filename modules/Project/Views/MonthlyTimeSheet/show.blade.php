@@ -1,5 +1,5 @@
 @extends('layouts.container')
-@section('title', 'Monthly Timesheet')
+@section('title', 'Monthly Timesheet Detail')
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -20,7 +20,7 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">Home</a></li>
-                            {{-- <li class="breadcrumb-item"><a href="#" class="text-decoration-none">HR</a></li> --}}
+                            <li class="breadcrumb-item"><a href="{{ route('monthly-timesheet.index') }}" class="text-decoration-none text-dark">Monthly Timesheet</a></li>
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
                     </nav>

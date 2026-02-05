@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
         return [
             'travel_type_id'=>'required',
             'purpose_of_travel'=>'required',
-            'project_code_id'=>'required|exists:lkup_project_codes,id',
+            'project_code_id'=>'required|exists:projects,id',
             'departure_date'=>'required|date|after_or_equal:'.$valid_date,
             'return_date'=>'required|date|after_or_equal:departure_date',
             'accompanying_staff'=>'nullable',

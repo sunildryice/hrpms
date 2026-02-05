@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreign('activity_code_id')->references('id')->on('lkup_activity_codes');
             $table->foreign('account_code_id')->references('id')->on('lkup_account_codes');
             $table->foreign('donor_code_id')->references('id')->on('lkup_donor_codes');
-            $table->foreign('processed_office_id')->references('id')->on('lkup_offices');
+            $table->foreign('processed_by_office_id')->references('id')->on('lkup_offices');
             $table->foreign('charged_office_id')->references('id')->on('lkup_offices');
         });
     }

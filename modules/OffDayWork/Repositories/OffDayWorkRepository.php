@@ -22,4 +22,13 @@ class OffDayWorkRepository extends Repository
 
         return $max;
     }
+
+    public function getAvailableOffDayWorkDates($userId)
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->where('status_id', config('constants.APPROVED_STATUS'))
+            ->pluck('off_day_work_date')
+            ->toArray();
+    }
 }

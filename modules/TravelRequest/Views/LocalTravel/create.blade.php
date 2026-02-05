@@ -109,7 +109,7 @@
                                     @foreach ($projects as $project)
                                         <option value="{{ $project->id }}"
                                             {{ $project->id == old('project_code_id') ? 'selected' : '' }}>
-                                            {{ $project->getProjectCodeWithDescription() }}
+                                            {{ $project->getProjectNameWithShortName() }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -196,7 +196,7 @@
                             </div>
                         </div> --}}
 
-                        <div class="mb-2 row">
+                        {{-- <div class="mb-2 row">
                             <div class="col-lg-2">
                                 <div class="d-flex align-items-start h-100">
                                     <label for="validationRemarks" class="form-label">Reason For Travel</label>
@@ -210,7 +210,7 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
                         {!! csrf_field() !!}
                     </div>
                     <div class="gap-2 border-0 card-footer justify-content-end d-flex">

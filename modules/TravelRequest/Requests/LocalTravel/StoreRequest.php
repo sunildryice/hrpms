@@ -24,7 +24,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_code_id'=>'required|exists:lkup_project_codes,id',
+            'project_code_id'=>'required|exists:projects,id',
             'title' =>'required|string|max:191',
             'travel_request_id'=>'nullable|exists:travel_requests,id',
             'employee_id'=>'nullable',

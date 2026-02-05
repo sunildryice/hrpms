@@ -2,20 +2,22 @@
 
 namespace Modules\TravelRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
-use Modules\Master\Repositories\ActivityCodeRepository;
-use Modules\Master\Repositories\DonorCodeRepository;
 use Modules\Master\Repositories\OfficeRepository;
-use Modules\TravelRequest\Repositories\TravelClaimExpenseRepository;
+use Modules\Project\Repositories\ProjectRepository;
+use Modules\Master\Repositories\DonorCodeRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
+
+use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\TravelRequest\Repositories\TravelClaimRepository;
 
 use Modules\TravelRequest\Requests\Claim\Expense\StoreRequest;
 use Modules\TravelRequest\Requests\Claim\Expense\UpdateRequest;
-
-use DataTables;
+use Modules\TravelRequest\Repositories\TravelClaimExpenseRepository;
 
 class ClaimExpenseController extends Controller
 {
@@ -27,13 +29,14 @@ class ClaimExpenseController extends Controller
      * @param TravelClaimExpenseRepository $travelExpenses
      */
     public function __construct(
-        ActivityCodeRepository       $activityCodes,
+        ActivityCodeRepository $activityCodes,
         DonorCodeRepository $donorCodes,
-        TravelClaimRepository        $travelClaims,
+        TravelClaimRepository $travelClaims,
         TravelClaimExpenseRepository $travelExpenses,
-        OfficeRepository $offices
-    )
-    {
+        OfficeRepository $offices,
+        protected ProjectRepository $projects,
+        protected ProjectActivityRepository $projectActivities,
+    ) {
         $this->activityCodes = $activityCodes;
         $this->donorCodes = $donorCodes;
         $this->travelClaims = $travelClaims;
@@ -53,13 +56,13 @@ class ClaimExpenseController extends Controller
         if ($request->ajax()) {
             $authUser = auth()->user();
             $travelClaim = $this->travelClaims->find($travelClaimId);
-            $data = $this->travelExpenses->select(['*'])->with(['activityCode','donorCode','office'])
+            $data = $this->travelExpenses->select(['*'])->with(['activity', 'donorCode', 'office'])
                 ->whereTravelClaimId($travelClaimId)->get();
             $datatable = DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('charging_office', function ($row) {
                     return $row->office->getOfficeName();
-                }) 
+                })
                 ->addColumn('expense_date', function ($row) {
                     return $row->getExpenseDate();
                 })->addColumn('attachment', function ($row) {
@@ -81,7 +84,7 @@ class ClaimExpenseController extends Controller
                     return $btn;
                 });
             return $datatable->addColumn('activity', function ($row) {
-                return $row->activityCode?->getActivityCodeDescription();
+                return $row->activity?->title;
             })->addColumn('donor', function ($row) {
                 return $row->donorCode->description;
             })->rawColumns(['action', 'attachment'])
@@ -98,8 +101,12 @@ class ClaimExpenseController extends Controller
      */
     public function create($id)
     {
-        $activityCodes = $this->activityCodes->getActiveActivityCodes();
+        $authUser = auth()->user();
+        // $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $travelClaim = $this->travelClaims->find($id);
+        $projectId = $travelClaim?->travelRequest?->project_code_id;
+        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
+        // ->where($projectId, 'project_id');
         $offices = $this->offices->getActiveOffices();
 
         return view('TravelRequest::TravelClaim.Expense.create')
@@ -131,13 +138,17 @@ class ClaimExpenseController extends Controller
         $travelClaimExpense = $this->travelExpenses->create($inputs);
 
         if ($travelClaimExpense) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'travelClaim' => $travelClaimExpense->travelClaim,
                 'travelClaimExpense' => $travelClaimExpense,
-                'message' => 'Travel expense is successfully added.'], 200);
+                'message' => 'Travel expense is successfully added.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Travel expense can not be added.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Travel expense can not be added.'
+        ], 422);
     }
 
     /**
@@ -149,10 +160,14 @@ class ClaimExpenseController extends Controller
      */
     public function edit($claimId, $id)
     {
+        $authUser = auth()->user();
         $travelClaim = $this->travelClaims->find($claimId);
+        $projectId = $travelClaim?->travelRequest?->project_code_id;
+        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
+        // ->where($projectId, 'project_id');
         $travelClaimExpense = $this->travelExpenses->find($id);
         $this->authorize('update', $travelClaim);
-        $activityCodes = $this->activityCodes->getActiveActivityCodes();
+        // $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $offices = $this->offices->getActiveOffices();
 
         return view('TravelRequest::TravelClaim.Expense.edit')
@@ -184,13 +199,17 @@ class ClaimExpenseController extends Controller
         $inputs['updated_by'] = auth()->id();
         $travelClaimExpense = $this->travelExpenses->update($id, $inputs);
         if ($travelClaimExpense) {
-            return response()->json(['status' => 'ok',
+            return response()->json([
+                'status' => 'ok',
                 'travelClaim' => $travelClaimExpense->travelClaim,
                 'travelClaimExpense' => $travelClaimExpense,
-                'message' => 'Travel expense is successfully updated.'], 200);
+                'message' => 'Travel expense is successfully updated.'
+            ], 200);
         }
-        return response()->json(['status' => 'error',
-            'message' => 'Travel expense can not be updated.'], 422);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Travel expense can not be updated.'
+        ], 422);
     }
 
     /**

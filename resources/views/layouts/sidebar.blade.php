@@ -286,34 +286,36 @@
                             $authUser->isHandoverNoteExists())
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarClearance" role="button"
-                               data-bs-toggle="collapse" data-bs-target="#navbarClearance"
-                               aria-expanded="false" aria-controls="navbarClearance"
-                               data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
+                                data-bs-toggle="collapse" data-bs-target="#navbarClearance" aria-expanded="false"
+                                aria-controls="navbarClearance" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Attendance">
                                 <i class="bi bi-clipboard-check nav-icon"></i>
                                 <span class="nav-link-title">Exit Staff Clearance</span> </a>
 
                             <div id="navbarClearance" class="collapse">
 
-                                 @if ($authUser->can('exit-staff-clearance'))
-                                <a class="nav-link" id="staff-clearance-menu"
-                                   href="{{ route('staff.clearance.index') }}">Staff Clearance</a>
-                                 @endif
+                                @if ($authUser->can('exit-staff-clearance'))
+                                    <a class="nav-link" id="staff-clearance-menu"
+                                        href="{{ route('staff.clearance.index') }}">Staff Clearance</a>
+                                @endif
                                 @if ($authUser->can('endorse-staff-clearance'))
                                     <a class="nav-link" id="staff-clearance-endorse-menu"
-                                       href="{{ route('staff.clearance.endorse.index') }}">Endorse Staff Clearance</a>
+                                        href="{{ route('staff.clearance.endorse.index') }}">Endorse Staff
+                                        Clearance</a>
                                 @endif
                                 @if ($authUser->can('approve-staff-clearance'))
                                     <a class="nav-link" id="staff-clearance-approve-menu"
-                                       href="{{ route('staff.clearance.approve.index') }}">Approve Staff Clearance</a>
+                                        href="{{ route('staff.clearance.approve.index') }}">Approve Staff
+                                        Clearance</a>
                                 @endif
                                 @if ($authUser->isHandoverNoteExists())
                                     @if (in_array($authUser->employee->exitHandOverNote->status_id, [1, 2]))
                                         <a class="nav-link" id="update-employees-exit-menu"
-                                           href="{{ route('exit.employee.handover.note.edit') }}">Edit Employees
+                                            href="{{ route('exit.employee.handover.note.edit') }}">Edit Employees
                                             Exit</a>
                                     @else
                                         <a class="nav-link" id="update-employees-exit-menu"
-                                           href="{{ route('exit.employee.handover.note.show') }}">Show Employees
+                                            href="{{ route('exit.employee.handover.note.show') }}">Show Employees
                                             Exit</a>
                                     @endif
                                 @endif
@@ -455,6 +457,67 @@
                             </div>
                         </div>
                     @endif
+                    {{-- Project Management Menu --}}
+                    <span class="dropdown-header fw-bold">Project Management</span>
+
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Projects">
+                            <i class="bi bi-kanban nav-icon"></i>
+                            <span class="nav-link-title">Projects</span>
+                        </a>
+                    </div>
+
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
+                            id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Work Plan">
+                            <i class="bi bi-journal-text nav-icon"></i>
+                            <span class="nav-link-title">Work Plan</span>
+                        </a>
+                    </div>
+
+                    @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"
+                                data-bs-toggle="collapse" data-bs-target="#navbarActivitiesMenuName"
+                                aria-expanded="false" aria-controls="navbarActivitiesMenuName"
+                                data-bs-toggle="tooltip" data-bs-placement="right" title="Activities">
+                                <i class="bi bi-list-stars nav-icon"></i>
+                                <span class="nav-link-title">Activities</span>
+                            </a>
+                            <div id="navbarActivitiesMenuName" class="nav-collapse collapse"
+                                data-bs-parent="#navbarActivitiesMenu" hs-parent-area="#navbarActivitiesMenu"
+                                style="">
+                                @if ($authUser->can('manage-activity-stages'))
+                                    <a class="nav-link" href="{{ route('activity-stages.index') }}"
+                                        id="activity-stages-index">Activity Stages</a>
+                                @endif
+                                @if ($authUser->can('manage-activity-update-periods'))
+                                    <a class="nav-link" href="{{ route('activity-update-periods.index') }}"
+                                        id="activity-update-periods-index">Activity Update Periods</a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    <div class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#navbarTimesheetMenuName" role="button"
+                            data-bs-toggle="collapse" data-bs-target="#navbarTimesheetMenuName" aria-expanded="false"
+                            aria-controls="#navbarTimesheetMenuName" data-bs-toggle="tooltip"
+                            data-bs-placement="right" title="Timesheets">
+                            <i class="bi bi-clock nav-icon"></i>
+                            <span class="nav-link-title">Timesheets</span>
+                        </a>
+                        <div id="navbarTimesheetMenuName" class="nav-collapse collapse"
+                            data-bs-parent="#navbarTimesheetMenu" hs-parent-area="#navbarTimesheetMenu"
+                            style="">
+                            <a class="nav-link" href="{{ route('timesheet.index') }}"
+                                id="timesheets-index">Timesheet</a>
+                            <a class="nav-link" href="{{ route('monthly-timesheet.index') }}"
+                                id="monthly-timesheets-index">Monthly Timesheets</a>
+                        </div>
+                    </div>
 
                     @if (
                         $authUser->can('local-travel') ||
@@ -476,7 +539,6 @@
                             $authUser->can('manage-announcement'))
                         <span class="dropdown-header fw-bold">Admin</span>
                     @endif
-
                     @if ($authUser->can('local-travel') || $authUser->can('approve-local-travel') || $authUser->can('pay-local-travel'))
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarLocalTravelMenuName" role="button"
@@ -863,10 +925,10 @@
                             </a>
                             <div id="navbarMasterMenuName" class="nav-collapse collapse"
                                 data-bs-parent="#navbarMasterMenu" hs-parent-area="#navbarMasterMenu">
-                                @if ($authUser->can('manage-activity-area'))
+                                {{-- @if ($authUser->can('manage-activity-area'))
                                     <a class="nav-link" href="{{ route('master.activity.areas.index') }}"
                                         id="activity-areas-menu">{{ __('label.activity-stages') }}</a>
-                                @endif
+                                @endif --}}
                                 @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"
                                         id="activity-codes-menu">{{ __('label.activities') }}</a>
@@ -929,10 +991,10 @@
                                         id="holidays-menu">Office Holidays </a>
                                 @endif
 
-                                @if ($authUser->can('manage-projects'))
-                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}"
-                                        id="project-codes-menu">{{ __('label.projects') }}</a>
-                                @endif
+                                {{--                                @if ($authUser->can('manage-projects')) --}}
+                                {{--                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}" --}}
+                                {{--                                        id="project-codes-menu">{{ __('label.projects') }}</a> --}}
+                                {{--                                @endif --}}
 
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"

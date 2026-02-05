@@ -120,8 +120,8 @@
                 <table class="table border">
                     <thead>
                         <tr>
-                            <th>{{ __('label.activity') }}</th>
-                            <th>Activities/Tasks</th>
+                            {{-- <th>{{ __('label.activity') }}</th>
+                            <th>Activities/Tasks</th> --}}
                             <th colspan="2">{{ __('label.destination') }}</th>
                             <th class="text-center">Date</th>
                             <th>Days Spent</th>
@@ -136,10 +136,10 @@
                     <tbody>
                         @foreach ($travelClaim->dsaClaim as $dsaClaim)
                             <tr>
-                                <td rowspan="2">
+                                {{-- <td rowspan="2">
                                     {{ $dsaClaim->activityCode?->getActivityCodeDescription() }}</td>
                                 <td rowspan="2">
-                                    {{ $dsaClaim->activities }}</td>
+                                    {{ $dsaClaim->activities }}</td> --}}
                                 <td>DEP:</td>
                                 <td>{{ $dsaClaim->departure_place }}</td>
                                 <td>{{ $dsaClaim->getDepartureDate() }}</td>
@@ -220,7 +220,7 @@
                     </tbody>
                 </table>
 
-                <h6 class="fw-bold mt-4">Claim Expenses</h6>
+                <h6 class="fw-bold mt-4">{{ __('label.other-expense') }}</h6>
                 <table class="table table-bordered">
                     <thead class="thead-light">
                         <tr>

@@ -45,5 +45,6 @@ return [
         'WorkFromHome',
         'OffDayWork',
         'LieuLeave',
+        'Project',
     ],
 ];

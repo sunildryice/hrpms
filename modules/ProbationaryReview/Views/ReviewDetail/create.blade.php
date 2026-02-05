@@ -467,7 +467,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-lg-9">
-                                    <div class="form-check form-switch">
+                                    <div class=" form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch" id="q3" name="objectives_met">
                                         <label class="form-check-label" for="q3">{{ __('label.objectives-met') }}</label>
                                     </div>
@@ -507,7 +507,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-lg-9">
-                                    <div class="form-check form-switch">
+                                    <div class=" form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch" id="q3" name="development_addressed">
                                         <label class="form-check-label" for="q3">{{__('label.development-addressed')}}</label>
                                     </div>
@@ -560,7 +560,7 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-lg-9">
-                                    <div class="form-check form-switch">
+                                    <div class=" form-switch">
                                         <input class="form-check-input" type="checkbox" role="switch" id="q3" name="appointment_confirmed">
                                         <label class="form-check-label" for="q3">{{__('label.appointment-confirmed')}}</label>
                                     </div>
@@ -582,7 +582,7 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col-lg-9">
-                                        <div class="form-check form-switch">
+                                        <div class=" form-switch">
                                             <input class="form-check-input" type="checkbox" role="switch" id="q3" name="probation_extended" checked="">
                                             <label class="form-check-label" for="q3">{{__('label.probation-extended')}}</label>
                                         </div>

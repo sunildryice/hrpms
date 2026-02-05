@@ -1,5 +1,5 @@
 <div class="modal-header bg-primary text-white">
-    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit DSA Claim</h5>
+    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit TADA Claim</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <form action="{!! route('travel.claims.dsa.update', [$travelDsaClaim->travel_claim_id, $travelDsaClaim->id]) !!}" method="post" enctype="multipart/form-data" id="claimItineraryForm"
@@ -12,7 +12,7 @@
                 </small>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label required-label">Activity</label>
@@ -38,7 +38,7 @@
                 <input type="text" class="form-control" name="activities"
                     value="{{ old('activities', $travelDsaClaim->activities) }}" placeholder="Activities">
             </div>
-        </div>
+        </div> --}}
 
         <div class="mb-2 row">
             <div class="col-lg-3"><label class="form-label required-label">From Date</label></div>

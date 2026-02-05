@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceDetail extends Model
 {
-    use HasFactory, ModelEventLogger;
+    use ModelEventLogger;
 
     // Database table used by the model.
     protected $table = 'attendance_details';
@@ -22,9 +22,8 @@ class AttendanceDetail extends Model
         'checkin',
         'checkout',
         'worked_hours',
-        'charged_hours',
-        'unrestricted_hours',
-        'attendance_status',
+        'checkin_from',
+        'checkout_from',
         'created_by',
         'updated_by'
     ];
@@ -44,11 +43,6 @@ class AttendanceDetail extends Model
     public function attendance()
     {
         return $this->belongsTo(Attendance::class, 'attendance_master_id')->withDefault();
-    }
-
-    public function donors()
-    {
-        return $this->hasMany(AttendanceDetailDonor::class, 'attendance_detail_id');
     }
 
     public function getCheckinTime()

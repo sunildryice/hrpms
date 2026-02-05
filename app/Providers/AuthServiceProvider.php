@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Modules\Employee\Models\Address;
@@ -49,8 +50,13 @@ use Modules\LieuLeave\Models\LieuLeaveRequest;
 use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Policies\PerformanceReviewPolicy;
+use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
+use Modules\Project\Repositories\ActivityUpdatePeriodRepository;
 use Modules\WorkFromHome\Models\WorkFromHome;
 use Modules\WorkFromHome\Policies\WorkFromHomePolicy;
+use Modules\Project\Models\WorkPlan;
+use Modules\Project\Policies\WorkPlanPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -81,6 +87,7 @@ class AuthServiceProvider extends ServiceProvider
         EmployeeRequest::class => EmployeeRequestPolicy::class,
         EventCompletion::class => EventCompletionPolicy::class,
         WorkFromHome::class => WorkFromHomePolicy::class,
+        WorkPlan::class => WorkPlanPolicy::class,
         LieuLeaveRequest::class => LieuLeavePolicy::class,
     ];
 
@@ -93,6 +100,7 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+
         $permissions = Permission::all();
         foreach ($permissions as $permission) {
             Gate::define($permission->guard_name, function ($user) use ($permission) {
@@ -100,24 +108,31 @@ class AuthServiceProvider extends ServiceProvider
             });
         }
 
-        Gate::define('approve-advance-settlement-form', function ($user) use ($permission) {
+        Gate::define('approve-advance-settlement-form', function ($user) {
             return $user->can('approve-advance-request') || $user->can('approve-recommended-advance-settlement');
         });
 
-        Gate::define('approve-payment-sheet-form', function ($user) use ($permission) {
+        Gate::define('approve-payment-sheet-form', function ($user) {
             return $user->can('approve-payment-sheet') || $user->can('approve-recommended-payment-sheet');
         });
 
-        Gate::define('approve-purchase-request-form', function ($user) use ($permission) {
+        Gate::define('approve-purchase-request-form', function ($user) {
             return $user->can('approve-purchase-request') || $user->can('approve-recommended-purchase-request');
         });
 
-        Gate::define('approve-travel-form', function ($user) use ($permission) {
+        Gate::define('approve-travel-form', function ($user) {
             return $user->can('approve-travel-request') || $user->can('approve-recommended-travel-request');
         });
 
-        Gate::define('approve-event-form', function ($user) use ($permission) {
+        Gate::define('approve-event-form', function ($user) {
             return $user->can('approve-event-completion') || $user->can('approve-recommended-event-completion');
+        });
+
+        Gate::define('manage-project-activity-on-certain-time', function (User $user, ?Project $project = null) {
+
+            $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
+
+            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id)) && $checkCurrentActivePeriod;
         });
     }
 }

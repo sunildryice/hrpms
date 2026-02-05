@@ -117,6 +117,21 @@ class Repository
         return $this->model->whereIn($field, $value);
     }
 
+    public function whereRaw($sql, $bindings = [])
+    {
+        return $this->model->whereRaw($sql, $bindings);
+    }
+
+    public function whereYear($field, $value)
+    {
+        return $this->model->whereYear($field, $value);
+    }
+
+    public function when($value, $callback)
+    {
+        return $this->model->when($value, $callback);
+    }
+
     public function orderby($field, $type = 'desc')
     {
         return $this->model->orderby($field, $type);

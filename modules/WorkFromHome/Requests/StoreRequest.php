@@ -21,7 +21,8 @@ class StoreRequest extends FormRequest
             'send_to' => ['required', 'integer', 'exists:users,id'],
 
             'deliverables'                  => ['required', 'array', 'min:1'],
-            'deliverables.*.project_id'     => ['required', 'integer', 'exists:lkup_project_codes,id'],
+            'deliverables.*.project_id'     => ['required', 'integer', 'exists:projects,id'],
+            'deliverables.*.activity_id'    => ['required', 'integer', 'exists:project_activities,id'],
             'deliverables.*.task'           => ['required', 'string'],
 
             'btn' => ['nullable', 'string', 'in:save,submit'],
@@ -38,6 +39,7 @@ class StoreRequest extends FormRequest
             'send_to'                  => 'approver',
             'deliverables'             => 'deliverables',
             'deliverables.*.project_id' => 'project',
+            'deliverables.*.activity_id' => 'activity',
             'deliverables.*.task'      => 'task',
         ];
     }
@@ -51,7 +53,16 @@ class StoreRequest extends FormRequest
 
             'deliverables.*.project_id.required' => 'Project is required for each deliverable.',
             'deliverables.*.project_id.exists'   => 'Please select a valid project.',
+            'deliverables.*.activity_id.required' => 'Activity is required for each deliverable.',
+            'deliverables.*.activity_id.exists'  => 'Please select a valid activity.',
             'deliverables.*.task.required'       => 'Task is required for each deliverable.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+
+        dd($validator->errors()->all());
+        parent::failedValidation($validator);
     }
 }

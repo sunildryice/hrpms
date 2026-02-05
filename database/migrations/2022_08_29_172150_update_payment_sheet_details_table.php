@@ -13,9 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('payment_sheet_details', function (Blueprint $table) {
-            $table->renameColumn('processed_office_id', 'processed_by_office_id');
-        });
+
     }
 
     /**
@@ -25,8 +23,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('payment_sheet_details', function (Blueprint $table) {
-            $table->renameColumn('processed_by_office_id', 'processed_office_id');
-        });
+
     }
 };

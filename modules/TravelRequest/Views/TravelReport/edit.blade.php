@@ -6,6 +6,12 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#travel-report-menu').addClass('active');
+
+            $('.select2').select2({
+                placeholder: "Select Status",
+                // allowClear: true,
+                width: '100%'
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -13,31 +19,6 @@
 
             const form = document.getElementById('travelReportAddForm');
             const template = document.getElementById('template');
-
-            // const subjectValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Day is required'
-            //         }
-            //     }
-            // };
-            // const dateValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Date is required'
-            //         }
-            //     }
-            // };
-            // const taskValidators = {
-            //     validators: {
-            //         notEmpty: {
-            //             message: 'Activities are required'
-            //         }
-            //     }
-            // };
-            // const remarkValidators = {
-            //     validators: {}
-            // };
 
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -62,18 +43,44 @@
                             }
                         }
                     },
-                    'completed_tasks': {
+                    // 'completed_tasks': {
+                    //     selector: '#activitiesErrorContainer',
+                    //     validators: {
+                    //         callback: {
+                    //             message: 'Activities are required',
+                    //             callback: function(input) {
+                    //                 const fields = form.querySelectorAll(
+                    //                     'textarea[name^="itinerary[completed_tasks]"]');
+                    //                 let allFilled = true;
+
+                    //                 fields.forEach(function(field) {
+                    //                     if (field.value.trim() === '') {
+                    //                         allFilled = false;
+                    //                         field.closest('tr').classList.add('table-danger');
+                    //                     } else {
+                    //                         field.closest('tr').classList.remove(
+                    //                             'table-danger');
+                    //                     }
+                    //                 });
+
+                    //                 return allFilled;
+                    //             }
+                    //         }
+                    //     }
+                    // },
+                    'itinerary.status.*': {
                         selector: '#activitiesErrorContainer',
                         validators: {
                             callback: {
-                                message: 'Activities are required',
+                                message: 'Please select a status for each day',
                                 callback: function(input) {
                                     const fields = form.querySelectorAll(
-                                        'textarea[name^="recommendation[completed_tasks]"]');
+                                        'select[name^="itinerary[status]"]'
+                                    );
                                     let allFilled = true;
 
                                     fields.forEach(function(field) {
-                                        if (field.value.trim() === '') {
+                                        if (!field.value || field.value.trim() === '') {
                                             allFilled = false;
                                             field.closest('tr').classList.add('table-danger');
                                         } else {
@@ -104,7 +111,7 @@
                     message: new FormValidation.plugins.Message({
                         clazz: 'invalid-feedback',
                         container: function(field, element) {
-                            if (field === 'completed_tasks') {
+                            if (field.startsWith('itinerary.status')) {
                                 return '#activitiesErrorContainer';
                             }
                             return FormValidation.plugins.Message.getParent(element);
@@ -113,38 +120,20 @@
                 },
             });
 
-            // document.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(field => {
-            //     fv.addField(field.name, {
-            //         validators: {
-            //             notEmpty: {
-            //                 message: 'Activities are required'
-            //             }
-            //         }
-            //     });
-            // });
+            // Re-validate when any status changes (including Select2)
+            form.querySelectorAll('select[name^="itinerary[status]"]').forEach(function(field) {
+                field.addEventListener('change', function() {
+                    fv.revalidateField('itinerary.status.*');
+                });
 
-            // @if ($errors->any())
-            //     @foreach ($dates as $index => $date)
-            //         @if ($errors->has("recommendation.completed_tasks.{$index}"))
-            //             fv.updateFieldStatus('recommendation[completed_tasks][{{ $index }}]', 'Invalid');
-            //         @endif
-            //     @endforeach
-            // @endif
-
-            form.querySelectorAll('textarea[name^="recommendation[completed_tasks]"]').forEach(function(field) {
-                field.addEventListener('input', function() {
-                    fv.revalidateField('completed_tasks');
+                $(field).on('select2:select select2:unselect', function() {
+                    fv.revalidateField('itinerary.status.*');
                 });
             });
 
             @if ($errors->any())
-                @foreach ($dates as $index => $date)
-                    @if ($errors->has("recommendation.completed_tasks.{$index}"))
-                        fv.revalidateField('completed_tasks');
-                    @endif
-                @endforeach
+                fv.revalidateField('itinerary.status.*');
             @endif
-
         });
     </script>
 @endsection
@@ -223,72 +212,68 @@
                                                             Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        <th style="width: 10%">Day</th>
-                                                        <th style="width: 15%">Date</th>
-                                                        <th>Carried Activities / Completed Tasks</th>
-                                                        <th style="width: 25%">Remarks</th>
+                                                        <th style="width: 15%">{{ __('label.date') }}</th>
+                                                        <th style="width: 15%">{{ __('label.activity') }}</th>
+                                                        <th style="width: 25%">Planned Activities</th>
+                                                        <th style="width: 25%">{{ __('label.status') }}</th>
+                                                        <th style="width: 20%">{{ __('label.remarks') }}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @php
-                                                        $start = \Carbon\Carbon::parse($travelRequest->departure_date);
-                                                        $end = \Carbon\Carbon::parse($travelRequest->return_date);
-                                                        $dates = collect();
-                                                        for ($d = $start->copy(); $d->lte($end); $d->addDay()) {
-                                                            $dates->push($d->copy());
-                                                        }
-
-                                                        $existing = $travelReport->travelReportRecommendations->keyBy(
-                                                            function ($item) {
-                                                                return $item->activity_date?->format('Y-m-d');
-                                                            },
-                                                        );
+                                                        $itineraries =
+                                                            $travelRequest?->travelRequestDayItineraries ?? collect();
                                                     @endphp
 
-                                                    @foreach ($dates as $index => $date)
+                                                    @forelse($itineraries as $index => $itinerary)
                                                         @php
-                                                            $dateStr = $date->format('Y-m-d');
+                                                            $date = \Carbon\Carbon::parse($itinerary->date);
                                                             $weekday = $date->format('l');
-                                                            $dayNum = $index + 1;
-
-                                                            $rec = $existing->get($dateStr);
+                                                            $formattedDate = $date->format('d M Y');
                                                         @endphp
 
                                                         <tr>
+
                                                             <td class="text-center">
-                                                                <input type="text"
-                                                                    class="form-control fw-bold text-center"
-                                                                    value="{{ $weekday }}" readonly>
+                                                                {{ $formattedDate }}
                                                                 <input type="hidden"
-                                                                    name="recommendation[day_number][{{ $index }}]"
-                                                                    value="{{ $dayNum }}">
+                                                                    name="itinerary[itinerary_id][{{ $index }}]"
+                                                                    value="{{ $itinerary->id }}">
                                                             </td>
 
                                                             <td>
-                                                                <input type="text" class="form-control"
-                                                                    value="{{ $date->format('d M Y') }}" readonly>
-                                                                <input type="hidden"
-                                                                    name="recommendation[activity_date][{{ $index }}]"
-                                                                    value="{{ $dateStr }}">
+                                                                {{ $itinerary?->activity?->title }}
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[completed_tasks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.completed_tasks.{$index}", $rec?->completed_tasks) }}</textarea>
-                                                                {{-- @error("recommendation.completed_tasks.{$index}")
-                                                                    <div class="invalid-feedback d-block">{{ $message }}
-                                                                    </div>
-                                                                @enderror --}}
+                                                                {{ $itinerary->planned_activities ?? '' }}
+
+                                                            <td>
+                                                                <select name="itinerary[status][{{ $index }}]"
+                                                                    class="form-select select2 @if (old("itinerary.status.$index", $itinerary->status ?? '') == '') is-invalid @endif">
+                                                                    <option value="">Select Status</option>
+                                                                    @foreach (\Modules\TravelRequest\Models\Enums\TravelReportStatus::cases() as $status)
+                                                                        <option value="{{ $status->value }}"
+                                                                            {{ old("itinerary.status.$index", $itinerary->status ?? '') === $status->value ? 'selected' : '' }}>
+                                                                            {{ $status->label() }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+
                                                             </td>
 
                                                             <td>
-                                                                <textarea name="recommendation[remarks][{{ $index }}]" rows="3" class="form-control">{{ old("recommendation.remarks.{$index}", $rec?->remarks) }}</textarea>
-                                                                {{-- @error("recommendation.remarks.{$index}")
-                                                                    <div class="invalid-feedback d-block">{{ $message }}
-                                                                    </div>
-                                                                @enderror --}}
+                                                                <textarea name="itinerary[remarks][{{ $index }}]" rows="3"
+                                                                    class="form-control @error("itinerary.remarks.{$index}") is-invalid @enderror">{{ old("itinerary.remarks.{$index}", $itinerary->remarks ?? '') }}</textarea>
                                                             </td>
                                                         </tr>
-                                                    @endforeach
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center text-danger">
+                                                                No itinerary days found for this travel request.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
                                                 </tbody>
                                             </table>
                                             <div id="activitiesErrorContainer"

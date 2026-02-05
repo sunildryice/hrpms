@@ -115,6 +115,43 @@
                 fv.revalidateField('project_code_id');
             });
 
+            // Fetch the activities based on the project
+            $('#project_id').on('change', function() {
+                const projectId = $(this).val();
+                const $activitySelect = $('#activity_id');
+                console.log(projectId, $activitySelect)
+
+                $.ajax({
+                    url: '{{ route('timesheet.get-activities-by-project') }}',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $activitySelect.html(
+                            '<option value="">Select Activity</option>'
+                        );
+
+                        $.each(response.activities, function(index,
+                            activity) {
+                            $activitySelect.append(
+                                $('<option>', {
+                                    value: activity.id,
+                                    text: activity.title
+                                })
+                            );
+                        });
+
+                        $activitySelect.trigger(
+                            'change');
+                    },
+                    error: function() {
+                        toastr.error('Failed to load activities');
+                    }
+                });
+            });
+
             // Passport Section Toggle
             const travelTypeSelect = document.querySelector('select[name="travel_type_id"]');
             const passportSection = document.getElementById('passportSection');
@@ -151,10 +188,12 @@
 
                     const oldName = existingRows[i]?.querySelector('input[name$="[name]"]')?.value || '';
                     const oldEmail = existingRows[i]?.querySelector('input[name$="[email]"]')?.value || '';
+                    const oldMobileNumber = existingRows[i]?.querySelector('input[name$="[mobile_number]"]')
+                        ?.value || '';
 
                     let rowHTML = `
                     <div class="col-lg-3"></div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="text" 
                                name="external_travelers[${i}][name]" 
                                class="form-control" 
@@ -162,12 +201,19 @@
                                value="${oldName}" 
                                required>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <input type="email" 
                                name="external_travelers[${i}][email]" 
                                class="form-control" 
-                               placeholder="Email (optional)" 
+                               placeholder="Email" 
                                value="${oldEmail}">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" 
+                               name="external_travelers[${i}][mobile_number]" 
+                               class="form-control" 
+                               placeholder="Mobile Number" 
+                               value="${oldMobileNumber}">
                     </div>
                     <div class="col-md-1">
                     <div class="btn-group" role="group">
@@ -421,7 +467,7 @@
                             </div>
                         </div>
                         <div class="col-lg-9">
-                            <select name="project_code_id"
+                            <select name="project_code_id" id="project_id"
                                 class="select2 form-control
                                         @if ($errors->has('project_code_id')) is-invalid @endif"
                                 data-width="100%">
@@ -429,7 +475,7 @@
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
                                         {{ $project->id == old('project_code_id') ? 'selected' : '' }}>
-                                        {{ $project->getProjectCodeWithDescription() }}
+                                        {{ $project->title }}
                                     </option>
                                 @endforeach
                             </select>
@@ -442,6 +488,7 @@
                             @endif
                         </div>
                     </div>
+
                     <div class="row mb-2">
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
@@ -582,15 +629,21 @@
                                 <div class="row mb-2 align-items-end external-traveler-row">
                                     <div class="col-lg-3">
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <input type="text" name="external_travelers[{{ $i }}][name]"
                                             class="form-control" placeholder="Full Name *"
                                             value="{{ $travelers[$i]['name'] ?? '' }}" required>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <input type="email" name="external_travelers[{{ $i }}][email]"
-                                            class="form-control" placeholder="Email (optional)"
+                                            class="form-control" placeholder="Email"
                                             value="{{ $travelers[$i]['email'] ?? '' }}">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text"
+                                            name="external_travelers[{{ $i }}][mobile_number]"
+                                            class="form-control" placeholder="Mobile Number"
+                                            value="{{ $travelers[$i]['mobile_number'] ?? '' }}">
                                     </div>
                                     <div class="col-md-1">
                                         <button type="button" class="btn btn-danger btn-sm remove-row">

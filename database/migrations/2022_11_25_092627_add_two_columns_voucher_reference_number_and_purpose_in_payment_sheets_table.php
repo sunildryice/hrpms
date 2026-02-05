@@ -14,8 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::table('payment_sheets', function (Blueprint $table) {
-            $table->string('voucher_reference_number')->nullable()->default(null)->after('net_amount');
-            $table->longText('purpose')->nullable()->default(null)->after('voucher_reference_number');
+//            $table->string('voucher_reference_number')->nullable()->default(null)->after('net_amount');
+//            $table->longText('purpose')->nullable()->default(null)->after('voucher_reference_number');
         });
     }
 
@@ -27,8 +27,8 @@ return new class extends Migration
     public function down()
     {
         Schema::table('payment_sheets', function (Blueprint $table) {
-            $table->dropColumn('voucher_reference_number');
-            $table->dropColumn('purpose');
+//            $table->dropColumn('voucher_reference_number');
+//            $table->dropColumn('purpose');
         });
     }
 };

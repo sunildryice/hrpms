@@ -11,6 +11,7 @@ use Modules\WorkFromHome\Requests\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Repositories\ProjectRepository;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestSubmitted;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
@@ -20,7 +21,7 @@ class RequestController extends Controller
 {
 
     public function __construct(
-        protected ProjectCodeRepository $projects,
+        protected ProjectRepository $projects,
         protected UserRepository $users,
         protected WorkFromHomeRepository $workFromHomes,
         protected WorkFromHomeLogRepository $workFromHomeLogs,
@@ -88,7 +89,10 @@ class RequestController extends Controller
 
         $authUser = auth()->user();
 
-        $projects = $this->projects->pluck('short_name', 'id')->toArray();
+        $projects = $this->projects
+            ->getAssignedProjects($authUser);
+
+
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::create', [
@@ -175,8 +179,8 @@ class RequestController extends Controller
     {
         $workFromHome = $this->workFromHomes->find($id);
 
-        $projects = $this->projects->pluck('short_name', 'id')->toArray();
         $authUser = auth()->user();
+        $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         return view('WorkFromHome::edit', compact(

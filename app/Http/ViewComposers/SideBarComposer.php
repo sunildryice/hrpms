@@ -429,10 +429,10 @@ class SideBarComposer
             ->whereIn('status_id', [config('constant.RECOMMENDED_STATUS'), config('constant.VERIFIED_STATUS')])
             ->count();
 
-        $approveWorkPlanCount = $this->workPlans
-            ->where('approver_id', '=', $authUser->id)
-            ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
-            ->count();
+        // $approveWorkPlanCount = $this->workPlans
+        //     ->where('approver_id', '=', $authUser->id)
+        //     ->where('status_id', '=', config('constant.SUBMITTED_STATUS'))
+        //     ->count();
 
         $reviewEmployeeExitPayableCount = $this->employeeExitPayables
             ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
@@ -517,7 +517,7 @@ class SideBarComposer
             ->withApproveAssetHandoverCount($approveAssetHandoverCount)
             ->withApproveExitInterviewCount($approveExitInterviewCount)
             ->withApproveAttendanceCount($approveAttendanceCount)
-            ->withApproveWorkPlanCount($approveWorkPlanCount)
+            // ->withApproveWorkPlanCount($approveWorkPlanCount)
             ->withApproveDistributionHandoverCount($approveDistributionHandoverCount)
             ->withReceiveDistributionHandoverCount($receiveDistributionHandoverCount)
             ->withApproveDistributionRequestCount($approveDistributionRequestCount)

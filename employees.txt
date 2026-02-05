@@ -1,0 +1,148 @@
+## Insert to Employees Table ###
+
+INSERT INTO employees (
+    employee_code, full_name, gender, official_email_address,
+    personal_email_address, mobile_number, date_of_birth,
+    citizenship_number, passport_number, nid_number, pan_number,
+    vehicle_license_number, marital_status, activated_at
+) VALUES
+(1, 'Abriti Arjyal', 2, 'abriti.arjyal@herdint.com', 'abriti.arjyal@gmail.com', '9841563925', '1989-02-17 00:00:00', '79086', NULL, NULL, NULL, NULL, 2, '2026-01-01 12:00:01'),
+(2, 'Bikram Thapa', 1, 'bikram.thapa@herdint.com', 'naikap_bikram@yahoo.com', '9841711816', '1974-04-15 00:00:00', '5827', NULL, NULL, '106812734', NULL, 2, '2026-01-01 12:00:01'),
+(3, 'Prakash Adhikari', 1, 'prakash.adhikari@herdint.com', 'prakash.sauraha@gmail.com', '9856040979', '1988-03-04 00:00:00', '127569', 'PA2462335', '188-831-608-1', '104422144', '01-07-00904522', 2, '2026-01-01 12:00:01'),
+(4, 'Rabindra Rai', 1, 'rabindra.rai@herdint.com', 'rrai643@gmail.com', '9860309651', '1984-06-28 00:00:00', '24105', NULL, NULL, '103640697', NULL, 2, '2026-01-01 12:00:01'),
+(5, 'Ramesh Pathak', 1, 'ramesh.pathak@herdint.com', 'ramesh.pathak2037@gmail.com', '9851235229', '1980-11-05 00:00:00', '359', NULL, NULL, '101915294', NULL, 2, '2026-01-01 12:00:01'),
+(6, 'Shophika Regmi', 2, 'shophika.regmi@herdint.com', 'regmi.shophika@gmail.com', '9841266466', '1986-12-17 00:00:00', '29386', NULL, NULL, NULL, NULL, 2, '2026-01-01 12:00:01'),
+(7, 'Sushil Chandra Baral', 1, 'sushil@herdint.com', 'barals@gmail.com', '9851068940', '1969-12-01 00:00:00', '729/29390', NULL, NULL, '100972933', NULL, 2, '2026-01-01 12:00:01'),
+(8, 'Pralhad Karki', 1, 'pralhad.karki@herdint.com', 'pk8237695@gmail.com', '9841043168', '1977-05-24 00:00:00', '6061/3423', NULL, NULL, '104196328', NULL, 2, '2026-01-01 12:00:01'),
+(9, 'Ghanshyam Gautam', 1, 'ghanshyam.gautam@herdint.com', 'ghanshyamgt@gmail.com', '9851150680', '1977-02-11 00:00:00', '21995', 'PA4553026', '897-128-0770', '102167847', '01-12-00000040', 2, '2026-01-01 12:00:01'),
+(10, 'Subash Kumar Bhattarai', 1, 'subash.bhattarai@herdint.com', 'subash.bhattarai@hotmail.com', '9851133133', '1982-10-28 00:00:00', '316', NULL, NULL, '104564693', NULL, 2, NULL),
+(11, 'Bishnu Prasad Dulal', 1, 'bishnu.dulal@herdint.com', 'aatreyabishnu@gmail.com', '9841578176', '1978-11-19 00:00:00', '25292/194', NULL, NULL, '101839800', NULL, 2, '2026-01-01 12:00:01'),
+(12, 'Saugat Pratap K.C', 1, 'saugat.kc@herdint.com', 'spk266@gmail.com', '9851216044', '1992-11-03 00:00:00', '271060/40106', NULL, NULL, NULL, NULL, 1, NULL),
+(13, 'Ayuska Parajuli', 2, 'ayuska.parajuli@herdint.com', 'ayusiparajuli@gmail.com', '9860142267', '1994-01-12 00:00:00', '051066-6606', '9855805', NULL, '110927460', '01-06-01515213', 2, '2026-01-01 12:00:01'),
+(14, 'Suprich Sapkota', 1, 'suprich.sapkota@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(15, 'Santosh Giri', 1, 'santosh.giri@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(16, 'Kirti Sagar Baral', 1, 'kirti.baral@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(17, 'Deepak Joshi', 1, 'deepak.joshi@herdint.com', 'deepak.deeps@gmail.com', '9851161307', '1985-11-16 00:00:00', '57800323', NULL, NULL, '102529801', NULL, 2, NULL),
+(18, 'Sampurna Kakchapati', 1, 'sampurna.kakchapati@herdint.com', 'kck_sampurna@yahoo.com', '9851139075', '1982-08-11 00:00:00', '2028', 'PA3046785', '353-752-085-5', '100368480', '01-06-00198392', 2, '2026-01-01 12:00:01'),
+(19, 'Shreeman Sharma', 1, 'shreeman.sharma@herdint.com', 'bigyansharma@gmail.com', '9841462057', '1982-04-14 00:00:00', '431/2610', NULL, NULL, '104438383', NULL, 2, '2026-01-01 12:00:01'),
+(20, 'Sujan Sapkota', 1, 'sujan.sapkota@herdint.com', 'sujansapkota8848@gmail.com', '9849265944', '1989-12-18 00:00:00', '7742', NULL, NULL, '120163009', NULL, 2, '2026-01-01 12:00:01'),
+(21, 'Sheshman Prasad Raidas', 1, 'sheshman.raidas@herdint.com', 'abc@gmail.com', '9811416953', '1980-04-14 00:00:00', '18661', NULL, NULL, '128139208', '02-12-00967034', 2, '2026-01-01 12:00:01'),
+(22, 'Juned Ahmad', 1, 'juned.ahmad@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(23, 'Basudev Bhattarai', 1, 'basudev.bhattarai@herdint.com', 'basud2051@gmail.com', '9808424614', '1993-10-06 00:00:00', '28-01-068-04095', '10612080', '708-140-930-5', '108418569', '01-06-00153162', 2, '2026-01-01 12:00:01'),
+(24, 'Pratistha Dhakal', 2, 'pratistha.dhakal@herdint.com', 'afnpratisthadhakal@gmail.com', '9846784566', '1997-04-20 00:00:00', '46017104286', 'PA0118059', '841-765-463-7', '114043054', NULL, 1, '2026-01-01 12:00:01'),
+(25, 'Sovin Shrestha', 1, 'sovin.shrestha@herdint.com', 'sovinshrestha@hotmail.com', '9840057769', NULL, '28-01-070-05925', 'PA0223488', '701-084-064-2', '121187701', '01-06-01357412', 1, '2026-01-01 12:00:01'),
+(26, 'Achyut Raj Pandey', 1, 'achyut.pandey@herdint.com', 'achyutrajpandey2014@gmail.com', '9849215398', '1987-02-22 00:00:00', '2516', NULL, NULL, '106217265', NULL, 2, '2026-01-01 12:00:01'),
+(27, 'Raju Raman Neupane', 1, 'raju.neupane@herdint.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(28, 'Bikram Adhikari', 1, 'bikram.adhikari@herdint.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(29, 'Ranjit Besara Satar', 1, 'ranjit.satar@herdint.com', 'ranjitbishra4@gmail.com', '9860307716', '1994-01-27 00:00:00', '042045-1091', NULL, NULL, '126001804', '01-06-00270937', 2, '2026-01-01 12:00:01'),
+(30, 'Grishu Shrestha', 2, 'grishu.shrestha@herdint.com', 'greeshushrestha@gmail.com', '9843238590', '1990-11-05 00:00:00', '29-01-064-00198', '11012321', NULL, '110405399', '01-06-00126872', 1, '2026-01-01 12:00:01'),
+(31, 'Bipul Lamichhane', 1, 'bipul.lamichhane@herdint.com', 'lamichhanebipul9@gmail.com', '9763446498', '1991-02-03 00:00:00', '217', 'PA4668041', '083-699-809-1', '120354780', '06-165598', 2, '2026-01-01 12:00:01'),
+(32, 'Parash Mani Sapkota', 1, 'parash.sapkota@herdint.com', 'parash0717@gmail.com', '9843815800', '1999-11-21 00:00:00', '25-01-75-03399', NULL, NULL, '139127430', NULL, 1, NULL),
+(33, 'Anil Dhungana', 1, 'anil.dhungana@herdint.com', 'mranildhungana@gmail.com', '9841917883', '1990-02-10 00:00:00', '172644', 'PA3176936', '794-312-0621', '106904116', '01-06-00132347', 2, '2026-01-01 12:00:01'),
+(34, 'Reecha Piya', 2, 'reecha.piya@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(35, 'Sulata Karki', 2, 'sulata.karki@herdint.com', 'sulatakarki@gmail.com', '9841891568', '1989-05-22 00:00:00', '052028/75', NULL, NULL, '106506699', NULL, 1, '2026-01-01 12:00:01'),
+(36, 'Biddya Kumari Chaudhary', 2, 'biddya.chaudhary@herdint.com', 'bidyachaudhary72@gmail.com', '9804412446', '1998-09-04 00:00:00', '30-2080-22717', NULL, NULL, '130839758', NULL, 2, '2026-01-01 12:00:01'),
+(37, 'Anjali Basnet', 2, 'anjali.basnet@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL),
+(38, 'Bharat Raj Bhatta', 1, 'bharat.bhatta@herdint.com', 'brb.bharat@gmail.com', '9851321332', '1988-12-24 00:00:00', '69972', NULL, NULL, '103640626', '01-13-0438800', 1, '2026-01-01 12:00:01'),
+(39, 'Pooja Karki', 2, 'pooja.karki@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL),
+(40, 'Pabitra Neupane', 2, 'pabitra.neupane@herdint.com', 'neupanepavitra@gmail.com', '9860820245', '1995-08-28 00:00:00', '26-01-71-01628', NULL, NULL, '112208462', NULL, 2, NULL),
+(41, 'Kabita Khadka', 2, 'kabita.khadka@herdint.com', 'kavtakhadka71@gmail.com', '9843206007', '1994-12-29 00:00:00', '221032/227', NULL, NULL, '108368860', NULL, 2, '2026-01-01 12:00:01'),
+(42, 'Sindhu Subedi', 2, 'sindhu.subedi@herdint.com', 'sindhu.sub56@gmail.com', '9849284817', '1992-08-28 00:00:00', '511009/152', '11911960', '116-172-913-6', '141299413', 'NA', 2, '2026-01-01 12:00:01'),
+(43, 'Surendra Budthapa', 1, 'surendra.budthapa@herdint.com', 'abc@gmail.com', '9846872550', NULL, '123123', NULL, NULL, '123123', NULL, 1, NULL),
+(44, 'Aney Rijal', 2, 'aney.rijal@herdint.com', 'rijal.aney@gmail.com', '9849055766', '1996-10-14 00:00:00', '27-01-71-01982', '10202372', '923-427-0313', '117022337', '04-06-01371025', 1, '2026-01-01 12:00:01'),
+(45, 'Saroni Pandey', 2, 'saroni.pandey@herdint.com', 'abc@gmail.com', '9841299445', NULL, '123123', NULL, NULL, NULL, NULL, 2, '2026-01-01 12:00:01'),
+(46, 'Sujan Poudel', 1, 'sujan.poudel@herdint.com', 'poudelsujan15@gmail.com', '9846466690', '1994-10-29 00:00:00', '461045/1483', 'PA2768525', '559-967-292-2', '111467888', '1-07-00356050', 2, '2026-01-01 12:00:01'),
+(47, 'Abhigyna Bhattarai', 2, 'abhigyna.bhattarai@herdint.com', 'abhigyna@gmail.com', '9841407815', NULL, '3782/10305', 'PA1894093', '577-026-698-8', '101984861', NULL, 2, '2026-01-01 12:00:01'),
+(48, 'Ichchhya Rupakheti', 2, 'ichchhya.rupakheti@herdint.com', 'ichchhyarupakheti@gmail.com', '9843152999', '1994-01-23 00:00:00', '27-1051/58516', 'PA1604072', '651-573-9637', '108120723', NULL, 2, '2026-01-01 12:00:01'),
+(49, 'Sitashma Mainali', 2, 'sitashma.mainali@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL),
+(50, 'Nawaraj Adhikari', 1, 'nawaraj.adhikari@herdint.com', 'nawaraj051@outlook.com', '9857077783', '1994-08-01 00:00:00', '39-01-69-00108', '10692916', '549-549-004-3', '110267043', '01-08-00535999', 2, '2026-01-01 12:00:01'),
+(51, 'Dogendra Tumsa', 1, 'dogendra.tumsa@herdint.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '2026-01-01 12:00:01'),
+(52, 'Shraddha Pangeni', 2, 'shraddha.pangeni@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(53, 'Jayandra Bishwokarma', 1, 'jayandra.bishwokarma@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(54, 'Saurav Nepal', 1, 'saurav.nepal@herdint.com', 'sau.nepal@gmail.com', '9863221645', '1989-09-10 00:00:00', '31169', NULL, '7090241585', '102240975', '01-06-00126293', 2, '2026-01-01 12:00:01'),
+(55, 'Madhav Chaulagain', 1, 'madhav.chaulagain@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(56, 'Kashinath Bhattarai', 1, 'kashinath.bhattarai@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL),
+(57, 'Ashmita Bishwakarma', 2, 'ashmita.bishwakarma@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(58, 'Shodashi Rayamajhi', 2, 'shodashi.rayamajhi@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(59, 'Aavashana  Dahal', 2, 'aavashana.dahal@herdint.com', 'aavadhl@gmail.com', '9863318013', '1995-12-28 00:00:00', '271060/119372', '10935770', NULL, '111863804', NULL, 1, '2026-01-01 12:00:01'),
+(60, 'Netra Kunwar', 1, 'netra.kunwar@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(61, 'Bijaya  Sharma', 2, 'bijaya.sharma@herdint.com', 'bijaya.ggm@gmail.com', '9841662813', '1988-09-17 00:00:00', '7902/21895', NULL, NULL, '106813634', '01-08-89111102', 2, '2026-01-01 12:00:01'),
+(62, 'Shalabh Shah', 1, 'shalabh.shah@herdint.com', 'shalabh.shah@gmaiil.com', '9808298631', '1992-12-29 00:00:00', '661019/241', NULL, NULL, '17142722', '01-06-00739732', 1, '2026-01-01 12:00:01'),
+(63, 'Samikshya Singh', 2, 'samikshya.singh@herdint.com', 'ssing_2080@hotmail.com', '9851181367', '1985-01-16 00:00:00', '39811', NULL, NULL, '100962734', NULL, 1, '2026-01-01 12:00:01'),
+(64, 'Milima Dangol', 2, 'milima.dangol@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(65, 'Ranjeeta Subedi', 2, 'ranjeeta.subedi@herdint.com', 'ranjeetasubedi2025@gmail.com', '9762796863', '1986-11-08 00:00:00', '7541', 'PA0128176', NULL, '114010278', '01-08-01019183', 2, '2026-01-01 12:00:01'),
+(66, 'Sabina Marasini', 2, 'sabina.marasini@herdint.com', 'shabinam367@gmail.com', '9849657181', '1995-06-04 00:00:00', '411001/107289', '10622230', NULL, '116234474', '01-06-01292441', 2, '2026-01-01 12:00:01'),
+(67, 'Bamdev Subedi', 1, 'bamdev.subedi@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(68, 'Anchala Chaudhary', 2, 'anchala.chaudhary@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, NULL),
+(69, 'Suyasha Koirala', 2, 'suyasha.koirala@herdint.com', 'suyashakoirala@gmail.com', '9849598590', '1993-04-29 00:00:00', '271060/48926', NULL, '6775915516', '108520561', '02-06-89169017', 2, '2026-01-01 12:00:01'),
+(70, 'Mir Khadka', 1, 'mir.khadka@herdint.com', 'abc@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL),
+(71, 'Srijana Bhattarai', 2, 'srijana.bhattarai@herdint.com', 'srijana.bhattarai24@gmail.com', '9869498843', '1990-09-09 00:00:00', '043042/6', '10454553', '344-173-6468', '132484916', NULL, 2, '2026-01-01 12:00:01'),
+(72, 'Shirish Maharjan', 1, 'shirish.maharjan@herdint.com', 'crismaharjan@gmail.com', '9841115705', '1993-09-15 00:00:00', '27-1058/93054', 'PA1021797', '7763143567', '129779298', '01-06-00747475', 2, '2026-01-01 12:00:01'),
+(73, 'Deepak Paudel', 1, 'deepak.paudel@herdint.com', 'paudeld@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '2026-01-01 12:00:01'),
+(74, 'Nirma Chaudhary', 2, 'nirma.chaudhary@herdint.com', 'chaudharynirma72@gmail.com', '9800703837', '1997-07-04 00:00:00', '38-01-73-03026', NULL, NULL, '151789878', NULL, 1, '2026-01-01 12:00:01'),
+(75, 'Ashish Shrestha', 1, 'ashish.shrestha@herdint.com', 'drshrestha.ashish@gmail.com', '9841336395', '1982-08-26 00:00:00', '105968', 'PA3183104', '438-780-3932', '103466859', '01-06-00270529', 2, '2026-01-01 12:00:01'),
+(76, 'Asmita K.C.', 2, 'asmita.kc@herdint.com', 'kcasmita84@gmail.com', '9863914338', NULL, '44-01-71-02342', NULL, '3475015205', '129016650', NULL, 2, '2026-01-01 12:00:01'),
+(77, 'Preeti Bhusal', 2, 'preeti.bhusal@herdint.com', 'bhusalpreeti54@gmail.com', '9868983406', NULL, '52-02-76-00691', NULL, '148-103-717-6', '144637960', NULL, 1, '2026-01-01 12:00:01'),
+(78, 'Deepak Chhetri', 1, 'deepak.chhetri@herdint.com', 'mail4deepakchhetri@gmail.com', '9857820104', NULL, '2955/3575', '10832578', '595-317-817-0', '101231985', '02-12-01374532', 2, '2026-01-01 12:00:01');
+
+
+## To create default Sick and Annual Leave Records  in Employee Leaves ##
+
+INSERT INTO employee_leaves (employee_id, leave_type_id, fiscal_year_id, reported_date, opening_balance, balance)
+SELECT id, 3, 4, '2025-12-01', 0, 0
+FROM employees
+WHERE activated_at is not NULL;
+
+INSERT INTO employee_leaves (employee_id, leave_type_id, fiscal_year_id, reported_date, opening_balance, balance)
+SELECT id, 6, 4, '2025-12-01', 0, 0
+FROM employees
+WHERE activated_at is not NULL;
+
+##### Update Sick Leave Data ###
+1. Create temporary mapping
+CREATE TEMPORARY TABLE temp_sick_balance (
+    employee_code INT,
+    new_balance DECIMAL(6,1)
+);
+
+INSERT INTO temp_sick_balance (employee_code, new_balance) VALUES
+(59, 8.5), (47,15.0), (1,20.0),  (44,16.5), (33,26.5), (75,3.5),  (76,2.5),
+(13,13.0), (23,22.0), (38,21.0), (36,14.0), (61,14.0), (2,28.0),  (31,3.0),
+(11,28.0),(51,17.0), (9,27.0),  (30,17.5),(48,13.0),(41,24.5),(50,15.0),
+(3,23.5), (8,28.0),  (24,13.5), (77,2.5),  (4,15.0),(5,27.5),(65,12.0),
+(29,8.0), (66,11.0), (63,12.0), (18,26.0),(54,10.0),(62,11.0),(21,11.0),
+(72,4.0), (6,22.0),  (19,23.0), (42,22.0),(25,29.0),(71,5.0), (20,29.0),
+(35,19.0),(7,26.0),  (69,10.0);
+
+UPDATE employee_leaves el
+INNER JOIN employees e          ON el.employee_id = e.id
+INNER JOIN temp_sick_balance t ON e.employee_code = t.employee_code
+SET el.balance     = t.new_balance
+WHERE  el.leave_type_id  = 3 AND
+    el.reported_date  = '2025-12-01';
+
+DROP TEMPORARY TABLE temp_sick_balance;
+
+##### Update Annual Leave Data ###
+
+CREATE TEMPORARY TABLE temp_annual_balance (
+    employee_code INT,
+    new_balance DECIMAL(6,1)
+);
+
+INSERT INTO temp_annual_balance (employee_code, new_balance) VALUES
+(59,5.5),(47,11),(1,16.5),(44,6.5),(33,20),(75,6.5),(76,1),(13,7),
+(23,26.5),(38,27.5),(36,10),(61,6),(2,37),(31,17.5),(11,5),(51,4.5),
+(9,21),(30,18.5),(48,13),(41,22),(50,1),(3,15),(8,32),(24,8.5),
+(77,3),(4,18),(5,12),(65,-11.5),(29,20.5),(66,-8),(63,16),(18,16.5),
+(54,13),(62,5),(21,22.5),(72,9.5),(6,22),(19,2),(42,21),(25,26.5),
+(71,-3),(20,20.5),(35,17),(7,23.5),(69,4);
+
+UPDATE employee_leaves el
+INNER JOIN employees e          ON el.employee_id = e.id
+INNER JOIN temp_annual_balance t ON e.employee_code = t.employee_code
+SET el.balance     = t.new_balance
+WHERE  el.leave_type_id  = 6 AND
+    el.reported_date  = '2025-12-01';
+
+DROP TEMPORARY TABLE temp_annual_balance;

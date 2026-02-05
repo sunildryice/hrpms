@@ -23,34 +23,34 @@ class TravelReportRepository extends Repository
         if ($currentOffice) {
             if ($currentOffice->office_type_id == config('constant.HEAD_OFFICE')) {
                 return $this->model->with(['travelRequest'])->select(['*'])
-                ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
-                ->orWhere(function ($q) use ($authUser) {
-                    $q->where('approver_id', $authUser->id);
-                    $q->orwhere('created_by', $authUser->id);
-                })
-                ->whereHas('travelRequest', function ($q) use ($accessibleOfficeIds) {
-                    $q->whereIn('office_id', $accessibleOfficeIds);
-                    $q->orWhere(function ($q) {
-                        $q->whereNull('office_id');
-                        $q->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')]);
-                    });
-                })
-                ->orderBy('created_at', 'desc')
-                ->get();
+                    ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
+                    ->orWhere(function ($q) use ($authUser) {
+                        $q->where('approver_id', $authUser->id);
+                        $q->orwhere('created_by', $authUser->id);
+                    })
+                    ->whereHas('travelRequest', function ($q) use ($accessibleOfficeIds) {
+                        $q->whereIn('office_id', $accessibleOfficeIds);
+                        $q->orWhere(function ($q) {
+                            $q->whereNull('office_id');
+                            $q->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')]);
+                        });
+                    })
+                    ->orderBy('created_at', 'desc')
+                    ->get();
             }
         }
 
         return $this->model->with(['travelRequest'])->select(['*'])
-        ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
-        ->where(function ($q) use ($authUser) {
-            $q->where('approver_id', $authUser->id);
-            $q->orwhere('created_by', $authUser->id);
-        })
-        ->orWhereHas('travelRequest', function ($q) use ($accessibleOfficeIds) {
-            $q->whereIn('office_id', $accessibleOfficeIds);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
+            ->where(function ($q) use ($authUser) {
+                $q->where('approver_id', $authUser->id);
+                $q->orwhere('created_by', $authUser->id);
+            })
+            ->orWhereHas('travelRequest', function ($q) use ($accessibleOfficeIds) {
+                $q->whereIn('office_id', $accessibleOfficeIds);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function approve($id, $inputs)
@@ -74,11 +74,19 @@ class TravelReportRepository extends Repository
         DB::beginTransaction();
         try {
             $travelReport = $this->model->updateOrCreate(['travel_request_id' => $inputs['travel_request_id']], $inputs);
-            if (!empty($inputs['recommendation_input'])) {
-                foreach ($inputs['recommendation_input'] as $recommendation) {
-                    $travelReport->travelReportRecommendations()->create($recommendation);
+
+            if (!empty($inputs['itinerary_updates'])) {
+                foreach ($inputs['itinerary_updates'] as $update) {
+                    $travelReport->travelRequest->travelRequestDayItineraries()
+                        ->where('id', $update['itinerary_id'])
+                        ->update([
+                            'status' => $update['status'],
+                            'remarks' => $update['remarks'],
+                            'updated_at' => now(),
+                        ]);
                 }
             }
+
             if ($inputs['btn'] == 'submit') {
                 $forwardInputs = [
                     'user_id' => $inputs['updated_by'],
@@ -103,7 +111,13 @@ class TravelReportRepository extends Repository
         DB::beginTransaction();
         try {
             $travelReport = $this->model->findOrFail($id);
-            $travelReport->travelReportRecommendations()->delete();
+            // $travelReport->travelReportRecommendations()->delete();
+            $travelReport->travelRequest->travelRequestDayItineraries()
+                ->update([
+                    'completed_tasks' => null,
+                    'remarks' => null,
+                    'updated_at' => now(),
+                ]);
             $travelReport->logs()->delete();
             $travelReport->delete();
             DB::commit();
@@ -135,10 +149,15 @@ class TravelReportRepository extends Repository
         try {
             $travelReport = $this->model->findOrFail($id);
             $travelReport->fill($inputs)->save();
-            $travelReport->travelReportRecommendations()->delete();
-            if (!empty($inputs['recommendation_input'])) {
-                foreach ($inputs['recommendation_input'] as $recommendation) {
-                    $travelReport->travelReportRecommendations()->create($recommendation);
+            if (!empty($inputs['itinerary_updates'])) {
+                foreach ($inputs['itinerary_updates'] as $update) {
+                    $travelReport->travelRequest->travelRequestDayItineraries()
+                        ->where('id', $update['itinerary_id'])
+                        ->update([
+                            'status' => $update['status'],
+                            'remarks' => $update['remarks'],
+                            'updated_at' => now(),
+                        ]);
                 }
             }
             if ($inputs['btn'] == 'submit') {

@@ -25,8 +25,8 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'activity_code_id' => 'required|exists:lkup_activity_codes,id',
-            'activities' => 'required',
+            // 'activity_code_id' => 'required|exists:lkup_activity_codes,id',
+            // 'activities' => 'required',
             'departure_date' => 'required|date_format:Y-m-d',
             'arrival_date' => 'required|date_format:Y-m-d',
             'departure_place' => 'required',
@@ -57,7 +57,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'attachment.mimes' => 'Only png,jpg or pdf files are allowed.',
-            'attachment.size' => 'Maximum allowed file size is 2MB.',
+            'attachment.size' => 'Maximum allowed file size is 5MB.',
         ];
     }
 }

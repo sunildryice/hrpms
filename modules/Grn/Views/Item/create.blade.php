@@ -2,10 +2,8 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Create GRN Item</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form
-    action="{!! route('grns.items.store', [$grn->id]) !!}"
-    method="post"
-    enctype="multipart/form-data" id="grnItemForm" autocomplete="off">
+<form action="{!! route('grns.items.store', [$grn->id]) !!}" method="post" enctype="multipart/form-data"
+    id="grnItemForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -43,7 +41,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="number" class="form-control" name="quantity"
-                       placeholder="{{ __('label.quantity-received') }}">
+                    placeholder="{{ __('label.quantity-received') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -53,8 +51,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="number" class="form-control" name="unit_price"
-                       placeholder="{{ __('label.unit-price') }}">
+                <input type="number" class="form-control" name="unit_price" placeholder="{{ __('label.unit-price') }}">
             </div>
         </div>
         <div class="row mb-2">
@@ -84,9 +81,9 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <div class="form-check form-switch">
+                <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                           name="vat_applicable" @if(old('vat_applicable')) checked @endif>
+                        name="vat_applicable" @if(old('vat_applicable')) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>
@@ -121,7 +118,8 @@
                 <select class="form-control select2" data-width="100%" name="activity_code_id">
                     <option value="">Select Activity Code</option>
                     @foreach($activityCodes as $activityCode)
-                        <option value="{!! $activityCode->id !!}">{{ $activityCode->getActivityCodeWithDescription() }}</option>
+                        <option value="{!! $activityCode->id !!}">{{ $activityCode->getActivityCodeWithDescription() }}
+                        </option>
                     @endforeach
                 </select>
             </div>

@@ -48,5 +48,15 @@ class FiscalYearSeeder extends Seeder
             'end_date' => '2025-12-31',
             'activated_at' => NULL,
         ]);
+
+        $year->updateOrCreate([
+            'id' => 5
+            ], [
+            'title' => '2026',
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-12-31',
+            'activated_at' => NULL,
+        ]);
+        $this->command->info('Happy New Year, 2026 !!!');
     }
 }

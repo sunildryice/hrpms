@@ -49,6 +49,18 @@
                             <i class="bi-calendar3-range dropdown-item-icon"></i>
                         </div>
                         <div class="d-content-section">
+                            {{ $lieuLeaveRequest->leaveBalance->offDayWorkApprovedDate() }}
+                        </div>
+                    </div>
+                    <span class="stretched-link" rel="tooltip" title="Off Day Approved Day"></span>
+                </li>
+
+                <li class="position-relative">
+                    <div class="gap-2 d-flex align-items-start">
+                        <div class="icon-section">
+                            <i class="bi-calendar3-range dropdown-item-icon"></i>
+                        </div>
+                        <div class="d-content-section">
                             {{ $lieuLeaveRequest->getStartDate() }}
                         </div>
                     </div>

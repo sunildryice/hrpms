@@ -9,6 +9,7 @@ use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\ProjectCode;
 use Modules\Master\Models\Status;
+use Modules\OffDayWork\Models\OffDayWork;
 use Modules\Privilege\Models\User;
 use Termwind\Components\Li;
 
@@ -170,5 +171,17 @@ class LieuLeaveRequest extends Model
     public function getLeaveDuration()
     {
         return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
+    }
+
+    public function offDayWork()
+    {
+        return $this->hasOneThrough(
+            OffDayWork::class,
+            LieuLeaveBalance::class,
+            'lieu_leave_request_id', // Foreign key on LieuLeaveBalance table...
+            'id', // Foreign key on OffDayWork table...
+            'id', // Local key on LieuLeaveRequest table...
+            'off_day_work_id' // Local key on LieuLeaveBalance table...
+        );
     }
 }

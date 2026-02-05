@@ -42,4 +42,9 @@ class LieuLeaveBalance extends Model
     {
         return $this->hasOne(LieuLeaveRequest::class, 'lieu_leave_request_id');
     }
+
+    public function offDayWorkApprovedDate()
+    {
+        return Carbon::parse($this->earned_date)->format('M j, Y');
+    }
 }

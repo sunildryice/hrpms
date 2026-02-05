@@ -508,8 +508,8 @@
                                 title="Work Plan">
                                 <span class="nav-link-title">Work Plan</span>
                             </a>
-                            <a class="nav-link" href="{{ route('work-plan.index') }}" role="button"
-                                id="work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                            <a class="nav-link" href="{{ route('employee-work-plan.index') }}" role="button"
+                                id="employee-work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
                                 title="Employee Work Plan">
                                 <span class="nav-link-title">Employee Work Plan</span>
                             </a>

@@ -6,12 +6,25 @@
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
+            $('#navbarVerticalMenu').find('#employee-work-plan-index').addClass('active');
+
+            $('#week_selector').change(function() {
+                var weekStart = $(this).val();
+                if (weekStart) {
+                    window.location.href = "{{ route('employee-work-plan.index') }}?week_start=" +
+                        weekStart;
+                }
+            });
 
             $('#WeeklyPlanTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('employee-work-plan.index') }}",
+                ajax: {
+                    url: "{{ route('employee-work-plan.index') }}",
+                    data: function(d) {
+                        d.week_start = "{{ $currentWeekStart->format('Y-m-d') }}";
+                    }
+                },
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -21,7 +34,7 @@
                     {
                         data: 'employee_full_name',
                         name: 'employee_full_name',
-                        orderable: false
+                        orderable: true
                     },
                     {
                         data: 'projects',
@@ -47,10 +60,26 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                 class="text-decoration-none text-dark">Home</a></li>
-                        <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
+                        <li class="breadcrumb-item" aria-current="page">@yield('title')
+                        </li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+                <div class="d-flex justify-content-between">
+                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')
+                    </h4>
+
+                    <div style="width: 300px">
+                        <select class="form-select select2" name="week_selector" id="week_selector">
+                            <option value="">Select Week</option>
+                            @foreach ($weeks as $date => $label)
+                                <option value="{{ $date }}"
+                                    {{ $currentWeekStart->format('Y-m-d') == $date ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -21,15 +21,10 @@ class MonthlyTimesheetPolicy
         if ($timeSheet->requester_id !== $user->id) {
             return false;
         }
-
-        // if (Carbon::now()->lte($timeSheet->end_date)) {
-        //     return false;
-        // }
-
-        return in_array($timeSheet->status_id, [
-            config('constant.CREATED_STATUS'),
-            config('constant.RETURNED_STATUS')
-        ]);
+        if (Carbon::now()->lte($timeSheet->end_date)) {
+            return false;
+        }
+        return in_array($timeSheet->status_id, [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]);
     }
 
     public function approve(User $user, TimeSheet $timeSheet)

@@ -86,7 +86,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::delete('/timesheet/{timesheet}/delete', [TimeSheetController::class, 'destroy'])->name('timesheet.destroy');
 
     Route::get('/monthly-timesheet/index', [MonthlyTimeSheetController::class, 'index'])->name('monthly-timesheet.index');
-    Route::get('/monthly-timesheet/{month}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
+    Route::get('/monthly-timesheet/{id}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
     Route::put('/monthly-timesheet/{id}', [MonthlyTimeSheetController::class, 'update'])->name('monthly-timesheet.update');
 
 
@@ -113,5 +113,5 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('approved/monthly-timesheet', [MonthlyTimeSheetApprovedController::class, 'index'])->name('approved.monthly-timesheet.index');
-    Route::get('approved/monthly-timesheet/{month}/create', [MonthlyTimeSheetApprovedController::class, 'show'])->name('approved.monthly-timesheet.show');
+    Route::get('approved/monthly-timesheet/{id}/show', [MonthlyTimeSheetApprovedController::class, 'show'])->name('approved.monthly-timesheet.show');
 });

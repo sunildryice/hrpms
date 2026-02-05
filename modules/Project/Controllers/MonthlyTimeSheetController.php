@@ -47,7 +47,7 @@ class MonthlyTimeSheetController extends Controller
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('monthly-timesheet.show', $row->month) . '" rel="tooltip" title="View Timesheet Details">';
+                    $btn .= route('monthly-timesheet.show', $row->id) . '" rel="tooltip" title="View Timesheet Details">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
                     return $btn;
                 })
@@ -56,14 +56,12 @@ class MonthlyTimeSheetController extends Controller
         }
         return view('Project::MonthlyTimeSheet.index');
     }
-    public function show($yearMonth)
+    public function show($id)
     {
         $authUser = auth()->user();
-        [$year, $monthNum] = explode('-', $yearMonth);
 
-        $timeSheet = TimeSheet::where('year', $year)
-            ->whereRaw('MONTH(start_date) = ?', [(int) $monthNum])
-            ->where('requester_id', auth()->id())
+        $timeSheet = TimeSheet::where('id', $id)
+            ->where('requester_id', $authUser->id)    
             ->firstOrFail();
 
         $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod($timeSheet->start_date, $timeSheet->end_date, auth()->id());
@@ -90,7 +88,7 @@ class MonthlyTimeSheetController extends Controller
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
         $supervisors = $this->user->getSupervisors($authUser);
-        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors', 'authUser'));
+        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'stats', 'timeSheet', 'supervisors', 'authUser'));
     }
 
     public function update(Request $request, $id)

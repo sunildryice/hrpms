@@ -45,9 +45,11 @@ class TimeSheetApproved extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('monthly-timesheet.show', $this->timeSheet->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->greeting('Hello!')
+            ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been returned to the requester.')
+            ->action('Return Timesheet', $url)
             ->line('Thank you for using our application!');
     }
 

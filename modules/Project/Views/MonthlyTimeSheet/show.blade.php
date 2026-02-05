@@ -211,9 +211,7 @@
                             <button type="submit" name="action" value="submit" class="btn btn-success btn-sm">
                                 Submit
                             </button>
-                            <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-secondary btn-sm">
-                                Back
-                            </a>
+                            <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-danger btn-sm">Cancel</a>
                         </div>
                     </form>
                 </div>

@@ -45,11 +45,14 @@ class TimeSheetReturned extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('monthly-timesheet.show', $this->timeSheet->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
+            ->greeting('Hello!')
+            ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been returned to the requester.')
+            ->action('Return Timesheet', $url)
             ->line('Thank you for using our application!');
     }
+
 
     /**
      * Get the array representation of the notification.
@@ -76,8 +79,8 @@ class TimeSheetReturned extends Notification
         event(new NotificationPushed());
         return [
             'travel_report_id' => $this->timeSheet->id,
-            'link' => route('monthly-timesheet.show', $this->timeSheet->month),
-            'alternate_link' => route('monthly-timesheet.show', $this->timeSheet->month),
+            'link' => route('monthly-timesheet.show', $this->timeSheet->id),
+            'alternate_link' => route('monthly-timesheet.show', $this->timeSheet->id),
             'subject' => "Timesheet for {$monthYear} has been returned",
         ];
     }

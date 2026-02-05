@@ -143,7 +143,6 @@ class ActivityTimeSheetRepository extends Repository
             ])
             ->when($userId, function ($query) use ($userId) {
                 $query->where('approver_id', $userId);
-                $query->orWhere('requester_id', $userId);
             })
             ->where('status_id', config('constant.APPROVED_STATUS'))
             ->orderBy('timesheets.year', 'desc')

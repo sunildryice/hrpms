@@ -10,6 +10,7 @@ use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Repositories\WorkPlanRepository;
 use Carbon\Carbon;
+use Modules\Project\Models\Enums\WorkPlanStatus;
 
 class EmployeeWorkPlanController extends Controller
 {
@@ -34,9 +35,11 @@ class EmployeeWorkPlanController extends Controller
 
             $query = $this->workPlans
                 ->with(['projects', 'employee'])
+                ->join('employees', 'employees.id', '=', 'work_plan.employee_id')
                 ->where('from_date', '>=', $currentWeekStart->format('Y-m-d'))
                 ->where('to_date', '<=', $currentWeekEnd->format('Y-m-d'))
-                ->select('work_plan.*');
+                ->select('work_plan.*')
+                ->orderBy('employees.full_name', 'asc');
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -52,7 +55,7 @@ class EmployeeWorkPlanController extends Controller
                     return $badges;
                 })
                 ->addColumn('action', function ($row) {
-                    return '<a href="' . route('work-plan.details', ['workPlan' => $row->id]) . '"
+                    return '<a href="' . route('employee-work-plan.details', ['workPlan' => $row->id]) . '"
                                 class="btn btn-primary btn-sm">
                                 <i class="bi bi-eye"></i>
                             </a>';
@@ -81,6 +84,59 @@ class EmployeeWorkPlanController extends Controller
             'currentWeekStart' => $currentWeekStart,
             'currentWeekEnd' => $currentWeekEnd,
             'weeks' => $weeks,
+        ]);
+    }
+
+    public function show(Request $request, $id)
+    {
+        $workPlanDetail = $this->workPlans->with(['employee', 'projects.activities', 'details'])->findOrFail($id);
+
+        if ($request->ajax()) {
+            $user = auth()->user();
+            if (!$user->employee) {
+                return DataTables::of(collect([]))->make(true);
+            }
+
+            $query = $this->workPlans->getWorkPlanDetails($id);
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('status', function ($row) {
+                    return $row->status ? ucfirst(str_replace('_', ' ', $row->status)) : 'Not Started';
+                })
+                ->addColumn('reason', function ($row) {
+                    return $row->reason ?? '';
+                })
+                ->editColumn('status', function ($row) {
+                    $statusEnum = WorkPlanStatus::tryFrom($row->status) ?? WorkPlanStatus::NotStarted;
+
+                    return '<span class="' . $statusEnum->colorClass() . '">' . $statusEnum->label() . '</span>';
+                })
+                ->rawColumns(['action', 'status'])
+                ->make(true);
+        }
+
+        $details = $workPlanDetail->details;
+        $stats = [
+            'total' => $details->count(),
+            'completed' => $details->where('status', WorkPlanStatus::Completed->value)->count(),
+            'partially_completed' => $details->where('status', WorkPlanStatus::PartiallyCompleted->value)->count(),
+            'no_required' => $details->where('status', WorkPlanStatus::NoRequired->value)->count(),
+            'not_started' => $details->filter(function ($detail) {
+                return is_null($detail->status) || $detail->status === WorkPlanStatus::NotStarted->value;
+            })->count(),
+        ];
+
+
+        $week = [
+            'start_date' => $workPlanDetail->from_date,
+            'end_date' => $workPlanDetail->to_date,
+        ];
+
+        return view('Project::EmployeeWorkPlan.show', [
+            'workPlan' => $workPlanDetail,
+            'week' => $week,
+            'stats' => $stats,
         ]);
     }
 }

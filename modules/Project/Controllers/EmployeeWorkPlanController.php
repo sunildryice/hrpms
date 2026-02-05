@@ -22,9 +22,15 @@ class EmployeeWorkPlanController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->has('week_start')) {
+            $currentWeekStart = Carbon::parse($request->week_start)->startOfWeek(Carbon::SUNDAY);
+        } else {
             $currentWeekStart = Carbon::now()->startOfWeek(Carbon::SUNDAY);
-            $currentWeekEnd = $currentWeekStart->copy()->addDays(6);
+        }
+
+        $currentWeekEnd = $currentWeekStart->copy()->addDays(6);
+        if ($request->ajax()) {
+
 
             $query = $this->workPlans
                 ->with(['projects', 'employee'])
@@ -55,6 +61,26 @@ class EmployeeWorkPlanController extends Controller
                 ->make(true);
         }
 
-        return view('Project::EmployeeWorkPlan.index');
+        $weeks = [];
+        $existingWeeks = $this->workPlans
+            ->select(['from_date', 'to_date'])
+            ->whereNotNull('from_date')
+            ->whereNotNull('to_date')
+            ->distinct()
+            ->orderBy('from_date', 'desc')
+            ->get();
+
+        foreach ($existingWeeks as $week) {
+            if ($week->from_date && $week->to_date) {
+                $label = $week->from_date->format('M j, Y') . ' - ' . $week->to_date->format('M j, Y');
+                $weeks[$week->from_date->format('Y-m-d')] = $label;
+            }
+        }
+
+        return view('Project::EmployeeWorkPlan.index', [
+            'currentWeekStart' => $currentWeekStart,
+            'currentWeekEnd' => $currentWeekEnd,
+            'weeks' => $weeks,
+        ]);
     }
 }

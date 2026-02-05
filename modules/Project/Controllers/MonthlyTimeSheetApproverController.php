@@ -11,6 +11,8 @@ use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Notifications\TimeSheetApproved;
+use Modules\Project\Notifications\TimeSheetReturned;
 use Modules\Project\Notifications\TimeSheetSubmitted;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
@@ -29,7 +31,7 @@ class MonthlyTimeSheetApproverController extends Controller
         $authUser = auth()->user();
         if ($request->ajax()) {
             $data = $this->activityTimeSheets->getApproverMonthlyTimeSheets($authUser->id);
-            
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('month_name', function ($row) {
@@ -47,10 +49,10 @@ class MonthlyTimeSheetApproverController extends Controller
                     return $badges;
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
-                    $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('monthly-timesheet.show', $row->month) . '" rel="tooltip" title="View Timesheet Details">';
-                    $btn .= '<i class="bi bi-eye"></i></a>';
-                    return $btn;
+                    $url = route('approve.monthly-timesheet.create', $row->id);
+                    return '<a class="btn btn-outline-primary btn-sm" href="' . $url . '" title="Approve Monthly TimeSheet">
+                <i class="bi bi-box-arrow-in-up-right"></i>
+            </a>';
                 })
                 ->rawColumns(['action', 'projects', 'status'])
                 ->make(true);
@@ -59,26 +61,31 @@ class MonthlyTimeSheetApproverController extends Controller
     }
 
 
-    public function show($yearMonth)
+    public function create($id)
     {
         $authUser = auth()->user();
-        [$year, $monthNum] = explode('-', $yearMonth);
 
-        $timeSheet = TimeSheet::where('year', $year)
-            ->whereRaw('MONTH(start_date) = ?', [(int) $monthNum])
-            ->where('requester_id', auth()->id())
+        $timeSheet = TimeSheet::where('id', $id)
+            ->where('approver_id', $authUser->id)
+            ->where('status_id', config('constant.SUBMITTED_STATUS'))
+            ->with(['requester', 'status', 'logs'])
             ->firstOrFail();
 
-        $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod($timeSheet->start_date, $timeSheet->end_date, auth()->id());
+        $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod(
+            $timeSheet->start_date,
+            $timeSheet->end_date,
+            $timeSheet->requester_id
+        );
+
         $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
-        // Generate all dates for the period
+
         $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
         $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
-        // Group timesheets by date
+
         $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
             return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
         });
-        // Create array of all dates with their timesheets
+
         $allDates = [];
         $currentDate = $startDate->copy();
         while ($currentDate->lte($endDate)) {
@@ -86,42 +93,79 @@ class MonthlyTimeSheetApproverController extends Controller
             $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
             $currentDate->addDay();
         }
+
         $stats = [
             'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),
             'activities' => $timeSheets->pluck('activity_id')->filter()->unique()->count(),
             'tasks' => $timeSheets->count(),
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
-        $supervisors = $this->user->getSupervisors($authUser);
-        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors', 'authUser'));
+
+        return view('Project::MonthlyTimeSheetApprover.create', compact(
+            'allDates',
+            'yearMonthFormatted',
+            'stats',
+            'timeSheet',
+            'authUser'
+        ));
     }
 
-    public function store(StoreRequest $request, $id)
+    public function store(Request $request, $id)
     {
-        $inputs = $request->validated();
-        $travelReport = $this->travelReport->find($id);
-        $this->authorize('approve', $travelReport);
+        $authUser = auth()->user();
+        $timeSheet = TimeSheet::where('id', $id)
+            ->where('approver_id', $authUser->id)
+            ->where('status_id', config('constant.SUBMITTED_STATUS'))
+            ->firstOrFail();
 
-        $inputs['user_id'] = auth()->id();
-        $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-        $travelReport = $this->travelReport->approve($travelReport->id, $inputs);
+        // Validate form input
+        $validated = $request->validate([
+            'status_id' => 'required|in:2,6',           // 2 = Return, 6 = Approve
+            'log_remarks' => 'nullable|string|max:1000',
+            'btn' => 'required|in:submit',
+        ]);
 
-        if ($travelReport) {
-            $message = '';
-            if ($travelReport->status_id == 2) {
-                $message = 'Travel report is successfully returned.';
-                $travelReport->reporter->notify(new TravelReportReturned($travelReport));
-            } else {
-                $message = 'Travel report is successfully approved.';
-                $travelReport->reporter->notify(new TravelReportApproved($travelReport));
+        $newStatusId = (int) $validated['status_id'];
+        $remarks = trim($validated['log_remarks'] ?? '');
+
+        // Define outcome based on selected status
+        $isApproved = $newStatusId === config('constant.APPROVED_STATUS');
+        $message = $isApproved ? 'Timesheet has been approved.' : 'Timesheet has been returned to the requester.';
+
+        DB::beginTransaction();
+
+        try {
+            // Update timesheet status
+            $timeSheet->update([
+                'status_id' => $newStatusId,
+                'updated_by' => $authUser->id,
+                'updated_at' => now(),
+            ]);
+
+            TimeSheetLog::create([
+                'timesheet_id' => $timeSheet->id,
+                'user_id' => $authUser->id,
+                'status_id' => $newStatusId,
+                'log_remarks' => $remarks ?: ($isApproved ? 'Approved' : 'Returned') . ' by ' . $authUser->getFullName(),
+            ]);
+
+            if ($timeSheet->requester) {
+                if ($isApproved) {
+                    $timeSheet->requester->notify(new TimeSheetApproved($timeSheet));
+                } else {
+                    $timeSheet->requester->notify(new TimeSheetReturned($timeSheet));
+                }
             }
 
-            return redirect()->route('approve.travel.reports.index')
-                ->withSuccessMessage($message);
-        }
+            DB::commit();
 
-        return redirect()->back()
-            ->withInput()
-            ->withWarningMessage('Travel Report can not be approved.');
+            return redirect()->route('approve.monthly-timesheet.index')->with('success_message', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error('Timesheet approval/return failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error_message', 'Failed to process your action. Please try again.');
+        }
     }
 }

@@ -98,7 +98,6 @@ class MonthlyTimeSheetController extends Controller
     public function update(Request $request, $id)
     {
         $authUser = auth()->user();
-
         $timeSheet = TimeSheet::where('id', $id)
             ->where('requester_id', $authUser->id)
             ->firstOrFail();
@@ -108,29 +107,21 @@ class MonthlyTimeSheetController extends Controller
         //     ->with('error_message', 'You can only submit after the period ends on ' . $timeSheet->end_date->format('d M Y'));
         //     }
 
-        // Validate input
-        $validated = $request->validate([
+        $inputs = $request->validate([
             'approver_id' => 'required|exists:users,id',
             'action' => 'required|in:submit',
         ]);
 
         // Prevent re-submission if already submitted or approved
-        if (
-            in_array($timeSheet->status_id, [
-                config('constant.SUBMITTED_STATUS'),
-                config('constant.APPROVED_STATUS'),
-            ])
-        ) {
-            return redirect()->back()
-                ->with('warning_message', 'This timesheet has already been submitted or approved.');
+        if (in_array($timeSheet->status_id, [config('constant.SUBMITTED_STATUS'), config('constant.APPROVED_STATUS'),])) {
+            return redirect()->back()->with('warning_message', 'This timesheet has already been submitted or approved.');
         }
 
         DB::beginTransaction();
 
         try {
-            // Update approver
             $timeSheet->update([
-                'approver_id' => $validated['approver_id'],
+                'approver_id' => $inputs['approver_id'],
                 'updated_by' => $authUser->id,
                 'updated_at' => now(),
             ]);

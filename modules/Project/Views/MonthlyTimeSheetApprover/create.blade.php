@@ -210,73 +210,63 @@
                     </table>
                 </div>
             </div>
-            @if ($authUser->can('submit', $timeSheet))
-                <div class="card-footer border-top">
-                    <form action="{{ route('approve.travel.reports.store', $travelReport->id) }}"
-                        id="MonthlyTimeSheetApproveForm" method="post" enctype="multipart/form-data" autocomplete="off">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationleavetype"
-                                                    class="form-label required-label">Status</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <select name="status_id" class="select2 form-control" data-width="100%">
-                                                <option value="">Select a Status</option>
-                                                <option value="2">Return to Requester</option>
-                                                <option value="6">Approve</option>
-                                            </select>
-                                            @if ($errors->has('status_id'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="status_id">
-                                                        {!! $errors->first('status_id') !!}
-                                                    </div>
-                                                </div>
-                                            @endif
+            <div class="card-footer border-top">
+                <form action="{{ route('approve.monthly-timesheet.store', $timeSheet->id) }}"
+                    id="MonthlyTimeSheetApproveForm" method="post" enctype="multipart/form-data" autocomplete="off">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="row mb-2">
+                                    <div class="col-lg-3">
+                                        <div class="d-flex align-items-start h-100">
+                                            <label for="validationleavetype"
+                                                class="form-label required-label">Status</label>
                                         </div>
                                     </div>
-                                    <div class="row mb-2">
-                                        <div class="col-lg-3">
-                                            <div class="d-flex align-items-start h-100">
-                                                <label for="validationRemarks"
-                                                    class="form-label required-label">Remarks</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-9">
-                                            <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
-                                            @if ($errors->has('log_remarks'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                    <div class="col-lg-9">
+                                        <select name="status_id" class="select2 form-control" data-width="100%">
+                                            <option value="">Select a Status</option>
+                                            <option value="2">Return to Requester</option>
+                                            <option value="6">Approve</option>
+                                        </select>
+                                        @if ($errors->has('status_id'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div data-field="status_id">
+                                                    {!! $errors->first('status_id') !!}
                                                 </div>
-                                            @endif
-                                        </div>
+                                            </div>
+                                        @endif
                                     </div>
-                                    {!! csrf_field() !!}
                                 </div>
+                                <div class="row mb-2">
+                                    <div class="col-lg-3">
+                                        <div class="d-flex align-items-start h-100">
+                                            <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                        @if ($errors->has('log_remarks'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                {!! csrf_field() !!}
                             </div>
                         </div>
-                        <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                            @if (!$authUser->can('submit', $travelReport))
-                                <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                                    Submit
-                                </button>
-                            @endif
-                            <a href="{!! route('approve.travel.reports.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                        </div>
-                    </form>
-                </div>
-            @else
-                <div class="card-footer bg-light text-center py-3">
-                    <small class="text-muted">
-                        Approval form will be available after the period ends on
-                        <strong>{{ $timeSheet->end_date->format('d M Y') }}</strong>
-                    </small>
-                </div>
-            @endif
+                    </div>
+                    <div class="card-footer border-0 justify-content-end d-flex gap-2">
+                        @if ($authUser->can('approve', $timeSheet))
+                            <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                                Submit
+                            </button>
+                        @endif
+                        <a href="{!! route('approve.monthly-timesheet.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 @stop

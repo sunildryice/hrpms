@@ -31,4 +31,9 @@ class MonthlyTimesheetPolicy
             config('constant.RETURNED_STATUS')
         ]);
     }
+
+    public function approve(User $user, TimeSheet $timeSheet)
+    {
+        return ($timeSheet->status_id == config('constant.SUBMITTED_STATUS') && $user->id == $timeSheet->approver_id);
+    }
 }

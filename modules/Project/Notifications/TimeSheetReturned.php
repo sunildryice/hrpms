@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Modules\Project\Models\TimeSheet;
 
-class TravelSheetApproved extends Notification
+class TimeSheetReturned extends Notification
 {
     use Queueable;
 
@@ -76,9 +76,9 @@ class TravelSheetApproved extends Notification
         event(new NotificationPushed());
         return [
             'travel_report_id' => $this->timeSheet->id,
-            'link' => route('monthly-timesheet.show', $this->timeSheet->id),
-            'alternate_link' => route('monthly-timesheet.show', $this->timeSheet->id),
-            'subject' => "Timesheet for {$monthYear} has been approved",
+            'link' => route('monthly-timesheet.show', $this->timeSheet->month),
+            'alternate_link' => route('monthly-timesheet.show', $this->timeSheet->month),
+            'subject' => "Timesheet for {$monthYear} has been returned",
         ];
     }
 

@@ -79,8 +79,8 @@ class TimeSheetSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'timesheet_id' => $this->timeSheet->id,
-            'link' => route('monthly-timesheet.show', $this->timeSheet->month),
-            'alternate_link' => route('monthly-timesheet.show', $this->timeSheet->month),
+            'link' => route('approve.monthly-timesheet.create', $this->timeSheet->id),
+            'alternate_link' => route('approve.monthly-timesheet.create', $this->timeSheet->id),
             'subject'          => "Timesheet for {$monthYear} has been submitted. Requester: {$requesterName}.",
         ];
     }

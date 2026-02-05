@@ -107,7 +107,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('approve/monthly-timesheet', [MonthlyTimeSheetApproverController::class, 'index'])->name('approve.monthly-timesheet.index');
-    Route::get('approve/monthly-timesheet/{month}/create', [MonthlyTimeSheetApproverController::class, 'create'])->name('approve.monthly-timesheet.create');
+    Route::get('approve/monthly-timesheet/{id}/create', [MonthlyTimeSheetApproverController::class, 'create'])->name('approve.monthly-timesheet.create');
     Route::post('approve/monthly-timesheet/{id}', [MonthlyTimeSheetApproverController::class, 'store'])->name('approve.monthly-timesheet.store');
 });
 

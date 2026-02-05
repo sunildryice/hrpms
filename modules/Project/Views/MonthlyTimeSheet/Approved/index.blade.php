@@ -1,14 +1,14 @@
 @extends('layouts.container')
-@section('title', 'Monthly Timesheets')
+@section('title', 'Approved Monthly Timesheets')
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#monthly-timesheets-index').addClass('active');
+            $('#navbarVerticalMenu').find('#approved-monthly-timesheets-menu').addClass('active');
             var oTable = $('#MonthlyTimeSheetTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('monthly-timesheet.index') }}",
+                ajax: "{{ route('approved.monthly-timesheet.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',

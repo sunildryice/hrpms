@@ -51,6 +51,16 @@ class TimeSheet extends Model
         return $this->belongsTo(Status::class, 'status_id')->withDefault();
     }
 
+    public function getStatus()
+    {
+        return $this->status->title;
+    }
+
+    public function getStatusClass()
+    {
+        return $this->status->status_class;
+    }
+
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'updated_by')->withDefault();

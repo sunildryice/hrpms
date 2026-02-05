@@ -1,13 +1,19 @@
 @extends('layouts.container')
-@section('title', 'Monthly Timesheet Detail')
+
+@section('title', 'Approved Monthly TimeSheet Detail')
+
+@section('page_css')
+    <style>
+        .recommend-col {
+            max-width: 350px;
+            white-space: pre-line;
+        }
+    </style>
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#monthly-timesheets-index').addClass('active');
-            $('.select2').select2({
-                placeholder: "Select Status",
-                width: '100%'
-            });
+            $('#navbarVerticalMenu').find('#approved-monthly-timesheets-menu').addClass('active');
         });
     </script>
 @endsection
@@ -20,7 +26,7 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('monthly-timesheet.index') }}" class="text-decoration-none text-dark">Monthly Timesheet</a></li>
+                             <li class="breadcrumb-item"><a href="{{ route('approved.monthly-timesheet.index') }}" class="text-decoration-none text-dark">Approved Monthly Timesheet</a></li>
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
                     </nav>
@@ -168,97 +174,37 @@
                     </table>
                 </div>
             </div>
-            @if ($authUser->can('submit', $timeSheet))
-                <div class="card-footer border-top">
-                    <form action="{{ route('monthly-timesheet.update', $timeSheet->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="row mb-2 align-items-center">
-                                        <div class="col-lg-3">
-                                            <label class="m-0">{{ __('label.approval') }}</label>
+            <div class="card">
+                <div class="card-header fw-bold">
+                    Monthly TimeSheet Process
+                </div>
+                <div class="card-body">
+                    <div class="c-b">
+                        @foreach ($timeSheet->logs as $log)
+                            <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom ">
+                                <div width="40" height="40" class="rounded-circle mr-3 user-icon">
+                                    <i class="bi-person-circle fs-5"></i>
+                                </div>
+                                <div class="w-100">
+                                    <div
+                                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                        <div
+                                            class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                            <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
+                                            <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                         </div>
-                                        <div class="col-lg-9">
-                                            @php $selectedApproverId = old('approver_id') ?: $timeSheet->approver_id; @endphp
-                                            <select name="approver_id"
-                                                class="select2 form-control @error('approver_id') is-invalid @enderror"
-                                                data-width="100%">
-                                                @if ($supervisors->count() !== 1)
-                                                    <option value="">Select an Approver</option>
-                                                @endif
-                                                @foreach ($supervisors as $approver)
-                                                    <option value="{{ $approver->id }}"
-                                                        {{ $approver->id == $selectedApproverId ? 'selected' : '' }}>
-                                                        {{ $approver->getFullName() }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('approver_id')
-                                                <div class="invalid-feedback">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                        <small
+                                            title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                     </div>
+                                    <p class="text-justify comment-text mb-0 mt-1">
+                                        {{ $log->log_remarks }}
+                                    </p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="card-footer border-0 d-flex justify-content-end gap-2">
-                            <button type="submit" name="action" value="submit" class="btn btn-success btn-sm">
-                                Submit
-                            </button>
-                            <a href="{{ route('monthly-timesheet.index') }}" class="btn btn-danger btn-sm">Cancel</a>
-                        </div>
-                    </form>
-                </div>
-            @else
-                @if ($timeSheet->status_id == config('constant.CREATED_STATUS'))
-                    <div class="card-footer bg-light text-center py-3">
-                        <small class="text-muted">
-                            Approval form will be available after the period ends on
-                            <strong>{{ $timeSheet->end_date->format('d M Y') }}</strong>
-                        </small>
-                    </div>
-                @endif
-            @endif
-            @if (in_array($timeSheet->status_id, [config('constant.APPROVED_STATUS'), config('constant.SUBMITTED_STATUS')]))
-                <div class="card">
-                    <div class="card-header fw-bold">Approval & Comments History</div>
-                    <div class="card-body">
-                        <div class="c-b">
-                            @foreach ($timeSheet->logs as $log)
-                                <div class="d-flex py-2 flex-row gap-2 mb-2 border-bottom">
-                                    <div class="rounded-circle user-icon">
-                                        <i class="bi-person-circle fs-5"></i>
-                                    </div>
-                                    <div class="w-100">
-                                        <div
-                                            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                            <div
-                                                class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
-                                                <label class="form-label mb-0">{{ $log->getCreatedBy() }}</label>
-                                                <span class="badge bg-primary c-badge">
-                                                    {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
-                                                </span>
-                                            </div>
-                                            <small title="{{ $log->created_at }}">
-                                                {{ $log->created_at->format('M d, Y h:i A') }}
-                                            </small>
-                                        </div>
-                                        <p class="text-justify comment-text mb-0 mt-1">
-                                            {{ $log->log_remarks }}
-                                        </p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                        @endforeach
                     </div>
                 </div>
-            @endif
+            </div>
         </div>
     </div>
 @stop

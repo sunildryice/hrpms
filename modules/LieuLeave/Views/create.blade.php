@@ -273,7 +273,7 @@
 
                 <div class="mb-3 row">
                     <div class="col-lg-2">
-                        <label for="send_to" class="form-label required-label">Send To</label>
+                        <label for="send_to" class="form-label required-label">Approver</label>
                     </div>
                     <div class="col-lg-10">
                         <select class="form-control" id="send_to" name="send_to" required>

@@ -17,6 +17,7 @@ class UpdateRequest extends FormRequest
         return [
             'leave_date'    => 'required|date',
             'reason'        => 'required|string',
+            'off_day_work_date' => 'required|date',
             'send_to'       => 'required|exists:users,id',
             'substitutes'   => 'nullable|array',
             'substitutes.*' => 'exists:employees,id',

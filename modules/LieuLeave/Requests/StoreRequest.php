@@ -26,6 +26,7 @@ class StoreRequest extends FormRequest
 
         return [
             'leave_date'    => 'required|date',
+            'off_day_work_date' => 'required|date',
             'reason'        => 'required|string',
             'send_to'       => 'required|exists:users,id',
             'substitutes'   => 'nullable|array',

@@ -46,6 +46,9 @@ class EmployeeWorkPlanController extends Controller
                 ->addColumn('employee_full_name', function ($row) {
                     return $row->employee->full_name ?? 'N/A';
                 })
+                ->filterColumn('employee_full_name', function ($query, $keyword) {
+                    $query->where('employees.full_name', 'like', "%{$keyword}%");
+                })
                 ->addColumn('projects', function ($row) {
                     $projects = $row->projects->unique('id');
                     $badges = '';
@@ -98,6 +101,9 @@ class EmployeeWorkPlanController extends Controller
             }
 
             $query = $this->workPlans->getWorkPlanDetails($id);
+
+
+
 
             return DataTables::of($query)
                 ->addIndexColumn()

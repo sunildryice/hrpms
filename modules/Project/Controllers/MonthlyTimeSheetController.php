@@ -101,10 +101,10 @@ class MonthlyTimeSheetController extends Controller
             ->where('requester_id', $authUser->id)
             ->firstOrFail();
 
-        if (now()->lte($timeSheet->end_date)) {
-            return redirect()->back()
-                ->with('error', 'You can only submit after the period ends on ' . $timeSheet->end_date->format('d M Y'));
-        }
+        // if (now()->lte($timeSheet->end_date)) {
+        //     return redirect()->back()
+        //     ->with('error_message', 'You can only submit after the period ends on ' . $timeSheet->end_date->format('d M Y'));
+        //     }
 
         // Validate input
         $validated = $request->validate([
@@ -120,7 +120,7 @@ class MonthlyTimeSheetController extends Controller
             ])
         ) {
             return redirect()->back()
-                ->with('warning', 'This timesheet has already been submitted or approved.');
+                ->with('warning_message', 'This timesheet has already been submitted or approved.');
         }
 
         DB::beginTransaction();
@@ -157,13 +157,14 @@ class MonthlyTimeSheetController extends Controller
 
             return redirect()
                 ->route('monthly-timesheet.index')
-                ->with('success', 'Timesheet has been successfully submitted for approval.');
+                ->with('success_message', 'Timesheet has been successfully submitted for approval.');
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             logger()->error('Timesheet submission failed: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Failed to submit timesheet. Please try again.');
+                ->with('error_message', 'Failed to submit timesheet. Please try again.');
         }
     }
 }

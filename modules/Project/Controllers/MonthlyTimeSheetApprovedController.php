@@ -17,51 +17,12 @@ use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class MonthlyTimeSheetApprovedController extends Controller
 {
-    private $travelReport;
-    private $employees;
-    private $travelReportRecommendation;
-    private $travelRequest;
-    private $travelRequestEstimate;
-    private $travelRequestItinerary;
-    private $roles;
-    private $status;
-    private $user;
-    private $destinationPath;
-
-    /**
-     * Create a new controller instance.
-     * @param EmployeeRepository $employees
-     * @param RoleRepository $roles
-     * @param StatusRepository $status
-     * @param TravelReportRepository $travelReport
-     * @param TravelReportRecommendationRepository $travelReportRecommendation
-     * @param TravelRequestRepository $travelRequest
-     * @param TravelRequestEstimateRepository $travelRequestEstimate
-     * @param TravelRequestItineraryRepository $travelRequestItinerary
-     * @param UserRepository $user
-     */
     public function __construct(
-        EmployeeRepository                   $employees,
-        RoleRepository                       $roles,
-        StatusRepository                     $status,
-        TravelReportRepository               $travelReport,
-        TravelReportRecommendationRepository $travelReportRecommendation,
-        TravelRequestRepository              $travelRequest,
-        TravelRequestEstimateRepository      $travelRequestEstimate,
-        TravelRequestItineraryRepository     $travelRequestItinerary,
-        UserRepository                       $user
-    )
-    {
-        $this->destinationPath              = 'travelreport';
-        $this->employees                    = $employees;
-        $this->roles                        = $roles;
-        $this->status                       = $status;
-        $this->travelReport                 = $travelReport;
-        $this->travelReportRecommendation   = $travelReportRecommendation;
-        $this->travelRequest                = $travelRequest;
-        $this->travelRequestEstimate        = $travelRequestEstimate;
-        $this->travelRequestItinerary       = $travelRequestItinerary;
-        $this->user                         = $user;
+        protected ActivityTimeSheetRepository $activityTimeSheets,
+        protected TimeSheetRepository $timeSheets,
+        protected UserRepository $user
+
+    ) {
     }
 
     /**
@@ -94,7 +55,7 @@ class MonthlyTimeSheetApprovedController extends Controller
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('approved.travel.reports.show', $row->id) . '" rel="tooltip" title="View Travel Report">';
                     $btn .= '<i class="bi bi-eye"></i></a>';
-                    if($authUser->can('print', $row)) {
+                    if ($authUser->can('print', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
                         $btn .= route('travel.report.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
                     }
@@ -117,20 +78,20 @@ class MonthlyTimeSheetApprovedController extends Controller
         $authUser = auth()->user();
         $travelReport = $this->travelReport->find($id);
         // $this->authorize('print', $travelReport);
-        $travelReport = $this->travelReport ->select('*')
-                                ->with('status')
-                                ->where('id', $id)
-                                ->whereStatusId(config('constant.APPROVED_STATUS'))
-                                ->first();
+        $travelReport = $this->travelReport->select('*')
+            ->with('status')
+            ->where('id', $id)
+            ->whereStatusId(config('constant.APPROVED_STATUS'))
+            ->first();
         $approver = $this->employees->select('*')->where('id', $travelReport->approver->employee_id)->first();
         $requester = $this->employees->select('*')->where('id', $travelReport->reporter->employee_id)->first();
-        $date['submitted_date']= '';
+        $date['submitted_date'] = '';
         $date['approved_date'] = '';
-        foreach($travelReport->logs as $log){
-            if($log->status_id == 3 ){
+        foreach ($travelReport->logs as $log) {
+            if ($log->status_id == 3) {
                 $date['submitted_date'] = $log->created_at;
             }
-            if($log->status_id == 6 ){
+            if ($log->status_id == 6) {
                 $date['approved_date'] = $date['recommended_date'] = $log->created_at;
             }
         }

@@ -17,114 +17,85 @@ use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
 class MonthlyTimeSheetApproverController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @param EmployeeRepository $employees ,
-     * @param TravelReportRepository $travelReport ,
-     * @param TravelReportRecommendationRepository $travelReportRecommendation ,
-     * @param TravelRequestRepository $travelRequest ,
-     * @param TravelRequestEstimateRepository $TravelRequestEstimateRepository ,
-     * @param TravelRequestItineraryRepository $travelRequestItineraryRepository ,
-     * @param RoleRepository $roles ,
-     * @param StatusRepository $status ,
-     * @param UserRepository $user
-     *
-     */
-
     public function __construct(
-        EmployeeRepository                   $employees,
-        TravelReportRepository               $travelReport,
-        TravelReportRecommendationRepository $travelReportRecommendation,
-        TravelRequestRepository              $travelRequest,
-        TravelRequestEstimateRepository      $travelRequestEstimate,
-        TravelRequestItineraryRepository     $travelRequestItinerary,
-        RoleRepository                       $roles,
-        StatusRepository                     $status,
-        UserRepository                       $user
-    )
-    {
-        $this->employees = $employees;
-        $this->travelReport = $travelReport;
-        $this->travelReportRecommendation = $travelReportRecommendation;
-        $this->travelRequest = $travelRequest;
-        $this->travelRequestEstimate = $travelRequestEstimate;
-        $this->travelRequestItinerary = $travelRequestItinerary;
-        $this->roles = $roles;
-        $this->status = $status;
-        $this->user = $user;
-        $this->destinationPath = 'travelreport';
-    }
+        protected ActivityTimeSheetRepository $activityTimeSheets,
+        protected TimeSheetRepository $timeSheets,
+        protected UserRepository $user
 
-    /**
-     * Display a listing of the travel request by employee id.
-     *
-     * @return mixed
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
+    ) {
+    }
     public function index(Request $request)
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->travelReport->with(['travelRequest'])->select(['*'])
-                ->where(function ($q) use ($authUser) {
-                    $q->where('approver_id', $authUser->id);
-                    $q->where('status_id', config('constant.SUBMITTED_STATUS'));
-                })->orderBy('created_at', 'desc')
-                ->get();
-
+            $data = $this->activityTimeSheets->getApproverMonthlyTimeSheets($authUser->id);
+            
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('departure_date', function ($row) {
-                    return $row->travelRequest->getDepartureDate();
-                })->addColumn('return_date', function ($row) {
-                    return $row->travelRequest->getReturnDate();
-                })->addColumn('final_destination', function ($row) {
-                    return $row->travelRequest->final_destination;
-                })->addColumn('travel_number', function ($row) {
-                    return $row->travelRequest->getTravelRequestNumber();
-                })->addColumn('requester', function ($row) {
-                    return $row->getReporterName();
-                })->addColumn('status', function ($row) {
+                ->addColumn('month_name', function ($row) {
+                    return $row->month_name;
+                })
+                ->addColumn('status', function ($row) {
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
-                })->addColumn('action', function ($row) use ($authUser) {
+                })
+                ->addColumn('projects', function ($row) {
+                    $projectShortNames = explode(', ', $row->project_short_names ?? '');
+                    $badges = '';
+                    foreach ($projectShortNames as $shortName) {
+                        $badges .= '<span class="badge bg-info text-dark me-1 mb-1">' . trim($shortName) . '</span>';
+                    }
+                    return $badges;
+                })
+                ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('approve.travel.reports.create', $row->id) . '" rel="tooltip" title="Approve Travel Report">';
-                    $btn .= '<i class="bi bi-box-arrow-in-up-right"></i></a>';
+                    $btn .= route('monthly-timesheet.show', $row->month) . '" rel="tooltip" title="View Timesheet Details">';
+                    $btn .= '<i class="bi bi-eye"></i></a>';
                     return $btn;
-                })->rawColumns(['action', 'status'])
+                })
+                ->rawColumns(['action', 'projects', 'status'])
                 ->make(true);
         }
-
-        return view('TravelRequest::TravelReportReview.index');
+        return view('Project::MonthlyTimeSheetApprover.index');
     }
 
-    /**
-     * Show the form for creating a new travel request by employee.
-     *
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function create($id)
+
+    public function show($yearMonth)
     {
         $authUser = auth()->user();
-        $travelReport = $this->travelReport->find($id);
-        $this->authorize('approve', $travelReport);
+        [$year, $monthNum] = explode('-', $yearMonth);
 
-        return view('TravelRequest::TravelReportReview.create')
-            ->withAuthUser($authUser)
-            ->withTravelReport($travelReport)
-            ->withTravelRequest($travelReport->travelRequest)
-            ->withRoles($this->roles->get());
+        $timeSheet = TimeSheet::where('year', $year)
+            ->whereRaw('MONTH(start_date) = ?', [(int) $monthNum])
+            ->where('requester_id', auth()->id())
+            ->firstOrFail();
+
+        $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod($timeSheet->start_date, $timeSheet->end_date, auth()->id());
+        $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
+        // Generate all dates for the period
+        $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
+        $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
+        // Group timesheets by date
+        $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
+            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
+        });
+        // Create array of all dates with their timesheets
+        $allDates = [];
+        $currentDate = $startDate->copy();
+        while ($currentDate->lte($endDate)) {
+            $dateKey = $currentDate->format('Y-m-d');
+            $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
+            $currentDate->addDay();
+        }
+        $stats = [
+            'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),
+            'activities' => $timeSheets->pluck('activity_id')->filter()->unique()->count(),
+            'tasks' => $timeSheets->count(),
+            'hours' => (float) $timeSheets->sum('hours_spent'),
+        ];
+        $supervisors = $this->user->getSupervisors($authUser);
+        return view('Project::MonthlyTimeSheet.show', compact('allDates', 'yearMonthFormatted', 'yearMonth', 'stats', 'timeSheet', 'supervisors', 'authUser'));
     }
 
-    /**
-     * Store a newly created travel request in storage.
-     *
-     * @param \Modules\Employee\Requests\StoreRequest $request
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
     public function store(StoreRequest $request, $id)
     {
         $inputs = $request->validated();

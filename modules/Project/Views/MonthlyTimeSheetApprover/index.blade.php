@@ -8,7 +8,7 @@
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('monthly-timesheet.index') }}",
+                ajax: "{{ route('approve.monthly-timesheet.index') }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',

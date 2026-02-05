@@ -541,6 +541,8 @@
                                 ({{ $approveMonthlyTimeSheetCount }})</a>
                             <a class="nav-link" href="{{ route('approved.monthly-timesheet.index') }}"
                                 id="approved-monthly-timesheets-menu">Approved Monthly Timesheet</a>
+                            <a class="nav-link" href="{{ route('monthly-timesheet.summary.index') }}"
+                                id="monthly-timesheets-summary-menu">Monthly Timesheet Summary</a>
                         </div>
                     </div>
 

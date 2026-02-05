@@ -4,14 +4,11 @@ namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\TimeSheet;
+use Yajra\DataTables\Facades\DataTables;
+use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
-use Modules\Privilege\Repositories\UserRepository;
-
 class MonthlyTimeSheetApprovedController extends Controller
 {
     public function __construct(
@@ -23,94 +20,83 @@ class MonthlyTimeSheetApprovedController extends Controller
 
     public function index(Request $request)
     {
-        $authUser = Auth::user();
+        $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $query = $this->activityTimeSheets->getApprovedMonthlyTimeSheets($authUser->id);
+            $data = $this->activityTimeSheets->getApprovedMonthlyTimeSheets($authUser->id);
 
-            return DataTables::of($query)
+            return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('month_year', fn($row) => $row->month . ' ' . $row->year)
-                ->addColumn(
-                    'period',
-                    fn($row) =>
-                    Carbon::parse($row->start_date)->format('d M') . ' — ' .
-                    Carbon::parse($row->end_date)->format('d M Y')
-                )
-                ->addColumn('requester', fn($row) => $row->requester?->getFullName() ?? '-')
-                ->addColumn('total_hours', fn($row) => number_format($row->total_hours ?? 0, 2) . ' hrs')
-                ->addColumn(
-                    'approved_at',
-                    fn($row) =>
-                    $row->approved_at
-                    ? Carbon::parse($row->approved_at)->format('d M Y • H:i')
-                    : '-'
-                )
-                ->addColumn('status', fn($row) => sprintf(
-                    '<span class="badge bg-success">Approved</span>'
-                ))
-                ->addColumn('action', function ($row) {
-                    return sprintf(
-                        '<a href="%s" class="btn btn-sm btn-outline-info" title="View Approved Timesheet">
-                            <i class="bi bi-eye"></i> View
-                        </a>',
-                        route('approved.monthly-timesheet.show', $row->id)
-                    );
+                ->addColumn('month_name', function ($row) {
+                    return $row->month_name;
                 })
-                ->rawColumns(['status', 'action'])
+                ->addColumn('status', function ($row) {
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
+                })
+                ->addColumn('projects', function ($row) {
+                    $projectShortNames = explode(', ', $row->project_short_names ?? '');
+                    $badges = '';
+                    foreach ($projectShortNames as $shortName) {
+                        $badges .= '<span class="badge bg-info text-dark me-1 mb-1">' . trim($shortName) . '</span>';
+                    }
+                    return $badges;
+                })
+                ->addColumn('action', function ($row) use ($authUser) {
+                    $url = route('approved.monthly-timesheet.show', $row->id);
+                    return '<a class="btn btn-outline-primary btn-sm" href="' . $url . '" title="Approved Monthly TimeSheet">
+                <i class="bi bi-eye"></i>
+            </a>';
+                })
+                ->rawColumns(['action', 'projects', 'status'])
                 ->make(true);
         }
 
-        return view('Project::MonthlyTimeSheetApproved.index');
+        return view('Project::MonthlyTimeSheet.Approved.index');
     }
 
     public function show($id)
     {
-        $authUser = Auth::user();
+       $authUser = auth()->user();
 
-        $timeSheet = TimeSheet::query()
-            ->where('id', $id)
+        $timeSheet = TimeSheet::where('id', $id)
             ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->with([
-                'requester',
-                'approver',
-                'status',
-                'logs' => fn($q) => $q->latest(),
-            ])
+            ->with(['requester', 'approver', 'status', 'logs' => fn($q) => $q->latest(),])
             ->firstOrFail();
 
-        $activities = $this->activityTimeSheets->getTimeSheetsByPeriod(
+        $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod(
             $timeSheet->start_date,
             $timeSheet->end_date,
             $timeSheet->requester_id
         );
+        $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
 
-        $groupedActivities = $activities->groupBy(fn($item) => $item->timesheet_date);
+        $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
+        $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
 
-        $calendar = [];
-        $currentDate = Carbon::parse($timeSheet->start_date);
-        $endDate = Carbon::parse($timeSheet->end_date);
+        $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
+            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
+        });
 
+        $allDates = [];
+        $currentDate = $startDate->copy();
         while ($currentDate->lte($endDate)) {
             $dateKey = $currentDate->format('Y-m-d');
-            $calendar[$dateKey] = $groupedActivities->get($dateKey, collect());
+            $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
             $currentDate->addDay();
         }
 
         $stats = [
-            'total_hours' => (float) $activities->sum('hours_spent'),
-            'project_count' => $activities->pluck('project_id')->filter()->unique()->count(),
-            'activity_count' => $activities->pluck('activity_id')->filter()->unique()->count(),
-            'days_recorded' => $activities->groupBy('timesheet_date')->count(),
-            'approved_by' => $timeSheet->approver?->getFullName(),
-            'approved_at' => $timeSheet->approved_at ? Carbon::parse($timeSheet->approved_at)->format('d M Y H:i') : null,
+            'projects' => $timeSheets->pluck('project_id')->filter()->unique()->count(),
+            'activities' => $timeSheets->pluck('activity_id')->filter()->unique()->count(),
+            'tasks' => $timeSheets->count(),
+            'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
 
-        return view('Project::MonthlyTimeSheetApproved.show', compact(
-            'timeSheet',
-            'calendar',
+        return view('Project::MonthlyTimeSheet.Approved.show', compact(
+            'allDates',
+            'yearMonthFormatted',
             'stats',
-            'activities',
+            'timeSheet',
             'authUser'
         ));
     }

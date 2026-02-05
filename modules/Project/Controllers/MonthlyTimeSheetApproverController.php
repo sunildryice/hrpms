@@ -54,7 +54,7 @@ class MonthlyTimeSheetApproverController extends Controller
                 ->rawColumns(['action', 'projects', 'status'])
                 ->make(true);
         }
-        return view('Project::MonthlyTimeSheetApprover.index');
+        return view('Project::MonthlyTimeSheet.Approver.index');
     }
 
 
@@ -98,7 +98,7 @@ class MonthlyTimeSheetApproverController extends Controller
             'hours' => (float) $timeSheets->sum('hours_spent'),
         ];
 
-        return view('Project::MonthlyTimeSheetApprover.create', compact(
+        return view('Project::MonthlyTimeSheet.Approver.create', compact(
             'allDates',
             'yearMonthFormatted',
             'stats',

@@ -137,6 +137,9 @@ class RequestController extends Controller
             $inputs['request_date'] = now();
             $inputs['start_date'] = $inputs['leave_date'];
             $inputs['end_date'] = $inputs['leave_date'];
+            $inputs['off_day_work_approved_date'] = $inputs['off_day_work_date'];
+
+
 
             DB::beginTransaction();
 
@@ -170,7 +173,9 @@ class RequestController extends Controller
                     'lieu_leave_request_id' => $lieuLeaveRequest->id,
                 ];
 
-                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])->first();
+                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])
+                    ->where('earned_date', $inputs['off_day_work_date'])
+                    ->first();
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
 
@@ -216,7 +221,7 @@ class RequestController extends Controller
 
     public function show($id)
     {
-        $lieuLeaveRequest = $this->lieuLeaveRequests->with(['requester', 'approver', 'project', 'logs.user'])->findOrFail($id);
+        $lieuLeaveRequest = $this->lieuLeaveRequests->with(['requester', 'approver', 'project', 'logs.user', 'leaveBalance'])->findOrFail($id);
 
         // $this->authorize('view', $lieuLeaveRequest);
 
@@ -262,6 +267,7 @@ class RequestController extends Controller
             $inputs['updated_by'] = auth()->id();
             $inputs['start_date'] = $inputs['leave_date'];
             $inputs['end_date'] = $inputs['leave_date'];
+            $inputs['off_day_work_approved_date'] = $inputs['off_day_work_date'];
 
             DB::beginTransaction();
 
@@ -298,7 +304,9 @@ class RequestController extends Controller
 
                 $this->lieuLeaveRequestLogs->create($logInputs);
 
-                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])->first();
+                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])
+                    ->where('earned_date', $inputs['off_day_work_date'])
+                    ->first();
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
 

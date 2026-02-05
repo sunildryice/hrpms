@@ -4,10 +4,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Modules\Project\Models\TimeSheet;
+use Modules\Project\Models\TimeSheetLog;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ActivityTimeSheet;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Notifications\TimeSheetSubmitted;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 
@@ -59,7 +61,7 @@ class MonthlyTimeSheetController extends Controller
         $authUser = auth()->user();
         [$year, $monthNum] = explode('-', $yearMonth);
 
-        $timeSheet = \Modules\Project\Models\TimeSheet::where('year', $year)
+        $timeSheet = TimeSheet::where('year', $year)
             ->whereRaw('MONTH(start_date) = ?', [(int) $monthNum])
             ->where('requester_id', auth()->id())
             ->firstOrFail();
@@ -93,33 +95,75 @@ class MonthlyTimeSheetController extends Controller
 
     public function update(Request $request, $id)
     {
+        $authUser = auth()->user();
+
         $timeSheet = TimeSheet::where('id', $id)
-            ->where('requester_id', auth()->id())
+            ->where('requester_id', $authUser->id)
             ->firstOrFail();
 
-        // Only allow update if period has ended
         if (now()->lte($timeSheet->end_date)) {
             return redirect()->back()
-                ->with('error', 'You can only submit for approval after the timesheet period ends.');
+                ->with('error', 'You can only submit after the period ends on ' . $timeSheet->end_date->format('d M Y'));
         }
 
+        // Validate input
         $validated = $request->validate([
             'approver_id' => 'required|exists:users,id',
+            'action' => 'required|in:submit',
         ]);
 
-        if ($timeSheet->isApproved()) {
+        // Prevent re-submission if already submitted or approved
+        if (
+            in_array($timeSheet->status_id, [
+                config('constant.SUBMITTED_STATUS'),
+                config('constant.APPROVED_STATUS'),
+            ])
+        ) {
             return redirect()->back()
-                ->with('warning', 'This timesheet is already approved.');
+                ->with('warning', 'This timesheet has already been submitted or approved.');
         }
 
-        $timeSheet->update([
-            'approver_id' => $validated['approver_id'],
-            'status_id' => config('constant.PENDING_STATUS') ?? $timeSheet->status_id,
-            'updated_by' => auth()->id(),
-        ]);
+        DB::beginTransaction();
 
-        return redirect()
-            ->route('monthly-timesheet.index')
-            ->with('success', 'Timesheet has been successfully submitted to the approver.');
+        try {
+            // Update approver
+            $timeSheet->update([
+                'approver_id' => $validated['approver_id'],
+                'updated_by' => $authUser->id,
+                'updated_at' => now(),
+            ]);
+
+            // If submit action
+            if ($request->input('action') === 'submit') {
+                $newStatus = config('constant.SUBMITTED_STATUS');
+
+                $timeSheet->update([
+                    'status_id' => $newStatus,
+                ]);
+
+                TimeSheetLog::create([
+                    'timesheet_id' => $timeSheet->id,
+                    'user_id' => $authUser->id,
+                    'log_remarks' => 'Timesheet submitted for approval.',
+                    'status_id' => $newStatus,
+                ]);
+
+                if ($timeSheet->approver) {
+                    $timeSheet->approver->notify(new TimeSheetSubmitted($timeSheet));
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('monthly-timesheet.index')
+                ->with('success', 'Timesheet has been successfully submitted for approval.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            logger()->error('Timesheet submission failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to submit timesheet. Please try again.');
+        }
     }
 }

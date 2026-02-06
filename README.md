@@ -113,6 +113,7 @@ For detailed explanations of specific business rules and logic, please refer to 
 
 - [Lieu Leave Request Rules](./docs/LieuLeaveRequestRules.md)
 - [Work Plan Rules](./docs/WorKPlanRules.md)
+- [Project Activity Rules](./docs/ProjectActivityRules.md)
 
 ## Documentation & Usage
 

@@ -136,6 +136,68 @@
                 $(this).data('previous', this.value);
             });
 
+            // Dedicated validation for activity status modal
+            const statusForm = document.getElementById('activityStatusForm');
+            const fvStatus = FormValidation.formValidation(statusForm, {
+                fields: {
+                    status_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Date is required.'
+                            }
+                        }
+                    },
+                    remarks: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Reason is required.',
+                                enabled: false,
+                            }
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap5: new FormValidation.plugins.Bootstrap5({
+                        rowSelector: '.fv-row',
+                        eleInvalidClass: '',
+                        eleValidClass: '',
+                    }),
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                },
+            }).on('core.form.valid', function() {
+                const $modal = $('#activityStatusModal');
+                const url = $modal.data('url');
+                const statusValue = $modal.data('status');
+                const message = $('#activityStatusMessage').val().trim();
+                const dateValue = $('#activityStatusDate').val().trim();
+
+                if (!url || !statusValue) {
+                    return;
+                }
+
+                const data = {
+                    status: statusValue,
+                    remarks: message,
+                    status_date: dateValue,
+                };
+
+                ajaxSubmit(url, 'POST', data, function(response) {
+                    $modal.data('updated', true);
+                    $modal.modal('hide');
+                    toastr.success(response.message, 'Success');
+                    $('#projectActivityTable').DataTable().ajax.reload(null, false);
+                });
+            });
+
+            const updateStatusRemarksValidator = (status) => {
+                const requireRemarks = status === 'completed' || status === 'no_required';
+                fvStatus.enableValidator('remarks', 'notEmpty', requireRemarks);
+                if (!requireRemarks) {
+                    fvStatus.resetField('remarks', true);
+                }
+            };
+
             // Handle status change with Bootstrap modal for Reason/Remarks
             $('#projectActivityTable').on('change', '.activity-status-change', function() {
                 const $select = $(this);
@@ -172,23 +234,24 @@
                     $modal.data('url', url);
                     $modal.data('select', $select);
                     $modal.data('oldStatus', oldStatus);
-                    $modal.data('status', newStatus);
-                    $modal.data('updated', false);
+                    $modal.data({
+                        status: newStatus,
+                        updated: false,
+                    });
+
+                    fvStatus.resetForm(true);
+                    updateStatusRemarksValidator(newStatus);
 
                     $('#activityStatusModalLabel').text(title);
-                    $('#activityStatusMessageLabel').text(label);
+                    $('#activityStatusMessageLabel')
+                        .text(label)
+                        .toggleClass('required-label', newStatus !== 'under_progress');
                     $('#activityStatusDateLabel').text(dateLabel);
-                    $('#activityStatusMessage').val('').removeClass('is-invalid');
 
-                    // Set default date to today and initialize datepicker
                     const today = new Date();
-                    const formattedDate = today.getFullYear() + '-' +
-                        String(today.getMonth() + 1).padStart(2, '0') + '-' +
-                        String(today.getDate()).padStart(2, '0');
+                    const formattedDate = today.toISOString().split('T')[0];
+                    $('#activityStatusDate').val(formattedDate);
 
-                    $('#activityStatusDate').val(formattedDate).removeClass('is-invalid');
-
-                    // Destroy existing datepicker if any and reinitialize
                     $('#activityStatusDate').datepicker('destroy');
                     $('#activityStatusDate').datepicker({
                         language: 'en-GB',
@@ -216,64 +279,14 @@
                 }
             });
 
-            // Submit handler for Bootstrap status modal
-            $('#activityStatusForm').on('submit', function(e) {
-                e.preventDefault();
-
-                const $modal = $('#activityStatusModal');
-                const url = $modal.data('url');
-                const statusValue = $modal.data('status');
-                const message = $('#activityStatusMessage').val().trim();
-                const dateValue = $('#activityStatusDate').val().trim();
-
-                if (!url || !statusValue) {
-                    return;
-                }
-
-                let isValid = true;
-
-                // Remarks is only required for no_required and completed
-                if (statusValue !== 'under_progress' && !message) {
-                    $('#activityStatusMessage').addClass('is-invalid');
-                    $('#activityStatusMessage').siblings('.invalid-feedback').show();
-                    isValid = false;
-                }
-
-                if (!dateValue) {
-                    $('#activityStatusDate').addClass('is-invalid');
-                    $('#activityStatusDate').siblings('.invalid-feedback').show();
-                    isValid = false;
-                }
-
-                if (!isValid) {
-                    return;
-                }
-
-                const data = {
-                    status: statusValue,
-                    // Backend will always receive this as `remarks`,
-                    // label text (Reason/Remarks) is only for display.
-                    remarks: message || null,
-                    status_date: dateValue,
-                };
-
-                ajaxSubmit(url, 'POST', data, function(response) {
-                    $modal.data('updated', true);
-                    $modal.modal('hide');
-                    toastr.success(response.message || 'Status updated successfully');
-                    $('#projectActivityTable').DataTable().ajax.reload(null, false);
-                });
+            $('#activityStatusDate').on('change', function() {
+                fvStatus.revalidateField('status_date');
             });
 
             $('#activityStatusMessage').on('input', function() {
-                $(this).removeClass('is-invalid');
-                $(this).siblings('.invalid-feedback').hide();
+                fvStatus.revalidateField('remarks');
             });
 
-            $('#activityStatusDate').on('change', function() {
-                $(this).removeClass('is-invalid');
-                $(this).siblings('.invalid-feedback').hide();
-            });
 
             // On modal close without update, revert dropdown to previous value
             $('#activityStatusModal').on('hidden.bs.modal', function() {
@@ -281,6 +294,8 @@
                 const updated = $modal.data('updated');
                 const $select = $modal.data('select');
                 const oldStatus = $modal.data('oldStatus');
+
+                fvStatus.resetForm(true);
 
                 if (!updated && $select && typeof oldStatus !== 'undefined') {
                     $select.val(oldStatus);
@@ -303,65 +318,56 @@
                     });
                     const fv = FormValidation.formValidation(form, {
                         fields: {
-                            title: {
+                            activity_level: {
                                 validators: {
                                     notEmpty: {
-                                        message: 'The title is required'
-                                    },
-                                },
+                                        message: 'Activity level is required.'
+                                    }
+                                }
                             },
                             activity_stage_id: {
                                 validators: {
                                     notEmpty: {
-                                        message: 'The stage is required'
-                                    },
-                                },
-                            },
-                            activity_level: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The activity level is required'
-                                    },
-                                },
-                            },
-                            'parent_id': {
-                                validators: {
-                                    callback: {
-                                        message: 'Activity is required',
-                                        callback: function(input) {
-                                            const level = $activityLevelSelect.val();
-                                            if (level === 'theme') return true;
-                                            return input.value !== '';
-                                        }
+                                        message: 'Stage is required.',
+                                        enabled: false
                                     }
                                 }
                             },
-                            'completion_date': {
+                            title: {
                                 validators: {
-                                    callback: {
-                                        message: 'End date must be on or after start date',
-                                        callback: function(input) {
-                                            const startVal = $('[name="start_date"]')
-                                                .val();
-                                            const endVal = input.value;
-                                            if (!startVal || !endVal) {
-                                                return true;
-                                            }
-                                            return endVal >= startVal;
-                                        }
+                                    notEmpty: {
+                                        message: 'Title is required.'
+                                    }
+                                }
+                            },
+                            parent_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Parent activity is required.',
+                                        enabled: false
+                                    }
+                                }
+                            },
+                            start_date: {
+                                validators: {
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'Use yyyy-mm-dd format.'
+                                    }
+                                }
+                            },
+                            completion_date: {
+                                validators: {
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'Use yyyy-mm-dd format.'
                                     }
                                 }
                             },
                             'members[]': {
                                 validators: {
-                                    callback: {
-                                        message: 'At least one member is required',
-                                        callback: function(input) {
-                                            const level = $activityLevelSelect.val();
-                                            if (level === 'theme') return true;
-                                            return $membersSelect.val() &&
-                                                $membersSelect.val().length > 0;
-                                        }
+                                    notEmpty: {
+                                        message: 'Please select at least one member.'
                                     }
                                 }
                             }
@@ -388,6 +394,21 @@
 
                         ajaxSubmitFormData($url, 'POST', formData, successCallback);
                     });
+
+                    const activityLevelSelect = form.querySelector('[name="activity_level"]');
+                    activityLevelSelect.addEventListener('change', function(e) {
+                        const level = e.target.value;
+                        // Enable/disable validators based on the selected level
+                        fv.enableValidator('activity_stage_id', 'notEmpty', level ===
+                            'theme');
+                        fv.enableValidator('parent_id', 'notEmpty', level === 'activity' ||
+                            level === 'sub_activity');
+                    });
+
+                    // Trigger change event if there's an initial value to set the correct validation state
+                    if (activityLevelSelect.value) {
+                        activityLevelSelect.dispatchEvent(new Event('change'));
+                    }
 
                     $('[name="start_date"]').datepicker({
                         language: 'en-GB',
@@ -923,8 +944,7 @@
                                 <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
                                     href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
                                         class="bi-plus"></i> Add Project Activity
-                                </button>
-                            @endcan
+                                @endcan
                         </div>
                     </div>
                 </div>
@@ -963,22 +983,33 @@
                 </div>
                 <form id="activityStatusForm" autocomplete="off">
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label required-label" id="activityStatusDateLabel"
-                                for="activityStatusDate">Date <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="activityStatusDate" readonly />
-                            <div class="invalid-feedback" style="display: none;">This field is required.</div>
+                        <div class="row g-3 fv-row" id="status-date-row">
+                            <div class="col-12 col-md-4 col-lg-3">
+                                <label class="form-label required-label mb-0" id="activityStatusDateLabel"
+                                    for="activityStatusDate">
+                                    Date <span class="text-danger">*</span>
+                                </label>
+                            </div>
+                            <div class="col-12 col-md-8 col-lg-9">
+                                <input type="text" class="form-control" id="activityStatusDate" name="status_date"
+                                    readonly />
+                            </div>
                         </div>
-                        <div class="mb-3" id="activityStatusMessageContainer">
-                            <label class="form-label" id="activityStatusMessageLabel" for="activityStatusMessage">Reason
-                                <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="activityStatusMessage" rows="3"></textarea>
-                            <div class="invalid-feedback" style="display: none;">This field is required.</div>
+                        <div class="row g-3 fv-row" id="activityStatusMessageContainer">
+                            <div class="col-12 col-md-4 col-lg-3">
+                                <label class="form-label required-label mb-0" id="activityStatusMessageLabel"
+                                    for="activityStatusMessage">
+                                    Reason <span class="text-danger">*</span>
+                                </label>
+                            </div>
+                            <div class="col-12 col-md-8 col-lg-9">
+                                <textarea class="form-control" id="activityStatusMessage" name="remarks" rows="3"></textarea>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-status-save">OK</button>
+                        <button type="submit" class="btn btn-primary btn-status-save">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </form>
             </div>

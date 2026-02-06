@@ -8,7 +8,7 @@
             var disabledRanges = @json($ranges ?? []);
             var todayStr = "{{ now()->format('Y-m-d') }}";
 
-            $('#navbarVerticalMenu').find('#project-index').addClass('active');
+            $('#navbarVerticalMenu').find('#activity-update-periods-index').addClass('active');
             var oTable = $('#activityUpdatePeriodTable').DataTable({
                 scrollX: true,
                 processing: true,

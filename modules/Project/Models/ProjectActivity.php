@@ -137,6 +137,12 @@ class ProjectActivity extends Model
         return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') : ($this->completion_date ? $this->completion_date->format('M d, Y') : "");
     }
 
+    public function getDisplayExtendedCompletionDateAttribute()
+    {
+        $latestExtension = $this->extensions()->orderBy('extended_completion_date', 'desc')->first();
+        return $latestExtension ? $latestExtension->extended_completion_date->format('M d, Y') . "<sub class=\"text-bold\"> (extended) </sub>" : ($this->completion_date ? $this->completion_date->format('M d, Y') : "");
+    }
+
     public function getLatestExtensionAttribute()
     {
         return $this->extensions()->orderBy('extended_completion_date', 'desc')->first();

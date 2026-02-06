@@ -460,7 +460,7 @@
                     {{-- Project Management Menu --}}
                     <span class="dropdown-header fw-bold">Project Management</span>
 
-                    @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
+                    {{-- @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
                         <div class="nav-item">
                             <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"
                                 data-bs-toggle="collapse" data-bs-target="#navbarActivitiesMenuName"
@@ -482,7 +482,7 @@
                                 @endif
                             </div>
                         </div>
-                    @endif
+                    @endif --}}
 
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
@@ -950,10 +950,20 @@
                             </a>
                             <div id="navbarMasterMenuName" class="nav-collapse collapse"
                                 data-bs-parent="#navbarMasterMenu" hs-parent-area="#navbarMasterMenu">
-                                {{-- @if ($authUser->can('manage-activity-area'))
-                                    <a class="nav-link" href="{{ route('master.activity.areas.index') }}"
-                                        id="activity-areas-menu">{{ __('label.activity-stages') }}</a>
-                                @endif --}}
+
+
+
+                                @if ($authUser->can('manage-activity-stages'))
+                                    <a class="nav-link" href="{{ route('activity-stages.index') }}"
+                                        id="activity-stages-index">Activity Stages</a>
+                                @endif
+                                @if ($authUser->can('manage-activity-update-periods'))
+                                    <a class="nav-link" href="{{ route('activity-update-periods.index') }}"
+                                        id="activity-update-periods-index">Activity Update Periods</a>
+                                @endif
+
+
+
                                 @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"
                                         id="activity-codes-menu">{{ __('label.activities') }}</a>

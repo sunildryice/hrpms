@@ -2,10 +2,6 @@
 
 This document outlines the business logic, permissions, and automated behaviors related to **Project Activities** within HRPMS.
 
-![alt text](images/activityUpdatePeriod.png)
-
-![alt text](images/projectActivity.png)
-
 ## 1. Roles and Permissions
 
 Permissions for managing project activities are based on user roles within a project.
@@ -62,3 +58,13 @@ To maintain consistency, the status of parent activities is automatically update
 - **`Not Started`**: If all child `Activities` are `Not Started`, the parent `Theme` will also be `Not Started`.
 
 **Note**: This automatic propagation rule applies from `Activity` to `Theme`. It does not apply from `Sub-Activity` to `Activity`. This logic is handled in the `updateParentActivity` method in `ProjectActivityController`.
+
+## 4. Date Constraints for Activities
+
+When creating or editing project activities, the selectable date ranges for `Start Date` and `End Date` are constrained to ensure logical project scheduling.
+
+- **Top-Level Activities (Themes)**: When creating a `Theme`, its start and end dates must fall within the overall project's start and end dates.
+- **Child Activities (Activities/Sub-Activities)**: When creating a child activity (e.g., an `Activity` under a `Theme`), its start and end dates are constrained by the parent's date range. The child activity cannot start before its parent starts or end after its parent ends.
+
+![Date constraints for parent and child activities](./images/activityDateSelector.png)
+_As shown above, the allowed date range for a new `Activity` is narrowed to the date range of its selected parent `Theme`._

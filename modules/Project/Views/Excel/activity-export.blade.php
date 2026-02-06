@@ -51,7 +51,7 @@
 
     <!-- 1. Project Title -->
     <tr>
-        <td colspan="{{ 8 + $totalWeekColumns }}">
+        <td colspan="{{ 10 + $totalWeekColumns }}">
             Project: {{ $project?->title ?? 'Project Activity Plan' }}<br>
             Period: [{{ $project?->start_date?->format('M d, Y') ?? '' }} to
             {{ $project?->completion_date?->format('M d, Y') ?? '' }}]
@@ -63,7 +63,9 @@
         <th rowspan="3">Activities</th>
         <th rowspan="3">Activity Type</th>
         <th rowspan="3">Output / Deliverables</th>
-        <th rowspan="3">Timeline</th>
+        <th rowspan="3">Budget Description</th>
+        <th rowspan="3">Start Date</th>
+        <th rowspan="3">Completion Date</th>
         <th rowspan="3">Members</th>
         <th rowspan="3">Completion status</th>
         <th rowspan="3">Extended Deadline</th>
@@ -139,7 +141,7 @@
             <td colspan="2">
                 <strong>{{ json_decode($stageName)->title ?? 'No Stage' }}</strong>
             </td>
-            <td colspan="{{ 6 + $totalWeekColumns }}"></td>
+            <td colspan="{{ 8 + $totalWeekColumns }}"></td>
             @foreach ($months as $monthLabel)
                 @foreach ($weekLabels as $_)
                     <td></td>
@@ -154,17 +156,16 @@
                 <td>{{ $theme->title }}</td>
                 <td>Activity Theme</td>
                 <td>{{ $theme->deliverables ?? '' }}</td>
+                <td>{{ $theme->budget_description ?? '' }}</td>
 
                 @php
                     $start = $theme->start_date;
                     $end = $theme->latest_extension?->extended_completion_date ?? $theme->completion_date;
                 @endphp
 
-                <td>
-                    @if ($start && $end)
-                        {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
-                    @endif
-                </td>
+                <td>{{ $start->format('Y-m-d') }}</td>
+                <td>{{ $theme->completion_date->format('Y-m-d') }}</td>
+
                 <td>{{ $theme->memberNames() }}</td>
                 <td>{{ ucwords(str_replace('_', ' ', $theme->status ?? 'not started')) }}</td>
                 <td>{{ $theme->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
@@ -192,17 +193,16 @@
                     <td>{{ $activity->title }}</td>
                     <td>Activity</td>
                     <td>{{ $activity->deliverables ?? '' }}</td>
+                    <td>{{ $activity->budget_description ?? '' }}</td>
 
                     @php
                         $start = $activity->start_date;
                         $end = $activity->latest_extension?->extended_completion_date ?? $activity->completion_date;
                     @endphp
 
-                    <td>
-                        @if ($start && $end)
-                            {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
-                        @endif
-                    </td>
+                    <td>{{ $start->format('Y-m-d') }}</td>
+                    <td>{{ $activity->completion_date->format('Y-m-d') }}</td>
+
                     <td>{{ $activity->memberNames() }}</td>
                     <td>{{ ucwords(str_replace('_', ' ', $activity->status ?? 'not started')) }}</td>
                     <td>{{ $activity->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
@@ -230,17 +230,16 @@
                         <td>{{ $sub->title }}</td>
                         <td>Sub Activity</td>
                         <td>{{ $sub->deliverables ?? '' }}</td>
+                        <td>{{ $sub->budget_description ?? '' }}</td>
 
                         @php
                             $start = $sub->start_date;
                             $end = $sub->latest_extension?->extended_completion_date ?? $sub->completion_date;
                         @endphp
 
-                        <td>
-                            @if ($start && $end)
-                                {{ $start->format('Y-m-d') }} — {{ $end->format('Y-m-d') }}
-                            @endif
-                        </td>
+                        <td>{{ $start->format('Y-m-d') }}</td>
+                        <td>{{ $sub->completion_date->format('Y-m-d') }}</td>
+
                         <td>{{ $sub->memberNames() }}</td>
                         <td>{{ ucwords(str_replace('_', ' ', $sub->status ?? 'not started')) }}</td>
                         <td>{{ $sub->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
@@ -274,7 +273,7 @@
         @php $globalSn = $sn; @endphp
     @empty
         <tr>
-            <td colspan="{{ 9 + count($months) * 4 }}" style="text-align:center; padding:20px;">
+            <td colspan="{{ 11 + count($months) * 4 }}" style="text-align:center; padding:20px;">
                 No activities found
             </td>
         </tr>

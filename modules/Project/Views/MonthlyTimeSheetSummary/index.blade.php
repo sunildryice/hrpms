@@ -75,7 +75,7 @@
                                 <th>Not Submitted</th>
                                 <th>Submitted</th>
                                 <th>Approved</th>
-                                <th>Return</th>
+                                <th>Returned</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

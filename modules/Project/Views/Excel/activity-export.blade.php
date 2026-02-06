@@ -1,5 +1,5 @@
 @php
-    // Prepare all data needed for header & table
+    // Prepare date range for the Gantt chart
     $allDates = collect();
 
     $project->activities->each(function ($theme) use ($allDates) {
@@ -42,32 +42,31 @@
     }
 
     $weekLabels = ['I', 'II', 'III', 'IV'];
-
-    // Total number of week columns
     $totalWeekColumns = count($months) * 4;
 @endphp
 
 <table border="1">
 
-    <!-- 1. Project Title -->
+    <!-- Project Title -->
     <tr>
         <td colspan="{{ 10 + $totalWeekColumns }}">
             Project: {{ $project?->title ?? 'Project Activity Plan' }}<br>
-            Period: [{{ $project?->start_date?->format('M d, Y') ?? '' }} to
+            Period: [{{ $project?->start_date?->format('M d, Y') ?? '' }}
+            to
             {{ $project?->completion_date?->format('M d, Y') ?? '' }}]
         </td>
     </tr>
 
-    <!-- 2. Year Row (merged per year) -->
+    <!-- Year Row -->
     <tr>
         <th rowspan="3">Activities</th>
-        <th rowspan="3">Activity Type</th>
+        <th rowspan="3">Type</th>
         <th rowspan="3">Output / Deliverables</th>
         <th rowspan="3">Budget Description</th>
         <th rowspan="3">Start Date</th>
         <th rowspan="3">Completion Date</th>
         <th rowspan="3">Members</th>
-        <th rowspan="3">Completion status</th>
+        <th rowspan="3">Status</th>
         <th rowspan="3">Extended Deadline</th>
         <th rowspan="3">Remarks</th>
 
@@ -81,10 +80,7 @@
 
                 if ($year !== $currentYear) {
                     if ($currentYear !== null) {
-                        $yearGroups[] = [
-                            'year' => $currentYear,
-                            'colspan' => $colspanCount,
-                        ];
+                        $yearGroups[] = ['year' => $currentYear, 'colspan' => $colspanCount];
                     }
                     $currentYear = $year;
                     $colspanCount = 1;
@@ -93,82 +89,103 @@
                 }
             }
 
-            // Last group
             if ($currentYear !== null) {
-                $yearGroups[] = [
-                    'year' => $currentYear,
-                    'colspan' => $colspanCount,
-                ];
+                $yearGroups[] = ['year' => $currentYear, 'colspan' => $colspanCount];
             }
         @endphp
 
         @foreach ($yearGroups as $group)
             <td colspan="{{ $group['colspan'] * 4 }}">
-                Year[{{ $group['year'] }}]
+                Year {{ $group['year'] }}
             </td>
         @endforeach
     </tr>
 
-    <!-- 3. Month Row -->
+    <!-- Month Row -->
     <tr>
         @foreach ($months as $monthLabel)
-            @php
-                $monthName = explode(' ', $monthLabel)[0];
-            @endphp
+            @php $monthName = explode(' ', $monthLabel)[0]; @endphp
             <td colspan="4">{{ $monthName }}</td>
         @endforeach
     </tr>
 
-    <!-- 4. Week Labels Row -->
+    <!-- Week Labels -->
     <tr>
         @foreach ($months as $month)
             @foreach ($weekLabels as $week)
-                <td style="padding: 4px 0;">{{ $week }}</td>
+                <td>{{ $week }}</td>
             @endforeach
         @endforeach
     </tr>
 
-
-    <!-- === Main content - grouped by stage === -->
+    <!-- === Content grouped by stage === -->
     @php
-        $grouped = $project->activities->whereNull('parent_id')->groupBy('stage');
+        $grouped = $project->activities->whereNull('parent_id')->groupBy('activity_stage_id');
         $globalSn = 1;
     @endphp
 
-    @forelse ($grouped as $stageName => $themesInStage)
-        <!-- Stage row -->
-        <tr style="background:#f0f4f8;">
-            <td colspan="2">
-                <strong>{{ json_decode($stageName)->title ?? 'No Stage' }}</strong>
-            </td>
+    @forelse ($grouped as $stageId => $themesInStage)
+        @php
+            $stage = \Modules\Project\Models\ActivityStage::find($stageId);
+            $stageTitle = $stage ? $stage->title : 'No Stage';
+        @endphp
+
+        <!-- Stage Header -->
+        <tr>
+            <td colspan="2">{{ $stageTitle }}</td>
             <td colspan="{{ 8 + $totalWeekColumns }}"></td>
-            @foreach ($months as $monthLabel)
+            @foreach ($months as $m)
                 @foreach ($weekLabels as $_)
                     <td></td>
                 @endforeach
             @endforeach
         </tr>
 
-        @php $sn = $globalSn; @endphp
-
         @foreach ($themesInStage as $theme)
+            @php
+                // Gantt logic for THEME
+                $statusValue = $theme->status ?? 'not_started';
+
+                $plannedStart = $theme->start_date;
+                $plannedEnd = $theme->completion_date;
+                $extendedEnd = $theme->latest_extension?->extended_completion_date ?? $plannedEnd;
+
+                $actualStart = $theme->actual_start_date;
+                $actualCompletion = $theme->actual_completion_date;
+
+                $ganttStart = $plannedStart;
+                $ganttEnd = $extendedEnd;
+
+                if ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::UnderProgress->value) {
+                    $ganttStart = $actualStart ?? $plannedStart;
+                    $ganttEnd = $extendedEnd;
+                } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::NoRequired->value) {
+                    $ganttStart = $actualStart ?? $plannedStart;
+                    $ganttEnd = $actualCompletion ?? $extendedEnd;
+                } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::Completed->value) {
+                    $ganttStart = $actualStart ?? $plannedStart;
+                    $ganttEnd = $actualCompletion ?? $extendedEnd;
+                }
+
+                if (!$ganttStart) {
+                    $ganttStart = null;
+                    $ganttEnd = null;
+                }
+
+                $statusLabel =
+                    \Modules\Project\Models\Enums\ActivityStatus::tryFrom($statusValue)?->label() ?? 'Not Started';
+            @endphp
+
             <tr>
                 <td>{{ $theme->title }}</td>
                 <td>Activity Theme</td>
                 <td>{{ $theme->deliverables ?? '' }}</td>
                 <td>{{ $theme->budget_description ?? '' }}</td>
-
-                @php
-                    $start = $theme->start_date;
-                    $end = $theme->latest_extension?->extended_completion_date ?? $theme->completion_date;
-                @endphp
-
-                <td>{{ $start->format('Y-m-d') }}</td>
-                <td>{{ $theme->completion_date->format('Y-m-d') }}</td>
-
-                <td>{{ $theme->memberNames() }}</td>
-                <td>{{ ucwords(str_replace('_', ' ', $theme->status ?? 'not started')) }}</td>
-                <td>{{ $theme->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
+                <td>{{ $theme->start_date?->format('Y-m-d') ?? '' }}</td>
+                <td>{{ $theme->completion_date?->format('Y-m-d') ?? '' }}</td>
+                <td>{{ $theme->memberNames() ?: '' }}</td>
+                <td>{{ $statusLabel }}</td>
+                <td>{{ $theme->latest_extension?->extended_completion_date?->format('Y-m-d') ?? '' }}</td>
                 <td>{{ $theme->latest_extension?->reason ?? '' }}</td>
 
                 @foreach ($months as $monthLabel)
@@ -179,33 +196,60 @@
                             $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                             $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                            $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
+                            $active =
+                                $ganttStart && $ganttEnd && $weekEnd->gte($ganttStart) && $weekStart->lte($ganttEnd);
                         @endphp
                         <td>{{ $active ? '█' : '' }}</td>
                     @endforeach
                 @endforeach
             </tr>
 
-            @php $activitySn = 1; @endphp
+            <!-- Activities under this theme -->
+            @foreach ($theme->activityChildren as $activity)
+                @php
+                    // Gantt logic for ACTIVITY
+                    $statusValue = $activity->status ?? 'not_started';
 
-            @forelse ($theme->activityChildren as $activity)
+                    $plannedStart = $activity->start_date;
+                    $plannedEnd = $activity->completion_date;
+                    $extendedEnd = $activity->latest_extension?->extended_completion_date ?? $plannedEnd;
+
+                    $actualStart = $activity->actual_start_date;
+                    $actualCompletion = $activity->actual_completion_date;
+
+                    $ganttStart = $plannedStart;
+                    $ganttEnd = $extendedEnd;
+
+                    if ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::UnderProgress->value) {
+                        $ganttStart = $actualStart ?? $plannedStart;
+                        $ganttEnd = $extendedEnd;
+                    } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::NoRequired->value) {
+                        $ganttStart = $actualStart ?? $plannedStart;
+                        $ganttEnd = $actualCompletion ?? $extendedEnd;
+                    } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::Completed->value) {
+                        $ganttStart = $actualStart ?? $plannedStart;
+                        $ganttEnd = $actualCompletion ?? $extendedEnd;
+                    }
+
+                    if (!$ganttStart) {
+                        $ganttStart = null;
+                        $ganttEnd = null;
+                    }
+
+                    $statusLabel =
+                        \Modules\Project\Models\Enums\ActivityStatus::tryFrom($statusValue)?->label() ?? 'Not Started';
+                @endphp
+
                 <tr>
                     <td>{{ $activity->title }}</td>
                     <td>Activity</td>
                     <td>{{ $activity->deliverables ?? '' }}</td>
                     <td>{{ $activity->budget_description ?? '' }}</td>
-
-                    @php
-                        $start = $activity->start_date;
-                        $end = $activity->latest_extension?->extended_completion_date ?? $activity->completion_date;
-                    @endphp
-
-                    <td>{{ $start->format('Y-m-d') }}</td>
-                    <td>{{ $activity->completion_date->format('Y-m-d') }}</td>
-
-                    <td>{{ $activity->memberNames() }}</td>
-                    <td>{{ ucwords(str_replace('_', ' ', $activity->status ?? 'not started')) }}</td>
-                    <td>{{ $activity->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
+                    <td>{{ $activity->start_date?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ $activity->completion_date?->format('Y-m-d') ?? '' }}</td>
+                    <td>{{ $activity->memberNames() ?: '' }}</td>
+                    <td>{{ $statusLabel }}</td>
+                    <td>{{ $activity->latest_extension?->extended_completion_date?->format('Y-m-d') ?? '' }}</td>
                     <td>{{ $activity->latest_extension?->reason ?? '' }}</td>
 
                     @foreach ($months as $monthLabel)
@@ -216,33 +260,64 @@
                                 $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                                 $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                                $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
+                                $active =
+                                    $ganttStart &&
+                                    $ganttEnd &&
+                                    $weekEnd->gte($ganttStart) &&
+                                    $weekStart->lte($ganttEnd);
                             @endphp
                             <td>{{ $active ? '█' : '' }}</td>
                         @endforeach
                     @endforeach
                 </tr>
 
-                @php $subSn = 1; @endphp
+                <!-- Sub-activities -->
+                @foreach ($activity->children as $sub)
+                    @php
+                        // Gantt logic for SUB-ACTIVITY
+                        $statusValue = $sub->status ?? 'not_started';
 
-                @forelse ($activity->children as $sub)
+                        $plannedStart = $sub->start_date;
+                        $plannedEnd = $sub->completion_date;
+                        $extendedEnd = $sub->latest_extension?->extended_completion_date ?? $plannedEnd;
+
+                        $actualStart = $sub->actual_start_date;
+                        $actualCompletion = $sub->actual_completion_date;
+
+                        $ganttStart = $plannedStart;
+                        $ganttEnd = $extendedEnd;
+
+                        if ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::UnderProgress->value) {
+                            $ganttStart = $actualStart ?? $plannedStart;
+                            $ganttEnd = $extendedEnd;
+                        } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::NoRequired->value) {
+                            $ganttStart = $actualStart ?? $plannedStart;
+                            $ganttEnd = $actualCompletion ?? $extendedEnd;
+                        } elseif ($statusValue === \Modules\Project\Models\Enums\ActivityStatus::Completed->value) {
+                            $ganttStart = $actualStart ?? $plannedStart;
+                            $ganttEnd = $actualCompletion ?? $extendedEnd;
+                        }
+
+                        if (!$ganttStart) {
+                            $ganttStart = null;
+                            $ganttEnd = null;
+                        }
+
+                        $statusLabel =
+                            \Modules\Project\Models\Enums\ActivityStatus::tryFrom($statusValue)?->label() ??
+                            'Not Started';
+                    @endphp
+
                     <tr>
                         <td>{{ $sub->title }}</td>
                         <td>Sub Activity</td>
                         <td>{{ $sub->deliverables ?? '' }}</td>
                         <td>{{ $sub->budget_description ?? '' }}</td>
-
-                        @php
-                            $start = $sub->start_date;
-                            $end = $sub->latest_extension?->extended_completion_date ?? $sub->completion_date;
-                        @endphp
-
-                        <td>{{ $start->format('Y-m-d') }}</td>
-                        <td>{{ $sub->completion_date->format('Y-m-d') }}</td>
-
-                        <td>{{ $sub->memberNames() }}</td>
-                        <td>{{ ucwords(str_replace('_', ' ', $sub->status ?? 'not started')) }}</td>
-                        <td>{{ $sub->latest_extension?->extended_completion_date?->format('Y-m-d') }}</td>
+                        <td>{{ $sub->start_date?->format('Y-m-d') ?? '' }}</td>
+                        <td>{{ $sub->completion_date?->format('Y-m-d') ?? '' }}</td>
+                        <td>{{ $sub->memberNames() ?: '' }}</td>
+                        <td>{{ $statusLabel }}</td>
+                        <td>{{ $sub->latest_extension?->extended_completion_date?->format('Y-m-d') ?? '' }}</td>
                         <td>{{ $sub->latest_extension?->reason ?? '' }}</td>
 
                         @foreach ($months as $monthLabel)
@@ -253,28 +328,24 @@
                                     $weekStart = $monthDate->copy()->addWeeks($weekIndex);
                                     $weekEnd = $weekStart->copy()->addDays(6)->min($monthEnd);
 
-                                    $active = $start && $end && $weekEnd->gte($start) && $weekStart->lte($end);
+                                    $active =
+                                        $ganttStart &&
+                                        $ganttEnd &&
+                                        $weekEnd->gte($ganttStart) &&
+                                        $weekStart->lte($ganttEnd);
                                 @endphp
                                 <td>{{ $active ? '█' : '' }}</td>
                             @endforeach
                         @endforeach
                     </tr>
-                    @php $subSn++; @endphp
-                @empty
-                @endforelse
-
-                @php $activitySn++; @endphp
-            @empty
-            @endforelse
-
-            @php $sn++; @endphp
+                @endforeach
+            @endforeach
         @endforeach
 
-        @php $globalSn = $sn; @endphp
     @empty
         <tr>
-            <td colspan="{{ 11 + count($months) * 4 }}" style="text-align:center; padding:20px;">
-                No activities found
+            <td colspan="{{ 10 + $totalWeekColumns }}">
+                No activities found for this project.
             </td>
         </tr>
     @endforelse

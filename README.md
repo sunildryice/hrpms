@@ -4,15 +4,15 @@ This project is a comprehensive Human Resource and Project Management System bui
 
 ## Technology Stack
 
--   **Framework:** Laravel 9.x
--   **Language:** PHP ^8.0.2
--   **Database:** MySQL (Standard Laravel support)
--   **Frontend:** Blade Templates, jQuery, Bootstrap
--   **Key Libraries:**
-    -   `yajra/laravel-datatables`: For advanced table interactions.
-    -   `maatwebsite/excel`: For Excel imports and exports.
-    -   `barryvdh/laravel-dompdf`: For PDF generation.
-    -   `rats/zkteco`: For ZKTeco biometric device integration.
+- **Framework:** Laravel 9.x
+- **Language:** PHP ^8.0.2
+- **Database:** MySQL (Standard Laravel support)
+- **Frontend:** Blade Templates, jQuery, Bootstrap
+- **Key Libraries:**
+    - `yajra/laravel-datatables`: For advanced table interactions.
+    - `maatwebsite/excel`: For Excel imports and exports.
+    - `barryvdh/laravel-dompdf`: For PDF generation.
+    - `rats/zkteco`: For ZKTeco biometric device integration.
 
 ## Architecture
 
@@ -20,31 +20,31 @@ The application follows a **Modular Architecture**. Instead of grouping code by 
 
 ### Directory Structure
 
--   `app/`: Core application code and shared helpers.
--   `modules/`: Contains domain-specific modules (e.g., `Employee`, `Payroll`).
--   `config/`: Application configuration files.
--   `database/`: Migrations, factories, and seeders.
--   `resources/`: Views, assets (JS/CSS), and language files.
--   `routes/`: Web and API route definitions.
+- `app/`: Core application code and shared helpers.
+- `modules/`: Contains domain-specific modules (e.g., `Employee`, `Payroll`).
+- `config/`: Application configuration files.
+- `database/`: Migrations, factories, and seeders.
+- `resources/`: Views, assets (JS/CSS), and language files.
+- `routes/`: Web and API route definitions.
 
 ## Modules
 
 The system is composed of several independent modules, including but not limited to:
 
--   **Employee Management:** `Employee`, `Profile`, `EmployeeExit`, `ProbationaryReview`
--   **Attendance & Leave:** `EmployeeAttendance`, `LeaveRequest`, `WorkLog`
--   **Payroll & Finance:** `Payroll`, `PaymentSheet`, `AdvanceRequest`, `FundRequest`
--   **Procurement & Inventory:** `Inventory`, `PurchaseRequest`, `PurchaseOrder`, `Grn` (Goods Received Note), `Supplier`
--   **Travel & Logistics:** `TravelRequest`, `TravelAuthorization`, `VehicleRequest`, `TransportationBill`
--   **General Administration:** `MeetingHallBooking`, `Announcement`, `Memo`
+- **Employee Management:** `Employee`, `Profile`, `EmployeeExit`, `ProbationaryReview`
+- **Attendance & Leave:** `EmployeeAttendance`, `LeaveRequest`, `WorkLog`
+- **Payroll & Finance:** `Payroll`, `PaymentSheet`, `AdvanceRequest`, `FundRequest`
+- **Procurement & Inventory:** `Inventory`, `PurchaseRequest`, `PurchaseOrder`, `Grn` (Goods Received Note), `Supplier`
+- **Travel & Logistics:** `TravelRequest`, `TravelAuthorization`, `VehicleRequest`, `TransportationBill`
+- **General Administration:** `MeetingHallBooking`, `Announcement`, `Memo`
 
 ## Installation
 
 ### Prerequisites
 
--   PHP >= 8.0.2
--   Composer
--   Node.js & NPM
+- PHP >= 8.0.2
+- Composer
+- Node.js & NPM
 
 ### Setup Steps
 
@@ -98,9 +98,8 @@ For testing purposes, you can access the live testing environment at:
 To contribute to this project, please follow these steps:
 
 1.  **Create a Branch**
-
-    -   For new features: `feat/feature-name`
-    -   For bug fixes: `fix/bug-name`
+    - For new features: `feat/feature-name`
+    - For bug fixes: `fix/bug-name`
 
 2.  **Push Changes**
     Push your branch to the remote repository.
@@ -108,14 +107,21 @@ To contribute to this project, please follow these steps:
 3.  **Merge Request**
     Create a Merge Request (MR) targeting the `uat` branch.
 
+## Business Logic Documentation
+
+For detailed explanations of specific business rules and logic, please refer to the documents below:
+
+- [Lieu Leave Request Rules](./docs/LieuLeaveRequestRules.md)
+- [Work Plan Rules](./docs/WorKPlanRules.md)
+
 ## Documentation & Usage
 
 Each module within the `modules/` directory typically contains its own set of:
 
--   **Controllers:** Handling HTTP requests.
--   **Models:** Database interactions.
--   **Views:** User interface templates.
--   **Migrations:** Database schema changes specific to the module.
+- **Controllers:** Handling HTTP requests.
+- **Models:** Database interactions.
+- **Views:** User interface templates.
+- **Migrations:** Database schema changes specific to the module.
 
 For specific feature implementation details, refer to the code within the respective module folder.
 

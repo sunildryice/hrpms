@@ -35,6 +35,10 @@
                         name: 'hours_spent'
                     },
                     {
+                        data: 'description',
+                        name: 'description'
+                    },
+                    {
                         data: 'attachment',
                         name: 'attachment'
                     },
@@ -249,6 +253,7 @@
                                 <th>{{ __('label.project') }}</th>
                                 <th>{{ __('label.activity') }}</th>
                                 <th>Hours Spent</th>
+                                <th>{{ __('label.description') }}</th>
                                 <th>{{ __('label.attachment') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>

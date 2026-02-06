@@ -19,8 +19,7 @@ class ProjectActivityExtensionController extends Controller
         protected ProjectActivityExtensionRepository $projectActivityExtension,
         protected ProjectRepository $projects,
         protected ProjectActivityRepository $projectActivities,
-    ) {
-    }
+    ) {}
 
     public function create(ProjectActivity $projectActivity)
     {
@@ -35,12 +34,7 @@ class ProjectActivityExtensionController extends Controller
         $data['project_id'] = $projectActivity->project_id;
         $data['created_by'] = auth()->id();
 
-        $extension = $this->projectActivityExtension->create($data);
-
-        $projectActivity->update([
-            'actual_completion_date' => $extension->extended_completion_date,
-            'updated_by' => auth()->id(),
-        ]);
+        $this->projectActivityExtension->create($data);
 
         return response()->json([
             'message' => 'Extension added successfully.',

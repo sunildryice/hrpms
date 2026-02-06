@@ -30,6 +30,8 @@ class StoreRequest extends FormRequest
             'reason' => 'nullable|string',
             'from_date' => 'required|date',
             'to_date' => 'required|date|after_or_equal:from_date',
+            'members' => 'nullable|array',
+            'members.*' => 'exists:users,id',
         ];
     }
 

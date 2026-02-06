@@ -2,6 +2,7 @@
 
 namespace Modules\Project\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 class WorkPlanDetail extends Model
@@ -30,5 +31,10 @@ class WorkPlanDetail extends Model
     public function activity()
     {
         return $this->belongsTo(ProjectActivity::class, 'project_activity_id');
+    }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'work_plan_members', 'work_plan_details_id', 'user_id');
     }
 }

@@ -58,6 +58,18 @@ class WorkPlanDetailController extends Controller
                     $selectInput .= '</select>';
                     return $selectInput;
                 })
+                ->addColumn('members', function ($row) {
+
+
+                    $members = $row->members->pluck('full_name')->toArray();
+
+                    $badges = '';
+
+                    foreach ($members as &$memberName) {
+                        $badges .= '<span class="badge bg-secondary me-1 mb-1">' . e($memberName) . '</span>';
+                    }
+                    return $badges;
+                })
                 ->addColumn('action', function ($row) use ($isEditable) {
                     if (!$isEditable) return '';
 
@@ -70,7 +82,7 @@ class WorkPlanDetailController extends Controller
 
                     return $btn;
                 })
-                ->rawColumns(['action', 'status'])
+                ->rawColumns(['action', 'status', 'members'])
                 ->make(true);
         }
 
@@ -106,12 +118,16 @@ class WorkPlanDetailController extends Controller
 
         $projects = $this->projects->getAssignedProjects(auth()->user());
 
+        // $assignedMembers = $projects->members;
+        // dd($assignedMembers);
+
         return view('Project::WorkPlan.Detail.create', compact('week', 'projects'));
     }
 
     public function store(WorkPlanStoreRequest $request)
     {
         $data = $request->validated();
+        $data['members'] = $request->input('members', []);
         $user = auth()->user();
 
         // Create a temporary instance to check policy against the date
@@ -145,8 +161,13 @@ class WorkPlanDetailController extends Controller
         ];
         $projects = $this->projects->getAssignedProjects(auth()->user());
 
-        // Eager load activities for the selected project to populate the dropdown
-        $workPlanDetail->project->load('activities');
+        // Eager load related data required for edit modal dropdowns
+        $workPlanDetail->project->load([
+            'activities.members',
+            'members',
+            'teamLead',
+            'focalPerson',
+        ]);
 
         return view('Project::WorkPlan.Detail.edit', compact('workPlanDetail', 'week', 'projects'));
     }
@@ -154,6 +175,7 @@ class WorkPlanDetailController extends Controller
     public function update(WorkPlanStoreRequest $request, $id)
     {
         $data = $request->validated();
+        $data['members'] = $request->input('members', []);
         $detail = $this->workPlans->findDetailById($id);
 
         if (auth()->user()->cannot('update', $detail->workPlan)) {
@@ -162,8 +184,9 @@ class WorkPlanDetailController extends Controller
 
         $this->workPlans->updateDetail($id, [
             'project_id' => $data['project_id'],
-            'project_activity_id' => $data['activity_id'],
-            'plan_tasks' => $data['planned_task'],
+            'activity_id' => $data['activity_id'],
+            'planned_task' => $data['planned_task'],
+            'members' => $data['members'],
         ]);
 
         return response()->json(['message' => 'Work plan updated successfully.']);

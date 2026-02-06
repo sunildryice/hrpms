@@ -34,7 +34,7 @@ class TimeSheetRepository extends Repository
             ])
             ->groupBy('year', 'month')
             ->orderBy('year', 'desc')
-            ->orderByRaw('MONTH(start_date) ASC')
+            ->orderByRaw('MONTH(end_date) ASC')
             ->get();
     }
 

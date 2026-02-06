@@ -35,8 +35,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
+                $highestColumn = $sheet->getHighestColumn();
+                $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+                $highestRow = $sheet->getHighestRow();
+
                 // Column widths
-                $sheet->getColumnDimension('A')->setWidth(40);   // Activities
+                $sheet->getColumnDimension('A')->setWidth(45);   // Activities
                 $sheet->getColumnDimension('B')->setWidth(16);   // Type
                 $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
                 $sheet->getColumnDimension('D')->setWidth(28);   // Budget Description
@@ -48,18 +52,15 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getColumnDimension('J')->setWidth(34);   // Remarks     
     
                 // Gantt columns - very narrow
-                $highestColumn = $sheet->getHighestColumn();
-                $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
-
                 for ($col = 11; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
 
-                // Freeze header (title + years + months + weeks)
+                // Freeze panes (title + years + months + weeks) and activities column rows
                 $sheet->freezePane('B5');
 
-                // Header background + bold
+                // Header styling (row 1–4)
                 $sheet->getStyle('A1:' . $highestColumn . '4')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -71,7 +72,6 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 ]);
 
                 // Thin borders everywhere
-                $highestRow = $sheet->getHighestRow();
                 $sheet->getStyle("A1:{$highestColumn}{$highestRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -84,12 +84,12 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 $sheet->getStyle('G:G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $sheet->getStyle('K:K')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                // $sheet->getStyle('A:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
                 $sheet->getStyle("A2:{$highestColumn}4")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 
                 // Monospace font for Gantt area
                 $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
 
+                //Stage & Theme styling
                 $stageStyle = [
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -110,20 +110,18 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // === Style Stage rows and Activity Theme name cells ===
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
-
                     $cellA = $sheet->getCell("A{$rowIndex}");
                     $cellB = $sheet->getCell("B{$rowIndex}");
 
-                    // Check if this is a stage row (merged cells in A and B)
+                    // Stage row (merged A+B)
                     if ($cellA->getMergeRange() && $cellA->getMergeRange() === $cellB->getMergeRange()) {
                         $sheet->getStyle("A{$rowIndex}:{$highestColumn}{$rowIndex}")->applyFromArray($stageStyle);
                         continue;
                     }
 
-                    // Check if this is an Activity Theme row
+                    // Activity Theme name cell
                     $cellBValue = trim((string) $cellB->getValue());
                     if (strtolower($cellBValue) === 'activity theme') {
-                        // Apply style **only to column A** (the name cell)
                         $sheet->getStyle("A{$rowIndex}")->applyFromArray($themeNameStyle);
                     }
                 }

@@ -58,9 +58,9 @@
                 <table class="table table-bordered" id="MonthlyTimeSheetSummaryDetailTable">
                     <thead class="bg-light">
                         <tr>
-                            <th>SN</th>
-                            <th>Employee</th>
-                            <th>Status</th>
+                            <th>{{ __('label.sn') }}</th>
+                            <th>{{ __('label.employee') }}</th>
+                            <th>{{ __('label.status') }}</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

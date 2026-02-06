@@ -60,7 +60,7 @@ class TimeSheetRepository extends Repository
     }
 
     /**
-     * Alternative: grouped by status (if you prefer separate columns/sections)
+     * Grouped by status (separate columns/sections)
      */
     public function getTimesheetsGroupedByStatus(string $year, string $month)
     {

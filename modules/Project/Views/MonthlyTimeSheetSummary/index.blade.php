@@ -72,10 +72,10 @@
                             <tr>
                                 <th>{{ __('label.year') }}</th>
                                 <th>{{ __('label.month') }}</th>
-                                <th>Not Submitted</th>
-                                <th>Submitted</th>
-                                <th>Approved</th>
-                                <th>Returned</th>
+                                <th>{{ __('label.not-submitted') }}</th>
+                                <th>{{ __('label.submitted') }}</th>
+                                <th>{{ __('label.approved') }}</th>
+                                <th>{{ __('label.returned') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

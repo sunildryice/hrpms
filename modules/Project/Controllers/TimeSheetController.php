@@ -36,7 +36,7 @@ class TimeSheetController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('project_id', function ($row) {
-                    return $row->project?->title;
+                    return $row->project?->short_name ?: $row->project?->title ?? '';
                 })
                 ->addColumn('activity_id', function ($row) {
                     return $row->activity?->title;

@@ -9,6 +9,12 @@
             $('#MonthlyTimeSheetSummaryDetailTable').DataTable({
                 processing: true,
                 serverSide: true,
+                scrollY: 500,
+                scroller: true,
+                scrollX: true,
+                bPaginate: false,
+                bInfo: true,
+                bFilter: true,
                 ajax: '{{ route('monthly-timesheet.summary.show', [$year, $month]) }}',
                 columns: [{
                         data: 'DT_RowIndex',
@@ -35,8 +41,10 @@
         <div class="pb-3 mb-3 border-bottom">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a class="text-decoration-none text-dark" href="{{ route('dashboard.index') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-decoration-none text-dark" href="{{ route('monthly-timesheet.summary.index') }}">Monthly Timesheet Summary</a></li>
+                    <li class="breadcrumb-item"><a class="text-decoration-none text-dark"
+                            href="{{ route('dashboard.index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a class="text-decoration-none text-dark"
+                            href="{{ route('monthly-timesheet.summary.index') }}">Monthly Timesheet Summary</a></li>
                     <li class="breadcrumb-item active">{{ $year }} {{ $month }}</li>
                 </ol>
             </nav>
@@ -47,7 +55,7 @@
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <table class="table table-bordered table-hover" id="MonthlyTimeSheetSummaryDetailTable">
+                <table class="table table-bordered" id="MonthlyTimeSheetSummaryDetailTable">
                     <thead class="bg-light">
                         <tr>
                             <th>SN</th>

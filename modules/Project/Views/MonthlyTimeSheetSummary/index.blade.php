@@ -67,7 +67,7 @@
         <div class="card shadow-sm border rounded">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover" id="MonthlyTimeSheetSummaryTable">
+                    <table class="table" id="MonthlyTimeSheetSummaryTable">
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.year') }}</th>

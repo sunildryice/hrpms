@@ -57,7 +57,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 }
 
                 // Freeze header (title + years + months + weeks)
-                $sheet->freezePane('A5');
+                $sheet->freezePane('B5');
 
                 // Header background + bold
                 $sheet->getStyle('A1:' . $highestColumn . '4')->applyFromArray([

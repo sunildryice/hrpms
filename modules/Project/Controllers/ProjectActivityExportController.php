@@ -16,7 +16,7 @@ class ProjectActivityExportController extends Controller
     }
     public function exportActivity(Request $request, Project $project)
     {
-        $fileName = 'activity_' . $project->id . '.xlsx';
+        $fileName = 'activity_plan_' . $project?->short_name . '.xlsx';
         return Excel::download(new ProjectActivityExport($project), $fileName);
     }
 }

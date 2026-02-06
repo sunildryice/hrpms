@@ -1,3 +1,10 @@
+<style>
+    .bg-orange {
+        background-color: #fd7e14;
+        color: #fff;
+    }
+</style>
+
 <div class="card-body">
     @php
         $latestLog = $projectActivity->latestStatusLog;
@@ -57,6 +64,32 @@
             </div>
         </div>
     </div>
+
+    <div class="mb-2 d-flex align-items-start gap-2">
+        {{-- Status --}}
+        <i class="bi-info-circle text-dark" title="{{ __('label.status') }}" aria-label="{{ __('label.status') }}"
+            data-bs-toggle="tooltip"></i>
+        <div class="w-100">
+            <div>
+
+                <span class="badge {{ $projectActivity->statusBgColor() ?? 'badge bg-secondary' }}">
+                    {{ $projectActivity->status ?? '-' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @if ($latestLog && $latestLog?->new_status->value === 'completed')
+        {{-- Completed On --}}
+        @php($labelText = $isNoRequiredStatus ? 'Completed On' : 'Completed On')
+        <div class="mb-2 d-flex align-items-start gap-2">
+            <i class="bi-check-circle text-dark" title="{{ $labelText }}" aria-label="{{ $labelText }}"
+                data-bs-toggle="tooltip"></i>
+            <div class="w-100">
+                <div>{{ $latestLog->created_at ? $latestLog->created_at->format('M d, Y h:i A') : '-' }}</div>
+            </div>
+        </div>
+    @endif
 
     @if ($latestLog && $latestLog->remarks)
         @php($labelText = $isNoRequiredStatus ? 'Reason' : 'Remarks')

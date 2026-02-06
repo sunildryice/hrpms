@@ -25,7 +25,8 @@ class ProjectRepository extends Repository
                     $q->whereHas('members', function ($sq) use ($authUser) {
                         $sq->where('user_id', $authUser->id);
                     })
-                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value)
+                        ->with(['members:id,full_name']);
                 },
 
             ])

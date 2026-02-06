@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Models\ProjectActivityStatusLog;
 
 class ProjectActivity extends Model
@@ -36,6 +37,8 @@ class ProjectActivity extends Model
         'actual_start_date',
         'actual_completion_date'
     ];
+
+
 
     public function parent()
     {
@@ -181,5 +184,16 @@ class ProjectActivity extends Model
     public function isUserAssignedToActivity($userId, $activityId)
     {
         return $this->members()->where('user_id', $userId)->where('activity_id', $activityId)->exists();
+    }
+
+    public function statusBgColor()
+    {
+        return match ($this->status) {
+            ActivityStatus::Completed->value => 'badge bg-success',
+            ActivityStatus::UnderProgress->value => 'badge bg-warning',
+            ActivityStatus::NotStarted->value => 'badge bg-orange text-white',
+            ActivityStatus::NoRequired->value => 'badge bg-danger',
+            default => 'badge bg-secondary',
+        };
     }
 }

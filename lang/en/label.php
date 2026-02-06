@@ -418,6 +418,7 @@ return [
     'total-amount' => 'Total Amount',
     'total-days' => 'Total Days',
     'total-dsa' => 'Total DSA',
+    'total-hours' => 'Total Hours',
     'travel-number' => 'Travel Number',
     'training-number' => 'Training Number',
     'training-question' => 'Training Question',

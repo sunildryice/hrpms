@@ -101,9 +101,9 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
-                                <th>Month</th>
-                                <th>Total Hours</th>
-                                <th>Projects</th>
+                                <th>{{ __('label.month') }}</th>
+                                <th>{{ __('label.total-hours') }}</th>
+                                <th>{{ __('label.project') }}</th>
                                 <th>{{ __('label.status') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>

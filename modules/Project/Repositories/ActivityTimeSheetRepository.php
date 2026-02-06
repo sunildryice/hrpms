@@ -84,7 +84,7 @@ class ActivityTimeSheetRepository extends Repository
                 return $query->where('timesheets.requester_id', $userId);
             })
             ->orderBy('timesheets.year', 'asc')
-            ->orderByRaw('MONTH(timesheets.start_date) asc')
+            ->orderByRaw('MONTH(timesheets.end_date) asc')
             ->get();
     }
 
@@ -115,7 +115,7 @@ class ActivityTimeSheetRepository extends Repository
             })
             ->where('status_id', config('constant.SUBMITTED_STATUS'))
             ->orderBy('timesheets.year', 'asc')
-            ->orderByRaw('MONTH(timesheets.start_date) asc')
+            ->orderByRaw('MONTH(timesheets.end_date) asc')
             ->get();
     }
 
@@ -146,7 +146,7 @@ class ActivityTimeSheetRepository extends Repository
             })
             ->where('status_id', config('constant.APPROVED_STATUS'))
             ->orderBy('timesheets.year', 'desc')
-            ->orderByRaw('MONTH(timesheets.start_date) desc')
+            ->orderByRaw('MONTH(timesheets.end_date) desc')
             ->get();
     }
 

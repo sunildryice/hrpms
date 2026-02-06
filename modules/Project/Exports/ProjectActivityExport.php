@@ -35,29 +35,32 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
 
-                // Column widths
-                $sheet->getColumnDimension('A')->setWidth(40);   // Activities
-                $sheet->getColumnDimension('B')->setWidth(16);   // Type
-                $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
-                $sheet->getColumnDimension('D')->setWidth(26);   // Timeline
-                $sheet->getColumnDimension('E')->setWidth(24);   // Members
-                $sheet->getColumnDimension('F')->setWidth(20);   // Status
-                $sheet->getColumnDimension('G')->setWidth(20);   // Extended
-                $sheet->getColumnDimension('H')->setWidth(34);   // Remarks
-    
-                // Gantt columns - very narrow
                 $highestColumn = $sheet->getHighestColumn();
                 $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+                $highestRow = $sheet->getHighestRow();
 
-                for ($col = 9; $col <= $highestColumnIndex; $col++) {
+                // Column widths
+                $sheet->getColumnDimension('A')->setWidth(45);   // Activities
+                $sheet->getColumnDimension('B')->setWidth(16);   // Type
+                $sheet->getColumnDimension('C')->setWidth(30);   // Deliverables
+                $sheet->getColumnDimension('D')->setWidth(28);   // Budget Description
+                $sheet->getColumnDimension('E')->setWidth(18);   // Start Date      
+                $sheet->getColumnDimension('F')->setWidth(18);   // Completion Date   
+                $sheet->getColumnDimension('G')->setWidth(24);   // Members
+                $sheet->getColumnDimension('H')->setWidth(20);   // Status
+                $sheet->getColumnDimension('I')->setWidth(20);   // Extended
+                $sheet->getColumnDimension('J')->setWidth(34);   // Remarks     
+    
+                // Gantt columns - very narrow
+                for ($col = 11; $col <= $highestColumnIndex; $col++) {
                     $columnLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
                     $sheet->getColumnDimension($columnLetter)->setWidth(3.4);
                 }
 
-                // Freeze header (title + years + months + weeks)
-                $sheet->freezePane('A5');
+                // Freeze panes (title + years + months + weeks) and activities column rows
+                $sheet->freezePane('B5');
 
-                // Header background + bold
+                // Header styling (row 1–4)
                 $sheet->getStyle('A1:' . $highestColumn . '4')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -69,7 +72,6 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 ]);
 
                 // Thin borders everywhere
-                $highestRow = $sheet->getHighestRow();
                 $sheet->getStyle("A1:{$highestColumn}{$highestRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
@@ -79,15 +81,15 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 ]);
 
                 // Alignments
-                $sheet->getStyle('E:E')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                $sheet->getStyle('H:H')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-                $sheet->getStyle('I:I')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                // $sheet->getStyle('A:' . $highestColumn)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
+                $sheet->getStyle('G:G')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle('J:J')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle('K:K')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
                 $sheet->getStyle("A2:{$highestColumn}4")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
 
                 // Monospace font for Gantt area
-                $sheet->getStyle('I:' . $highestColumn)->getFont()->setName('Consolas');
+                $sheet->getStyle('K:' . $highestColumn)->getFont()->setName('Consolas');
 
+                //Stage & Theme styling
                 $stageStyle = [
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -108,20 +110,18 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 // === Style Stage rows and Activity Theme name cells ===
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
-
                     $cellA = $sheet->getCell("A{$rowIndex}");
                     $cellB = $sheet->getCell("B{$rowIndex}");
 
-                    // Check if this is a stage row (merged cells in A and B)
+                    // Stage row (merged A+B)
                     if ($cellA->getMergeRange() && $cellA->getMergeRange() === $cellB->getMergeRange()) {
                         $sheet->getStyle("A{$rowIndex}:{$highestColumn}{$rowIndex}")->applyFromArray($stageStyle);
                         continue;
                     }
 
-                    // Check if this is an Activity Theme row
+                    // Activity Theme name cell
                     $cellBValue = trim((string) $cellB->getValue());
                     if (strtolower($cellBValue) === 'activity theme') {
-                        // Apply style **only to column A** (the name cell)
                         $sheet->getStyle("A{$rowIndex}")->applyFromArray($themeNameStyle);
                     }
                 }
@@ -132,7 +132,7 @@ class ProjectActivityExport implements FromView, WithEvents, WithTitle
                 foreach ($sheet->getRowIterator(5, $highestRow) as $row) {
                     $rowIndex = $row->getRowIndex();
 
-                    foreach (range(9, $highestColumnIndex) as $colIdx) {
+                    foreach (range(11, $highestColumnIndex) as $colIdx) {
                         $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIdx);
                         $cell = $sheet->getCell("{$colLetter}{$rowIndex}");
                         $value = trim((string) $cell->getValue());

@@ -64,7 +64,7 @@ class ProjectActivityController extends Controller
                     foreach (ActivityStatus::cases() as $status) {
                         $selected = $row?->status === $status?->value ? 'selected' : '';
                         $disabled = $this->checkSelectDisableStatus($row, $status);
-                        $selectInput .= '<option value="' . $status?->value . '" ' . $selected . ' ' . $disabled . '>' . ucfirst(str_replace('_', ' ', $status?->value)) . '</option>';
+                        $selectInput .= '<option value="' . $status?->value . '" ' . $selected . ' ' . $disabled . '>' . $status?->label() . '</option>';
                     }
                     $selectInput .= '</select>';
                 } else {

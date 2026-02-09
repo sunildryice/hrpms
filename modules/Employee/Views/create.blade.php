@@ -230,6 +230,16 @@
                 },
             });
 
+            $(form.querySelector('[name="joined_date"]')).datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+                onChange: function() {
+                    fv.revalidateField('joined_date');
+                },
+            });
+
         });
     </script>
 @endsection

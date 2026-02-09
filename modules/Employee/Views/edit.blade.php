@@ -199,6 +199,15 @@
                 fv.revalidateField('date_of_birth');
             });
 
+            $('[name="joined_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('joined_date');
+            });
+
             $('[name="probation_complete_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,

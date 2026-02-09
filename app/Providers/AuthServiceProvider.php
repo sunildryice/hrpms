@@ -104,12 +104,12 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
 
-//        $permissions = Permission::all();
-//        foreach ($permissions as $permission) {
-//            Gate::define($permission->guard_name, function ($user) use ($permission) {
-//                return in_array($permission->guard_name, session()->get('access_permissions', []));
-//            });
-//        }
+        $permissions = Permission::all();
+        foreach ($permissions as $permission) {
+            Gate::define($permission->guard_name, function ($user) use ($permission) {
+                return in_array($permission->guard_name, session()->get('access_permissions', []));
+            });
+        }
 
         Gate::define('approve-advance-settlement-form', function ($user) {
             return $user->can('approve-advance-request') || $user->can('approve-recommended-advance-settlement');

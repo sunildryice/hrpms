@@ -15,6 +15,10 @@
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px !important;
         }
+
+        .wrap-text {
+            white-space: normal !important;
+        }
     </style>
 @endsection
 
@@ -51,6 +55,7 @@
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
+                        className: 'wrap-text',
                         defaultContent: ''
                     },
                     {
@@ -65,6 +70,7 @@
                     },
                     {
                         data: 'members',
+                        className: 'wrap-text',
                     },
                     @if ($isEditable)
                         {
@@ -130,6 +136,7 @@
                         const $membersSelect = $('.members-select');
                         const $projectSelect = $('.project-select');
                         let fvInstance = null;
+                        let hasAttemptedSubmit = false;
 
                         // **NEW: Restore form data immediately after load**
                         const restoreFormData = () => {
@@ -178,7 +185,7 @@
                                     const current = $(this).val() || [];
                                     $(this).attr('data-selected-members', JSON.stringify(
                                         current));
-                                    if (fvInstance) {
+                                    if (hasAttemptedSubmit && fvInstance) {
                                         fvInstance.revalidateField('members[]');
                                     }
                                 });
@@ -299,6 +306,9 @@
                             // Bind project change AFTER restoration
                             $projectSelect.on('change', function() {
                                 handleProjectSelection($(this).find(':selected'));
+                                if (hasAttemptedSubmit && fvInstance) {
+                                    fvInstance.revalidateField('project_id');
+                                }
                             });
 
                             // **NEW: Handle pre-selected project for edit forms**
@@ -310,17 +320,105 @@
                             }
                         }, 50);
 
-                        // Rest of your FormValidation code remains the same...
                         const form = document.getElementById('addPlanForm');
+                        if (!form) {
+                            toastr.error('Unable to initialize the form. Please try again.');
+                            return;
+                        }
+
+                        const $plannedTask = $(form).find('textarea[name="planned_task"]');
+
                         fvInstance = FormValidation.formValidation(form, {
-                            // ... your existing validation config
+                            fields: {
+                                project_id: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Project is required',
+                                        },
+                                    },
+                                },
+                                activity_id: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Activity is required',
+                                        },
+                                    },
+                                },
+                                planned_task: {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Planned task is required',
+                                        },
+                                    },
+                                },
+                                'members[]': {
+                                    validators: {
+                                        notEmpty: {
+                                            message: 'Select at least one member',
+                                        },
+                                    },
+                                },
+                            },
+                            plugins: {
+                                trigger: new FormValidation.plugins.Trigger({
+                                    event: {
+                                        project_id: 'submit',
+                                        activity_id: 'submit',
+                                        planned_task: 'submit',
+                                        'members[]': 'submit',
+                                    },
+                                }),
+                                bootstrap5: new FormValidation.plugins.Bootstrap5({
+                                    rowSelector: '.row',
+                                    eleInvalidClass: '',
+                                    eleValidClass: '',
+                                }),
+                                submitButton: new FormValidation.plugins.SubmitButton(),
+                                icon: new FormValidation.plugins.Icon({
+                                    valid: 'bi bi-check2-square',
+                                    invalid: 'bi bi-x-lg',
+                                    validating: 'bi bi-arrow-repeat',
+                                }),
+                            },
                         });
 
                         fvInstance.enableValidator('members[]', 'notEmpty', !$membersSelect.prop(
                             'disabled'));
 
+                        $activitySelect.on('change', function() {
+                            if (hasAttemptedSubmit && fvInstance) {
+                                fvInstance.revalidateField('activity_id');
+                            }
+                        });
+
+                        if ($plannedTask.length) {
+                            $plannedTask.on('input', function() {
+                                if (hasAttemptedSubmit && fvInstance) {
+                                    fvInstance.revalidateField('planned_task');
+                                }
+                            });
+                        }
+
+                        fvInstance.on('core.form.invalid', function() {
+                            hasAttemptedSubmit = true;
+                        });
+
                         fvInstance.on('core.form.valid', function() {
-                            // ... your existing submit handler
+                            hasAttemptedSubmit = true;
+                            const submitUrl = form.getAttribute('action');
+                            const submitMethod = form.getAttribute('method') || 'POST';
+                            const formData = new FormData(form);
+
+                            const successCallback = function(response) {
+                                $('#addPlanModal').modal('hide');
+                                $('#addPlanModal').find('.modal-content').html('');
+                                toastr.success(response.message ||
+                                    'Work plan saved successfully');
+                                oTable.ajax.reload();
+                            };
+
+                            ajaxSubmitFormData(submitUrl, submitMethod, formData,
+                                successCallback);
                         });
                     });
             });

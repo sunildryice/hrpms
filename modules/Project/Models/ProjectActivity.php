@@ -196,4 +196,15 @@ class ProjectActivity extends Model
             default => 'badge bg-secondary',
         };
     }
+
+    public function statusLabel()
+    {
+        return match ($this->status) {
+            ActivityStatus::Completed->value => 'Completed',
+            ActivityStatus::UnderProgress->value => 'Under Progress',
+            ActivityStatus::NotStarted->value => 'Not Started',
+            ActivityStatus::NoRequired->value => 'No Longer Required',
+            default => '-',
+        };
+    }
 }

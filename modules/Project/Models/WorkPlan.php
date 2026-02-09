@@ -2,6 +2,7 @@
 
 namespace Modules\Project\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
 use Carbon\Carbon;
@@ -56,6 +57,18 @@ class WorkPlan extends Model
             'id',
             'id',
             'project_id'
+        );
+    }
+
+    public function members()
+    {
+        return $this->hasManyThrough(
+            User::class,
+            WorkPlanDetail::class,
+            'work_plan_id',
+            'id',
+            'id',
+            'user_id'
         );
     }
 }

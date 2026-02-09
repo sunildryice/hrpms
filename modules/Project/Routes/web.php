@@ -4,12 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\WorkPlanController;
 use Modules\Project\Controllers\TimeSheetController;
-use Modules\Project\Controllers\WeeklyPlanController;
 use Modules\Project\Controllers\ActivityStageController;
-use Modules\Project\Controllers\ProjectMembersController;
 use Modules\Project\Controllers\WorkPlanDetailController;
 use Modules\Project\Controllers\ProjectActivityController;
 use Modules\Project\Controllers\EmployeeWorkPlanController;
+use Modules\Project\Controllers\InvolvedWorkPlanController;
 use Modules\Project\Controllers\MonthlyTimeSheetController;
 use Modules\Project\Controllers\ProjectGanttChartController;
 use Modules\Project\Controllers\ActivityUpdatePeriodController;
@@ -106,6 +105,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');
     Route::get('/employee-work-plan/{workPlan}/details', [EmployeeWorkPlanController::class, 'show'])->name('employee-work-plan.details');
+
+    Route::get('/involved-work-plan', [InvolvedWorkPlanController::class, 'index'])->name('involved-work-plan.index');
 });
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {

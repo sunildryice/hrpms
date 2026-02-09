@@ -515,6 +515,12 @@
                                     <span class="nav-link-title">Employee Work Plan</span>
                                 </a>
                             @endif
+
+                            <a class="nav-link" href="{{ route('involved-work-plan.index') }}" role="button"
+                                id="involved-work-plan-index" data-bs-toggle="tooltip" data-bs-placement="right"
+                                title="Involved Work Plan">
+                                <span class="nav-link-title">Involved Work Plan</span>
+                            </a>
                         </div>
                     </div>
 

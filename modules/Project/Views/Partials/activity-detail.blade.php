@@ -73,7 +73,7 @@
             <div>
 
                 <span class="badge {{ $projectActivity->statusBgColor() ?? 'badge bg-secondary' }}">
-                    {{ $projectActivity->status ?? '-' }}
+                    {{ $projectActivity->statusLabel() ?? '-' }}
                 </span>
             </div>
         </div>

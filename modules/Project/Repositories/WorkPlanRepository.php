@@ -3,6 +3,8 @@
 namespace Modules\Project\Repositories;
 
 use App\Repositories\Repository;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Modules\Project\Models\WorkPlan;
 use Modules\Project\Models\WorkPlanDetail;
 
@@ -62,6 +64,78 @@ class WorkPlanRepository extends Repository
     {
         return WorkPlanDetail::with(['project', 'activity', 'members'])
             ->where('work_plan_id', $workPlanId);
+    }
+
+    public function getUserWorkPlanDetailsByWeek($fromDate, $toDate, $userId)
+    {
+        return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members'])
+            ->whereHas('workPlan', function ($query) use ($fromDate, $toDate) {
+                $query->whereDate('from_date', $fromDate)
+                    ->whereDate('to_date', $toDate);
+            })
+            ->whereHas('members', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            });
+    }
+
+    public function getWeekSelectionForUser(int $userId, ?string $requestedWeekStart = null): array
+    {
+        $weekRanges = $this->getAvailableWeekRangesForUser($userId);
+        $weeks = $this->buildWeekOptions($weekRanges);
+        $defaultWeek = $weekRanges->first();
+
+        $currentWeekStart = $this->resolveWeekStart($requestedWeekStart, $weeks, $defaultWeek);
+        $selectedWeek = $weekRanges->first(function ($week) use ($currentWeekStart) {
+            return $week->from_date->isSameDay($currentWeekStart);
+        });
+        $currentWeekEnd = $selectedWeek?->to_date?->copy() ?? $currentWeekStart->copy()->addDays(6);
+
+        return [
+            'weeks' => $weeks,
+            'current_week_start' => $currentWeekStart,
+            'current_week_end' => $currentWeekEnd,
+            'selected_week' => $selectedWeek,
+        ];
+    }
+
+    protected function getAvailableWeekRangesForUser(int $userId): Collection
+    {
+        $existingWeeks = $this->model
+            ->select(['from_date', 'to_date'])
+            ->whereHas('details.members', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->whereNotNull('from_date')
+            ->whereNotNull('to_date')
+            ->orderBy('from_date', 'desc')
+            ->get();
+
+        return $existingWeeks->unique(function ($week) {
+            return $week->from_date->format('Y-m-d');
+        })->values();
+    }
+
+    protected function buildWeekOptions(Collection $weekRanges): array
+    {
+        return $weekRanges->mapWithKeys(function ($week) {
+            $key = $week->from_date->format('Y-m-d');
+            $label = $week->from_date->format('M j, Y') . ' - ' . $week->to_date->format('M j, Y');
+
+            return [$key => $label];
+        })->toArray();
+    }
+
+    protected function resolveWeekStart(?string $requestedWeekStart, array $weeks, ?WorkPlan $defaultWeek): Carbon
+    {
+        if ($requestedWeekStart && array_key_exists($requestedWeekStart, $weeks)) {
+            return Carbon::parse($requestedWeekStart)->startOfDay();
+        }
+
+        if ($defaultWeek) {
+            return $defaultWeek->from_date->copy();
+        }
+
+        return Carbon::now()->startOfWeek(Carbon::SUNDAY);
     }
 
     public function findDetailById($id)

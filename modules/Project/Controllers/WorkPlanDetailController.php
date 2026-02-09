@@ -118,7 +118,6 @@ class WorkPlanDetailController extends Controller
 
         $projects = $this->projects->getAssignedProjects(auth()->user());
 
-        // $assignedMembers = $projects->members;
 
         return view('Project::WorkPlan.Detail.create', compact('week', 'projects'));
     }

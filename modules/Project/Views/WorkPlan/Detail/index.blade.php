@@ -15,6 +15,10 @@
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px !important;
         }
+
+        .wrap-text {
+            white-space: normal !important;
+        }
     </style>
 @endsection
 
@@ -51,6 +55,7 @@
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
+                        className: 'wrap-text',
                         defaultContent: ''
                     },
                     {
@@ -65,6 +70,7 @@
                     },
                     {
                         data: 'members',
+                        className: 'wrap-text',
                     },
                     @if ($isEditable)
                         {

@@ -52,10 +52,10 @@ class ImportEmployeeAttendance extends Command
                 ->orderBy('attendance_timestamp', 'asc')
                 ->get();
             if (count($attendanceLogs) > 0) {
-                $checkIn = $attendanceLogs->first()->attendanceTimestamp;
+                $checkIn = $attendanceLogs->first()->attendance_timestamp;
                 $checkOut = NULL;
                 if ($attendanceLogs->count() > 1) {
-                    $checkOut = $attendanceLogs->last()->attendanceTimestamp;
+                    $checkOut = $attendanceLogs->last()->attendance_timestamp;
                 }
                 $attendance = $this->attendances->getAttendanceObject($employee->id, $date->year, $date->month);
                 if (!$attendance) {

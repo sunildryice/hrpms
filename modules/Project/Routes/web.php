@@ -15,6 +15,7 @@ use Modules\Project\Controllers\ProjectGanttChartController;
 use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityImportController;
+use Modules\Project\Controllers\MonthlyTimeSheetSummaryController;
 use Modules\Project\Controllers\MonthlyTimeSheetApprovedController;
 use Modules\Project\Controllers\MonthlyTimeSheetApproverController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
@@ -89,7 +90,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/monthly-timesheet/{id}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
     Route::put('/monthly-timesheet/{id}', [MonthlyTimeSheetController::class, 'update'])->name('monthly-timesheet.update');
 
-
+    Route::get('/monthly-timesheet/summary/index', [MonthlyTimeSheetSummaryController::class, 'index'])->name('monthly-timesheet.summary.index');
+    Route::get('/monthly-timesheet/summary/{year}/{month}/show', [MonthlyTimeSheetSummaryController::class, 'show'])->name('monthly-timesheet.summary.show');
 
     Route::get('/work-plan', [WorkPlanController::class, 'index'])->name('work-plan.index');
     Route::post('/work-plan/store', [WorkPlanDetailController::class, 'store'])->name('work-plan.store');

@@ -15,6 +15,8 @@ use Modules\Project\Requests\ProjectActivity\StoreRequest;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Requests\ProjectActivity\UpdateRequest;
 
+use function PHPUnit\Framework\isNull;
+
 class ProjectActivityController extends Controller
 {
     public function __construct(
@@ -44,7 +46,7 @@ class ProjectActivityController extends Controller
                 return $row->start_date?->format('M d, Y');
             })
             ->editColumn('completion_date', function ($row) {
-                return $row->completion_date?->format('M d, Y');
+                return $row->display_extended_completion_date;
             })
             ->addColumn('activity_stage', function ($row) {
                 return $row->stage->title;
@@ -58,7 +60,7 @@ class ProjectActivityController extends Controller
             ->editColumn('status', function ($row) {
                 $selectInput = '';
                 if ($this->checkStatusDisplay($row)) {
-                    $selectInput .= '<select class="form-select form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
+                    $selectInput .= '<select class="form-select  form-select-sm activity-status-change" data-activity-id="' . $row->id . '">';
                     foreach (ActivityStatus::cases() as $status) {
                         $selected = $row?->status === $status?->value ? 'selected' : '';
                         $disabled = $this->checkSelectDisableStatus($row, $status);
@@ -120,7 +122,7 @@ class ProjectActivityController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['action', 'status'])
+            ->rawColumns(['action', 'status', 'completion_date'])
             ->make(true);
     }
 

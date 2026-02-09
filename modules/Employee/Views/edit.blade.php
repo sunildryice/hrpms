@@ -450,7 +450,7 @@
                             <a href="{!! route('employees.index') !!}" class="text-decoration-none text-dark">Employees</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')
-                            : {{ $employee->getFullNameWithCode() }}</li>
+                            : {{ $employee->getFullName() }}</li>
                     </ol>
                 </nav>
                 <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>

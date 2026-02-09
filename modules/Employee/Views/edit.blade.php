@@ -199,6 +199,15 @@
                 fv.revalidateField('date_of_birth');
             });
 
+            $('[name="joined_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('joined_date');
+            });
+
             $('[name="probation_complete_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
@@ -450,7 +459,7 @@
                             <a href="{!! route('employees.index') !!}" class="text-decoration-none text-dark">Employees</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')
-                            : {{ $employee->getFullNameWithCode() }}</li>
+                            : {{ $employee->getFullName() }}</li>
                     </ol>
                 </nav>
                 <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>

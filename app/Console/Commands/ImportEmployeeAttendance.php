@@ -31,7 +31,8 @@ class ImportEmployeeAttendance extends Command
         protected AttendanceLog              $attendanceLog,
         protected AttendanceDetailRepository $attendanceDetails,
         protected EmployeeRepository         $employees
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -47,15 +48,16 @@ class ImportEmployeeAttendance extends Command
 
         $employees = $this->employees->get();
         foreach ($employees as $employee) {
-            $attendanceLogs = $this->attendanceLog->where('employeeCode', $employee->employee_code)
-                ->whereDate('attendanceTimestamp', $date->format('Y-m-d'))
-                ->orderBy('attendanceTimestamp', 'asc')
+            $attendanceLogs = $this->attendanceLog->where('employee_code', $employee->employee_code)
+                ->whereDate('attendance_timestamp', $date->format('Y-m-d'))
+                ->orderBy('attendance_timestamp', 'asc')
                 ->get();
+
             if (count($attendanceLogs) > 0) {
-                $checkIn = $attendanceLogs->first()->attendanceTimestamp;
+                $checkIn = $attendanceLogs->first()->attendance_timestamp;
                 $checkOut = NULL;
                 if ($attendanceLogs->count() > 1) {
-                    $checkOut = $attendanceLogs->last()->attendanceTimestamp;
+                    $checkOut = $attendanceLogs->last()->attendance_timestamp;
                 }
                 $attendance = $this->attendances->getAttendanceObject($employee->id, $date->year, $date->month);
                 if (!$attendance) {
@@ -79,12 +81,8 @@ class ImportEmployeeAttendance extends Command
                     'checkin' => $checkIn,
                     'checkout' => $checkOut,
                 ];
-                if ($checkIn) {
-                    $inputs['checkin_from'] = 'Device';
-                }
-                if ($checkIn) {
-                    $inputs['checkout_from'] = 'Device';
-                }
+                $inputs['checkin_from'] = $checkIn ? 'Device' : $attendance->checkin_from;
+                $inputs['checkout_from'] = $checkOut ? 'Device' : $attendance->checkout_from;
 
                 $detail = $this->attendanceDetails->updateOrCreate([
                     'attendance_master_id' => $attendance->id,

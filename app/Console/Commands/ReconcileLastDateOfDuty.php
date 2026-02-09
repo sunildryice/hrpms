@@ -56,18 +56,5 @@ class ReconcileLastDateOfDuty extends Command
             }
         }
         $this->info('Setting all employee last date of duty of exit employee.');
-
-        $this->info('Getting all employees.');
-        $employees = $this->employees->with(['firstTenure'])->get();
-
-        foreach($employees as $employee) {
-            if(!$employee->joined_date){
-                $employee->update([
-                    'joined_date' => $employee->firstTenure->joined_date
-                ]);
-                $this->info('Joined date of employee '. $employee->getFullName() .' is updated.');
-            }
-        }
-        $this->info('Setting all employee joined date of employees.');
     }
 }

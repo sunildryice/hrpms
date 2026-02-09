@@ -7,6 +7,106 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#dashboard').addClass('active');
+
+
+            // Check In Today with Confirmation
+            $(document).on('click', '.checkin-today-btn', function() {
+                let date = $(this).data('date');
+                let btn = $(this);
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You won\'t be able to revert this!',
+                    // icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#01aef0',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Check In',
+                    cancelButtonText: 'Cancel',
+                    // reverseButtons: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        btn.prop('disabled', true).html(
+                            '<i class="bi bi-hourglass-split"></i> Checking in...');
+
+                        $.ajax({
+                            url: "{{ route('attendance.checkin.today') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                date: date
+                            },
+                            success: function(response) {
+                                toastr.success('Checked in at ' + response.time);
+                                $('#today-attendance-action').html(`
+                        <button class="btn btn-warning btn-sm checkout-today-btn" data-date="${date}">
+                            <i class="bi bi-box-arrow-in-left"></i> Check Out
+                        </button>
+                    `);
+                                oTable.ajax.reload(null, false);
+                            },
+                            error: function(xhr) {
+                                btn.prop('disabled', false).html(
+                                    '<i class="bi bi-box-arrow-in-right"></i> Check In Now'
+                                );
+                                toastr.error(xhr.responseJSON?.message ||
+                                    'Failed to check in');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Check Out Today with Confirmation
+            $(document).on('click', '.checkout-today-btn', function() {
+                let date = $(this).data('date');
+                let btn = $(this);
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'You won\'t be able to revert this!',
+                    // icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#01aef0',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, Check Out',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        btn.prop('disabled', true).html(
+                            '<i class="bi bi-hourglass-split"></i> Checking out...');
+
+                        $.ajax({
+                            url: "{{ route('attendance.checkout.today') }}",
+                            type: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                date: date
+                            },
+                            success: function(response) {
+                                toastr.success('Checked out at ' + response.time +
+                                    ' on ' + response.worked_hours + ' hours worked'
+                                );
+                                $('#today-attendance-action').html(`
+                                    <button class="btn btn-success btn-sm" disabled>
+                                        <i class="bi bi-fingerprint"></i> Completed Today
+                                    </button>
+                                `);
+                                oTable.ajax.reload(null, false);
+                            },
+                            error: function(xhr) {
+                                btn.prop('disabled', false).html(
+                                    '<i class="bi bi-box-arrow-in-left"></i> Check Out'
+                                );
+                                toastr.error(xhr.responseJSON?.message ||
+                                    'Failed to check out');
+                            }
+                        });
+                    }
+                });
+            });
+            
         });
     </script>
 @endsection
@@ -22,6 +122,49 @@
                     </ol>
                 </nav>
                 <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">Dashboard</h4>
+            </div>
+             <div class="add-info justify-content-end d-flex align-items-center gap-1">
+                <div class="py-3 rounded text-end" id="today-attendance-action">
+                    @php
+                        $today = now()->format('Y-m-d');
+                        $employeeId = auth()->user()->employee->id;
+
+                        $attendanceMaster = \Modules\EmployeeAttendance\Models\Attendance::where(
+                            'employee_id',
+                            $employeeId,
+                        )
+                            ->where('year', now()->year)
+                            ->where('month', now()->month)
+                            ->first();
+
+                        $hasCheckIn = false;
+                        $hasCheckOut = false;
+
+                        if ($attendanceMaster) {
+                            $todayDetail = $attendanceMaster
+                                ->attendanceDetails()
+                                ->where('attendance_date', $today)
+                                ->first();
+
+                            $hasCheckIn = $todayDetail && $todayDetail->checkin;
+                            $hasCheckOut = $todayDetail && $todayDetail->checkout;
+                        }
+                    @endphp
+
+                    @if ($hasCheckOut)
+                        <button class="btn btn-success btn-sm" disabled>
+                            <i class="bi bi-fingerprint"></i> Completed Today
+                        </button>
+                    @elseif ($hasCheckIn)
+                        <button class="btn btn-warning btn-sm checkout-today-btn" data-date="{{ $today }}">
+                            <i class="bi bi-box-arrow-in-left"></i> Check Out
+                        </button>
+                    @else
+                        <button class="btn btn-primary btn-sm checkin-today-btn" data-date="{{ $today }}">
+                            <i class="bi bi-box-arrow-in-right"></i> Check In
+                        </button>
+                    @endif
+                </div>
             </div>
         </div>
 

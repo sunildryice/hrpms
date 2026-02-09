@@ -299,17 +299,15 @@
                         </li>
                         <li class="position-relative">
                             <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->getFullName() }}
-                            ({{ $employee->request_id }})
-                            <a href="#" class="stretched-link" rel="tooltip" title="Profile"></a>
+                            <a href="#" class="stretched-link" rel="tooltip" title="Full Name"></a>
+                        </li>
+                        <li class="position-relative">
+                            <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->request_id }}
+                            <a href="#" class="stretched-link" rel="tooltip" title="Staff ID"></a>
                         </li>
                         <li><span rel="tooltip" title="Designation"><i class="bi-briefcase dropdown-item-icon me-2"></i>
                                 {{ $employee->designation->title }}</span>
                         </li>
-
-                        {{-- <li><span rel="tooltip" title="Marital Status"><i
-                                    class="bi-question-circle dropdown-item-icon me-2"></i>
-                                {{ $employee->getMaritalStatus() }}</span>
-                        </li> --}}
                         <li>
                             <span rel="tooltip" title="Address">
                                 <i class="bi-pin-map dropdown-item-icon"></i>
@@ -770,7 +768,7 @@
                                                         $changed($tenure->getJoinedDate(), $prev ? $prev->getJoinedDate() : null) ||
                                                         $changed($tenure->getToDate(), $prev ? $prev->getToDate() : null))
                                                     <tr>
-                                                        <th scope="row" width="10%">Joining Date:</th>
+                                                        <th scope="row" width="10%">{{ __('label.from-date') }}:</th>
                                                         <td colspan="3">{{ $tenure->getJoinedDate() }}</td>
                                                     </tr>
                                                     <tr>

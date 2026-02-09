@@ -97,6 +97,21 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label for="validationdob" class="m-0">{{ __('label.from-date') }}
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="joined_date"
+                    value="{{ old('joined_date') ?: $employee->joined_date->format('Y-m-d') }}" onfocus="this.blur()"
+                    placeholder="yyyy-mm-dd" />
+                <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label for="validationdob" class="m-0">Date of Birth
                     </label>
                 </div>

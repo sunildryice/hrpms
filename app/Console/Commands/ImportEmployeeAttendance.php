@@ -31,7 +31,8 @@ class ImportEmployeeAttendance extends Command
         protected AttendanceLog              $attendanceLog,
         protected AttendanceDetailRepository $attendanceDetails,
         protected EmployeeRepository         $employees
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -51,6 +52,7 @@ class ImportEmployeeAttendance extends Command
                 ->whereDate('attendance_timestamp', $date->format('Y-m-d'))
                 ->orderBy('attendance_timestamp', 'asc')
                 ->get();
+
             if (count($attendanceLogs) > 0) {
                 $checkIn = $attendanceLogs->first()->attendance_timestamp;
                 $checkOut = NULL;
@@ -79,12 +81,8 @@ class ImportEmployeeAttendance extends Command
                     'checkin' => $checkIn,
                     'checkout' => $checkOut,
                 ];
-                if ($checkIn) {
-                    $inputs['checkin_from'] = 'Device';
-                }
-                if ($checkIn) {
-                    $inputs['checkout_from'] = 'Device';
-                }
+                $inputs['checkin_from'] = $checkIn ? 'Device' : $attendance->checkin_from;
+                $inputs['checkout_from'] = $checkOut ? 'Device' : $attendance->checkout_from;
 
                 $detail = $this->attendanceDetails->updateOrCreate([
                     'attendance_master_id' => $attendance->id,

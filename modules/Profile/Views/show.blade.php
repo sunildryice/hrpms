@@ -984,7 +984,7 @@
                                                     <td colspan="3">{{ $tenure->getDesignationName() }}</td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Joining Date: </th>
+                                                    <th scope="row">{{ __('label.from-date') }}: </th>
                                                     <td colspan="3">{{ $tenure->getJoinedDate() }}</td>
                                                 </tr>
                                                 <tr>

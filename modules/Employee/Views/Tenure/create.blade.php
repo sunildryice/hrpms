@@ -84,12 +84,12 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationdob" class="form-label required-label">Joined Date</label>
+                    <label for="validationdob" class="form-label required-label">{{ __('label.from-date') }}</label>
                 </div>
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control @if ($errors->has('joined_date')) is-invalid @endif"
-                    name="joined_date" placeholder="Joined Date"
+                    name="joined_date" placeholder="From Date"
                     value="{{ old('joined_date') ?: ($employee->latestTenure?->to_date?->format('Y-m-d') ?: $employee->latestTenure?->joined_date?->format('Y-m-d') ?: '') }}"
                     onfocus="this.blur()" />
                 @if ($errors->has('joined_date'))

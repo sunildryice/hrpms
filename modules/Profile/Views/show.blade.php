@@ -280,7 +280,7 @@
                 <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
             </div>
             <div class="add-info justify-content-end d-flex align-items-center gap-1">
-                <div class="py-3 rounded text-end" id="today-attendance-action">
+                {{-- <div class="py-3 rounded text-end" id="today-attendance-action">
                     @php
                         $today = now()->format('Y-m-d');
                         $employeeId = auth()->user()->employee->id;
@@ -320,7 +320,7 @@
                             <i class="bi bi-box-arrow-in-right"></i> Check In
                         </button>
                     @endif
-                </div>
+                </div> --}}
                 <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-primary" style=" text-decoration: none">Edit
                     Profile <i class="bi bi-pencil-square"></i></a>
             </div>

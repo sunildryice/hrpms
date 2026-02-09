@@ -372,6 +372,7 @@ class AttendanceController extends Controller
         } else {
             $this->attendanceDetail->update($detail->id, [
                 'checkin' => $now,
+                'checkin_from'=>'Manual',
                 'updated_by' => auth()->id(),
             ]);
         }

@@ -47,9 +47,9 @@ class ImportEmployeeAttendance extends Command
 
         $employees = $this->employees->get();
         foreach ($employees as $employee) {
-            $attendanceLogs = $this->attendanceLog->where('employeeCode', $employee->employee_code)
-                ->whereDate('attendanceTimestamp', $date->format('Y-m-d'))
-                ->orderBy('attendanceTimestamp', 'asc')
+            $attendanceLogs = $this->attendanceLog->where('employee_code', $employee->employee_code)
+                ->whereDate('attendance_timestamp', $date->format('Y-m-d'))
+                ->orderBy('attendance_timestamp', 'asc')
                 ->get();
             if (count($attendanceLogs) > 0) {
                 $checkIn = $attendanceLogs->first()->attendanceTimestamp;

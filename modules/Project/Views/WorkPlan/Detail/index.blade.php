@@ -19,6 +19,14 @@
         .wrap-text {
             white-space: normal !important;
         }
+
+        .plan-modal-dialog {
+            max-width: 1200px;
+        }
+
+        .output-documents-wrapper .output-doc-row {
+            gap: 0.75rem;
+        }
     </style>
 @endsection
 
@@ -26,6 +34,11 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
+
+            const statusUpdateUrlTemplate = "{{ route('work-plan.update-status', ['id' => '__ID__']) }}";
+            const buildStatusUpdateUrl = (detailId) => statusUpdateUrlTemplate.replace('__ID__', detailId);
+            const $statusReasonModal = $('#statusReasonModal');
+            const $statusReasonForm = $('#statusReasonForm');
 
             $('.activity-select').select2({
                 dropdownParent: $('#addPlanModal'),
@@ -72,6 +85,13 @@
                         data: 'members',
                         className: 'wrap-text',
                     },
+                    {
+                        data: 'documents',
+                        name: 'documents',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
                     @if ($isEditable)
                         {
                             data: 'action',
@@ -91,6 +111,64 @@
 
             var currentStatusElement = null;
             var currentStatusPreviousValue = null;
+
+            const resetPendingStatusSelection = () => {
+                if (currentStatusElement) {
+                    currentStatusElement.val(currentStatusPreviousValue).data('prev',
+                        currentStatusPreviousValue);
+                }
+            };
+
+            const handleStatusSuccess = (message, newStatus, $select) => {
+                toastr.success(message || 'Status updated successfully');
+                if ($select && typeof newStatus !== 'undefined') {
+                    $select.data('prev', newStatus).val(newStatus);
+                }
+                oTable.ajax.reload(null, false);
+            };
+
+            function updateWorkPlanStatus(id, status, reason, $select, prev) {
+                const payload = {
+                    _method: 'PUT',
+                    status: status,
+                    reason: reason || ''
+                };
+
+                ajaxSubmit(buildStatusUpdateUrl(id), 'POST', payload, function(response) {
+                    handleStatusSuccess(response.message, status, $select);
+                }, function() {
+                    if ($select) {
+                        $select.val(prev);
+                    }
+                });
+            }
+
+            $statusReasonModal.on('hidden.bs.modal', function() {
+                resetPendingStatusSelection();
+                currentStatusElement = null;
+                currentStatusPreviousValue = null;
+            });
+
+            $statusReasonForm.on('submit', function(event) {
+                event.preventDefault();
+
+                const detailId = $('#status_detail_id').val();
+                if (!detailId) {
+                    toastr.error('Work plan reference is missing. Please try again.');
+                    return;
+                }
+
+                const formData = new FormData(this);
+                formData.set('_method', 'PUT');
+
+                ajaxSubmitFormData(buildStatusUpdateUrl(detailId), 'POST', formData, function(response) {
+                    const newStatus = $('#status_value').val();
+                    handleStatusSuccess(response.message, newStatus, currentStatusElement);
+                    currentStatusElement = null;
+                    currentStatusPreviousValue = null;
+                    $statusReasonModal.modal('hide');
+                });
+            });
 
             $(document).on('change', '.work-plan-status', function() {
                 var $select = $(this);
@@ -138,7 +216,6 @@
                         let fvInstance = null;
                         let hasAttemptedSubmit = false;
 
-                        // **NEW: Restore form data immediately after load**
                         const restoreFormData = () => {
                             const projectId = $projectSelect.val();
                             const activityId = $activitySelect.val();
@@ -147,7 +224,6 @@
                                 [];
 
                             if (projectId) {
-                                // Pre-populate project, activities, and members
                                 $projectSelect.val(projectId).trigger('change');
                             }
                             if (activityId) {
@@ -237,7 +313,8 @@
 
                             members.forEach(member => {
                                 const label = member.name || member.full_name || member
-                                    .email_address || ('Member #' + member.id);
+                                    .email_address ||
+                                    ('Member #' + member.id);
                                 const option = new Option(label, member.id, false, false);
                                 $membersSelect.append(option);
                             });
@@ -289,12 +366,9 @@
                             $activitySelect.trigger('change');
                         };
 
-                        // **IMPROVED: Initialize AFTER small delay to ensure DOM is ready**
                         setTimeout(() => {
-                            // Restore form data first
                             restoreFormData();
 
-                            // Initialize Select2
                             initMembersSelect2();
                             initSelect2Control($projectSelect, {
                                 placeholder: 'Select Project'
@@ -303,7 +377,6 @@
                                 placeholder: 'Select Activity'
                             });
 
-                            // Bind project change AFTER restoration
                             $projectSelect.on('change', function() {
                                 handleProjectSelection($(this).find(':selected'));
                                 if (hasAttemptedSubmit && fvInstance) {
@@ -311,7 +384,6 @@
                                 }
                             });
 
-                            // **NEW: Handle pre-selected project for edit forms**
                             if ($projectSelect.val()) {
                                 setTimeout(() => {
                                     handleProjectSelection($projectSelect.find(
@@ -423,7 +495,6 @@
                     });
             });
 
-
             // Handle delete
             $('#WeeklyPlanTable').on('click', '.delete-work-plan', function(e) {
                 e.preventDefault();
@@ -439,6 +510,8 @@
             });
         });
     </script>
+    @include('Project::WorkPlan.Detail.partials.status-reason-modal-script')
+    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
@@ -481,6 +554,7 @@
                             <th>Status</th>
                             <th>Remarks</th>
                             <th>Members</th>
+                            <th>Documents</th>
                             @if ($isEditable)
                                 <th>{{ __('label.action') }}</th>
                             @endif
@@ -495,7 +569,7 @@
 
         {{-- Plan Modal Container --}}
         <div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl plan-modal-dialog">
                 <div class="modal-content">
                     {{-- Content loaded dynamically --}}
                 </div>
@@ -503,36 +577,8 @@
         </div>
 
         {{-- Status Reason Modal --}}
-        <div class="modal fade" id="statusReasonModal" tabindex="-1" aria-labelledby="statusReasonModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form id="statusReasonForm">
-                        <div class="modal-header bg-primary text-white">
-                            <h5 class="modal-title mb-0 fs-6" id="statusReasonModalLabel">Mark As Completed</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" id="status_detail_id" name="id">
-                            <input type="hidden" id="status_value" name="status">
-                            <div class="row mb-2">
-                                <div class="col-lg-3">
-                                    <div class="d-flex align-items-start h-100">
-                                        <label for="status_reason" class="form-label required-label m-0">Reason</label>
-                                    </div>
-                                </div>
-                                <div class="col-lg-9">
-                                    <textarea class="form-control" id="status_reason" name="reason" rows="3" required
-                                        placeholder="Please provide a reason for completion..."></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        @include('Project::WorkPlan.Detail.partials.status-reason-modal')
+
+        {{-- Documents Modal --}}
+        @include('Project::WorkPlan.Detail.partials.output-document-modal')
     @stop

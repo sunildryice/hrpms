@@ -37,6 +37,13 @@ class InvolvedWorkPlanController extends Controller
                 ->addIndexColumn()
                 ->addColumn('plan_tasks', fn($row) => $row->plan_tasks)
                 ->addColumn('reason', fn($row) => $row->reason ?? '')
+                ->addColumn('documents', function ($row) {
+                    $count = $row->attachments->count();
+                    $title = 'View documents (' . $count . ')';
+                    return '<button type="button" class="btn btn-outline-secondary btn-sm view-documents" data-id="' . $row->id . '" title="' . e($title) . '">' .
+                        '<i class="bi bi-paperclip"></i>' .
+                        '</button>';
+                })
                 ->editColumn('status', function ($row) {
                     $statusEnum = WorkPlanStatus::tryFrom($row->status) ?? WorkPlanStatus::NotStarted;
                     return '<span class="' . $statusEnum->colorClass() . '">' . $statusEnum->label() . '</span>';
@@ -63,7 +70,7 @@ class InvolvedWorkPlanController extends Controller
                 ->addColumn('action', function ($row) {
                     return '<button type="button" class="btn btn-outline-primary btn-sm view-work-plan" data-detail-id="' . $row->id . '"><i class="bi bi-eye"></i></button>';
                 })
-                ->rawColumns(['status', 'action'])
+                ->rawColumns(['status', 'action', 'documents'])
                 ->make(true);
         }
 

@@ -4,6 +4,7 @@ namespace Modules\Project\Models;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WorkPlanDetail extends Model
 {
@@ -36,5 +37,10 @@ class WorkPlanDetail extends Model
     public function members()
     {
         return $this->belongsToMany(User::class, 'work_plan_members', 'work_plan_details_id', 'user_id');
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(WorkPlanDetailAttachment::class);
     }
 }

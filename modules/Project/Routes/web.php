@@ -101,6 +101,9 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::delete('/work-plan/{id}/delete', [WorkPlanDetailController::class, 'destroy'])->name('work-plan.destroy');
     Route::get('/work-plan/get-activities', [WorkPlanDetailController::class, 'getActivities'])->name('work-plan.get-activities');
     Route::get('/work-plan/{workPlan}/details', [WorkPlanDetailController::class, 'index'])->name('work-plan.details');
+    Route::get('/work-plan/detail/{detail}/documents', [WorkPlanDetailController::class, 'documents'])->name('work-plan.detail-documents');
+    Route::get('/work-plan/detail-document/{attachment}', [WorkPlanDetailController::class, 'viewDocument'])->name('work-plan.detail-document.view');
+    Route::get('/work-plan/detail-document/{attachment}/download', [WorkPlanDetailController::class, 'downloadDocument'])->name('work-plan.detail-document.download');
 
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');

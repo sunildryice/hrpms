@@ -95,7 +95,7 @@ class LeaveController extends Controller
         }
         return response()->json([
             'leaveDaysCount' => $leaveDays->count(),
-            'message' => 'There are overlapping leave days on requested date range.',
+            'message' => $leaveDays->count() ? 'There are overlapping leave days on requested date range.' : 'There are no overlapping leave days.',
         ]);
     }
 }

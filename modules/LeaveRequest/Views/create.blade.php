@@ -5,6 +5,8 @@
 @section('page_js')
     <script type="text/javascript">
         var formValidationInstance = null;
+        var sickLeaveId = '{{ config('constant.SICK_LEAVE') }}';
+
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#leave-requests-menu').addClass('active');
         });
@@ -191,6 +193,12 @@
             });
         });
 
+        function getSelectedLeaveType() {
+            const form = document.getElementById('leaveRequestAddForm');
+            const leaveTypeSelect = form.querySelector('[name="leave_type_id"]');
+            return leaveTypeSelect ? leaveTypeSelect.value : null;
+        }
+
         function getLeaveDays() {
             const form = document.getElementById('leaveRequestAddForm');
             const start = form.querySelector('[name="start_date"]').value;
@@ -212,7 +220,6 @@
 
             return days;
         }
-
 
         document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('leaveRequestAddForm');
@@ -259,15 +266,13 @@
                                 message: 'Prescription is required',
                                 callback: function(input) {
                                     let days = getLeaveDays();
-
-                                    if (days > 3) {
+                                    let leaveTypeId = getSelectedLeaveType();
+                                    if (days > 3 && sickLeaveId == leaveTypeId) {
                                         return input.value !== ''; // Required
                                     }
-
                                     return true; // Not required
                                 }
                             },
-
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',
@@ -276,7 +281,6 @@
                             }
                         }
                     }
-
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -302,7 +306,7 @@
                     }),
                 },
             }).on('core.form.valid', function() {
-                $('.submit-btn').attr('disabled', true)
+                $('.submit-btn').attr('disabled', true);
             });
 
 
@@ -332,31 +336,6 @@
                     $($element).closest('form').find('[name="leave_basis"]').val(1);
                     generateLeaveTable(this);
                 }
-                {{-- if(leaveType.includes('Sick')){ --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{-- } else { --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{-- } --}}
                 fv.revalidateField('leave_type_id');
             }).on('change', '[name="approver_id"]', function(e) {
                 fv.revalidateField('approver_id');
@@ -366,7 +345,6 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                {{-- startDate: '{!! date('Y-m-d') !!}', --}}
             }).on('change', function(e) {
                 fv.revalidateField('start_date');
                 fv.revalidateField('end_date');
@@ -378,7 +356,6 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                {{-- startDate: '{!! date('Y-m-d') !!}', --}}
             }).on('change', function(e) {
                 fv.revalidateField('start_date');
                 fv.revalidateField('end_date');
@@ -588,9 +565,7 @@
                         </div>
                     </div>
                     <div id="leaveDays">
-
                     </div>
-                    {!! csrf_field() !!}
                 </div>
                 <div class="gap-2 border-0 card-footer justify-content-end d-flex">
                     <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Save
@@ -600,6 +575,7 @@
                     </button>
                     <a href="{!! route('leave.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                 </div>
+                {!! csrf_field() !!}
             </form>
         </div>
     </section>

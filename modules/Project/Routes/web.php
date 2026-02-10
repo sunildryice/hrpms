@@ -19,6 +19,7 @@ use Modules\Project\Controllers\MonthlyTimeSheetApprovedController;
 use Modules\Project\Controllers\MonthlyTimeSheetApproverController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
+use Modules\Project\Controllers\ProjectActivityAttachmentController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -76,6 +77,10 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('/project-activity/{projectActivity}/timesheet/store', [ProjectActivityTimeSheetController::class, 'store'])->name('project-activity.timesheet.store');
     Route::put('/project-activity/timesheet/{timesheet}/update', [ProjectActivityTimeSheetController::class, 'update'])->name('project-activity.timesheet.update');
     Route::delete('/project-activity/timesheet/{timesheet}/delete', [ProjectActivityTimeSheetController::class, 'destroy'])->name('project-activity-timesheet.destroy');
+
+    Route::get('/project-activity/attachments/{attachment}/view', [ProjectActivityAttachmentController::class, 'stream'])->name('project-activity.attachments.view');
+    Route::get('/project-activity/attachments/{attachment}/download', [ProjectActivityAttachmentController::class, 'download'])->name('project-activity.attachments.download');
+    Route::delete('/project-activity/attachments/{attachment}/delete', [ProjectActivityAttachmentController::class, 'destroy'])->name('project-activity.attachments.destroy');
 
     Route::get('/timesheet/index', [TimeSheetController::class, 'index'])->name('timesheet.index');
     Route::get('/timesheet/create', [TimeSheetController::class, 'create'])->name('timesheet.create');

@@ -59,6 +59,19 @@
                 ajaxDeleteSweetAlert($url, successCallback);
             });
 
+            $(document).on('click', '.delete-project-activity-attachment', function(e) {
+                e.preventDefault();
+                const $button = $(this);
+                const url = $button.data('href');
+                ajaxDeleteSweetAlert(url, function(response) {
+                    toastr.success(response.message || 'Attachment deleted successfully.',
+                        'Success', {
+                            timeOut: 5000
+                        });
+                    window.location.reload();
+                });
+            });
+
             $(document).on('click', '.open-timesheet-modal-form', function(e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
@@ -140,7 +153,7 @@
                         fv.revalidateField('timesheet_date');
                     });
 
-                     // Auto-select today only if the field is empty (create mode)
+                    // Auto-select today only if the field is empty (create mode)
                     if (!$('[name="timesheet_date"]').val().trim()) {
                         const today = new Date().toISOString().split('T')[0];
                         $('[name="timesheet_date"]').val(today);
@@ -216,5 +229,60 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold">Output/Deliverables Documents</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if ($projectActivity->attachments->isEmpty())
+                        <p class="text-muted mb-0">No deliverable documents uploaded yet.</p>
+                    @else
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>{{ __('label.sn') }}</th>
+                                        <th>Document Name</th>
+                                        <th>Uploaded On</th>
+                                        <th class="text-nowrap">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($projectActivity->attachments as $index => $attachment)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $attachment->title }}</td>
+                                            <td>{{ $attachment->created_at?->format('M d, Y h:i A') ?? '-' }}</td>
+                                            <td class="text-nowrap">
+                                                <a href="{{ route('project-activity.attachments.view', $attachment->id) }}"
+                                                    class="btn btn-outline-info btn-sm" target="_blank" rel="noopener"
+                                                    title="View document">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{{ route('project-activity.attachments.download', $attachment->id) }}"
+                                                    class="btn btn-outline-primary btn-sm" title="Download document">
+                                                    <i class="bi bi-download"></i>
+                                                </a>
+                                                @can('delete', $attachment)
+                                                    <button type="button"
+                                                        class="btn btn-outline-danger btn-sm delete-project-activity-attachment"
+                                                        data-href="{{ route('project-activity.attachments.destroy', $attachment->id) }}"
+                                                        title="Delete document">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                @endcan
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
-    @endsection
+    </div>
+@endsection

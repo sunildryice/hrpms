@@ -39,6 +39,9 @@
             color: #fff;
         }
 
+        .activity-doc-row {
+            gap: 0.75rem;
+        }
     </style>
 @endsection
 
@@ -110,177 +113,6 @@
                     oTable.ajax.reload();
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
-            });
-
-            // Track previous status value before change
-            $('#projectActivityTable').on('focus', '.activity-status-change', function() {
-                $(this).data('previous', this.value);
-            });
-
-            // Dedicated validation for activity status modal
-            const statusForm = document.getElementById('activityStatusForm');
-            const fvStatus = FormValidation.formValidation(statusForm, {
-                fields: {
-                    status_date: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Date is required.'
-                            }
-                        }
-                    },
-                    remarks: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Reason is required.',
-                                enabled: false,
-                            }
-                        }
-                    },
-                },
-                plugins: {
-                    trigger: new FormValidation.plugins.Trigger(),
-                    bootstrap5: new FormValidation.plugins.Bootstrap5({
-                        rowSelector: '.fv-row',
-                        eleInvalidClass: '',
-                        eleValidClass: '',
-                    }),
-                    submitButton: new FormValidation.plugins.SubmitButton(),
-                },
-            }).on('core.form.valid', function() {
-                const $modal = $('#activityStatusModal');
-                const url = $modal.data('url');
-                const statusValue = $modal.data('status');
-                const message = $('#activityStatusMessage').val().trim();
-                const dateValue = $('#activityStatusDate').val().trim();
-
-                if (!url || !statusValue) {
-                    return;
-                }
-
-                const data = {
-                    status: statusValue,
-                    remarks: message,
-                    status_date: dateValue,
-                };
-
-                ajaxSubmit(url, 'POST', data, function(response) {
-                    $modal.data('updated', true);
-                    $modal.modal('hide');
-                    toastr.success(response.message, 'Success');
-                    $('#projectActivityTable').DataTable().ajax.reload(null, false);
-                });
-            });
-
-            const updateStatusRemarksValidator = (status) => {
-                const requireRemarks = status === 'completed' || status === 'no_required';
-                fvStatus.enableValidator('remarks', 'notEmpty', requireRemarks);
-                if (!requireRemarks) {
-                    fvStatus.resetField('remarks', true);
-                }
-            };
-
-            // Handle status change with Bootstrap modal for Reason/Remarks
-            $('#projectActivityTable').on('change', '.activity-status-change', function() {
-                const $select = $(this);
-                const newStatus = $select.val();
-                const oldStatus = $select.data('previous');
-                const activityId = $select.data('activity-id');
-
-                if (!activityId) {
-                    return;
-                }
-
-                const url = "{{ url('/project-activity') }}/" + activityId + "/status";
-
-
-                if (newStatus === 'no_required' || newStatus === 'completed' || newStatus ===
-                    'under_progress') {
-                    const $modal = $('#activityStatusModal');
-
-                    let title, label, dateLabel;
-                    if (newStatus === 'no_required') {
-                        title = 'Mark activity as Not Required';
-                        label = 'Reason';
-                        dateLabel = 'Completion Date';
-                    } else if (newStatus === 'completed') {
-                        title = 'Mark activity as Completed';
-                        label = 'Remarks';
-                        dateLabel = 'Completion Date';
-                    } else if (newStatus === 'under_progress') {
-                        title = 'Mark activity as Under Progress';
-                        label = 'Remarks';
-                        dateLabel = 'Actual Start Date';
-                    }
-
-                    $modal.data('url', url);
-                    $modal.data('select', $select);
-                    $modal.data('oldStatus', oldStatus);
-                    $modal.data({
-                        status: newStatus,
-                        updated: false,
-                    });
-
-                    fvStatus.resetForm(true);
-                    updateStatusRemarksValidator(newStatus);
-
-                    $('#activityStatusModalLabel').text(title);
-                    $('#activityStatusMessageLabel')
-                        .text(label)
-                        .toggleClass('required-label', newStatus !== 'under_progress');
-                    $('#activityStatusDateLabel').text(dateLabel);
-
-                    const today = new Date();
-                    const formattedDate = today.toISOString().split('T')[0];
-                    $('#activityStatusDate').val(formattedDate);
-
-                    $('#activityStatusDate').datepicker('destroy');
-                    $('#activityStatusDate').datepicker({
-                        language: 'en-GB',
-                        autoHide: true,
-                        format: 'yyyy-mm-dd',
-                        zIndex: 2048,
-                    });
-
-                    // Hide remarks field for under_progress
-                    if (newStatus === 'under_progress') {
-                        $('#activityStatusMessageContainer').hide();
-                    } else {
-                        $('#activityStatusMessageContainer').show();
-                    }
-
-                    $modal.modal('show');
-                } else {
-                    // For other statuses, just update directly without extra input
-                    ajaxSubmit(url, 'POST', {
-                        status: newStatus
-                    }, function(response) {
-                        toastr.success(response.message || 'Status updated successfully');
-                        $('#projectActivityTable').DataTable().ajax.reload(null, false);
-                    });
-                }
-            });
-
-            $('#activityStatusDate').on('change', function() {
-                fvStatus.revalidateField('status_date');
-            });
-
-            $('#activityStatusMessage').on('input', function() {
-                fvStatus.revalidateField('remarks');
-            });
-
-
-            // On modal close without update, revert dropdown to previous value
-            $('#activityStatusModal').on('hidden.bs.modal', function() {
-                const $modal = $(this);
-                const updated = $modal.data('updated');
-                const $select = $modal.data('select');
-                const oldStatus = $modal.data('oldStatus');
-
-                fvStatus.resetForm(true);
-
-                if (!updated && $select && typeof oldStatus !== 'undefined') {
-                    $select.val(oldStatus);
-                }
             });
 
             $(document).on('click', '.open-project-activity-modal-form', function(e) {
@@ -873,6 +705,8 @@
         });
     </script>
 
+    @include('Project::Project.partials.activity-status-modal-script')
+
 @endsection
 
 @section('page-content')
@@ -954,46 +788,5 @@
     </div>
 
     {{-- Activity Status Reason/Remarks Modal --}}
-    <div class="modal fade" id="activityStatusModal" tabindex="-1" aria-labelledby="activityStatusModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" id="activityStatusModalContent">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title mb-0 fs-6" id="activityStatusModalLabel">Update Activity Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="activityStatusForm" autocomplete="off">
-                    <div class="modal-body">
-                        <div class="row g-3 fv-row" id="status-date-row">
-                            <div class="col-12 col-md-4 col-lg-3">
-                                <label class="form-label required-label mb-0" id="activityStatusDateLabel"
-                                    for="activityStatusDate">
-                                    Date <span class="text-danger">*</span>
-                                </label>
-                            </div>
-                            <div class="col-12 col-md-8 col-lg-9">
-                                <input type="text" class="form-control" id="activityStatusDate" name="status_date"
-                                    readonly />
-                            </div>
-                        </div>
-                        <div class="row g-3 fv-row" id="activityStatusMessageContainer">
-                            <div class="col-12 col-md-4 col-lg-3">
-                                <label class="form-label required-label mb-0" id="activityStatusMessageLabel"
-                                    for="activityStatusMessage">
-                                    Reason <span class="text-danger">*</span>
-                                </label>
-                            </div>
-                            <div class="col-12 col-md-8 col-lg-9">
-                                <textarea class="form-control" id="activityStatusMessage" name="remarks" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-status-save">Save</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    @include('Project::Project.partials.activity-status-modal')
 @endsection

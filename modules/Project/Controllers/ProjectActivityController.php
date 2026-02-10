@@ -3,9 +3,13 @@
 namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Modules\Project\Models\Project;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Yajra\DataTables\Facades\DataTables;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ProjectActivityStatusLog;
@@ -14,11 +18,12 @@ use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Requests\ProjectActivity\StoreRequest;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Requests\ProjectActivity\UpdateRequest;
-
-use function PHPUnit\Framework\isNull;
+use Modules\Project\Requests\ProjectActivity\UpdateStatusRequest;
 
 class ProjectActivityController extends Controller
 {
+    private const STATUS_DOCUMENT_STORAGE_PATH = 'project-activities/documents';
+
     public function __construct(
         protected ProjectActivityRepository $projectActivity
     ) {}
@@ -176,7 +181,12 @@ class ProjectActivityController extends Controller
     public function show($id)
     {
         $projectActivity = $this->projectActivity->find($id);
-        $projectActivity->load('latestStatusLog');
+        $projectActivity->load([
+            'latestStatusLog',
+            'attachments' => function ($query) {
+                $query->latest('created_at');
+            },
+        ]);
         $activityLevels = ActivityLevel::cases();
         $stages = $projectActivity->project?->stages ?? [];
         $parentActivities = $this->projectActivity->where('project_id', '=', $projectActivity->project_id)->get();
@@ -232,54 +242,125 @@ class ProjectActivityController extends Controller
         ], 422);
     }
 
-    public function updateStatus(Request $request, ProjectActivity $projectActivity)
+    public function updateStatus(UpdateStatusRequest $request, ProjectActivity $projectActivity)
     {
-        $request->validate([
-            'status' => 'required|string|in:not_started,under_progress,no_required,completed',
-            'remarks' => 'nullable|string',
-            'status_date' => 'nullable|date',
-        ]);
+        $data = $request->validated();
+
+
+        $statusEnum = ActivityStatus::tryFrom($data['status']) ?? ActivityStatus::NotStarted;
+        $remarks = trim((string) ($data['remarks'] ?? ''));
+        $statusDate = $request->input('status_date') ?? now();
+        $documents = $data['documents'] ?? [];
+
+        if ($this->statusRequiresRemarks($statusEnum) && blank($remarks)) {
+            return response()->json([
+                'message' => 'Remarks are required for the selected status.',
+            ], 422);
+        }
 
         $oldStatus = $projectActivity->status ?? ActivityStatus::NotStarted->value;
-        $newStatus = $request->input('status');
-        $statusDate = $request->input('status_date') ?? now();
+        $storedFiles = [];
 
-        // Update actual_start_date and actual_completion_date based on status
-        if ($newStatus == ActivityStatus::UnderProgress->value && !$projectActivity->actual_start_date) {
-            $projectActivity->actual_start_date = $statusDate;
-        }
-        if (($newStatus == ActivityStatus::Completed->value || $newStatus == ActivityStatus::NoRequired->value)) {
-            $projectActivity->actual_completion_date = $statusDate;
-            if (!$projectActivity->actual_start_date) {
+        DB::beginTransaction();
+
+        try {
+            if ($statusEnum === ActivityStatus::UnderProgress && !$projectActivity->actual_start_date) {
                 $projectActivity->actual_start_date = $statusDate;
             }
-        }
-        if ($newStatus == ActivityStatus::NotStarted->value) {
-            $projectActivity->actual_start_date = null;
-            $projectActivity->actual_completion_date = null;
-        }
 
-        $projectActivity->status = $newStatus;
-        $projectActivity->save();
+            if (in_array($statusEnum, [ActivityStatus::Completed, ActivityStatus::NoRequired], true)) {
+                $projectActivity->actual_completion_date = $statusDate;
+                if (!$projectActivity->actual_start_date) {
+                    $projectActivity->actual_start_date = $statusDate;
+                }
+            }
 
-        // Log status change
-        ProjectActivityStatusLog::create([
-            'project_activity_id' => $projectActivity->id,
-            'changed_by' => auth()->id(),
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus,
-            'remarks' => $request->input('remarks'),
-        ]);
+            if ($statusEnum === ActivityStatus::NotStarted) {
+                $projectActivity->actual_start_date = null;
+                $projectActivity->actual_completion_date = null;
+            }
 
-        // Propagate status to parent if needed
+            $projectActivity->status = $statusEnum->value;
+            $projectActivity->save();
 
-        if ($projectActivity->activity_level == ActivityLevel::Activity->value) {
-            $this->updateParentActivity($projectActivity, $statusDate);
+            $statusLog = ProjectActivityStatusLog::create([
+                'project_activity_id' => $projectActivity->id,
+                'changed_by' => auth()->id(),
+                'old_status' => $oldStatus,
+                'new_status' => $statusEnum->value,
+                'remarks' => $remarks ?: null,
+            ]);
+
+            if (!empty($documents)) {
+                $storedFiles = $this->storeStatusDocuments($projectActivity, $documents);
+            }
+
+            if ($projectActivity->activity_level == ActivityLevel::Activity->value) {
+                $this->updateParentActivity($projectActivity, $statusDate);
+            }
+
+            DB::commit();
+        } catch (\Throwable $throwable) {
+            DB::rollBack();
+            $this->cleanupStoredDocuments($storedFiles);
+            report($throwable);
+
+            return response()->json([
+                'message' => 'Unable to update the status right now. Please try again.',
+            ], 500);
         }
 
         return response()->json([
             'message' => 'Project Activity status updated successfully.',
         ]);
+    }
+
+    protected function statusRequiresRemarks(ActivityStatus $status): bool
+    {
+        return in_array($status, [ActivityStatus::Completed, ActivityStatus::NoRequired], true);
+    }
+
+    /**
+     * @return string[] Stored file paths
+     */
+    protected function storeStatusDocuments(ProjectActivity $projectActivity, array $documents): array
+    {
+        $storedPaths = [];
+        $userId = auth()->id();
+
+        foreach ($documents as $index => $document) {
+            $file = $document['file'] ?? null;
+
+            if (!$file instanceof UploadedFile) {
+                continue;
+            }
+
+            $fileName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+            $storedPath = $file->storeAs(
+                self::STATUS_DOCUMENT_STORAGE_PATH . '/' . $projectActivity->id,
+                $fileName
+            );
+
+            $projectActivity->attachments()->create([
+                'title' => $document['name'] ?? $file->getClientOriginalName(),
+                'file_path' => $storedPath,
+                'created_by' => $userId,
+                'updated_by' => $userId,
+            ]);
+
+            $storedPaths[] = $storedPath;
+        }
+
+        return $storedPaths;
+    }
+
+    protected function cleanupStoredDocuments(array $paths): void
+    {
+        foreach ($paths as $path) {
+            if ($path && Storage::exists($path)) {
+                Storage::delete($path);
+            }
+        }
     }
 
     /**

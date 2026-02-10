@@ -9,6 +9,7 @@ use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Models\ProjectActivityStatusLog;
+use Modules\Project\Models\ProjectActivityAttachment;
 
 class ProjectActivity extends Model
 {
@@ -164,6 +165,11 @@ class ProjectActivity extends Model
     public function latestStatusLog()
     {
         return $this->hasOne(ProjectActivityStatusLog::class, 'project_activity_id')->latestOfMany();
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(ProjectActivityAttachment::class, 'project_activity_id');
     }
 
     public function parentName()

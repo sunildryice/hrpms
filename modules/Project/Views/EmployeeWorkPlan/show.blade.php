@@ -2,6 +2,14 @@
 
 @section('title', 'Employee Work Plan Details')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -30,6 +38,7 @@
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
+                        className: 'wrap-text',
                         defaultContent: ''
                     },
                     {
@@ -46,6 +55,7 @@
             });
         });
     </script>
+    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
@@ -76,7 +86,7 @@
                             <th>SN</th>
                             <th>Project</th>
                             <th>Activity</th>
-                            <th>Planned Tasks</th>
+                            <th class="wrap-text">Planned Tasks</th>
                             <th>Status</th>
                             <th>Remarks</th>
                         </tr>
@@ -87,4 +97,5 @@
             </div>
 
         </div>
+        @include('Project::WorkPlan.Detail.partials.output-document-modal')
     @stop

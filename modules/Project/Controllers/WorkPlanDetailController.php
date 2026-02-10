@@ -51,12 +51,7 @@ class WorkPlanDetailController extends Controller
                 ->addColumn('reason', function ($row) {
                     return $row->reason ?? '';
                 })
-                ->addColumn('documents', function ($row) {
 
-                    return '<button type="button" class="btn btn-outline-secondary btn-sm view-documents" data-id="' . $row->id . '">' .
-                        '<i class="bi bi-paperclip me-1"></i> ' .
-                        '</button>';
-                })
                 ->editColumn('status', function ($row) use ($isStatusUpdatable) {
                     $statusEnum = WorkPlanStatus::tryFrom($row->status) ?? WorkPlanStatus::NotStarted;
 

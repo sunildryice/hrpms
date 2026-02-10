@@ -84,14 +84,7 @@
                     {
                         data: 'members',
                         className: 'wrap-text',
-                    },
-                    {
-                        data: 'documents',
-                        name: 'documents',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
+                    }
                     @if ($isEditable)
                         {
                             data: 'action',
@@ -554,7 +547,6 @@
                             <th>Status</th>
                             <th>Remarks</th>
                             <th>Members</th>
-                            <th>Documents</th>
                             @if ($isEditable)
                                 <th>{{ __('label.action') }}</th>
                             @endif

@@ -47,13 +47,6 @@
                         defaultContent: ''
                     },
                     {
-                        data: 'documents',
-                        name: 'documents',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
                         data: 'reason',
                         name: 'reason',
                         defaultContent: '',
@@ -95,7 +88,6 @@
                             <th>Activity</th>
                             <th class="wrap-text">Planned Tasks</th>
                             <th>Status</th>
-                            <th>Documents</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>

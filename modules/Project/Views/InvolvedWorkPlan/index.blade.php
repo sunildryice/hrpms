@@ -79,13 +79,6 @@
                         orderable: false
                     },
                     {
-                        data: 'documents',
-                        name: 'documents',
-                        orderable: false,
-                        searchable: false,
-                        className: 'text-center'
-                    },
-                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -218,7 +211,6 @@
                             <th>Status</th>
                             <th>Created By</th>
                             <th>Remarks</th>
-                            <th>Documents</th>
                             <th>{{ __('label.action') }}</th>
                         </tr>
                     </thead>

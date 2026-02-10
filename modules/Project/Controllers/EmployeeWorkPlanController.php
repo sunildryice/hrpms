@@ -113,13 +113,6 @@ class EmployeeWorkPlanController extends Controller
                 ->addColumn('reason', function ($row) {
                     return $row->reason ?? '';
                 })
-                ->addColumn('documents', function ($row) {
-                    $count = $row->attachments->count();
-                    $title = 'View documents (' . $count . ')';
-                    return '<button type="button" class="btn btn-outline-secondary btn-sm view-documents" data-id="' . $row->id . '" title="' . e($title) . '">' .
-                        '<i class="bi bi-paperclip"></i>' .
-                        '</button>';
-                })
                 ->editColumn('status', function ($row) {
                     $statusEnum = WorkPlanStatus::tryFrom($row->status) ?? WorkPlanStatus::NotStarted;
 

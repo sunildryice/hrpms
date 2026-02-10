@@ -487,6 +487,10 @@
                                                 <td colspan="3">{{ $employee->mobile_number }}</td>
                                             </tr>
                                             <tr>
+                                                <th scope="row">Joined Date (DD/MM/YYYY) AD</th>
+                                                <td colspan="3">{{ $employee->getJoinedDate() }}</td>
+                                            </tr>
+                                            <tr>
                                                 <th scope="row">Date of Birth (DD/MM/YYYY) AD</th>
                                                 <td colspan="3">{{ $employee->getDateOfBirth() }}</td>
                                             </tr>

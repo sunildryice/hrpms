@@ -58,6 +58,7 @@ class UpdateRequest extends FormRequest
             'pan_attachment' => 'nullable|mimes:jpg,png,pdf|max:2048',
             'signature' => 'nullable|mimes:jpg,png|max:2048',
             'profile_picture' => 'nullable|mimes:jpg,png|max:2048',
+            'joined_date' => 'nullable|date',
             'date_of_birth' => 'nullable|date',
             'probation_complete_date' => 'nullable|date',
             'religion_id' => 'nullable',

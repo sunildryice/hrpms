@@ -75,6 +75,17 @@
                             },
                         },
                     },
+                    joined_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The joined date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                        },
+                    },
                     date_of_birth: {
                         validators: {
                             date: {

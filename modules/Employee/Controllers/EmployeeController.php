@@ -220,7 +220,7 @@ class EmployeeController extends Controller
         ])->find($id);
         $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
             ->where('id', '<>', $employee->id)
-            // ->whereNotNull('activated_at')
+            ->whereNotNull('activated_at')
             ->orderBy('full_name', 'asc')
             ->get();
 

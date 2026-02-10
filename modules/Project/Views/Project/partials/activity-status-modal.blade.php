@@ -33,9 +33,9 @@
                             <textarea class="form-control" id="activityStatusMessage" name="remarks" rows="3"></textarea>
                         </div>
                     </div>
-                    <div class="row g-3 fv-row" id="activityOutputDocumentsSection" style="display: none;">
+                    <div class="row g-3 fv-row" id="activityOutputDocumentsSection">
                         <div class="col-12 col-md-4 col-lg-3">
-                            <label class="form-label required-label mb-0">
+                            <label class="form-label mb-0" id="activityOutputDocumentsLabel">
                                 Output/Deliverables Documents
                             </label>
                         </div>

@@ -9,18 +9,16 @@
         const $activityStatusMessage = $('#activityStatusMessage');
         const $activityStatusDate = $('#activityStatusDate');
         const $activityStatusValue = $('#activityStatusValue');
-        const $activityDocumentSection = $('#activityOutputDocumentsSection');
         const $activityDocumentRows = $('#activityOutputDocumentRows');
         const $addActivityDocumentRowBtn = $('#addActivityDocumentRow');
-        const DOCUMENT_REQUIRED_STATUSES = ['completed', 'no_required'];
-
+        const $activityDocumentLabel = $('#activityOutputDocumentsLabel');
         const DOCUMENT_ALLOWED_TYPES = 'application/pdf,image/jpeg,image/png';
         const DOCUMENT_ALLOWED_EXTENSIONS = 'pdf,jpg,jpeg,png';
+        const DOCUMENT_ALLOWED_TYPE_LIST = DOCUMENT_ALLOWED_TYPES.split(',');
+        const DOCUMENT_ALLOWED_EXTENSION_LIST = DOCUMENT_ALLOWED_EXTENSIONS.split(',');
         const DOCUMENT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
-        const documentFieldRegistry = new WeakMap();
         let fvStatus;
-
-        const shouldRequireDocuments = (status) => DOCUMENT_REQUIRED_STATUSES.includes(status);
+        let remarksValidationEnabled = false;
 
         const createActivityDocumentRow = () => $(
             '<div class="activity-doc-row d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2 mb-2">' +
@@ -38,93 +36,118 @@
             '</div>'
         );
 
-        const unregisterDocumentValidators = ($row) => {
-            const registry = documentFieldRegistry.get($row[0]);
-            if (registry && fvStatus) {
-                fvStatus.removeField(registry.nameField);
-                fvStatus.removeField(registry.fileField);
-            }
-
-            documentFieldRegistry.delete($row[0]);
+        const clearDocumentFieldAttributes = ($row) => {
             $row.find('.document-name-input').removeAttr('name').prop('required', false);
             $row.find('.document-file-input').removeAttr('name').prop('required', false);
         };
 
-        const registerDocumentValidators = ($row, index) => {
-            unregisterDocumentValidators($row);
-
-            const nameField = `documents[${index}][name]`;
-            const fileField = `documents[${index}][file]`;
-            const $nameInput = $row.find('.document-name-input');
-            const $fileInput = $row.find('.document-file-input');
-
-            $nameInput.attr('name', nameField).prop('required', true);
-            $fileInput.attr('name', fileField).prop('required', true);
-
-            if (fvStatus) {
-                fvStatus.addField(nameField, {
-                    validators: {
-                        notEmpty: {
-                            message: 'Document name is required.',
-                        },
-                    },
-                });
-
-                fvStatus.addField(fileField, {
-                    validators: {
-                        notEmpty: {
-                            message: 'Document file is required.',
-                        },
-                        file: {
-                            extension: DOCUMENT_ALLOWED_EXTENSIONS,
-                            type: DOCUMENT_ALLOWED_TYPES,
-                            maxSize: DOCUMENT_MAX_SIZE,
-                            message: 'File must be PDF/JPG/PNG and under 5MB.',
-                        },
-                    },
-                });
+        const validateOptionalDocumentFile = (file) => {
+            if (!file) {
+                return {
+                    valid: false,
+                    message: 'Document file is missing.'
+                };
             }
 
-            documentFieldRegistry.set($row[0], {
-                nameField,
-                fileField
-            });
+            const extension = file.name.split('.').pop().toLowerCase();
+            if (!DOCUMENT_ALLOWED_EXTENSION_LIST.includes(extension)) {
+                return {
+                    valid: false,
+                    message: 'Optional documents must be PDF/JPG/PNG.'
+                };
+            }
+
+            if (file.type && !DOCUMENT_ALLOWED_TYPE_LIST.includes(file.type)) {
+                return {
+                    valid: false,
+                    message: 'Optional documents must be PDF/JPG/PNG.'
+                };
+            }
+
+            if (file.size > DOCUMENT_MAX_SIZE) {
+                return {
+                    valid: false,
+                    message: 'Optional documents must be under 5MB.'
+                };
+            }
+
+            return {
+                valid: true
+            };
         };
 
-        const refreshActivityDocumentRows = (documentsEnabled) => {
-            $activityDocumentRows.children('.activity-doc-row').each(function(index) {
-                const $row = $(this);
+        const collectOptionalDocuments = () => {
+            const documents = [];
+            let hasPartial = false;
+            let invalidMessage = null;
 
-                if (documentsEnabled) {
-                    registerDocumentValidators($row, index);
-                } else {
-                    unregisterDocumentValidators($row);
+            $activityDocumentRows.children('.activity-doc-row').each(function() {
+                if (invalidMessage) {
+                    return;
                 }
+
+                const $row = $(this);
+                const name = $row.find('.document-name-input').val().trim();
+                const fileInput = $row.find('.document-file-input')[0];
+                const file = fileInput && fileInput.files.length ? fileInput.files[0] : null;
+                const hasName = !!name;
+                const hasFile = !!file;
+
+                if (!hasName && !hasFile) {
+                    return;
+                }
+
+                if (!hasName || !hasFile) {
+                    hasPartial = true;
+                    return;
+                }
+
+                const validation = validateOptionalDocumentFile(file);
+                if (!validation.valid) {
+                    invalidMessage = validation.message;
+                    return;
+                }
+
+                documents.push({
+                    name,
+                    file
+                });
             });
 
-            const allowRemoval = documentsEnabled && $activityDocumentRows.children('.activity-doc-row')
-                .length > 1;
+            return {
+                documents,
+                hasPartial,
+                invalidMessage
+            };
+        };
+
+        const refreshActivityDocumentRows = () => {
+            $activityDocumentRows.children('.activity-doc-row').each(function() {
+                clearDocumentFieldAttributes($(this));
+            });
+            const allowRemoval = $activityDocumentRows.children('.activity-doc-row').length > 1;
             $activityDocumentRows.find('.remove-activity-output-doc').prop('disabled', !allowRemoval);
+            $activityDocumentLabel.removeClass('required-label');
         };
 
         const resetActivityDocumentRows = () => {
-            $activityDocumentRows.children('.activity-doc-row').each(function() {
-                unregisterDocumentValidators($(this));
-            });
             const $rows = $activityDocumentRows.children('.activity-doc-row');
-            const $baseRow = $rows.first();
-            $baseRow.find('.document-name-input').val('');
-            $baseRow.find('.document-file-input').val('');
-            $rows.not($baseRow).remove();
+            $rows.each(function(index) {
+                const $row = $(this);
+                clearDocumentFieldAttributes($row);
+                if (index === 0) {
+                    $row.find('.document-name-input').val('');
+                    $row.find('.document-file-input').val('');
+                } else {
+                    $row.remove();
+                }
+            });
+
+            refreshActivityDocumentRows();
         };
 
-        const toggleActivityDocumentSection = (status) => {
-            const enableDocuments = shouldRequireDocuments(status);
-            if (!enableDocuments) {
-                resetActivityDocumentRows();
-            }
-            $activityDocumentSection.toggle(enableDocuments);
-            refreshActivityDocumentRows(enableDocuments);
+        const toggleActivityDocumentSection = () => {
+            refreshActivityDocumentRows();
         };
         fvStatus = FormValidation.formValidation(statusForm, {
             fields: {
@@ -132,14 +155,6 @@
                     validators: {
                         notEmpty: {
                             message: 'Date is required.'
-                        }
-                    }
-                },
-                remarks: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Reason is required.',
-                            enabled: false,
                         }
                     }
                 },
@@ -157,8 +172,25 @@
             const url = $activityStatusModal.data('url');
             const statusValue = $activityStatusValue.val();
             const dateValue = $activityStatusDate.val().trim();
+            const optionalDocumentsPayload = collectOptionalDocuments();
 
             if (!url || !statusValue) {
+                console.warn('Activity status form missing URL or status value', {
+                    url,
+                    statusValue
+                });
+                return;
+            }
+
+            if (optionalDocumentsPayload.hasPartial) {
+                toastr.error(
+                    'Please fill both name and file for optional documents or remove the row.',
+                    'Validation');
+                return;
+            }
+
+            if (optionalDocumentsPayload.invalidMessage) {
+                toastr.error(optionalDocumentsPayload.invalidMessage, 'Validation');
                 return;
             }
 
@@ -166,6 +198,20 @@
             formData.set('status', statusValue);
             formData.set('remarks', $activityStatusMessage.val().trim());
             formData.set('status_date', dateValue);
+
+            if (optionalDocumentsPayload.documents.length) {
+                optionalDocumentsPayload.documents.forEach(function(doc, index) {
+                    formData.append(`documents[${index}][name]`, doc.name);
+                    formData.append(`documents[${index}][file]`, doc.file);
+                });
+            }
+
+            console.log('Submitting activity status', {
+                url,
+                status: statusValue,
+                status_date: dateValue,
+                optionalDocumentsAttached: optionalDocumentsPayload.documents.length
+            });
 
             ajaxSubmitFormData(url, 'POST', formData, function(response) {
                 $activityStatusModal.data('updated', true);
@@ -175,18 +221,59 @@
             });
         });
 
-        const updateStatusRemarksValidator = (status) => {
+        fvStatus.on('core.form.invalid', function() {
+            console.warn('Activity status form validation failed. Please review required fields.');
+        });
+
+        fvStatus.on('core.validator.invalid', function(event) {
+            console.warn('Validator blocked submission', {
+                field: event.field,
+                validator: event.validator,
+                message: event.result.message,
+                status: $activityStatusValue.val()
+            });
+        });
+
+        refreshActivityDocumentRows();
+
+        const ensureRemarksValidator = (message) => {
+            if (remarksValidationEnabled) {
+                fvStatus.removeField('remarks');
+                remarksValidationEnabled = false;
+            }
+
+            fvStatus.addField('remarks', {
+                validators: {
+                    notEmpty: {
+                        message: message || 'Remarks is required.',
+                    },
+                },
+            });
+            remarksValidationEnabled = true;
+        };
+
+        const disableRemarksValidator = () => {
+            if (!remarksValidationEnabled) {
+                return;
+            }
+            fvStatus.removeField('remarks');
+            remarksValidationEnabled = false;
+        };
+
+        const updateStatusRemarksValidator = (status, message) => {
             const requireRemarks = status === 'completed' || status === 'no_required';
-            fvStatus.enableValidator('remarks', 'notEmpty', requireRemarks);
-            if (!requireRemarks) {
-                fvStatus.resetField('remarks', true);
+            if (requireRemarks) {
+                ensureRemarksValidator(message);
+            } else {
+                disableRemarksValidator();
+                $activityStatusMessage.val('');
             }
         };
 
         $addActivityDocumentRowBtn.on('click', function() {
             const $row = createActivityDocumentRow();
             $activityDocumentRows.append($row);
-            refreshActivityDocumentRows(shouldRequireDocuments($activityStatusValue.val()));
+            refreshActivityDocumentRows();
         });
 
         $activityDocumentRows.on('click', '.remove-activity-output-doc', function() {
@@ -194,9 +281,8 @@
                 return;
             }
             const $row = $(this).closest('.activity-doc-row');
-            unregisterDocumentValidators($row);
             $row.remove();
-            refreshActivityDocumentRows(shouldRequireDocuments($activityStatusValue.val()));
+            refreshActivityDocumentRows();
         });
 
         $('#projectActivityTable').on('focus', '.activity-status-change', function() {
@@ -243,7 +329,6 @@
                 });
 
                 fvStatus.resetForm(true);
-                updateStatusRemarksValidator(newStatus);
                 toggleActivityDocumentSection(newStatus);
                 $activityStatusValue.val(newStatus);
 
@@ -252,6 +337,15 @@
                     .text(label)
                     .toggleClass('required-label', newStatus !== 'under_progress');
                 $('#activityStatusDateLabel').text(dateLabel);
+                const messagePlaceholder = newStatus === 'completed' ?
+                    'Please provide remarks...' :
+                    newStatus === 'no_required' ?
+                    'Please provide a reason...' :
+                    'Add remarks or notes...';
+                $activityStatusMessage.attr('placeholder', messagePlaceholder);
+                const remarksValidationMessage = newStatus === 'completed' ?
+                    'Remarks are required for completed activities.' :
+                    'Reason is required for not required status.';
 
                 const today = new Date();
                 const formattedDate = today.toISOString().split('T')[0];
@@ -271,6 +365,8 @@
                     $('#activityStatusMessageContainer').show();
                 }
 
+                updateStatusRemarksValidator(newStatus, remarksValidationMessage);
+
                 $activityStatusModal.modal('show');
             } else {
                 ajaxSubmit(url, 'POST', {
@@ -287,7 +383,9 @@
         });
 
         $activityStatusMessage.on('input', function() {
-            fvStatus.revalidateField('remarks');
+            if (remarksValidationEnabled) {
+                fvStatus.revalidateField('remarks');
+            }
         });
 
         $activityStatusModal.on('hidden.bs.modal', function() {
@@ -297,7 +395,9 @@
 
             fvStatus.resetForm(true);
             $activityStatusValue.val('');
+            resetActivityDocumentRows();
             toggleActivityDocumentSection(null);
+            disableRemarksValidator();
 
             if (!updated && $select && typeof oldStatus !== 'undefined') {
                 $select.val(oldStatus);

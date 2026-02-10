@@ -18,6 +18,7 @@ use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Requests\ProjectActivity\StoreRequest;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Requests\ProjectActivity\UpdateRequest;
+use Modules\Project\Requests\ProjectActivity\UpdateStatusRequest;
 
 class ProjectActivityController extends Controller
 {
@@ -241,16 +242,10 @@ class ProjectActivityController extends Controller
         ], 422);
     }
 
-    public function updateStatus(Request $request, ProjectActivity $projectActivity)
+    public function updateStatus(UpdateStatusRequest $request, ProjectActivity $projectActivity)
     {
-        $data = $request->validate([
-            'status' => 'required|string|in:not_started,under_progress,no_required,completed',
-            'remarks' => 'nullable|string',
-            'status_date' => 'nullable|date',
-            'documents' => ['array'],
-            'documents.*.name' => ['required_with:documents', 'string'],
-            'documents.*.file' => ['required_with:documents', 'file', 'mimes:pdf,jpeg,png', 'max:5120'],
-        ]);
+        $data = $request->validated();
+
 
         $statusEnum = ActivityStatus::tryFrom($data['status']) ?? ActivityStatus::NotStarted;
         $remarks = trim((string) ($data['remarks'] ?? ''));
@@ -260,12 +255,6 @@ class ProjectActivityController extends Controller
         if ($this->statusRequiresRemarks($statusEnum) && blank($remarks)) {
             return response()->json([
                 'message' => 'Remarks are required for the selected status.',
-            ], 422);
-        }
-
-        if ($this->statusRequiresDocuments($statusEnum) && empty($documents)) {
-            return response()->json([
-                'message' => 'Please attach at least one deliverable document.',
             ], 422);
         }
 
@@ -327,11 +316,6 @@ class ProjectActivityController extends Controller
     }
 
     protected function statusRequiresRemarks(ActivityStatus $status): bool
-    {
-        return in_array($status, [ActivityStatus::Completed, ActivityStatus::NoRequired], true);
-    }
-
-    protected function statusRequiresDocuments(ActivityStatus $status): bool
     {
         return in_array($status, [ActivityStatus::Completed, ActivityStatus::NoRequired], true);
     }

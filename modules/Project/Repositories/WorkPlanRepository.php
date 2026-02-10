@@ -62,13 +62,13 @@ class WorkPlanRepository extends Repository
 
     public function getWorkPlanDetails($workPlanId)
     {
-        return WorkPlanDetail::with(['project', 'activity', 'members', 'attachments'])
+        return WorkPlanDetail::with(['project', 'activity', 'members',])
             ->where('work_plan_id', $workPlanId);
     }
 
     public function getUserWorkPlanDetailsByWeek($fromDate, $toDate, $userId)
     {
-        return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members', 'attachments'])
+        return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members',])
             ->whereHas('workPlan', function ($query) use ($fromDate, $toDate) {
                 $query->whereDate('from_date', $fromDate)
                     ->whereDate('to_date', $toDate);

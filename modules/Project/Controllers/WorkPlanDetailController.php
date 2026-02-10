@@ -92,7 +92,7 @@ class WorkPlanDetailController extends Controller
 
                     return $btn;
                 })
-                ->rawColumns(['action', 'status', 'members', 'documents'])
+                ->rawColumns(['action', 'status', 'members',])
                 ->make(true);
         }
 

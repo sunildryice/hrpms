@@ -66,6 +66,7 @@
 
         });
 
+        var sickLeaveId = '{{ config('constant.SICK_LEAVE') }}';
         var employeeId = '{{ auth()->user()->employee_id }}';
         var holidays = '{!! str_replace('&quot;', '', json_encode($holidays)) !!}';
         let leaveModes = (JSON.parse('{!! json_encode($leaveModes->map->only(['id', 'title', 'hours'])) !!}'));
@@ -81,9 +82,53 @@
             }
             return arr;
         }
+
+        var checkOverlapLeave = function($element) {
+            startDate = $($element).closest('form').find('[name="start_date"]').val();
+            endDate = $($element).closest('form').find('[name="end_date"]').val();
+            if (startDate && endDate) {
+                var url = baseUrl + '/api/employee/' + employeeId + '/check-leaves';
+                data = {
+                    start_date: startDate,
+                    end_date: endDate
+                };
+                var successCallback = function(response) {
+                    if (response.leaveDaysCount) {
+                        toastr.warning(response.message, 'Warning', {
+                            timeOut: 9000
+                        });
+                    }
+                }
+                var errorCallback = function(error) {
+                    console.log(error);
+                }
+                ajaxNativeSubmit(url, 'POST', data, 'json', successCallback, errorCallback);
+            }
+        }
+
+        function getLeaveModes(leaveTypeId) {
+            return new Promise(function(resolve, reject) {
+                var url = "{{ route('api.leave.modes.index', ['leaveTypeId' => 'LEAVE_TYPE_ID']) }}"
+                    .replace('LEAVE_TYPE_ID', leaveTypeId);
+
+                var successCallback = function(response) {
+                    leaveModes = response.leaveModes || [];
+                    resolve(leaveModes);
+                };
+
+                var errorCallback = function(error) {
+                    console.log(error);
+                    reject(error);
+                };
+
+                ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+            });
+        }
+
         var showHideAttachment = function($element) {
             let days = 0;
             var leaveType = $($element).closest('form').find('[name="leave_type_id"] option:selected').text();
+            var leaveTypeID = $($element).closest('form').find('[name="leave_type_id"] option:selected').val();
             startDate = new Date($($element).closest('form').find('[name="start_date"]').val());
             endDate = new Date($($element).closest('form').find('[name="end_date"]').val());
             if (startDate instanceof Date && isFinite(startDate) && endDate instanceof Date && isFinite(endDate)) {
@@ -91,7 +136,7 @@
                 days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 days = isNaN(days) ? 0 : days + 1;
             }
-            if (days > 3) {
+            if (days > 3 && leaveTypeID == {{ config('constant.SICK_LEAVE') }}) {
                 $($element).closest('form').find('#attachmentBlock').show();
             } else {
                 $($element).closest('form').find('#attachmentBlock').hide();
@@ -192,6 +237,34 @@
             showHideAttachment($element);
         }
 
+        function getSelectedLeaveType() {
+            const form = document.getElementById('leaveRequestEditForm');
+            const leaveTypeSelect = form.querySelector('[name="leave_type_id"]');
+            return leaveTypeSelect ? leaveTypeSelect.value : null;
+        }
+
+        function getLeaveDays() {
+            const form = document.getElementById('leaveRequestEditForm');
+            const start = form.querySelector('[name="start_date"]').value;
+            const end = form.querySelector('[name="end_date"]').value;
+
+            if (!start || !end) {
+                return 0;
+            }
+
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+
+            if (isNaN(startDate) || isNaN(endDate)) {
+                return 0;
+            }
+
+            let diff = Math.abs(endDate - startDate);
+            let days = Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
+
+            return days;
+        }
+
         document.addEventListener('DOMContentLoaded', function(e) {
             const form = document.getElementById('leaveRequestEditForm');
             const fv = FormValidation.formValidation(form, {
@@ -233,6 +306,17 @@
                     },
                     attachment: {
                         validators: {
+                            // callback: {
+                            //     message: 'Prescription is required',
+                            //     callback: function(input) {
+                            //         let days = getLeaveDays();
+                            //         let leaveTypeId = getSelectedLeaveType();
+                            //         if (days > 3 && sickLeaveId == leaveTypeId) {
+                            //             return input.value !== ''; 
+                            //         }
+                            //         return true; 
+                            //     }
+                            // },
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',
@@ -266,7 +350,7 @@
                     }),
                 },
             }).on('core.form.valid', function() {
-                $('.submit-btn').attr('disabled', true)
+                $('.submit-btn').attr('disabled', true);
             });
 
             $(form).on('change', '[name="leave_type_id"]', function(e) {
@@ -298,31 +382,7 @@
 
 
                 var leaveType = $('[name="leave_type_id"] option:selected').text();
-                {{-- if(leaveType.includes('Sick')){ --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--    }); --}}
-                {{-- } else { --}}
-                {{--    $('[name="start_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{--    $('[name="end_date"]').datepicker('destroy').datepicker({ --}}
-                {{--        language: 'en-GB', --}}
-                {{--        autoHide: true, --}}
-                {{--        format: 'yyyy-mm-dd', --}}
-                {{--        startDate: '{!! date('Y-m-d') !!}', --}}
-                {{--    }).val(''); --}}
-                {{-- } --}}
+
                 fv.revalidateField('leave_type_id');
             }).on('change', '[name="approver_id"]', function(e) {
                 fv.revalidateField('approver_id');
@@ -332,9 +392,6 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
-                    {{--                @if (!str_contains($leaveRequest->getLeaveType(), 'Sick')) --}}
-                    {{--                startDate: '{!! date('Y-m-d') !!}', --}}
-                    {{--                @endif --}}
                 }).on('change', function(e) {
                     fv.revalidateField('start_date');
                     fv.revalidateField('end_date');
@@ -345,15 +402,13 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
-                    {{--                @if (!str_contains($leaveRequest->getLeaveType(), 'Sick')) --}}
-                    {{--                startDate: '{!! date('Y-m-d') !!}', --}}
-                    {{--                @endif --}}
                 }).on('change', function(e) {
                     fv.revalidateField('start_date');
                     fv.revalidateField('end_date');
                     generateLeaveTable(this);
                 });
             @endif
+
             selectedLeaveModeIds = [];
             @if ($errors->count() || session('warning_message'))
                 $(form).find('[name="leave_type_id"]').trigger('change');
@@ -608,11 +663,11 @@
                     @endif
 
                     <div class="mb-2 row" id="attachmentBlock"
-                        @if ($leaveRequest->getLeaveDifferenceInDays() <= 3) )
-                                        style="display: none;" @endif>
+                        @if ($leaveRequest->getLeaveDifferenceInDays() <= 3 || $leaveRequest->leave_type_id != config('constant.SICK_LEAVE')) style="display: none;" @endif>
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Attachment</label>
+                                <label for="validationRemarks" class="form-label">Upload
+                                    Prescription</label>
                             </div>
                         </div>
                         <div class="col-lg-9">

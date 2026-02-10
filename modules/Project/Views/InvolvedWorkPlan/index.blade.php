@@ -163,7 +163,6 @@
             }
         });
     </script>
-    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 
 @section('page-content')
@@ -286,6 +285,4 @@
             </div>
         </div>
     </div>
-
-    @include('Project::WorkPlan.Detail.partials.output-document-modal')
 @endsection

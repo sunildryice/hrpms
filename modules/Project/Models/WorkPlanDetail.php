@@ -38,9 +38,4 @@ class WorkPlanDetail extends Model
     {
         return $this->belongsToMany(User::class, 'work_plan_members', 'work_plan_details_id', 'user_id');
     }
-
-    public function attachments(): HasMany
-    {
-        return $this->hasMany(WorkPlanDetailAttachment::class);
-    }
 }

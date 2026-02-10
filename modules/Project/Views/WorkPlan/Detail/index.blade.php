@@ -23,10 +23,6 @@
         .plan-modal-dialog {
             max-width: 1200px;
         }
-
-        .output-documents-wrapper .output-doc-row {
-            gap: 0.75rem;
-        }
     </style>
 @endsection
 
@@ -504,7 +500,6 @@
         });
     </script>
     @include('Project::WorkPlan.Detail.partials.status-reason-modal-script')
-    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
@@ -571,6 +566,4 @@
         {{-- Status Reason Modal --}}
         @include('Project::WorkPlan.Detail.partials.status-reason-modal')
 
-        {{-- Documents Modal --}}
-        @include('Project::WorkPlan.Detail.partials.output-document-modal')
     @stop

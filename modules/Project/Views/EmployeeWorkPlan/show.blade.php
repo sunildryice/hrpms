@@ -55,7 +55,6 @@
             });
         });
     </script>
-    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
@@ -97,5 +96,4 @@
             </div>
 
         </div>
-        @include('Project::WorkPlan.Detail.partials.output-document-modal')
     @stop

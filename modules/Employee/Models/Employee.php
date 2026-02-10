@@ -485,6 +485,16 @@ class Employee extends Model
 
         return $dob;
     }
+    public function getJoinedDate()
+    {
+        $joinedDate = '';
+
+        if ($this->joined_date) {
+            $joinedDate = (new DateTime($this->joined_date))->format('M d, Y');
+        }
+
+        return $joinedDate;
+    }
 
     public function getAge()
     {

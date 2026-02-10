@@ -9,6 +9,10 @@
             padding-bottom: 0.75rem;
             border-bottom: 1px solid #edf1f5;
         }
+
+        .wrap-text {
+            white-space: normal;
+        }
     </style>
 @endsection
 
@@ -54,6 +58,7 @@
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
+                        className: 'wrap-text',
                         defaultContent: ''
                     },
                     {
@@ -101,7 +106,7 @@
 
             function populateModal(data) {
                 $('#detailWeek').text(formatDateRange(data.work_plan_meta?.from_date, data.work_plan_meta
-                ?.to_date));
+                    ?.to_date));
                 $('#detailProject').text(data.project?.short_name || 'N/A');
                 $('#detailActivity').text(data.activity?.title || 'N/A');
                 $('#detailTasks').text(data.plan_tasks || '-');
@@ -158,6 +163,7 @@
             }
         });
     </script>
+    @include('Project::WorkPlan.Detail.partials.output-document-modal-script')
 @endsection
 
 @section('page-content')
@@ -280,4 +286,6 @@
             </div>
         </div>
     </div>
+
+    @include('Project::WorkPlan.Detail.partials.output-document-modal')
 @endsection

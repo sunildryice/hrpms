@@ -80,7 +80,7 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select class="form-select members-select" name="members[]" multiple
+                <select class="form-select select2 members-select" name="members[]" multiple
                     data-selected-members='@json($selectedMemberIds)'
                     {{ $currentProjectMembers->isEmpty() ? 'disabled' : '' }}>
                     @foreach ($currentProjectMembers as $member)

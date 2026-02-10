@@ -32,8 +32,6 @@ class TenureRepository extends Repository
                 'next_line_manager_id' => $tenure->next_line_manager_id,
             ]);
 
-            $this->updateMinimumEmployeeJoiningDate($tenure->employee_id);
-
             DB::commit();
             return $tenure;
         } catch (\Illuminate\Database\QueryException $e) {
@@ -65,14 +63,5 @@ class TenureRepository extends Repository
             DB::rollback();
             return false;
         }
-    }
-
-    public function updateMinimumEmployeeJoiningDate($employeeId)
-    {
-        $employeeTenures = $this->model->where('employee_id', $employeeId);
-        $minDate = $employeeTenures->min('joined_date');
-        $employee = $this->employee->find($employeeId);
-        $employee->joined_date = $minDate;
-        $employee->save();
     }
 }

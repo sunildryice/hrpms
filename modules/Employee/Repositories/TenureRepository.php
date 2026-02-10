@@ -32,8 +32,6 @@ class TenureRepository extends Repository
                 'next_line_manager_id' => $tenure->next_line_manager_id,
             ]);
 
-            $this->updateMinimumEmployeeJoiningDate($tenure->employee_id);
-
             DB::commit();
             return $tenure;
         } catch (\Illuminate\Database\QueryException $e) {

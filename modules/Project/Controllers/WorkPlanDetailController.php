@@ -5,15 +5,11 @@ namespace Modules\Project\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\Project\Models\Enums\WorkPlanStatus;
 use Modules\Project\Models\WorkPlan;
 use Modules\Project\Models\WorkPlanDetail;
-use Modules\Project\Models\WorkPlanDetailAttachment;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Repositories\ProjectRepository;
 use Modules\Project\Repositories\WorkPlanRepository;
@@ -22,7 +18,6 @@ use Yajra\DataTables\Facades\DataTables;
 
 class WorkPlanDetailController extends Controller
 {
-    private const DOCUMENT_STORAGE_PATH = 'work-plan/documents';
 
     public function __construct(
         protected ProjectRepository $projects,
@@ -204,9 +199,6 @@ class WorkPlanDetailController extends Controller
     {
         $data = $request->validate([
             'status' => ['required', 'string', Rule::in(array_map(fn($status) => $status->value, WorkPlanStatus::cases()))],
-            'documents' => ['array'],
-            'documents.*.name' => ['required_with:documents', 'string'],
-            'documents.*.file' => ['required_with:documents', 'file', 'mimes:pdf,jpeg,png', 'max:5120'], // max 5MB
             'reason' => ['nullable', 'string'],
         ]);
 
@@ -231,10 +223,6 @@ class WorkPlanDetailController extends Controller
                 'reason' => $reason ?: null,
             ]);
 
-            if (!empty($data['documents'])) {
-                $this->syncDetailDocuments($detail, $data['documents']);
-            }
-
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();
@@ -248,61 +236,6 @@ class WorkPlanDetailController extends Controller
         return response()->json(['message' => 'Status updated successfully.']);
     }
 
-    public function documents(WorkPlanDetail $detail)
-    {
-        $this->authorizeDocumentAccess($detail);
-
-        $documents = $detail->attachments()->latest()->get()->map(function ($attachment) {
-            return [
-                'id' => $attachment->id,
-                'title' => $attachment->title,
-                'uploaded_at' => optional($attachment->created_at)->format('M j, Y g:i A'),
-                'view_url' => route('work-plan.detail-document.view', $attachment),
-                'download_url' => route('work-plan.detail-document.download', $attachment),
-            ];
-        });
-
-        return response()->json(['documents' => $documents]);
-    }
-
-    public function viewDocument(WorkPlanDetailAttachment $attachment)
-    {
-        $detail = $attachment->workPlanDetail;
-        $this->authorizeDocumentAccess($detail);
-
-        if (!$attachment->file_path || !Storage::exists($attachment->file_path)) {
-            abort(404, 'File not found.');
-        }
-
-        $filePath = Storage::path($attachment->file_path);
-        $mimeType = Storage::mimeType($attachment->file_path) ?: 'application/octet-stream';
-
-        return response()->file($filePath, [
-            'Content-Type' => $mimeType,
-            'Content-Disposition' => 'inline; filename="' . basename($attachment->title ?? 'document') . '"',
-        ]);
-    }
-
-    public function downloadDocument(WorkPlanDetailAttachment $attachment)
-    {
-        $detail = $attachment->workPlanDetail;
-        $this->authorizeDocumentAccess($detail);
-
-        if (!$attachment->file_path || !Storage::exists($attachment->file_path)) {
-            abort(404, 'File not found.');
-        }
-
-        $storedExtension = pathinfo($attachment->file_path, PATHINFO_EXTENSION);
-        $safeBaseName = $attachment->title ?: 'document';
-        $sanitizedBase = Str::slug(pathinfo($safeBaseName, PATHINFO_FILENAME));
-        $downloadName = trim($sanitizedBase ?: 'document');
-        if ($storedExtension) {
-            $downloadName .= '.' . $storedExtension;
-        }
-
-        return Storage::download($attachment->file_path, $downloadName);
-    }
-
     public function destroy($id)
     {
         $detail = $this->workPlans->findDetailById($id);
@@ -313,57 +246,5 @@ class WorkPlanDetailController extends Controller
 
         $this->workPlans->deleteDetail($id);
         return response()->json(['message' => 'Work plan deleted successfully.']);
-    }
-
-    protected function syncDetailDocuments(WorkPlanDetail $detail, array $documents): void
-    {
-        $this->purgeExistingDocuments($detail);
-
-        $userId = auth()->id();
-
-        foreach ($documents as $document) {
-            $file = $document['file'] ?? null;
-
-            if (!$file instanceof UploadedFile) {
-                continue;
-            }
-
-            $fileName = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
-            $storedPath = $file->storeAs(
-                self::DOCUMENT_STORAGE_PATH . '/' . $detail->id,
-                $fileName
-            );
-
-            $detail->attachments()->create([
-                'title' => $document['name'] ?? $file->getClientOriginalName(),
-                'file_path' => $storedPath,
-                'created_by' => $userId,
-                'updated_by' => $userId,
-            ]);
-        }
-    }
-
-    protected function purgeExistingDocuments(WorkPlanDetail $detail): void
-    {
-        $detail->attachments()->get()->each(function ($attachment) {
-            $this->deleteAttachmentFile($attachment->file_path);
-            $attachment->delete();
-        });
-    }
-
-    protected function deleteAttachmentFile(?string $path): void
-    {
-        if ($path && Storage::exists($path)) {
-            Storage::delete($path);
-        }
-    }
-
-    protected function authorizeDocumentAccess(WorkPlanDetail $detail): void
-    {
-        $user = auth()->user();
-
-        if ($user->cannot('update', $detail->workPlan) && $user->cannot('updateStatus', $detail->workPlan)) {
-            abort(403, 'You are not authorized to view these documents.');
-        }
     }
 }

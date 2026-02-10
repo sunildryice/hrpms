@@ -1,4 +1,4 @@
-@extends('layouts.container')
+it @extends('layouts.container')
 
 @section('title', 'Work Plan Details')
 
@@ -15,31 +15,19 @@
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px !important;
         }
-
-        .wrap-text {
-            white-space: normal !important;
-        }
-
-        .plan-modal-dialog {
-            max-width: 1200px;
-        }
     </style>
 @endsection
 
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
-
-            const statusUpdateUrlTemplate = "{{ route('work-plan.update-status', ['id' => '__ID__']) }}";
-            const buildStatusUpdateUrl = (detailId) => statusUpdateUrlTemplate.replace('__ID__', detailId);
-            const $statusReasonModal = $('#statusReasonModal');
-            const $statusReasonForm = $('#statusReasonForm');
+            $('#navbarVerticalMenu').find('#weekly-plan-index').addClass('active');
 
             $('.activity-select').select2({
                 dropdownParent: $('#addPlanModal'),
                 width: '100%'
             });
+
 
             var oTable = $('#WeeklyPlanTable').DataTable({
                 processing: true,
@@ -64,7 +52,6 @@
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
-                        className: 'wrap-text',
                         defaultContent: ''
                     },
                     {
@@ -75,14 +62,14 @@
                     {
                         data: 'reason',
                         name: 'reason',
-                        defaultContent: '',
+                        defaultContent: ''
                     },
                     {
                         data: 'members',
-                        className: 'wrap-text',
+                        name: 'members'
                     }
                     @if ($isEditable)
-                        {
+                        , {
                             data: 'action',
                             name: 'action',
                             orderable: false,
@@ -100,64 +87,6 @@
 
             var currentStatusElement = null;
             var currentStatusPreviousValue = null;
-
-            const resetPendingStatusSelection = () => {
-                if (currentStatusElement) {
-                    currentStatusElement.val(currentStatusPreviousValue).data('prev',
-                        currentStatusPreviousValue);
-                }
-            };
-
-            const handleStatusSuccess = (message, newStatus, $select) => {
-                toastr.success(message || 'Status updated successfully');
-                if ($select && typeof newStatus !== 'undefined') {
-                    $select.data('prev', newStatus).val(newStatus);
-                }
-                oTable.ajax.reload(null, false);
-            };
-
-            function updateWorkPlanStatus(id, status, reason, $select, prev) {
-                const payload = {
-                    _method: 'PUT',
-                    status: status,
-                    reason: reason || ''
-                };
-
-                ajaxSubmit(buildStatusUpdateUrl(id), 'POST', payload, function(response) {
-                    handleStatusSuccess(response.message, status, $select);
-                }, function() {
-                    if ($select) {
-                        $select.val(prev);
-                    }
-                });
-            }
-
-            $statusReasonModal.on('hidden.bs.modal', function() {
-                resetPendingStatusSelection();
-                currentStatusElement = null;
-                currentStatusPreviousValue = null;
-            });
-
-            $statusReasonForm.on('submit', function(event) {
-                event.preventDefault();
-
-                const detailId = $('#status_detail_id').val();
-                if (!detailId) {
-                    toastr.error('Work plan reference is missing. Please try again.');
-                    return;
-                }
-
-                const formData = new FormData(this);
-                formData.set('_method', 'PUT');
-
-                ajaxSubmitFormData(buildStatusUpdateUrl(detailId), 'POST', formData, function(response) {
-                    const newStatus = $('#status_value').val();
-                    handleStatusSuccess(response.message, newStatus, currentStatusElement);
-                    currentStatusElement = null;
-                    currentStatusPreviousValue = null;
-                    $statusReasonModal.modal('hide');
-                });
-            });
 
             $(document).on('change', '.work-plan-status', function() {
                 var $select = $(this);
@@ -187,6 +116,56 @@
                 }
             });
 
+            // Handle Modal Hidden (Cancel/Close)
+            $('#statusReasonModal').on('hide.bs.modal', function() {
+                if (currentStatusElement) {
+                    // Revert
+                    currentStatusElement.val(currentStatusPreviousValue);
+                    currentStatusElement = null;
+                }
+            });
+
+            // Handle Modal Submit
+            $('#statusReasonForm').on('submit', function(e) {
+                e.preventDefault();
+                var id = $('#status_detail_id').val();
+                var status = $('#status_value').val();
+                var reason = $('#status_reason').val();
+
+                var $select = currentStatusElement;
+                var prev = currentStatusPreviousValue;
+
+                // Mark as handled so hide event doesn't revert
+                currentStatusElement = null;
+
+                updateWorkPlanStatus(id, status, reason, $select, prev, function() {
+                    $('#statusReasonModal').modal('hide');
+                });
+            });
+
+            function updateWorkPlanStatus(id, status, reason, $select, prev, successCallback) {
+                $.ajax({
+                    url: '/work-plan/' + id + '/update-status',
+                    type: 'PUT',
+                    data: {
+                        status: status,
+                        reason: reason,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                        $select.data('prev', status);
+                        oTable.ajax.reload(null, false); // Reload table to reflect reason change
+                        if (successCallback) successCallback();
+                    },
+                    error: function(xhr) {
+                        toastr.error(xhr.responseJSON?.message || 'Error updating status');
+                        // Revert
+                        $select.val(prev);
+                    }
+                });
+            }
+
             $(document).on('click', '.open-plan-modal, .edit-work-plan', function(e) {
                 e.preventDefault();
                 $('#addPlanModal').find('.modal-content').html('');
@@ -199,241 +178,147 @@
                         }
 
                         const $modal = $('#addPlanModal');
-                        const $activitySelect = $('.activity-select');
-                        const $membersSelect = $('.members-select');
-                        const $projectSelect = $('.project-select');
-                        let fvInstance = null;
-                        let hasAttemptedSubmit = false;
+                        const $form = $modal.find('#addPlanForm');
+                        const $projectSelect = $form.find('.project-select');
+                        const $activitySelect = $form.find('.activity-select');
+                        const $membersSelect = $form.find('.members-select');
 
-                        const restoreFormData = () => {
-                            const projectId = $projectSelect.val();
-                            const activityId = $activitySelect.val();
-                            const members = $membersSelect.attr('data-selected-members') ?
-                                JSON.parse($membersSelect.attr('data-selected-members') || '[]') :
-                                [];
-
-                            if (projectId) {
-                                $projectSelect.val(projectId).trigger('change');
-                            }
-                            if (activityId) {
-                                $activitySelect.attr('data-selected-activity', activityId);
-                            }
-                            if (members.length) {
-                                $membersSelect.attr('data-selected-members', JSON.stringify(
-                                    members));
-                            }
-                        };
-
-                        const ensureSelect2Parent = ($element) => {
-                            if (!$element.parent().hasClass('select2-parent')) {
-                                $element.wrap(
-                                    '<div class="position-relative w-100 select2-parent"></div>'
-                                );
-                            }
-                            return $element.parent();
-                        };
-
-                        const initSelect2Control = ($element, options = {}) => {
-                            const $parent = ensureSelect2Parent($element);
-                            const baseOptions = {
-                                dropdownParent: $parent,
-                                width: '100%',
-                                dropdownAutoWidth: true,
-                            };
-                            $element.select2(Object.assign(baseOptions, options));
-                            return $parent;
-                        };
-
-                        const bindMembersSelectEvents = () => {
-                            $membersSelect.off('change.membersSync').on('change.membersSync',
-                                function() {
-                                    const current = $(this).val() || [];
-                                    $(this).attr('data-selected-members', JSON.stringify(
-                                        current));
-                                    if (hasAttemptedSubmit && fvInstance) {
-                                        fvInstance.revalidateField('members[]');
-                                    }
-                                });
-                        };
-
-                        const destroyMembersSelect2 = () => {
-                            if ($membersSelect.hasClass('select2-hidden-accessible')) {
-                                $membersSelect.select2('destroy');
-                            }
-                            $membersSelect.off('change.membersSync');
-                        };
-
-                        const initMembersSelect2 = () => {
-                            initSelect2Control($membersSelect, {
-                                placeholder: 'Select members',
-                                minimumResultsForSearch: 0,
-                            });
-                            bindMembersSelectEvents();
-                        };
-
-                        const parseJsonAttribute = ($element, attribute) => {
-                            const raw = $element.attr(attribute);
-                            if (!raw) return [];
-                            try {
-                                return JSON.parse(raw);
-                            } catch (error) {
-                                return [];
-                            }
-                        };
-
-                        const updateMembersSelect = (members) => {
-                            destroyMembersSelect2();
-                            $membersSelect.empty();
-
-                            if (!members || !members.length) {
-                                $membersSelect.prop('disabled', true);
-                                $membersSelect.append(
-                                    '<option value="">No members available</option>');
-                                initMembersSelect2();
-                                $membersSelect.val(null).trigger('change');
-                                return;
-                            }
-
-                            const storedSelection = parseJsonAttribute($membersSelect,
-                                'data-selected-members');
-                            const selection = storedSelection.filter(id =>
-                                members.some(member => String(member.id) === String(id))
-                            );
-
-                            members.forEach(member => {
-                                const label = member.name || member.full_name || member
-                                    .email_address ||
-                                    ('Member #' + member.id);
-                                const option = new Option(label, member.id, false, false);
-                                $membersSelect.append(option);
-                            });
-
-                            $membersSelect.prop('disabled', false);
-                            initMembersSelect2();
-                            $membersSelect.val(selection).trigger('change');
-                            $membersSelect.attr('data-selected-members', JSON.stringify(selection));
-                        };
-
-                        const handleProjectSelection = (selectedOption) => {
-                            if (!selectedOption || !selectedOption.length) {
-                                updateMembersSelect([]);
-                                if (fvInstance) {
-                                    fvInstance.enableValidator('members[]', 'notEmpty', false);
-                                    fvInstance.resetField('members[]', true);
+                        const parseJsonPayload = function(payload) {
+                            if (!payload) return [];
+                            if (Array.isArray(payload)) return payload;
+                            if (typeof payload === 'object') return payload;
+                            if (typeof payload === 'string') {
+                                if (!payload.trim()) return [];
+                                try {
+                                    return JSON.parse(payload);
+                                } catch (error) {
+                                    return [];
                                 }
+                            }
+
+                            return [];
+                        };
+
+                        const parseSelectedMembers = function(rawMembers) {
+                            const parsed = parseJsonPayload(rawMembers);
+                            return Array.isArray(parsed) ? parsed.map(String) : [];
+                        };
+
+                        const populateActivityOptions = function(activities, presetValue) {
+                            $activitySelect.empty().append(
+                                '<option value="">Select Activity</option>');
+
+                            if (!activities.length) {
+                                $activitySelect.prop('disabled', true).trigger('change.select2');
                                 return;
                             }
 
-                            const activities = parseJsonAttribute(selectedOption,
-                                'data-activities');
-                            const projectMembers = parseJsonAttribute(selectedOption,
-                                'data-members');
-                            const selectedActivityId = $activitySelect.attr(
-                                'data-selected-activity') || '';
+                            $activitySelect.prop('disabled', false);
 
-                            $activitySelect.html('<option value="">Select Activity</option>');
-
-                            activities.forEach(activity => {
+                            activities.forEach(function(activity) {
                                 const option = new Option(activity.title, activity.id,
-                                    false, activity.id == selectedActivityId);
+                                    false,
+                                    String(activity.id) === String(presetValue || ''));
                                 $activitySelect.append(option);
                             });
 
-                            if (selectedActivityId) {
-                                $activitySelect.removeAttr('data-selected-activity');
+                            if (presetValue) {
+                                $activitySelect.val(String(presetValue));
+                            } else {
+                                $activitySelect.val('');
                             }
 
-                            updateMembersSelect(projectMembers);
-                            if (fvInstance) {
-                                fvInstance.enableValidator('members[]', 'notEmpty', !!(
-                                    projectMembers && projectMembers.length));
-                                if (!projectMembers || !projectMembers.length) {
-                                    fvInstance.resetField('members[]', true);
-                                }
-                            }
-
-                            $activitySelect.trigger('change');
+                            $activitySelect.trigger('change.select2');
                         };
 
-                        setTimeout(() => {
-                            restoreFormData();
+                        const populateMemberOptions = function(members, presetValues) {
+                            const normalizedPreset = presetValues.map(String);
+                            $membersSelect.empty();
 
-                            initMembersSelect2();
-                            initSelect2Control($projectSelect, {
-                                placeholder: 'Select Project'
-                            });
-                            initSelect2Control($activitySelect, {
-                                placeholder: 'Select Activity'
-                            });
-
-                            $projectSelect.on('change', function() {
-                                handleProjectSelection($(this).find(':selected'));
-                                if (hasAttemptedSubmit && fvInstance) {
-                                    fvInstance.revalidateField('project_id');
-                                }
-                            });
-
-                            if ($projectSelect.val()) {
-                                setTimeout(() => {
-                                    handleProjectSelection($projectSelect.find(
-                                        ':selected'));
-                                }, 100);
+                            if (!members.length) {
+                                $membersSelect.prop('disabled', true).trigger('change.select2');
+                                return;
                             }
-                        }, 50);
+
+                            $membersSelect.prop('disabled', false);
+
+                            members.forEach(function(member) {
+                                const isSelected = normalizedPreset.includes(String(member
+                                    .id));
+                                const option = new Option(member.name, member.id, false,
+                                    isSelected);
+                                $membersSelect.append(option);
+                            });
+
+                            $membersSelect.val(normalizedPreset).trigger('change.select2');
+                        };
+
+                        const refreshDependentSelects = function(usePreset = false) {
+                            const selectedOption = $projectSelect.find(':selected');
+                            const activities = parseJsonPayload(selectedOption.data('activities'));
+                            const members = parseJsonPayload(selectedOption.data('members'));
+                            const presetActivity = usePreset ? ($activitySelect.data(
+                                'selected-activity') || '') : '';
+                            const presetMembers = usePreset ? parseSelectedMembers($membersSelect
+                                .data('selected-members')) : [];
+
+                            populateActivityOptions(activities, presetActivity);
+                            populateMemberOptions(members, presetMembers);
+
+                            if (usePreset) {
+                                $activitySelect.removeData('selected-activity');
+                                $membersSelect.removeData('selected-members');
+                            }
+                        };
+
+                        $projectSelect.select2({
+                            dropdownParent: $modal,
+                            width: '100%'
+                        }).on('change', function() {
+                            refreshDependentSelects();
+                        });
+
+                        $activitySelect.select2({
+                            dropdownParent: $modal,
+                            width: '100%'
+                        });
+
+                        $membersSelect.select2({
+                            dropdownParent: $modal,
+                            width: '100%',
+                            placeholder: 'Select Members'
+                        });
+
+                        refreshDependentSelects(true);
 
                         const form = document.getElementById('addPlanForm');
-                        if (!form) {
-                            toastr.error('Unable to initialize the form. Please try again.');
-                            return;
-                        }
-
-                        const $plannedTask = $(form).find('textarea[name="planned_task"]');
-
-                        fvInstance = FormValidation.formValidation(form, {
+                        FormValidation.formValidation(form, {
                             fields: {
                                 project_id: {
                                     validators: {
                                         notEmpty: {
-                                            message: 'Project is required',
-                                        },
-                                    },
+                                            message: 'The Project is required'
+                                        }
+                                    }
                                 },
                                 activity_id: {
                                     validators: {
                                         notEmpty: {
-                                            message: 'Activity is required',
-                                        },
-                                    },
+                                            message: 'The Activity is required'
+                                        }
+                                    }
                                 },
                                 planned_task: {
                                     validators: {
                                         notEmpty: {
-                                            message: 'Planned task is required',
-                                        },
-                                    },
-                                },
-                                'members[]': {
-                                    validators: {
-                                        notEmpty: {
-                                            message: 'Select at least one member',
-                                        },
-                                    },
-                                },
+                                            message: 'The planned task is required'
+                                        }
+                                    }
+                                }
                             },
                             plugins: {
-                                trigger: new FormValidation.plugins.Trigger({
-                                    event: {
-                                        project_id: 'submit',
-                                        activity_id: 'submit',
-                                        planned_task: 'submit',
-                                        'members[]': 'submit',
-                                    },
-                                }),
-                                bootstrap5: new FormValidation.plugins.Bootstrap5({
-                                    rowSelector: '.row',
-                                    eleInvalidClass: '',
-                                    eleValidClass: '',
-                                }),
+                                trigger: new FormValidation.plugins.Trigger(),
+                                bootstrap5: new FormValidation.plugins.Bootstrap5(),
                                 submitButton: new FormValidation.plugins.SubmitButton(),
                                 icon: new FormValidation.plugins.Icon({
                                     valid: 'bi bi-check2-square',
@@ -441,45 +326,24 @@
                                     validating: 'bi bi-arrow-repeat',
                                 }),
                             },
-                        });
-
-                        fvInstance.enableValidator('members[]', 'notEmpty', !$membersSelect.prop(
-                            'disabled'));
-
-                        $activitySelect.on('change', function() {
-                            if (hasAttemptedSubmit && fvInstance) {
-                                fvInstance.revalidateField('activity_id');
-                            }
-                        });
-
-                        if ($plannedTask.length) {
-                            $plannedTask.on('input', function() {
-                                if (hasAttemptedSubmit && fvInstance) {
-                                    fvInstance.revalidateField('planned_task');
-                                }
-                            });
-                        }
-
-                        fvInstance.on('core.form.invalid', function() {
-                            hasAttemptedSubmit = true;
-                        });
-
-                        fvInstance.on('core.form.valid', function() {
-                            hasAttemptedSubmit = true;
-                            const submitUrl = form.getAttribute('action');
-                            const submitMethod = form.getAttribute('method') || 'POST';
+                        }).on('core.form.valid', function() {
+                            const $url = form.getAttribute('action');
+                            const method = form.getAttribute('method');
                             const formData = new FormData(form);
 
                             const successCallback = function(response) {
                                 $('#addPlanModal').modal('hide');
-                                $('#addPlanModal').find('.modal-content').html('');
-                                toastr.success(response.message ||
-                                    'Work plan saved successfully');
+                                toastr.success(response.message || 'Saved successfully');
                                 oTable.ajax.reload();
                             };
 
-                            ajaxSubmitFormData(submitUrl, submitMethod, formData,
-                                successCallback);
+                            // Handle Laravel PUT method override
+                            let ajaxMethod = method;
+                            if (formData.get('_method') === 'PUT') {
+                                ajaxMethod = 'POST';
+                            }
+
+                            ajaxSubmitFormData($url, ajaxMethod, formData, successCallback);
                         });
                     });
             });
@@ -499,7 +363,6 @@
             });
         });
     </script>
-    @include('Project::WorkPlan.Detail.partials.status-reason-modal-script')
 @endsection
 @section('page-content')
     <div class="pb-3 mb-3 border-bottom">
@@ -520,7 +383,8 @@
             </div>
             <div class="add-info justify-content-end">
                 @if ($isEditable)
-                    <a href="{{ route('work-plan.create', ['from_date' => $week['start_date']->format('Y-m-d'), 'to_date' => $week['end_date']->format('Y-m-d')]) }}"
+                    <a href=""
+                        data-href="{{ route('work-plan.create', ['from_date' => $week['start_date']->format('Y-m-d'), 'to_date' => $week['end_date']->format('Y-m-d')]) }}"
                         class="btn btn-primary btn-sm open-plan-modal">
                         <i class="bi bi-plus"></i> Add Plan
                     </a>
@@ -556,7 +420,7 @@
 
         {{-- Plan Modal Container --}}
         <div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl plan-modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     {{-- Content loaded dynamically --}}
                 </div>
@@ -564,6 +428,36 @@
         </div>
 
         {{-- Status Reason Modal --}}
-        @include('Project::WorkPlan.Detail.partials.status-reason-modal')
-
+        <div class="modal fade" id="statusReasonModal" tabindex="-1" aria-labelledby="statusReasonModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="statusReasonForm">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title mb-0 fs-6" id="statusReasonModalLabel">Mark As Completed</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="status_detail_id" name="id">
+                            <input type="hidden" id="status_value" name="status">
+                            <div class="row mb-2">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="status_reason" class="form-label required-label m-0">Reason</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <textarea class="form-control" id="status_reason" name="reason" rows="3" required
+                                        placeholder="Please provide a reason for completion..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @stop

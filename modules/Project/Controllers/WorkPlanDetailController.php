@@ -64,8 +64,6 @@ class WorkPlanDetailController extends Controller
                     return $selectInput;
                 })
                 ->addColumn('members', function ($row) {
-
-
                     $members = $row->members->pluck('full_name')->toArray();
 
                     $badges = '';
@@ -87,7 +85,7 @@ class WorkPlanDetailController extends Controller
 
                     return $btn;
                 })
-                ->rawColumns(['action', 'status', 'members',])
+                ->rawColumns(['action', 'status', 'members'])
                 ->make(true);
         }
 

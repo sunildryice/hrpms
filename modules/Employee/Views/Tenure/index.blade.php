@@ -8,7 +8,7 @@
                 <tr>
                     <th>Designation</th>
                     <th>Department</th>
-                    <th>Date of Joining</th>
+                    <th>From Date</th>
                     <th>To Date</th>
                     <th>Contract End Date</th>
                     <th>Duty Station</th>

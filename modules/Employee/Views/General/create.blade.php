@@ -105,7 +105,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationdob" class="form-label">Joined Date
+                    <label for="validationdob" class="form-label required-label">Joined Date
                     </label>
                 </div>
             </div>

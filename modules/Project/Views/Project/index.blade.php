@@ -39,6 +39,14 @@
                         name: 'short_name'
                     },
                     {
+                        data: 'team_lead',
+                        name: 'team_lead'
+                    },
+                    {
+                        data: 'focal_person',
+                        name: 'focal_person'
+                    },
+                    {
                         data: 'start_date',
                         name: 'start_date'
                     },
@@ -121,6 +129,8 @@
                                 <th>{{ __('label.sn') }}</th>
                                 <th class="wrap-text">{{ __('label.project') }}</th>
                                 <th>{{ __('label.short-name') }}</th>
+                                <th>{{ __('label.team-lead') }}</th>
+                                <th>{{ __('label.focal-person') }}</th>
                                 <th>{{ __('label.start-date') }}</th>
                                 <th>{{ __('label.completion-date') }}</th>
                                 <th>{{ __('label.action') }}</th>

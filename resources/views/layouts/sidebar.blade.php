@@ -134,6 +134,11 @@
                                         href="{{ route('attendance.index') }}">Employees Attendance</a>
                                 @endif
 
+                                {{-- @if ($authUser->can('daily-attendance'))
+                                    <a class="nav-link" id="daily-attendance-index"
+                                        href="{{ route('daily.attendance.index') }}">Daily Attendance</a>
+                                @endif --}}
+
                                 @if ($authUser->can('review-employee-attendance'))
                                     <a class="nav-link" id="attendance-review-index"
                                         href="{{ route('attendance.review.index') }}">Review Attendance

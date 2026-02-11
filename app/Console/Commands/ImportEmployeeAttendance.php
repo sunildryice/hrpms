@@ -84,6 +84,14 @@ class ImportEmployeeAttendance extends Command
                 $inputs['checkin_from'] = $checkIn ? 'Device' : $attendance->checkin_from;
                 $inputs['checkout_from'] = $checkOut ? 'Device' : $attendance->checkout_from;
 
+                if ($checkIn && $checkOut) {
+                    $checkIn = Carbon::parse($checkIn)->startOfMinute();
+                    $checkOut = Carbon::parse($checkOut)->startOfMinute();
+
+                    $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
+                    $inputs['worked_hours'] = $workedHours;
+                }
+
                 $detail = $this->attendanceDetails->updateOrCreate([
                     'attendance_master_id' => $attendance->id,
                     'attendance_date' => $date->format('Y-m-d'),

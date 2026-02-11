@@ -33,7 +33,7 @@
         class="form-signin rounded shadow bg-white flex-grow-1 gap-3 d-flex flex-column align-items-center justify-content-center"
         action="{{ route('auth.login') }}" method="POST" autocomplete="off">
         <div class="w-100 d-flex flex-column align-items-center justify-content-center pt-3 pb-1 ">
-            {{-- <img src="{{ asset('img/logonp.png') }}" alt="LOGO">--}}
+            <img src="{{ asset('img/logonp.png') }}" alt="LOGO" style="width: 100px">
         </div>
         <h2 class="form-signin-heading owh-text-light fs-5 text-uppercase fw-bold mt-1 mb-2 sign_in-l">sign in</h2>
 

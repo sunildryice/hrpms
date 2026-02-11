@@ -668,7 +668,7 @@
                         @if ($leaveRequest->getLeaveDifferenceInDays() <= 3 || $leaveRequest->leave_type_id != config('constant.SICK_LEAVE')) style="display: none;" @endif>
                         <div class="col-lg-3">
                             <div class="d-flex align-items-start h-100">
-                                <label for="validationRemarks" class="form-label">Upload
+                                <label for="validationRemarks" class="form-label required-label">Upload
                                     Prescription</label>
                             </div>
                         </div>

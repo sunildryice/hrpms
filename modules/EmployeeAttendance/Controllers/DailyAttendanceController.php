@@ -24,7 +24,7 @@ class DailyAttendanceController extends Controller
         if ($request->ajax()) {
 
             $selectedDate = $request->filled('selected_date')
-                ? date('Y-m-d', (int)($request->selected_date / 1000))
+                ? date('Y-m-d', (int) ($request->selected_date / 1000))
                 : now()->format('Y-m-d');
 
             $query = $this->employeeRepo->getActiveEmployeesQuery();
@@ -49,8 +49,8 @@ class DailyAttendanceController extends Controller
                 })
                 ->addColumn('hours_worked', function ($emp) use ($selectedDate) {
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-                    return $detail && $detail->worked_hours 
-                        ? number_format($detail->worked_hours, 2) 
+                    return $detail && $detail->worked_hours
+                        ? number_format($detail->worked_hours, 2)
                         : '-';
                 })
                 ->addColumn('remarks', function ($emp) use ($selectedDate) {
@@ -58,10 +58,24 @@ class DailyAttendanceController extends Controller
                     if ($date->isFuture()) {
                         return 'Future Date';
                     }
+
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
+
                     if ($detail && $detail->checkin && $detail->checkout) {
                         return 'Present';
                     }
+                    if ($date->isWeekend()) {
+                        return 'Weekend';
+                    }
+
+                    // $officeId = $emp->latestTenure?->office_id;
+                    // if ($officeId) {
+                    //     $holidays = $this->officeRepo->getHolidaysOneYear($officeId, $date->year);
+                    //     if (in_array($date->format('Y-m-d'), $holidays)) {
+                    //         return $emp->latestTenure?->is_annual_holiday ? 'Annual Holiday' : 'Holiday';
+                    //     }
+                    // }
+
                     return 'Absent';
                 })
                 ->make(true);

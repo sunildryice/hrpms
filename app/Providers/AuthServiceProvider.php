@@ -135,7 +135,7 @@ class AuthServiceProvider extends ServiceProvider
 
             $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
 
-            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id)) && $checkCurrentActivePeriod;
+            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id) || $user->employee?->employee_code == 62) && $checkCurrentActivePeriod;
         });
     }
 }

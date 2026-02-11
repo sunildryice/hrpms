@@ -27,6 +27,19 @@ class EmployeeRepository extends Repository
         return $this->model->whereNotNull('activated_at')->orderBy('employee_code', 'asc')->get();
     }
 
+    public function getActiveEmployeesQuery()
+    {
+        return $this->model
+            ->select(['id', 'full_name', 'employee_code', 'employee_type_id', 'activated_at'])
+            ->with(['user', 'latestTenure', 'latestTenure.office'])
+            ->whereNotNull('activated_at')
+            ->where(function ($q) {
+                $q->whereIn('employee_type_id', [config('constant.FULL_TIME_EMPLOYEE')]);
+                $q->orWhereNull('employee_type_id');
+            })
+            ->orderBy('employee_code', 'asc');
+    }
+
     public function createUser($employee, $inputs)
     {
         DB::beginTransaction();
@@ -34,7 +47,7 @@ class EmployeeRepository extends Repository
             $inputs['full_name'] = $employee->getFullName();
             $inputs['reset_token'] = \Str::random(60);
             $user = $employee->user()->create($inputs);
-            if (! empty($inputs['roles'])) {
+            if (!empty($inputs['roles'])) {
                 $user->roles()->sync($inputs['roles']);
             }
             DB::commit();
@@ -50,7 +63,7 @@ class EmployeeRepository extends Repository
     public function getActiveEmployees()
     {
         return $this->model->select(['id', 'full_name', 'employee_code'])
-//            ->whereHas('user')
+            //            ->whereHas('user')
             ->with(['user'])
             ->whereNotNull('activated_at')
             ->where(function ($q) {
@@ -133,7 +146,7 @@ class EmployeeRepository extends Repository
         try {
             $inputs['full_name'] = $employee->getFullName();
             $employee->user->update($inputs);
-            if (! empty($inputs['roles'])) {
+            if (!empty($inputs['roles'])) {
                 $employee->user->roles()->sync($inputs['roles']);
             }
             DB::commit();

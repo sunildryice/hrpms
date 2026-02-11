@@ -32,7 +32,7 @@ class ProjectActivityController extends Controller
         $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
-            ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id), function ($query) {
+            ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id) || $authUser->employee?->employee_code == 62, function ($query) {
                 // Focal Person or Team Lead can see all activities
                 return $query;
             }, function ($query) use ($authUser) {

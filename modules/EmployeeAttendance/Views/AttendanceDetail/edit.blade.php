@@ -212,7 +212,14 @@
                                 }
 
                                 // Only show "Absent" for past dates or today (not future dates)
-                                if (!$isFuture && !$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave && !$inTravel) {
+                                if (
+                                    !$isFuture &&
+                                    !$hasCheckIn &&
+                                    !$hasCheckOut &&
+                                    !$isHoliday &&
+                                    !$hasLeave &&
+                                    !$inTravel
+                                ) {
                                     $remarkParts[] = 'Absent';
                                 }
 
@@ -260,117 +267,129 @@
 
 
     @if (auth()->user()->can('submit', $attendance))
-        <section>
-            <div class="card">
-                <div class="card-header fw-bold">
-                    Attendance Process
-                </div>
-                <form action="{{ route('attendance.submit') }}" id="attendanceProcessForm" method="post"
-                    enctype="multipart/form-data" autocomplete="off">
+        @php
+            $attendanceMonth = $attendance->month; 
+            $attendanceYear = $attendance->year;
 
-                    <input type="hidden" name="attendance_id" value="{{ $attendance->id }}">
+            $firstDayOfMonth = Carbon\Carbon::createFromDate($attendanceYear, $attendanceMonth, 1);
+            $lastDayOfMonth = $firstDayOfMonth->endOfMonth()->format('Y-m-d');
+            $today = now()->format('Y-m-d');
 
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                @if ($attendance->status_id == config('constant.RETURNED_STATUS'))
-                                    <section>
-                                        <div class="m-2 col-lg-6">
-                                            <div class="p-3 mb-2 border row">
-                                                <div>
-                                                    <div class="d-flex align-items-start h-100">
-                                                        <span class="fw-bold"
-                                                            style="text-decoration: underline">Remarks:</span>
+            $canShowForm = $today >= $lastDayOfMonth;
+        @endphp
+        @if ($canShowForm)
+            <section>
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Attendance Process
+                    </div>
+                    <form action="{{ route('attendance.submit') }}" id="attendanceProcessForm" method="post"
+                        enctype="multipart/form-data" autocomplete="off">
+
+                        <input type="hidden" name="attendance_id" value="{{ $attendance->id }}">
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    @if ($attendance->status_id == config('constant.RETURNED_STATUS'))
+                                        <section>
+                                            <div class="m-2 col-lg-6">
+                                                <div class="p-3 mb-2 border row">
+                                                    <div>
+                                                        <div class="d-flex align-items-start h-100">
+                                                            <span class="fw-bold"
+                                                                style="text-decoration: underline">Remarks:</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <span>{{ $attendance->getLatestRemark() }}</span>
                                                     </div>
                                                 </div>
-                                                <div class="mt-2">
-                                                    <span>{{ $attendance->getLatestRemark() }}</span>
-                                                </div>
                                             </div>
-                                        </div>
-                                    </section>
-                                @endif
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-2 row">
-                                    <div class="col-lg-5">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="status_id" class="m-0">Remarks</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-7">
-                                        <textarea class="form-control" name="remarks" id="remarks" rows="2">{{ $attendance->remarks ?: old('remarks') }}</textarea>
-                                        @if ($errors->has('remarks'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="remarks">
-                                                    {!! $errors->first('remarks') !!}
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
+                                        </section>
+                                    @endif
                                 </div>
-                                <div class="mb-2 row">
-                                    <div class="col-lg-5">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="approver_id" class="form-label required-label">Select
-                                                Approver</label>
+                                <div class="col-lg-6">
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-5">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="status_id" class="m-0">Remarks</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <textarea class="form-control" name="remarks" id="remarks" rows="2">{{ $attendance->remarks ?: old('remarks') }}</textarea>
+                                            @if ($errors->has('remarks'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="remarks">
+                                                        {!! $errors->first('remarks') !!}
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="col-lg-7">
-                                        <select name="approver_id" id="approver_id" class="select2 form-control"
-                                            data-width="100%">
-                                            <option value="">Select Approver</option>
-                                            @foreach ($approvers as $reviewer)
-                                                <option value="{{ $reviewer->id }}">{{ $reviewer->full_name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('reviewer_id'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="reviewer_id">
-                                                    {!! $errors->first('reviewer_id') !!}
-                                                </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-5">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="approver_id" class="form-label required-label">Select
+                                                    Approver</label>
                                             </div>
-                                        @endif
-                                    </div>
-                                </div>
-                                <div class="mb-2 row">
-                                    <div class="col-lg-5">
-                                        <div class="d-flex align-items-start h-100">
-                                            <label for="status_id" class="form-label required-label">Submit to HR for
-                                                verification </label>
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <select name="approver_id" id="approver_id" class="select2 form-control"
+                                                data-width="100%">
+                                                <option value="">Select Approver</option>
+                                                @foreach ($approvers as $reviewer)
+                                                    <option value="{{ $reviewer->id }}">{{ $reviewer->full_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if ($errors->has('reviewer_id'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="reviewer_id">
+                                                        {!! $errors->first('reviewer_id') !!}
+                                                    </div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
-                                    <div class="col-lg-7">
-                                        <select name="reviewer_id" class="select2 form-control" data-width="100%">
-                                            <option value="">Select HR</option>
-                                            @foreach ($reviewers as $reviewer)
-                                                <option value="{{ $reviewer->id }}">{{ $reviewer->getFullName() }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @if ($errors->has('reviewer_id'))
-                                            <div class="fv-plugins-message-container invalid-feedback">
-                                                <div data-field="reviewer_id">
-                                                    {!! $errors->first('reviewer_id') !!}
-                                                </div>
+                                    <div class="mb-2 row">
+                                        <div class="col-lg-5">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="status_id" class="form-label required-label">Submit to HR for
+                                                    verification </label>
                                             </div>
-                                        @endif
+                                        </div>
+                                        <div class="col-lg-7">
+                                            <select name="reviewer_id" class="select2 form-control" data-width="100%">
+                                                <option value="">Select HR</option>
+                                                @foreach ($reviewers as $reviewer)
+                                                    <option value="{{ $reviewer->id }}">{{ $reviewer->getFullName() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @if ($errors->has('reviewer_id'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="reviewer_id">
+                                                        {!! $errors->first('reviewer_id') !!}
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
+                                    {!! csrf_field() !!}
                                 </div>
-                                {!! csrf_field() !!}
                             </div>
                         </div>
-                    </div>
-                    <div class="gap-2 border-0 card-footer justify-content-end d-flex">
-                        <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm"
-                            {{ $editable ? '' : 'disabled' }}>
-                            Submit
-                        </button>
-                        <a href="{!! route('attendance.detail.show', $attendance->id) !!}" class="btn btn-danger btn-sm">Cancel</a>
-                    </div>
-                </form>
-            </div>
-        </section>
+                        <div class="gap-2 border-0 card-footer justify-content-end d-flex">
+                            <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm"
+                                {{ $editable ? '' : 'disabled' }}>
+                                Submit
+                            </button>
+                            <a href="{!! route('attendance.detail.show', $attendance->id) !!}" class="btn btn-danger btn-sm">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        @endif
     @endif
 @endsection

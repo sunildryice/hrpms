@@ -1049,6 +1049,11 @@
                                         id="probationary-indicators-menu">{{ __('label.probationary-indicators') }}</a>
                                 @endif
 
+                                @if ($authUser->can('manage-supplier'))
+                                    <a class="nav-link" href="{{ route('suppliers.index') }}"
+                                        id="suppliers-menu">{{ __('label.suppliers') }}</a>
+                                @endif
+
                                 @if ($authUser->can('manage-unit'))
                                     <a class="nav-link" href="{{ route('master.units.index') }}"
                                         id="units-menu">{{ __('label.units') }}</a>

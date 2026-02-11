@@ -305,12 +305,15 @@
                             <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->request_id }}
                             <a href="#" class="stretched-link" rel="tooltip" title="Staff ID"></a>
                         </li>
-                        <li><span rel="tooltip" title="Designation"><i class="bi-briefcase dropdown-item-icon me-2"></i>
-                                {{ $employee->designation->title }}</span>
+                        <li class="d-flex align-items-start">
+                            <i class="bi-briefcase dropdown-item-icon me-2 mt-1"></i>
+                            <span rel="tooltip" title="Designation">
+                                {{ $employee->designation->title }}
+                            </span>
                         </li>
-                        <li>
+                        <li class="d-flex align-items-start">
+                            <i class="bi-pin-map dropdown-item-icon me-2 mt-1"></i>
                             <span rel="tooltip" title="Address">
-                                <i class="bi-pin-map dropdown-item-icon"></i>
                                 {{ $employee->address ? $employee->address->getTemporaryAddress() : '' }}
                             </span>
                         </li>

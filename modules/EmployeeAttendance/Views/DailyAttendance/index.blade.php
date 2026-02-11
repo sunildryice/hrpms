@@ -2,106 +2,167 @@
 
 @section('title', 'Daily Attendance')
 
+@section('page_css')
+    <style>
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+            font-size: 0.92rem;
+        }
+        .table thead th {
+            background: #f8f9fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .name-col { text-align: left !important; min-width: 180px; }
+        .remarks-col { text-align: left !important; min-width: 220px; }
+        .action-col { min-width: 120px; }
+        .modal-body .form-label { font-weight: 500; }
+        .text-muted-light { color: #adb5bd; }
+    </style>
+@endsection
 
 @section('page_js')
-    <script type="text/javascript">
-        let selected_date = '';
-        let office_id = '';
+<script type="text/javascript">
+    let selected_date = '';
+    let office_id = '';
 
-        $(document).ready(function() {
+    $(document).ready(function () {
 
-            $('#navbarVerticalMenu').find('#daily-attendance-index').addClass('active');
+        $('#navbarVerticalMenu').find('#daily-attendance-index').addClass('active');
 
-            $('[name=selected_date]').datepicker({
-                language: 'en-GB',
-                autohide: true,
-                format: 'yyyy-mm-dd',
-                endDate: '0d'
-            });
+        $('[name=selected_date]').datepicker({
+            language: 'en-GB',
+            autohide: true,
+            format: 'yyyy-mm-dd',
+            endDate: '0d'
+        });
 
-            // Set default to today
+        // Set default to today
+        const today = new Date().toISOString().split('T')[0];
+        $('#selected_date').val(today);
+        selected_date = new Date(today).getTime();
+
+        var table = $('#dailyAttendanceTable').DataTable({
+            scrollX: true,
+            processing: true,
+            serverSide: true,
+            bFilter: false,
+            bPaginate: false,
+            bInfo: true,
+            ajax: {
+                url: "{{ route('daily.attendance.index') }}",
+                type: 'POST',
+                data: function(d) {
+                    d.selected_date = selected_date;
+                    d.office_id = office_id;
+                }
+            },
+            columns: [
+                { data: 'staff_id',      name: 'staff_id' },
+                { data: 'employee_name', name: 'employee_name', className: 'name-col' },
+                { data: 'time_in',       name: 'time_in' },
+                { data: 'time_out',      name: 'time_out' },
+                { data: 'hours_worked',  name: 'hours_worked' },
+                { data: 'remarks',       name: 'remarks', className: 'remarks-col' },
+                { data: 'action',        name: 'action', className: 'action-col', orderable: false, searchable: false }
+            ],
+            columnDefs: [
+                { targets: 6, visible: false } // Initially hide Action column
+            ]
+        });
+
+        // Auto-load today
+        table.ajax.reload();
+
+        // Search & Reset
+        $('#btn_search').on('click', function() {
+            if ($('#selected_date').val()) {
+                let sd = new Date($('#selected_date').val());
+                selected_date = sd.getTime();
+            }
+            office_id = $('#office_id').val() || '';
+            table.ajax.reload();
+        });
+
+        $('#btn_reset').on('click', function() {
             const today = new Date().toISOString().split('T')[0];
             $('#selected_date').val(today);
             selected_date = new Date(today).getTime();
+            $('#office_id').val('').trigger('change.select2');
+            office_id = '';
+            table.ajax.reload();
+        });
 
-            var table = $('#dailyAttendanceTable').DataTable({
-                scrollX: true,
-                processing: true,
-                serverSide: true,
-                bFilter: false,
-                bPaginate: false,
-                bInfo: true,
-                ajax: {
-                    url: "{{ route('daily.attendance.index') }}",
-                    type: 'POST',
-                    data: function(d) {
-                        d.selected_date = selected_date;
-                        d.office_id = office_id;
+        // Show/hide Action column based on selected date
+        table.on('draw', function () {
+            const selected = $('#selected_date').val();
+            const isToday = selected === new Date().toISOString().split('T')[0];
+            table.column(6).visible(!isToday);
+        });
+
+        // Edit button click → open modal
+        $(document).on('click', '.edit-attendance-btn', function(e) {
+            e.preventDefault();
+
+            const employeeId = $(this).data('employee-id');
+            const date       = $(this).data('date');
+            let checkin      = $(this).data('checkin') || '';
+            let checkout     = $(this).data('checkout') || '';
+
+            $('#edit_date').text(date);
+            $('#edit_employee_id').val(employeeId);
+            $('#edit_checkin').val(checkin);
+            $('#edit_checkout').val(checkout);
+
+            // Disable if already set
+            $('#edit_checkin').prop('disabled', !!checkin);
+            $('#edit_checkout').prop('disabled', !!checkout);
+
+            $('#editAttendanceModal').modal('show');
+        });
+
+        // Save via AJAX
+        $('#saveAttendanceBtn').on('click', function() {
+            const employeeId = $('#edit_employee_id').val();
+            const date       = $('#edit_date').text();
+            const checkin    = $('#edit_checkin').val();
+            const checkout   = $('#edit_checkout').val();
+
+            $.ajax({
+                url: "{{ route('attendance.update.checkin.checkout') }}",
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    employee_id: employeeId,
+                    date: date,
+                    checkin: checkin,
+                    checkout: checkout
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message || 'Attendance updated');
+                        $('#editAttendanceModal').modal('hide');
+                        table.ajax.reload();
+                    } else {
+                        toastr.error(response.message || 'Failed to update');
                     }
                 },
-                columns: [{
-                        data: 'staff_id',
-                        name: 'staff_id'
-                    },
-                    {
-                        data: 'employee_name',
-                        name: 'employee_name',
-                        className: 'name-col'
-                    },
-                    {
-                        data: 'time_in',
-                        name: 'time_in'
-                    },
-                    {
-                        data: 'time_out',
-                        name: 'time_out'
-                    },
-                    {
-                        data: 'hours_worked',
-                        name: 'hours_worked'
-                    },
-                    {
-                        data: 'remarks',
-                        name: 'remarks',
-                        className: 'remarks-col'
-                    },
-                ],
-            });
-
-            // Auto-load today's data on page load
-            table.ajax.reload();
-
-            $('#btn_search').on('click', function() {
-                if ($('#selected_date').val()) {
-                    let sd = new Date($('#selected_date').val());
-                    selected_date = sd.getTime();
-                } else {
-                    selected_date = '';
+                error: function() {
+                    toastr.error('Something went wrong');
                 }
-
-                office_id = $('#office_id').val() || '';
-
-                table.ajax.reload();
-            });
-
-            $('#btn_reset').on('click', function() {
-                const today = new Date().toISOString().split('T')[0];
-                $('#selected_date').val(today);
-                selected_date = new Date(today).getTime();
-                $('#office_id').val('').trigger('change.select2');
-                office_id = '';
-                table.ajax.reload();
             });
         });
-    </script>
+    });
+</script>
 @endsection
 
 @section('page-content')
 
     <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
-            <div
-                class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
+            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
                 <div class="flex-grow-1">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
@@ -154,10 +215,43 @@
                                 <th>Time Out (hh:mm)</th>
                                 <th>Hours Worked (hh.mm)</th>
                                 <th style="width: 40%;">Remarks</th>
+                                <th style="width: 120px;">Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Attendance Modal -->
+    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-labelledby="editAttendanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editAttendanceModalLabel">Edit Attendance</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_employee_id">
+                    <p class="mb-3">
+                        <strong>Date:</strong> <span id="edit_date"></span>
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Check-in Time</label>
+                        <input type="time" class="form-control" id="edit_checkin">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Check-out Time</label>
+                        <input type="time" class="form-control" id="edit_checkout">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveAttendanceBtn">Save Changes</button>
                 </div>
             </div>
         </div>

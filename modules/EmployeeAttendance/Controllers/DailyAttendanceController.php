@@ -27,10 +27,8 @@ class DailyAttendanceController extends Controller
                 ? date('Y-m-d', (int)($request->selected_date / 1000))
                 : now()->format('Y-m-d');
 
-            // Use query builder (not collection!)
             $query = $this->employeeRepo->getActiveEmployeesQuery();
 
-            // Apply office filter
             if ($request->filled('office_id')) {
                 $query->whereHas('latestTenure', function ($q) use ($request) {
                     $q->where('office_id', $request->office_id);
@@ -39,7 +37,7 @@ class DailyAttendanceController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->addColumn('staff_id', fn($emp) => $emp->employee_code ?? '-')
+                ->addColumn('staff_id', fn($emp) => $emp->requestId ?? '-')
                 ->addColumn('employee_name', fn($emp) => $emp->getFullName())
                 ->addColumn('time_in', function ($emp) use ($selectedDate) {
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
@@ -57,25 +55,19 @@ class DailyAttendanceController extends Controller
                 })
                 ->addColumn('remarks', function ($emp) use ($selectedDate) {
                     $date = Carbon::parse($selectedDate);
-
                     if ($date->isFuture()) {
                         return 'Future Date';
                     }
-
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-
                     if ($detail && $detail->checkin && $detail->checkout) {
                         return 'Present';
                     }
-
                     return 'Absent';
                 })
                 ->make(true);
         }
 
-        $data = [
-            'offices' => $this->officeRepo->getActiveOffices(),
-        ];
+        $data = ['offices' => $this->officeRepo->getActiveOffices(),];
 
         return view('EmployeeAttendance::DailyAttendance.index', $data);
     }

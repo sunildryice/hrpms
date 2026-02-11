@@ -137,12 +137,8 @@
                         </div>
 
                         <div class="col-auto">
-                            <button type="button" id="btn_search" class="btn btn-primary btn-sm">
-                                Search
-                            </button>
-                            <button type="button" id="btn_reset" class="btn btn-secondary btn-sm">
-                                Reset
-                            </button>
+                            <button type="button" id="btn_search" class="btn btn-primary btn-sm m-1">Search</button>
+                            <button type="button" id="btn_reset" class="btn btn-secondary btn-sm m-1">Reset</button>
                         </div>
                     </div>
                     <span class="text-danger small" id="error_message"></span>

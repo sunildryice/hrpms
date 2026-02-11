@@ -11,14 +11,15 @@
 |
 */
 
+use Modules\EmployeeAttendance\Controllers\ReviewController;
 use Modules\EmployeeAttendance\Controllers\ApproveController;
+use Modules\EmployeeAttendance\Controllers\PendingController;
 use Modules\EmployeeAttendance\Controllers\ApprovedController;
 use Modules\EmployeeAttendance\Controllers\AttendanceController;
+use Modules\EmployeeAttendance\Controllers\DailyAttendanceController;
 use Modules\EmployeeAttendance\Controllers\AttendanceDetailController;
-use Modules\EmployeeAttendance\Controllers\AttendanceDetailDonorController;
 use Modules\EmployeeAttendance\Controllers\AttendanceReviewController;
-use Modules\EmployeeAttendance\Controllers\PendingController;
-use Modules\EmployeeAttendance\Controllers\ReviewController;
+use Modules\EmployeeAttendance\Controllers\AttendanceDetailDonorController;
 
 Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendance.')->group(function () {
 
@@ -43,6 +44,10 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendan
     Route::post('import', [AttendanceController::class, 'import'])->name('import');
 });
 
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
+    Route::match(['get', 'post'], '/daily-attendance', [DailyAttendanceController::class, 'index'])
+        ->name('daily.attendance.index');
+});
 Route::middleware(['web', 'auth', 'logger'])
     ->prefix('attendance/detail')->as('attendance.detail.')->group(function () {
         Route::get('', [AttendanceDetailController::class, 'index'])->name('index');

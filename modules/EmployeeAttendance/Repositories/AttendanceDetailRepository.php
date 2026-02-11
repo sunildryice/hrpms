@@ -27,10 +27,24 @@ class AttendanceDetailRepository extends Repository
         $this->model = $attendanceDetail;
     }
 
+    public function getModel()
+    {
+        return $this->model;
+    }
+
     public function getDetail($attendanceId, $date): ?AttendanceDetail
     {
         return $this->model->where('attendance_master_id', $attendanceId)
             ->where('attendance_date', $date)->first();
+    }
+
+    public function getDetailByEmployeeAndDate($employeeId, $date)
+    {
+        return $this->model->whereHas('attendance', function ($q) use ($employeeId) {
+            $q->where('employee_id', $employeeId);
+        })
+            ->where('attendance_date', $date)
+            ->first();
     }
 
     public function create($inputs)

@@ -61,7 +61,7 @@ class DailyAttendanceController extends Controller
 
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
 
-                    if ($detail && $detail->checkin && $detail->checkout) {
+                    if ($detail && $detail?->checkin || $detail?->checkout) {
                         return 'Present';
                     }
                     if ($date->isWeekend()) {

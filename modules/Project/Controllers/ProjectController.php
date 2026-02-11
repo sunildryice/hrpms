@@ -44,6 +44,12 @@ class ProjectController
                 ->editColumn('completion_date', function ($row) {
                     return $row->formatted_completion_date;
                 })
+                ->editColumn('team_lead', function ($row) {
+                    return $row->teamLead ? $row->teamLead->full_name : '-';
+                })
+                ->editColumn('focal_person', function ($row) {
+                    return $row->focalPerson ? $row->focalPerson->full_name : '-';
+                })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.dashboard', $row->id) . '" rel="tooltip" title="View Project">';

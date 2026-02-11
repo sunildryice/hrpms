@@ -306,17 +306,19 @@
                     },
                     attachment: {
                         validators: {
-                            // callback: {
-                            //     message: 'Prescription is required',
-                            //     callback: function(input) {
-                            //         let days = getLeaveDays();
-                            //         let leaveTypeId = getSelectedLeaveType();
-                            //         if (days > 3 && sickLeaveId == leaveTypeId) {
-                            //             return input.value !== ''; 
-                            //         }
-                            //         return true; 
-                            //     }
-                            // },
+                            callback: {
+                                message: 'Prescription is required',
+                                callback: function(input) {
+                                    let days = getLeaveDays();
+                                    let leaveTypeId = getSelectedLeaveType();
+                                    if (days <= 3 || sickLeaveId != leaveTypeId) {
+                                        return true;
+                                    }
+                                    const hasExisting = document.querySelector('input[name="has_existing_attachment"]') !== null;
+                                    const hasNewFile = input.value !== '';
+                                    return hasExisting || hasNewFile;
+                                }
+                            },
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
                                 type: 'image/jpeg,image/png,application/pdf',
@@ -676,6 +678,7 @@
                             <small>Supported file types jpeg/jpg/png/pdf and file size of upto
                                 2MB.</small>
                             @if (file_exists('storage/' . $leaveRequest->attachment) && $leaveRequest->attachment != '')
+                                <input type="hidden" name="has_existing_attachment" value="1">
                                 <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
                                     title="View Attachment">
                                     <div class ="media">

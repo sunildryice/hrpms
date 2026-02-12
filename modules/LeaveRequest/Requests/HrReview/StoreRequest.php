@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id'=>'required',
-            'review_remarks'=>'required',
+            'review_remarks'=>'nullable',
             'recommended_to' => 'nullable'
         ];
     }

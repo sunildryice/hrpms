@@ -276,7 +276,7 @@
 
     <div class="emp-header"></div>
     <div class="row">
-        <div class="mb-3 col-lg-3 mb-lg-0">
+        <div class="mb-3 col-lg-4 mb-lg-0">
             <div class="card">
                 <div class="card-header fw-bold">Profile
 
@@ -342,7 +342,7 @@
             </div>
         </div>
         @if (auth()->user()->can('manage-employee'))
-            <div class="col-lg-9">
+            <div class="col-lg-8">
                 {{-- <div class="py-3 mb-2 rounded text-end">
                     <a href="{{ route('employees.info', $employee->id) }}" class="btn btn-sm btn-primary" target="_blank"
                         style=" text-decoration: none">Print <i class="bi bi-printer"></i></a>

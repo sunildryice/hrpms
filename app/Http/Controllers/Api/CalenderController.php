@@ -39,8 +39,8 @@ class CalenderController extends Controller
                     ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);
             });
 
-        $sickLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.SICK_LEAVE'))->with(['requester'])->get();
-        $annualLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.ANNUAL_LEAVE'))->with(['requester'])->get();
+        $sickLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.SICK_LEAVE'))->with(['requester', 'leaveDays.leaveMode'])->get();
+        $annualLeaves = (clone $leaveRequests)->where('leave_type_id', config('constant.ANNUAL_LEAVE'))->with(['requester', 'leaveDays.leaveMode'])->get();
 
         $lieuLeaveRequests = $this->lieuLeaveRequest->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
@@ -78,7 +78,7 @@ class CalenderController extends Controller
         $otherLeaves = (clone $leaveRequests)->whereNotIn('leave_type_id', [
             config('constant.SICK_LEAVE'),
             config('constant.ANNUAL_LEAVE'),
-        ])->with(['requester'])->get();
+        ])->with(['requester', 'leaveDays.leaveMode'])->get();
 
 
         $office = $this->officeRepository->find($officeId);

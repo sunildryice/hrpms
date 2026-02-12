@@ -281,12 +281,12 @@
 
                     <div class="mb-3">
                         <label class="form-label">Check-in Time</label>
-                        <input type="text" class="form-control" id="edit_checkin">
+                        <input type="text" class="form-control" id="edit_checkin" onfocus="this.blur()">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Check-out Time</label>
-                        <input type="text" class="form-control" id="edit_checkout">
+                        <input type="text" class="form-control" id="edit_checkout" onfocus="this.blur()">
                     </div>
                 </div>
                 <div class="modal-footer">

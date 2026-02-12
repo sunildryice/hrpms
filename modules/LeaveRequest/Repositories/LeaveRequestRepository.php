@@ -4,6 +4,7 @@ namespace Modules\LeaveRequest\Repositories;
 
 use App\Repositories\Repository;
 use DB;
+use Illuminate\Support\Facades\Artisan;
 use Modules\Employee\Models\Employee;
 use Modules\Employee\Repositories\LeaveRepository;
 use Modules\LeaveRequest\Models\LeaveRequest;
@@ -162,8 +163,9 @@ class LeaveRequestRepository extends Repository
             $leaveRequest->update($inputs);
             $leaveRequest->logs()->create($inputs);
             if ($inputs['status_id'] == config('constant.APPROVED_STATUS')) {
-                app(LeaveRepository::class)
-                    ->reconcileEmployeeLeave($leaveRequest->requester->employee, $leaveRequest->start_date->format('Y'), $leaveRequest->start_date->format('m'));
+                Artisan::call('dryice:reconcile:employee:leave', ['employee' => $leaveRequest->requester->employee->employee_code]);
+//                app(LeaveRepository::class)
+//                    ->reconcileEmployeeLeave($leaveRequest->requester->employee, $leaveRequest->start_date->format('Y'), $leaveRequest->start_date->format('m'));
             }
 
             DB::commit();

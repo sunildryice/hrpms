@@ -29,15 +29,16 @@ class LeaveRequestController extends Controller
      * Create a new controller instance.
      */
     public function __construct(
-        protected EmployeeRepository $employees,
-        protected FiscalYearRepository $fiscalYears,
-        protected LeaveModeRepository $leaveModes,
-        protected LeaveRepository $employeeLeaves,
+        protected EmployeeRepository     $employees,
+        protected FiscalYearRepository   $fiscalYears,
+        protected LeaveModeRepository    $leaveModes,
+        protected LeaveRepository        $employeeLeaves,
         protected LeaveRequestRepository $leaveRequests,
-        protected LeaveTypeRepository $leaveTypes,
-        protected OfficeRepository $offices,
-        protected UserRepository $users
-    ) {
+        protected LeaveTypeRepository    $leaveTypes,
+        protected OfficeRepository       $offices,
+        protected UserRepository         $users
+    )
+    {
         $this->destinationPath = 'leaverequest';
         $this->sortOrder = array_flip([6, 3, 12, 9]);
     }
@@ -98,11 +99,11 @@ class LeaveRequestController extends Controller
                         $btn .= route('leave.requests.edit', $row->id) . '"  data-bs-toggle="tooltip" data-bs-placement="top"
                         data-bs-title="Edit Leave Request"><i class="bi-pencil-square"></i></a>';
                     } else
-                    if ($authUser->can('print', $row)) {
-                        $btn .= '&emsp;<a target="_blank" class="btn btn-outline-primary btn-sm" ';
-                        $btn .= 'href="' . route('leave.requests.print', $row->id) . '">';
-                        $btn .= '<i class="bi-printer"></i></a>';
-                    }
+                        if ($authUser->can('print', $row)) {
+                            $btn .= '&emsp;<a target="_blank" class="btn btn-outline-primary btn-sm" ';
+                            $btn .= 'href="' . route('leave.requests.print', $row->id) . '">';
+                            $btn .= '<i class="bi-printer"></i></a>';
+                        }
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
                         $btn .= 'data-href="' . route('leave.requests.destroy', $row->id) . '">';
@@ -221,10 +222,7 @@ class LeaveRequestController extends Controller
             $message = 'Leave request is successfully added.';
             if ($leaveRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
-                $reviewsers = $this->users->permissionBasedUsers('review-leave-request');
-                foreach ($reviewsers as $reviewer) {
-                    $reviewer->notify(new LeaveRequestSubmittedReview($leaveRequest));
-                }
+                $leaveRequest->approver->notify(new LeaveRequestSubmittedReview($leaveRequest));
             }
 
             if ($leaveRequest->status_id == config('constant.VERIFIED_STATUS')) {
@@ -233,13 +231,9 @@ class LeaveRequestController extends Controller
             }
 
 
-
-
             return redirect()->route('leave.requests.index')
                 ->withSuccessMessage($message);
         }
-
-
 
 
         return redirect()->back()->withInput()
@@ -249,7 +243,7 @@ class LeaveRequestController extends Controller
     /**
      * Show the form for editing the specified travel request.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -329,7 +323,7 @@ class LeaveRequestController extends Controller
     /**
      * Update the specified leave request in storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      *
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -359,10 +353,7 @@ class LeaveRequestController extends Controller
             $message = 'Leave request is successfully updated.';
             if ($leaveRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
-                $reviewsers = $this->users->permissionBasedUsers('review-leave-request');
-                foreach ($reviewsers as $reviewer) {
-                    $reviewer->notify(new LeaveRequestSubmittedReview($leaveRequest));
-                }
+                $leaveRequest->approver->notify(new LeaveRequestSubmittedReview($leaveRequest));
             }
             if ($leaveRequest->status_id == config('constant.VERIFIED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';

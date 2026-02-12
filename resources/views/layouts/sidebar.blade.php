@@ -1106,6 +1106,10 @@
                                     <a class="nav-link" href="{{ route('report.leave.requests.index') }}"
                                         id="leave-request-report-menu">Leave Requests</a>
                                 @endif
+                                @if ($authUser->can('work-from-home-report'))
+                                    <a class="nav-link" href="{{ route('report.work.from.home.index') }}"
+                                        id="work-from-home-report-menu">Work From Home</a>
+                                @endif
                                 @if ($authUser->can('maintenance-request-report'))
                                     <a class="nav-link" href="{{ route('report.maintenance.request.index') }}"
                                         id="maintenance-request-report-menu">Maintenance Request</a>

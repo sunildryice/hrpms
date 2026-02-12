@@ -11,6 +11,7 @@ use Modules\Report\Controllers\Admin\ConstructionReportController;
 use Modules\Report\Controllers\LogisticsProcurement\GrnController;
 use Modules\Report\Controllers\Finance\MonthlyFundRequestController;
 use Modules\Report\Controllers\HumanResources\LeaveRequestController;
+use Modules\Report\Controllers\HumanResources\WorkFromHomeController;
 use Modules\Report\Controllers\HumanResources\LeaveSummaryController;
 use Modules\Report\Controllers\HumanResources\EmployeeProfileController;
 use Modules\Report\Controllers\HumanResources\TrainingRequestController;
@@ -100,6 +101,9 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     Route::any('leave/requests', [LeaveRequestController::class, 'index'])->name('leave.requests.index');
     Route::any('leave/requests/export', [LeaveRequestController::class, 'export'])->name('leave.requests.export');
 
+    Route::get('work/from/home', [WorkFromHomeController::class, 'index'])->name('work.from.home.index');
+    Route::get('work/from/home/export', [WorkFromHomeController::class, 'export'])->name('work.from.home.export');
+
     // Leave Summary report
     Route::any('leave/summary/index', [LeaveSummaryController::class, 'index'])->name('leave.summary.index');
     Route::any('leave/summary/export', [LeaveSummaryController::class, 'export'])->name('leave.summary.export');
@@ -133,7 +137,7 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     Route::any('asset/book/export', [AssetBookController::class, 'export'])->name('asset.book.export');
 
     //Aseet Disposition
-    Route::any('asset/disposition/index',  [AssetBookController::class, 'dispositionIndex'])->name('asset.disposition.index');
+    Route::any('asset/disposition/index', [AssetBookController::class, 'dispositionIndex'])->name('asset.disposition.index');
     Route::any('asset/disposition/export', [AssetBookController::class, 'dispositionExport'])->name('asset.disposition.export');
 
     // Construction

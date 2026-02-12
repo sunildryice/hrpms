@@ -43,6 +43,7 @@ class LeaveRepository extends Repository
             ->whereHas('leaveType', function ($q) {
                 $q->whereNotNull('activated_at');
             })
+            ->orderBy('leave_type_id', 'desc')
             ->get();
     }
 

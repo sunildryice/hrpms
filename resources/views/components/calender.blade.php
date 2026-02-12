@@ -133,9 +133,15 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <h6 class="fw-bold">Time / Duration</h6>
-                    <p id="singleEventDateRange" class="text-muted small mb-1"></p>
-                    <p id="singleEventDescription" class="text-muted small mb-0"></p>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Time / Duration</h6>
+                        <p id="singleEventDateRange" class="text-muted small mb-0"></p>
+                    </div>
+
+                    <div class="mb-3 d-none" id="singleEventLeaveModeContainer">
+                        <h6 class="fw-bold">Leave Mode</h6>
+                        <p id="singleEventLeaveMode" class="text-muted small mb-0"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -281,9 +287,20 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <h6 class="fw-bold">Time / Duration</h6>
-                    <p id="singleEventDateRange" class="text-muted small mb-1"></p>
-                    <p id="singleEventDescription" class="text-muted small mb-0"></p>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Time / Duration</h6>
+                        <p id="singleEventDateRange" class="text-muted small mb-0"></p>
+                    </div>
+
+                    <div class="mb-3 d-none" id="singleEventLeaveModeContainer">
+                        <h6 class="fw-bold">Leave Mode</h6>
+                        <p id="singleEventLeaveMode" class="text-muted small mb-0"></p>
+                    </div>
+
+                    /* <div>
+                        <h6 class="fw-bold">Description</h6>
+                        <p id="singleEventDescription" class="text-muted small mb-0"></p>
+                    </div> */
                 </div>
             </div>
         </div>
@@ -372,6 +389,24 @@
         }
     }
 
+    function getLeaveModeLabel(leaveRequest) {
+        if (!leaveRequest.leave_days || leaveRequest.leave_days.length === 0) {
+            return '';
+        }
+
+        const modes = new Set();
+        leaveRequest.leave_days.forEach(day => {
+            if (day.leave_mode && day.leave_mode.title) {
+                modes.add(day.leave_mode.title);
+            }
+        });
+
+        if (modes.size === 0) return '';
+        if (modes.size === 1) return Array.from(modes)[0];
+
+        return 'Mixed Mode';
+    }
+
     function mapApiDataToEvents(data) {
         const events = [];
 
@@ -388,6 +423,7 @@
         sickLeaves.forEach(sl => {
             const requester = sl.requester || {};
             const desc = sl.remarks || 'No description.';
+            const mode = getLeaveModeLabel(sl);
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Sick Leave`,
                 start: normalizeDate(sl.start_date),
@@ -398,7 +434,8 @@
                 /* description: desc, */
                 priority: getPriority('sick_leave'),
                 extendedProps: {
-                    /* description: desc */
+                    description: desc,
+                    leaveMode: mode
                 }
             });
         });
@@ -407,6 +444,7 @@
         annualLeaves.forEach(al => {
             const requester = al.requester || {};
             const desc = al.remarks || 'No description.';
+            const mode = getLeaveModeLabel(al);
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Annual Leave`,
                 start: normalizeDate(al.start_date),
@@ -417,7 +455,8 @@
                 /* description: desc, */
                 priority: getPriority('annual_leave'),
                 extendedProps: {
-                    /* description: desc */
+                    description: desc,
+                    leaveMode: mode
                 }
             });
         });
@@ -503,6 +542,7 @@
         otherLeaves.forEach(ol => {
             const requester = ol.requester || {};
             const desc = ol.remarks || 'No description.';
+            const mode = getLeaveModeLabel(ol);
             events.push({
                 title: `${requester.full_name ?? requester.name ?? 'Employee'} is on Leave`,
                 start: normalizeDate(ol.start_date),
@@ -513,7 +553,8 @@
                 description: desc,
                 priority: getPriority('leave'),
                 extendedProps: {
-                    /* description: desc */
+                    description: desc,
+                    leaveMode: mode
                 }
             });
         });
@@ -618,6 +659,7 @@
                             <div>
                                 <h6 class="mb-1 fw-bold">${event.title}</h6>
                                 ${dateHtml}
+                                ${event.extendedProps.leaveMode ? `<small class="text-muted d-block mt-1">${event.extendedProps.leaveMode}</small>` : ''}
                             </div>
                         </div>
                     </div>
@@ -641,8 +683,14 @@
         }
         $('#singleEventDateRange').text(range);
 
-        const desc = event.extendedProps.description || event.description || '';
-        $('#singleEventDescription').text(desc);
+        const leaveMode = event.extendedProps.leaveMode;
+        if (leaveMode && leaveMode.trim() !== '') {
+            $('#singleEventLeaveMode').text(leaveMode);
+            $('#singleEventLeaveModeContainer').removeClass('d-none');
+        } else {
+            $('#singleEventLeaveMode').text('');
+            $('#singleEventLeaveModeContainer').addClass('d-none');
+        }
 
         new bootstrap.Modal(document.getElementById('singleEventModal')).show();
     }

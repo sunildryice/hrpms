@@ -53,7 +53,6 @@ class ReconcileEmployeeLeave extends Command
         $employee = $this->employees->findByField('employee_code', $employeeCode);
 
         if($employee->user) {
-
             $this->info('Leave records of ' . $employee->getFullName() . ' are being updated.');
             $previousMonth = 0;
             foreach (range(1, date('m')) as $month) {

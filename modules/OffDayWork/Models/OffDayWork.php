@@ -3,14 +3,15 @@
 namespace Modules\OffDayWork\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Master\Models\FiscalYear;
+use Modules\Master\Models\Office;
 use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
 use Modules\Project\Models\ProjectActivity;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
 class OffDayWork extends Model
@@ -27,11 +28,20 @@ class OffDayWork extends Model
         'fiscal_year_id',
         'reason',
         'status_id',
+        'office_id',
+        'department_id',
+        'request_date',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
         'date' => 'date',
         'deliverables' => 'array',
+    ];
+    protected $dates = [
+        'date',
+        'request_date',
     ];
 
     public function requester()
@@ -88,9 +98,9 @@ class OffDayWork extends Model
 
 
                 return [
-                    'project_id'   => (int) $projectId,
+                    'project_id' => (int) $projectId,
                     'project_name' => $project ? $project->short_name : $project?->title,
-                    'task'        => $item['task'],
+                    'task' => $item['task'],
                     'activity_name' => $activity ? $activity->title : 'N/A',
                 ];
             })
@@ -148,5 +158,15 @@ class OffDayWork extends Model
         $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
         return $offDayWorkNumber . $fiscalYear;
+    }
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id')->withDefault();
+    }
+
+    public function getOfficeName()
+    {
+        return $this->office ? $this->office->getOfficeName() : '';
     }
 }

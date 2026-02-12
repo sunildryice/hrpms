@@ -1102,14 +1102,22 @@
                                     <a class="nav-link" href="{{ route('report.leave.summary.index') }}"
                                         id="leave-summary-report-menu">Leave Record Summary</a>
                                 @endif
+
                                 @if ($authUser->can('leave-request-report'))
                                     <a class="nav-link" href="{{ route('report.leave.requests.index') }}"
                                         id="leave-request-report-menu">Leave Requests</a>
                                 @endif
+
                                 @if ($authUser->can('work-from-home-report'))
                                     <a class="nav-link" href="{{ route('report.work.from.home.index') }}"
                                         id="work-from-home-report-menu">Work From Home</a>
                                 @endif
+
+                                @if ($authUser->can('off-day-work-report'))
+                                    <a class="nav-link" href="{{ route('report.off.day.work.index') }}"
+                                        id="off-day-work-report-menu">Off Day Work</a>
+                                @endif
+
                                 @if ($authUser->can('maintenance-request-report'))
                                     <a class="nav-link" href="{{ route('report.maintenance.request.index') }}"
                                         id="maintenance-request-report-menu">Maintenance Request</a>

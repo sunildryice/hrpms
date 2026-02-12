@@ -1,34 +1,35 @@
 <?php
 
-use Modules\Report\Controllers\AssetDispositionController;
-use Modules\Report\Controllers\Admin\TravelRequestController;
-use Modules\Report\Controllers\AssetDispositionReportController;
-use Modules\Report\Controllers\Finance\FundRequestController;
-use Modules\Report\Controllers\Finance\PaymentSheetController;
-use Modules\Report\Controllers\Admin\VehicleMovementController;
-use Modules\Report\Controllers\Finance\AdvanceRequestController;
 use Modules\Report\Controllers\Admin\ConstructionReportController;
-use Modules\Report\Controllers\LogisticsProcurement\GrnController;
-use Modules\Report\Controllers\Finance\MonthlyFundRequestController;
-use Modules\Report\Controllers\HumanResources\LeaveRequestController;
-use Modules\Report\Controllers\HumanResources\WorkFromHomeController;
-use Modules\Report\Controllers\HumanResources\LeaveSummaryController;
-use Modules\Report\Controllers\HumanResources\EmployeeProfileController;
-use Modules\Report\Controllers\HumanResources\TrainingRequestController;
-use Modules\Report\Controllers\LogisticsProcurement\AssetBookController;
-use Modules\Report\Controllers\LogisticsProcurement\StockBookController;
+use Modules\Report\Controllers\Admin\TravelRequestController;
+use Modules\Report\Controllers\Admin\VehicleMovementController;
+use Modules\Report\Controllers\AssetDispositionController;
+use Modules\Report\Controllers\AssetDispositionReportController;
+use Modules\Report\Controllers\Finance\AdvanceRequestController;
 use Modules\Report\Controllers\Finance\ConsolidatedFundRequestController;
+use Modules\Report\Controllers\Finance\FundRequestController;
+use Modules\Report\Controllers\Finance\MonthlyFundRequestController;
+use Modules\Report\Controllers\Finance\PaymentSheetController;
 use Modules\Report\Controllers\HumanResources\ConsultantProfileController;
-use Modules\Report\Controllers\HumanResources\EmployeeInsuranceController;
-use Modules\Report\Controllers\HumanResources\PerformanceReviewController;
-use Modules\Report\Controllers\HumanResources\EmployeeRequisitionController;
-use Modules\Report\Controllers\LogisticsProcurement\PurchaseOrderController;
 use Modules\Report\Controllers\HumanResources\EmployeeExitClearanceController;
 use Modules\Report\Controllers\HumanResources\EmployeeExitInterviewController;
-use Modules\Report\Controllers\LogisticsProcurement\PurchaseRequestController;
+use Modules\Report\Controllers\HumanResources\EmployeeInsuranceController;
+use Modules\Report\Controllers\HumanResources\EmployeeProfileController;
+use Modules\Report\Controllers\HumanResources\EmployeeRequisitionController;
+use Modules\Report\Controllers\HumanResources\LeaveRequestController;
+use Modules\Report\Controllers\HumanResources\LeaveSummaryController;
+use Modules\Report\Controllers\HumanResources\OffDayWorkReportController;
+use Modules\Report\Controllers\HumanResources\PerformanceReviewController;
+use Modules\Report\Controllers\HumanResources\TrainingRequestController;
+use Modules\Report\Controllers\HumanResources\WorkFromHomeController;
+use Modules\Report\Controllers\LogisticsProcurement\AssetBookController;
+use Modules\Report\Controllers\LogisticsProcurement\GrnController;
 use Modules\Report\Controllers\LogisticsProcurement\MaintenanceRequestController;
-use Modules\Report\Controllers\LogisticsProcurement\StockBookOfficeUseController;
+use Modules\Report\Controllers\LogisticsProcurement\PurchaseOrderController;
+use Modules\Report\Controllers\LogisticsProcurement\PurchaseRequestController;
+use Modules\Report\Controllers\LogisticsProcurement\StockBookController;
 use Modules\Report\Controllers\LogisticsProcurement\StockBookDistributionController;
+use Modules\Report\Controllers\LogisticsProcurement\StockBookOfficeUseController;
 
 Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->group(function () {
 
@@ -101,8 +102,13 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     Route::any('leave/requests', [LeaveRequestController::class, 'index'])->name('leave.requests.index');
     Route::any('leave/requests/export', [LeaveRequestController::class, 'export'])->name('leave.requests.export');
 
+    // Work From Home report
     Route::get('work/from/home', [WorkFromHomeController::class, 'index'])->name('work.from.home.index');
     Route::get('work/from/home/export', [WorkFromHomeController::class, 'export'])->name('work.from.home.export');
+
+    // Off Day Work report
+    Route::any('off/day/work',   [OffDayWorkReportController::class, 'index'])->name('off.day.work.index');
+    Route::any('off/day/work/export', [OffDayWorkReportController::class, 'export'])->name('off.day.work.export');
 
     // Leave Summary report
     Route::any('leave/summary/index', [LeaveSummaryController::class, 'index'])->name('leave.summary.index');

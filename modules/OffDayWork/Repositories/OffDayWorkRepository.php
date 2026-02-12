@@ -2,7 +2,6 @@
 
 namespace Modules\OffDayWork\Repositories;
 
-
 use App\Repositories\Repository;
 use Modules\Master\Models\ProjectCode;
 use Modules\OffDayWork\Models\OffDayWork;

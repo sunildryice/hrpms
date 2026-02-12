@@ -52,29 +52,33 @@ class ReconcileEmployeeLeave extends Command
         $employeeCode = $this->argument('employee');
         $employee = $this->employees->findByField('employee_code', $employeeCode);
 
-        $this->info('Leave records of '. $employee->getFullName() .' are being updated.');
-        $previousMonth = 0;
-        foreach(range(1, date('m')) as $month)
-        {
-            $month = sprintf("%02d", $month);
-            $reportedDate = date('Y-' . $month . '-01');
-            $this->info('Report date => '. $reportedDate);
+        if($employee->user) {
 
-            $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
-                ->where('end_date', '>=', date('Y-m-d'))
-                ->first();
+            $this->info('Leave records of ' . $employee->getFullName() . ' are being updated.');
+            $previousMonth = 0;
+            foreach (range(1, date('m')) as $month) {
+                $month = sprintf("%02d", $month);
+                $reportedDate = date('Y-' . $month . '-01');
+                $this->info('Report date => ' . $reportedDate);
 
-
-            $previousYear = collect();
-            if ($month == '01') {
-                $pyDate = Carbon::now()->startOfYear()->subMonth()->format('Y-m-d');
-                $previousYear = $this->fiscalYears->where('start_date', '<=', $pyDate)
-                    ->where('end_date', '>=', $pyDate)
+                $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
+                    ->where('end_date', '>=', date('Y-m-d'))
                     ->first();
+
+
+                $previousYear = collect();
+                if ($month == '01') {
+                    $pyDate = Carbon::now()->startOfYear()->subMonth()->format('Y-m-d');
+                    $previousYear = $this->fiscalYears->where('start_date', '<=', $pyDate)
+                        ->where('end_date', '>=', $pyDate)
+                        ->first();
+                }
+                $this->employeeLeaves->generateEmployeeLeave($employee, $reportedDate, $fiscalYear, $previousYear);
+                $this->employeeLeaves->reconcileEmployeeLeave($employee, date('Y'), $month);
             }
-            $this->employeeLeaves->generateEmployeeLeave($employee, $reportedDate, $fiscalYear, $previousYear);
-            $this->employeeLeaves->reconcileEmployeeLeave($employee, date('Y'), $month);
+            $this->info('Leave records of ' . $employee->getFullName() . ' are updated.');
+        } else {
+            $this->info('Leave records of ' . $employee->getFullName() . ' are not updated. User is not assigned for this employee.');
         }
-        $this->info('Leave records of '. $employee->getFullName() .' are updated.');
     }
 }

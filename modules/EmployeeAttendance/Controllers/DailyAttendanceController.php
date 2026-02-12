@@ -77,28 +77,34 @@ class DailyAttendanceController extends Controller
                 ->addColumn('action', function ($emp) use ($selectedDate, $isToday) {
                     // Hide action column completely for today
                     if ($isToday) {
-                        return '<span class="text-muted">—</span>';
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    if (!auth()->user()->can('edit_daily_attendance')) {
+                        return '<span class="text-muted">-</span>';
                     }
 
                     $date = Carbon::parse($selectedDate);
 
                     // Only allow edit for past dates (not future, already excluded above)
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-
                     return '<button type="button" class="btn btn-sm btn-outline-primary edit-attendance-btn"
-                        title="Edit Attendance"
-                        data-employee-id="' . $emp->id . '"
-                        data-date="' . $selectedDate . '"
-                        data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
-                        data-checkout="' . ($detail?->checkout?->format('H:i') ?? '') . '">
-                        <i class="bi bi-pencil-square"></i> 
-                    </button>';
+                            title="Edit Attendance"
+                            data-employee-id="' . $emp->id . '"
+                            data-date="' . $selectedDate . '"
+                            data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
+                            data-checkout="' . ($detail?->checkout?->format('H:i') ?? '') . '">
+                            <i class="bi bi-pencil-square"></i> 
+                        </button>';
                 })
                 ->rawColumns(['action', 'remarks'])
                 ->make(true);
         }
 
-        $data = ['offices' => $this->officeRepo->getActiveOffices()];
+        $data = [
+            'offices' => $this->officeRepo->getActiveOffices(),
+            'can_edit_attendance' => auth()->user()->can('edit_daily_attendance'),
+        ];
 
         return view('EmployeeAttendance::DailyAttendance.index', $data);
     }

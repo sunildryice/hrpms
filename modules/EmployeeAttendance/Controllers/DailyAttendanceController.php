@@ -65,7 +65,7 @@ class DailyAttendanceController extends Controller
 
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
 
-                    if ($detail && $detail->checkin && $detail->checkout) {
+                    if ($detail && ($detail->checkin || $detail->checkout)) {
                         return 'Present';
                     }
                     if ($date->isWeekend()) {
@@ -90,7 +90,7 @@ class DailyAttendanceController extends Controller
                         data-date="' . $selectedDate . '"
                         data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
                         data-checkout="' . ($detail?->checkout?->format('H:i') ?? '') . '">
-                        <i class="bi bi-pencil-square"></i> Edit
+                        <i class="bi bi-pencil-square"></i> 
                     </button>';
                 })
                 ->rawColumns(['action', 'remarks'])
@@ -125,9 +125,7 @@ class DailyAttendanceController extends Controller
                 'checkout' => $checkout,
             ]);
         } else {
-            // Create new record (you may need to get/create attendance master first)
-            // This part depends on your Attendance model logic
-            // For simplicity, assuming you have a way to get/create master
+            // Create new record ( create attendance master first)
             $attendance = Attendance::firstOrCreate(
                 ['employee_id' => $employeeId, 'month' => date('n', strtotime($date)), 'year' => date('Y', strtotime($date))],
                 ['created_by' => auth()->id()]
@@ -142,7 +140,7 @@ class DailyAttendanceController extends Controller
             ]);
         }
 
-        // Optional: recalculate worked_hours if needed
+        // recalculate worked_hours if needed
         if ($checkin && $checkout) {
             $start = Carbon::parse($checkin);
             $end = Carbon::parse($checkout);

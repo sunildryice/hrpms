@@ -75,7 +75,6 @@ class DailyAttendanceController extends Controller
                     return 'Absent';
                 })
                 ->addColumn('action', function ($emp) use ($selectedDate, $isToday) {
-                    // Hide action column completely for today
                     if ($isToday) {
                         return '<span class="text-muted">-</span>';
                     }
@@ -86,7 +85,6 @@ class DailyAttendanceController extends Controller
 
                     $date = Carbon::parse($selectedDate);
 
-                    // Only allow edit for past dates (not future, already excluded above)
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
                     return '<button type="button" class="btn btn-sm btn-outline-primary edit-attendance-btn"
                             title="Edit Attendance"
@@ -132,7 +130,7 @@ class DailyAttendanceController extends Controller
                 'checkout' => $checkout,
             ]);
         } else {
-            // Create new record ( create attendance master first)
+            // Create new record (Create attendance master first)
             $attendance = Attendance::firstOrCreate(
                 ['employee_id' => $employeeId, 'month' => date('n', strtotime($date)), 'year' => date('Y', strtotime($date))],
                 ['created_by' => auth()->id()]
@@ -146,15 +144,13 @@ class DailyAttendanceController extends Controller
                 'created_by' => auth()->id(),
             ]);
         }
-
-        // recalculate worked_hours
+        // Recalculate worked_hours
         if ($checkin && $checkout) {
             $start = Carbon::parse($checkin);
             $end = Carbon::parse($checkout);
             $hours = $start->diff($end)->format('%H.%I');
             $detail->update(['worked_hours' => $hours]);
         }
-
         return response()->json([
             'success' => true,
             'message' => 'Attendance updated successfully'

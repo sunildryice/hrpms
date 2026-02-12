@@ -112,14 +112,50 @@
                 let checkin = $(this).data('checkin') || '';
                 let checkout = $(this).data('checkout') || '';
 
+
                 $('#edit_date').text(date);
                 $('#edit_employee_id').val(employeeId);
                 $('#edit_checkin').val(checkin);
                 $('#edit_checkout').val(checkout);
 
+
                 // Disable if already set
                 $('#edit_checkin').prop('disabled', !!checkin);
                 $('#edit_checkout').prop('disabled', !!checkout);
+
+
+                // Initialize daterangepicker for time picker
+                if (!checkin) {
+                    $('#edit_checkin').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePickerSeconds: false,
+                        autoUpdateInput: false,
+                        locale: {
+                            format: 'HH:mm'
+                        },
+                    }).on('show.daterangepicker', function(ev, picker) {
+                        picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('HH:mm'));
+                    });
+                }
+
+                if (!checkout) {
+                    $('#edit_checkout').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePickerSeconds: false,
+                        autoUpdateInput: false,
+                        locale: {
+                            format: 'HH:mm'
+                        },
+                    }).on('show.daterangepicker', function(ev, picker) {
+                        picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('HH:mm'));
+                    });
+                }
 
                 $('#editAttendanceModal').modal('show');
             });
@@ -245,12 +281,12 @@
 
                     <div class="mb-3">
                         <label class="form-label">Check-in Time</label>
-                        <input type="time" class="form-control" id="edit_checkin">
+                        <input type="text" class="form-control" id="edit_checkin">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Check-out Time</label>
-                        <input type="time" class="form-control" id="edit_checkout">
+                        <input type="text" class="form-control" id="edit_checkout">
                     </div>
                 </div>
                 <div class="modal-footer">

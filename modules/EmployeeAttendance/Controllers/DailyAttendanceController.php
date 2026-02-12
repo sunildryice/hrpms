@@ -86,6 +86,7 @@ class DailyAttendanceController extends Controller
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
 
                     return '<button type="button" class="btn btn-sm btn-outline-primary edit-attendance-btn"
+                        title="Edit Attendance"
                         data-employee-id="' . $emp->id . '"
                         data-date="' . $selectedDate . '"
                         data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
@@ -140,7 +141,7 @@ class DailyAttendanceController extends Controller
             ]);
         }
 
-        // recalculate worked_hours if needed
+        // recalculate worked_hours
         if ($checkin && $checkout) {
             $start = Carbon::parse($checkin);
             $end = Carbon::parse($checkout);

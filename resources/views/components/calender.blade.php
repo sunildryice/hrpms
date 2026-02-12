@@ -142,11 +142,6 @@
                         <h6 class="fw-bold">Leave Mode</h6>
                         <p id="singleEventLeaveMode" class="text-muted small mb-0"></p>
                     </div>
-
-                    <div>
-                        <h6 class="fw-bold">Description</h6>
-                        <p id="singleEventDescription" class="text-muted small mb-0"></p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -302,10 +297,10 @@
                         <p id="singleEventLeaveMode" class="text-muted small mb-0"></p>
                     </div>
 
-                    <div>
+                    /* <div>
                         <h6 class="fw-bold">Description</h6>
                         <p id="singleEventDescription" class="text-muted small mb-0"></p>
-                    </div>
+                    </div> */
                 </div>
             </div>
         </div>
@@ -687,9 +682,6 @@
             range += ` - ${fmt(lastDay)}`;
         }
         $('#singleEventDateRange').text(range);
-
-        const desc = event.extendedProps.description || event.description || 'No description.';
-        $('#singleEventDescription').text(desc);
 
         const leaveMode = event.extendedProps.leaveMode;
         if (leaveMode && leaveMode.trim() !== '') {

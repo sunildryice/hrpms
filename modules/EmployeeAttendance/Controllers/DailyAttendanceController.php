@@ -145,7 +145,7 @@ class DailyAttendanceController extends Controller
         if ($checkin && $checkout) {
             $start = Carbon::parse($checkin);
             $end = Carbon::parse($checkout);
-            $hours = $start->diffInMinutes($end) / 60;
+            $hours = $start->diff($end)->format('%H.%I');
             $detail->update(['worked_hours' => $hours]);
         }
 

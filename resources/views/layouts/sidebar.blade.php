@@ -9,6 +9,13 @@
             </a>
             <div class="navbar-vertical-content">
                 <div id="navbarVerticalMenu" class="nav nav-vertical card-navbar-nav nav-tabs flex-column">
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard.index') }}" role="button" id="dashboard-menu"
+                            data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard">
+                            <i class="bi bi-speedometer2 nav-icon"></i>
+                            <span class="nav-link-title">Dashboard</span>
+                        </a>
+                    </div>
                     <span class="dropdown-header fw-bold">Human Resources</span>
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('employees.index') }}" role="button" id="employees-menu"

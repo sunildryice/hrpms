@@ -124,3 +124,10 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('approved/monthly-timesheet', [MonthlyTimeSheetApprovedController::class, 'index'])->name('approved.monthly-timesheet.index');
     Route::get('approved/monthly-timesheet/{id}/show', [MonthlyTimeSheetApprovedController::class, 'show'])->name('approved.monthly-timesheet.show');
 });
+
+Route::get('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'show'])->name('project-activity.other-details');
+Route::patch('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'update'])->name('project-activity.update-other-details');
+// Other Details CRUD
+Route::post('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'store'])->name('project-activity.other-details.store');
+Route::put('/project-activity/other-details/{id}', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'updateDetail'])->name('project-activity.other-details.update');
+Route::delete('/project-activity/other-details/{id}', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'destroy'])->name('project-activity.other-details.destroy');

@@ -703,6 +703,23 @@
                     });
                 });
             });
+
+            // Handle opening Other Details modal
+            let activityOtherDetailsModal = new bootstrap.Modal(document.getElementById(
+                'activityOtherDetailsModal'));
+            let activityOtherDetailsModalContent = document.getElementById('activityOtherDetailsModalContent');
+
+            $(document).on('click', '.open-other-details-modal', function(e) {
+                e.preventDefault();
+                let url = $(this).data('url');
+                // Optionally, you can show a loader here
+                $.get(url, function(data) {
+                    $(activityOtherDetailsModalContent).find('.modal-body').html(data);
+                    activityOtherDetailsModal.show();
+                }).fail(function() {
+                    toastr.error('Failed to load details.', 'Error');
+                });
+            });
         });
     </script>
 
@@ -790,4 +807,6 @@
 
     {{-- Activity Status Reason/Remarks Modal --}}
     @include('Project::Project.partials.activity-status-modal')
+
+
 @endsection

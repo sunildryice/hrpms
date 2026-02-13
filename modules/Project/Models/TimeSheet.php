@@ -9,22 +9,25 @@ use Modules\Master\Models\Status;
 
 class TimeSheet extends Model
 {
-    use HasFactory;
     protected $table = 'timesheets';
+
     protected $fillable = [
         'year',
+        'month',
         'start_date',
         'end_date',
-        'month',
+        'month_name',
         'status_id',
         'approver_id',
         'requester_id',
         'updated_by',
     ];
+
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
     protected $dates = [
         'start_date',
         'end_date',
@@ -36,6 +39,7 @@ class TimeSheet extends Model
             ->whereStatusId(config('constant.APPROVED_STATUS'))
             ->latest();
     }
+
     public function requester()
     {
         return $this->belongsTo(User::class, 'requester_id')->withDefault();
@@ -90,6 +94,7 @@ class TimeSheet extends Model
     {
         return $this->status_id === config('constant.APPROVED_STATUS');
     }
+
     public function logs()
     {
         return $this->hasMany(TimeSheetLog::class, 'timesheet_id');

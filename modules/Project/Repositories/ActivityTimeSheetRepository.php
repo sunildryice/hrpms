@@ -64,20 +64,20 @@ class ActivityTimeSheetRepository extends Repository
             ->select([
                 'timesheets.*',
                 DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
-                DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
-                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("CONCAT(timesheets.month_name, ' ', timesheets.year) AS month_name"),
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
-                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
-                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
-                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
-                      FROM project_activity_timesheet tst 
-                      JOIN projects p ON tst.project_id = p.id 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ')
+                      FROM project_activity_timesheet tst
+                      JOIN projects p ON tst.project_id = p.id
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
             ])
             ->when($userId, function ($query) use ($userId) {
@@ -95,19 +95,19 @@ class ActivityTimeSheetRepository extends Repository
                 'timesheets.*',
                 DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
                 DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
-                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
-                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
-                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
-                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
-                      FROM project_activity_timesheet tst 
-                      JOIN projects p ON tst.project_id = p.id 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ')
+                      FROM project_activity_timesheet tst
+                      JOIN projects p ON tst.project_id = p.id
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
             ])
             ->when($approverId, function ($query) use ($approverId) {
@@ -126,19 +126,19 @@ class ActivityTimeSheetRepository extends Repository
                 'timesheets.*',
                 DB::raw("CONCAT(timesheets.year, '-', LPAD(MONTH(timesheets.start_date), 2, '0')) AS month"),
                 DB::raw("CONCAT(timesheets.month, ' ', timesheets.year) AS month_name"),
-                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT COUNT(*) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_entries"),
-                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT ROUND(SUM(tst.hours_spent), 2) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS total_hours"),
-                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT COUNT(DISTINCT tst.project_id) FROM project_activity_timesheet tst
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS unique_project_count"),
-                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ') 
-                      FROM project_activity_timesheet tst 
-                      JOIN projects p ON tst.project_id = p.id 
-                      WHERE tst.created_by = timesheets.requester_id 
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT p.short_name ORDER BY p.short_name SEPARATOR ', ')
+                      FROM project_activity_timesheet tst
+                      JOIN projects p ON tst.project_id = p.id
+                      WHERE tst.created_by = timesheets.requester_id
                       AND tst.timesheet_date BETWEEN timesheets.start_date AND timesheets.end_date) AS project_short_names"),
             ])
             ->when($userId, function ($query) use ($userId) {

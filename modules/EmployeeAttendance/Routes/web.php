@@ -47,6 +47,9 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('attendance')->as('attendan
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::match(['get', 'post'], '/daily-attendance', [DailyAttendanceController::class, 'index'])
         ->name('daily.attendance.index');
+
+    Route::post('daily-attendance/update-time', [DailyAttendanceController::class, 'updateTime'])
+        ->name('attendance.update.checkin.checkout');
 });
 Route::middleware(['web', 'auth', 'logger'])
     ->prefix('attendance/detail')->as('attendance.detail.')->group(function () {

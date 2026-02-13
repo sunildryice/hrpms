@@ -2,13 +2,15 @@
 
 namespace Modules\EmployeeAttendance\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
-use Yajra\DataTables\DataTables;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use Modules\EmployeeAttendance\Models\Attendance;
+use Modules\Master\Repositories\OfficeRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\EmployeeAttendance\Models\AttendanceDetail;
+use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
 
 class DailyAttendanceController extends Controller
 {
@@ -26,6 +28,8 @@ class DailyAttendanceController extends Controller
             $selectedDate = $request->filled('selected_date')
                 ? date('Y-m-d', (int) ($request->selected_date / 1000))
                 : now()->format('Y-m-d');
+
+            $isToday = Carbon::parse($selectedDate)->isToday();
 
             $query = $this->employeeRepo->getActiveEmployeesQuery();
 
@@ -61,28 +65,95 @@ class DailyAttendanceController extends Controller
 
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
 
-                    if ($detail && $detail?->checkin || $detail?->checkout) {
+                    if ($detail && ($detail->checkin || $detail->checkout)) {
                         return 'Present';
                     }
                     if ($date->isWeekend()) {
                         return 'Weekend';
                     }
 
-                    // $officeId = $emp->latestTenure?->office_id;
-                    // if ($officeId) {
-                    //     $holidays = $this->officeRepo->getHolidaysOneYear($officeId, $date->year);
-                    //     if (in_array($date->format('Y-m-d'), $holidays)) {
-                    //         return $emp->latestTenure?->is_annual_holiday ? 'Annual Holiday' : 'Holiday';
-                    //     }
-                    // }
-
                     return 'Absent';
                 })
+                ->addColumn('action', function ($emp) use ($selectedDate, $isToday) {
+                    if ($isToday) {
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    if (!auth()->user()->can('edit_daily_attendance')) {
+                        return '<span class="text-muted">-</span>';
+                    }
+
+                    $date = Carbon::parse($selectedDate);
+
+                    $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
+                    return '<button type="button" class="btn btn-sm btn-outline-primary edit-attendance-btn"
+                            title="Edit Attendance"
+                            data-employee-id="' . $emp->id . '"
+                            data-date="' . $selectedDate . '"
+                            data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
+                            data-checkout="' . ($detail?->checkout?->format('H:i') ?? '') . '">
+                            <i class="bi bi-pencil-square"></i> 
+                        </button>';
+                })
+                ->rawColumns(['action', 'remarks'])
                 ->make(true);
         }
 
-        $data = ['offices' => $this->officeRepo->getActiveOffices(),];
+        $data = [
+            'offices' => $this->officeRepo->getActiveOffices(),
+            'can_edit_attendance' => auth()->user()->can('edit_daily_attendance'),
+        ];
 
         return view('EmployeeAttendance::DailyAttendance.index', $data);
+    }
+
+    public function updateTime(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:employees,id',
+            'date' => 'required|date',
+            'checkin' => 'nullable|date_format:H:i',
+            'checkout' => 'nullable|date_format:H:i|after_or_equal:checkin',
+        ]);
+
+        $employeeId = $request->employee_id;
+        $date = $request->date;
+        $checkin = $request->checkin ? $date . ' ' . $request->checkin . ':00' : null;
+        $checkout = $request->checkout ? $date . ' ' . $request->checkout . ':00' : null;
+
+        $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($employeeId, $date);
+
+        if ($detail) {
+            // Update existing record
+            $detail->update([
+                'checkin' => $checkin,
+                'checkout' => $checkout,
+            ]);
+        } else {
+            // Create new record (Create attendance master first)
+            $attendance = Attendance::firstOrCreate(
+                ['employee_id' => $employeeId, 'month' => date('n', strtotime($date)), 'year' => date('Y', strtotime($date))],
+                ['created_by' => auth()->id()]
+            );
+
+            $detail = AttendanceDetail::create([
+                'attendance_master_id' => $attendance->id,
+                'attendance_date' => $date,
+                'checkin' => $checkin,
+                'checkout' => $checkout,
+                'created_by' => auth()->id(),
+            ]);
+        }
+        // Recalculate worked_hours
+        if ($checkin && $checkout) {
+            $start = Carbon::parse($checkin);
+            $end = Carbon::parse($checkout);
+            $hours = $start->diff($end)->format('%H.%I');
+            $detail->update(['worked_hours' => $hours]);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Attendance updated successfully'
+        ]);
     }
 }

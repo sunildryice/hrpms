@@ -246,6 +246,7 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function(e) {
+            const employeeOriginalJoinDate = '{{ $tenure->employee->joined_date?->format('Y-m-d') }}';
             const form = document.getElementById('tenureEditForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -279,7 +280,19 @@
                                 format: 'YYYY-MM-DD',
                                 message: 'The value is not a valid date',
                             },
-                        },
+                            callback: {
+                                message: `Tenure from date cannot be before employee's original join date (${employeeOriginalJoinDate})`,
+                                callback: function(input) {
+                                    if (!input.value.trim()) return true;
+
+                                    const empJoinDate = new Date(
+                                        '{{ $employee->joined_date?->format('Y-m-d') }}');
+                                    const tenureJoinDate = new Date(input.value);
+
+                                    return tenureJoinDate >= empJoinDate;
+                                }
+                            }
+                        }
                     },
                     to_date: {
                         validators: {

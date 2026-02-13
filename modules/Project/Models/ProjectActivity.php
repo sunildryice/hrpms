@@ -22,6 +22,7 @@ class ProjectActivity extends Model
         'parent_id',
         'title',
         'deliverables',
+        'other_details',
         'budget_description',
         'status',
         'start_date',
@@ -62,6 +63,7 @@ class ProjectActivity extends Model
     {
         return $this->parent()->where('activity_level', '=', ActivityLevel::Activity->value);
     }
+
 
 
     public function scopeThemes($query)
@@ -133,6 +135,11 @@ class ProjectActivity extends Model
         return $this->hasOne(ProjectActivityExtension::class, 'activity_id')
             ->orderBy('extended_completion_date', 'desc')
             ->first();
+    }
+
+    public function otherDetails()
+    {
+        return $this->hasMany(ActivityOtherDetail::class, 'project_activity_id');
     }
 
     public function getDisplayCompletionDateAttribute()

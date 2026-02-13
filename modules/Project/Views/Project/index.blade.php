@@ -5,10 +5,10 @@
 @section('page_css')
     <style>
         .wrap-text {
-            white-space: normal !important;
-            word-break: break-word;
+            white-space: nowrap !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
             max-width: 200px;
-            overflow-wrap: break-word;
         }
     </style>
 @endsection

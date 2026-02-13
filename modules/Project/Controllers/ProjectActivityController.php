@@ -125,6 +125,7 @@ class ProjectActivityController extends Controller
                         . '<i class="bi bi-calendar-plus"></i></a>';
                 }
 
+
                 return $btn;
             })
             ->rawColumns(['action', 'status', 'completion_date'])
@@ -437,6 +438,57 @@ class ProjectActivityController extends Controller
 
             // Recursively update up the chain
             $this->updateParentActivity($parent, $statusDate);
+        }
+    }
+
+    // Add this method to serve the Other Details modal content
+    public function otherDetails(ProjectActivity $projectActivity)
+    {
+        $projectActivity->load([
+            'latestStatusLog',
+            'attachments' => function ($query) {
+                $query->latest('created_at');
+            },
+        ]);
+        return view('Project::ProjectActivity.partials.other-details-content', compact('projectActivity'));
+    }
+
+    public function updateOtherDetails(Request $request, $projectActivity)
+    {
+
+        $data = $request->validate([
+            'details' => 'required|array',
+            'details.*.key' => 'required|string',
+            'details.*.value' => 'required|string',
+        ]);
+
+        try {
+            // Accept either model or ID
+            if (!$projectActivity instanceof ProjectActivity) {
+                $projectActivity = ProjectActivity::find($projectActivity);
+            }
+            if (!$projectActivity) {
+                \Log::error('ProjectActivity not found for updateOtherDetails', ['id' => $projectActivity]);
+                return response()->json([
+                    'message' => 'Project Activity not found. Please refresh and try again.'
+                ], 404);
+            }
+
+            $otherDetails = [];
+            foreach ($data['details'] as $item) {
+                $otherDetails[$item['key']] = $item['value'];
+            }
+            $projectActivity->other_details = json_encode($otherDetails);
+            $projectActivity->save();
+
+            return response()->json([
+                'message' => 'Other details updated successfully.',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error updating ProjectActivity other details', ['error' => $e->getMessage()]);
+            return response()->json([
+                'message' => 'Unable to update other details right now. Please try again.',
+            ], 500);
         }
     }
 }

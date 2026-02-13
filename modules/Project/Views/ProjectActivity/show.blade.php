@@ -199,7 +199,7 @@
             </div>
         </div>
         <div class="col-lg-9">
-            <div class="card h-100">
+            <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity TimeSheets</span>
@@ -283,6 +283,8 @@
                     @endif
                 </div>
             </div>
+
+            @include('Project::Partials.other-detail', ['projectActivity' => $projectActivity])
         </div>
     </div>
 @endsection

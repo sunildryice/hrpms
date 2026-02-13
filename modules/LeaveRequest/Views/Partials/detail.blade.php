@@ -106,13 +106,21 @@
                                 <i class="dropdown-item-icon"></i>
                             </div>
                             <div class="d-content-section">
-                                <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
+                                {{-- <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
                                     title="View Attachment">
                                     <div class="media">
                                         <img src="{{ url('storage/' . $leaveRequest->attachment) }}"
                                             style="width: 80px;">
                                     </div>
-                                </a>
+                                </a> --}}
+                                @if ($leaveRequest->attachment && file_exists('storage/' . $leaveRequest->attachment))
+                                    <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="fs-5"
+                                        title="View Attachment">
+                                        <i class="bi bi-file-earmark-medical"></i>
+                                    </a>
+                                @else
+                                    <span class="text-muted"> (No attachment)</span>
+                                @endif
                             </div>
                         </div>
                         {{-- <span class="stretched-link" rel="tooltip" title="Attachment"></span> --}}

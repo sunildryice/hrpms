@@ -9,6 +9,7 @@
             <th>{{ __('label.start-date') }}</th>
             <th>{{ __('label.end-date') }}</th>
             <th>{{ __('label.members') }}</th>
+            <th>Activity Status</th>
         </tr>
     </thead>
     <tbody>

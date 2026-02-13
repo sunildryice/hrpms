@@ -56,6 +56,7 @@
                 serverSide: true,
                 ajax: "{{ route('project-activity.index', $project->id) }}",
                 bFilter: true,
+                pageLength: 25,
                 bPaginate: true,
                 bInfo: true,
                 scrollX: true,

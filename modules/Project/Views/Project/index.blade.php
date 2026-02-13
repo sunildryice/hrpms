@@ -39,12 +39,12 @@
                         name: 'short_name'
                     },
                     {
-                        data: 'team_lead',
-                        name: 'team_lead'
+                        data: 'team_lead_id',
+                        name: 'team_lead_id'
                     },
                     {
-                        data: 'focal_person',
-                        name: 'focal_person'
+                        data: 'focal_person_id',
+                        name: 'focal_person_id'
                     },
                     {
                         data: 'start_date',

@@ -31,7 +31,6 @@ class WorkFromHomeLog extends Model
         return $this->belongsTo(Status::class, 'status_id');
     }
 
-
     public function getStatus()
     {
         return ucwords($this->status->title);

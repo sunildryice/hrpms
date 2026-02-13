@@ -17,7 +17,8 @@ return new class extends Migration {
             $table->year('year');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->string('month')->nullable();
+            $table->unsignedTinyInteger('month');
+            $table->string('month_name')->nullable();
             $table->unsignedBigInteger('status_id')->nullable()->default(null);
             $table->unsignedBigInteger('approver_id')->nullable()->default(null);
             $table->unsignedBigInteger('requester_id')->nullable()->default(null);

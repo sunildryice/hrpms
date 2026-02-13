@@ -27,8 +27,7 @@ class MonthlyTimeSheetController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->activityTimeSheets
-                ->getMonthlyTimeSheets($authUser->id);
+            $data = $this->activityTimeSheets->getMonthlyTimeSheets($authUser->id);
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('month_name', function ($row) {
@@ -61,7 +60,7 @@ class MonthlyTimeSheetController extends Controller
         $authUser = auth()->user();
 
         $timeSheet = TimeSheet::where('id', $id)
-            ->where('requester_id', $authUser->id)    
+            ->where('requester_id', $authUser->id)
             ->firstOrFail();
 
         $timeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod($timeSheet->start_date, $timeSheet->end_date, auth()->id());

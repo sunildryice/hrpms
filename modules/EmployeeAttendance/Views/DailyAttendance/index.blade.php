@@ -2,7 +2,6 @@
 
 @section('title', 'Daily Attendance')
 
-
 @section('page_js')
     <script type="text/javascript">
         let selected_date = '';
@@ -65,22 +64,26 @@
                         name: 'remarks',
                         className: 'remarks-col'
                     },
-                ],
+                    {
+                        data: 'action',
+                        name: 'action',
+                        className: 'action-col text-center',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
             });
 
-            // Auto-load today's data on page load
+            // Auto-load today
             table.ajax.reload();
 
+            // Search & Reset
             $('#btn_search').on('click', function() {
                 if ($('#selected_date').val()) {
                     let sd = new Date($('#selected_date').val());
                     selected_date = sd.getTime();
-                } else {
-                    selected_date = '';
                 }
-
                 office_id = $('#office_id').val() || '';
-
                 table.ajax.reload();
             });
 
@@ -91,6 +94,102 @@
                 $('#office_id').val('').trigger('change.select2');
                 office_id = '';
                 table.ajax.reload();
+            });
+
+            // Show/hide Action column based on selected date
+            table.on('draw', function() {
+                const selected = $('#selected_date').val();
+                const isToday = selected === new Date().toISOString().split('T')[0];
+                table.column(6).visible(!isToday);
+            });
+
+            // Edit button click → open modal
+            $(document).on('click', '.edit-attendance-btn', function(e) {
+                e.preventDefault();
+
+                const employeeId = $(this).data('employee-id');
+                const date = $(this).data('date');
+                let checkin = $(this).data('checkin') || '';
+                let checkout = $(this).data('checkout') || '';
+
+
+                $('#edit_date').text(date);
+                $('#edit_employee_id').val(employeeId);
+                $('#edit_checkin').val(checkin);
+                $('#edit_checkout').val(checkout);
+
+
+                // Disable if already set
+                $('#edit_checkin').prop('disabled', !!checkin);
+                $('#edit_checkout').prop('disabled', !!checkout);
+
+
+                // Initialize daterangepicker for time picker
+                if (!checkin) {
+                    $('#edit_checkin').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePickerSeconds: false,
+                        autoUpdateInput: false,
+                        locale: {
+                            format: 'HH:mm'
+                        },
+                    }).on('show.daterangepicker', function(ev, picker) {
+                        picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('HH:mm'));
+                    });
+                }
+
+                if (!checkout) {
+                    $('#edit_checkout').daterangepicker({
+                        singleDatePicker: true,
+                        timePicker: true,
+                        timePickerSeconds: false,
+                        autoUpdateInput: false,
+                        locale: {
+                            format: 'HH:mm'
+                        },
+                    }).on('show.daterangepicker', function(ev, picker) {
+                        picker.container.find(".calendar-table").hide();
+                    }).on('apply.daterangepicker', function(ev, picker) {
+                        $(this).val(picker.startDate.format('HH:mm'));
+                    });
+                }
+
+                $('#editAttendanceModal').modal('show');
+            });
+
+            // Save via AJAX
+            $('#saveAttendanceBtn').on('click', function() {
+                const employeeId = $('#edit_employee_id').val();
+                const date = $('#edit_date').text();
+                const checkin = $('#edit_checkin').val();
+                const checkout = $('#edit_checkout').val();
+
+                $.ajax({
+                    url: "{{ route('attendance.update.checkin.checkout') }}",
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        employee_id: employeeId,
+                        date: date,
+                        checkin: checkin,
+                        checkout: checkout
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message || 'Attendance updated');
+                            $('#editAttendanceModal').modal('hide');
+                            table.ajax.reload();
+                        } else {
+                            toastr.error(response.message || 'Failed to update');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Something went wrong');
+                    }
+                });
             });
         });
     </script>
@@ -152,12 +251,47 @@
                                 <th>Employee Name</th>
                                 <th>Time In (hh:mm)</th>
                                 <th>Time Out (hh:mm)</th>
-                                <th>Hours Worked (hh.mm)</th>
+                                <th>Hours Worked</th>
                                 <th style="width: 40%;">Remarks</th>
+                                <th class="text-center" style="width: 120px;">Action</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Attendance Modal -->
+    <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-labelledby="editAttendanceModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="editAttendanceModalLabel">Edit Attendance</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="edit_employee_id">
+                    <p class="mb-3">
+                        <strong>Date:</strong> <span id="edit_date"></span>
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Check-in Time</label>
+                        <input type="text" class="form-control" id="edit_checkin" onfocus="this.blur()">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Check-out Time</label>
+                        <input type="text" class="form-control" id="edit_checkout" onfocus="this.blur()">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="saveAttendanceBtn">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>

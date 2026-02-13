@@ -187,7 +187,7 @@ class TravelRequestRepository extends Repository
         DB::beginTransaction();
         try {
             $travelRequest = $this->model->create($inputs);
-            if (! empty($inputs['accompanying_staff'])) {
+            if (!empty($inputs['accompanying_staff'])) {
                 $travelRequest->accompanyingStaffs()->sync($inputs['accompanying_staff']);
             }
             if (array_key_exists('substitutes', $inputs)) {
@@ -196,9 +196,9 @@ class TravelRequestRepository extends Repository
             DB::commit();
 
             return $travelRequest;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
-
+            logger()->channel('database')->error($exception->getMessage(), $inputs);
             return false;
         }
     }

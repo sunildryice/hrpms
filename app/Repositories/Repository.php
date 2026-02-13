@@ -55,36 +55,38 @@ class Repository
             $record = $this->model->create($inputs);
             DB::commit();
             return $record;
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e->getMessage());
+        } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
+            logger()->channel('database')->error($exception->getMessage(), $inputs);
             return false;
         }
     }
 
-    public function insert($data)
+    public function insert($inputs)
     {
         DB::beginTransaction();
         try {
-            $this->model->insert($data);
+            $this->model->insert($inputs);
             DB::commit();
             return true;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
+            logger()->channel('database')->error($exception->getMessage(), $inputs);
             return false;
         }
     }
 
-    public function update($id, $data)
+    public function update($id, $inputs)
     {
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
-            $record->fill($data)->save();
+            $record->fill($inputs)->save();
             DB::commit();
             return $record;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
+            logger()->channel('database')->error($exception->getMessage(), $inputs);
             return false;
         }
     }
@@ -96,8 +98,9 @@ class Repository
             $this->model->findOrFail($id)->delete();
             DB::commit();
             return true;
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (\Illuminate\Database\QueryException $exception) {
             DB::rollback();
+            logger()->channel('database')->error($exception->getMessage());
             return false;
         }
     }

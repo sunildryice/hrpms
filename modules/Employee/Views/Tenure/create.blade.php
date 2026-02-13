@@ -138,7 +138,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationdob" class="form-label">Line Manager</label>
+                    <label for="validationdob" class="form-label required-label">Line Manager</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -320,6 +320,9 @@
                     },
                     supervisor_id: {
                         validators: {
+                            notEmpty: {
+                                message: 'Line Manager is required',
+                            },
                             different: {
                                 compare: function() {
                                     return form.querySelector('[name="next_line_manager_id"]').value;

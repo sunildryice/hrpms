@@ -11,7 +11,7 @@
 @endphp
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#consultant-menu').addClass('active');
 
             var oTable = $('#employeeTable').DataTable({
@@ -20,9 +20,9 @@
                 serverSide: true,
                 ajax: "{{ route('consultant.index', ['active=' . !$active]) }}",
                 columns: [{
-                    data: 'employee_code',
-                    name: 'employee_code'
-                },
+                        data: 'ste_code',
+                        name: 'ste_code'
+                    },
                     {
                         data: 'employee_type_id',
                         name: 'employee_type_id'
@@ -78,10 +78,10 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
                             <a href="{!! route('dashboard.index') !!}"
-                               class="text-decoration-none text-dark">{{ __('label.home') }}</a>
+                                class="text-decoration-none text-dark">{{ __('label.home') }}</a>
                         </li>
                         <li class="breadcrumb-item"><a href="#"
-                                                       class="text-decoration-none text-dark">{{ __('label.human-resource') }}</a>
+                                class="text-decoration-none text-dark">{{ __('label.human-resource') }}</a>
                         </li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
@@ -97,32 +97,32 @@
                         View {!! $label !!} <i class="fa fa-lg fa-flip-horizontal"></i>
                     </a>
                 </div>
-            @endif
-        </div>
-    </div>
-    <div class="card">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-borderedless" id="employeeTable">
-                    <thead class="bg-light">
-                    <tr>
-                        <th class="" style="width:120px;">{{ __('label.consultant-code') }}</th>
-                        <th>STE Type</th>
-                        <th>{{ __('label.name') }}</th>
-                        <th>{{ __('label.email-address') }}</th>
-                        <th>{{ __('label.position') }}</th>
-                        <th>{{ __('label.department') }}</th>
-                        <th>{{ __('label.supervisor') }}</th>
-                        <th>Duty station</th>
-                        <th>{{ __('label.status') }}</th>
-                        <th>{{ __('label.action') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                @endif
             </div>
         </div>
-    </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-borderedless" id="employeeTable">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="" style="width:120px;">{{ __('label.consultant-code') }}</th>
+                                <th>STE Type</th>
+                                <th>{{ __('label.name') }}</th>
+                                <th>{{ __('label.email-address') }}</th>
+                                <th>{{ __('label.position') }}</th>
+                                <th>{{ __('label.department') }}</th>
+                                <th>{{ __('label.supervisor') }}</th>
+                                <th>Duty station</th>
+                                <th>{{ __('label.status') }}</th>
+                                <th>{{ __('label.action') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-@stop
+    @stop

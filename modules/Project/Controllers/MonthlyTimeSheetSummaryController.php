@@ -45,8 +45,8 @@ class MonthlyTimeSheetSummaryController extends Controller
 
     public function show(Request $request, $year, $month)
     {
+        $timesheets = $this->timeSheets->getTimesheetsByYearAndMonth($year, $month);
         if ($request->ajax()) {
-            $timesheets = $this->timeSheets->getTimesheetsByYearAndMonth($year, $month);
 
             return DataTables::of($timesheets)
                 ->addIndexColumn()
@@ -83,6 +83,6 @@ class MonthlyTimeSheetSummaryController extends Controller
                 ->make(true);
         }
 
-        return view('Project::MonthlyTimeSheetSummary.show', compact('year', 'month'));
+        return view('Project::MonthlyTimeSheetSummary.show', compact('year', 'month', 'timesheets'));
     }
 }

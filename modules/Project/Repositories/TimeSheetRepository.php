@@ -13,6 +13,15 @@ class TimeSheetRepository extends Repository
         $this->model = $model;
     }
 
+    public function getTimeSheetOfUserByYearAndMonth($requesterId, $year, $month)
+    {
+        return $this->model->select(['*'])
+            ->where('requester_id', $requesterId)
+            ->where('year', $year)
+            ->where('month', $month)
+            ->first();
+    }
+
     /**
      * Get summary counts per year + month
      */
@@ -66,7 +75,7 @@ class TimeSheetRepository extends Repository
     {
         return $this->model
             ->select('status_id', 'requester_id')
-            ->with('requester:id,first_name,last_name') 
+            ->with('requester:id,first_name,last_name')
             ->where('year', $year)
             ->where('month', $month)
             ->get()

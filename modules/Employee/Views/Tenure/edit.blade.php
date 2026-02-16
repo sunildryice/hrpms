@@ -141,7 +141,7 @@
         <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="supervisor_id" class="form-label">Line Manager</label>
+                    <label for="supervisor_id" class="form-label required-label">Line Manager</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -246,6 +246,7 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function(e) {
+            const employeeOriginalJoinDate = '{{ $tenure->employee->joined_date?->format('Y-m-d') }}';
             const form = document.getElementById('tenureEditForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
@@ -279,7 +280,19 @@
                                 format: 'YYYY-MM-DD',
                                 message: 'The value is not a valid date',
                             },
-                        },
+                            callback: {
+                                message: `Tenure from date cannot be before employee's original join date (${employeeOriginalJoinDate})`,
+                                callback: function(input) {
+                                    if (!input.value.trim()) return true;
+
+                                    const empJoinDate = new Date(
+                                        '{{ $employee->joined_date?->format('Y-m-d') }}');
+                                    const tenureJoinDate = new Date(input.value);
+
+                                    return tenureJoinDate >= empJoinDate;
+                                }
+                            }
+                        }
                     },
                     to_date: {
                         validators: {
@@ -323,6 +336,9 @@
                     },
                     supervisor_id: {
                         validators: {
+                            notEmpty: {
+                                message: 'Line Manager is required',
+                            },
                             different: {
                                 compare: function() {
                                     return form.querySelector('[name="next_line_manager_id"]').value;

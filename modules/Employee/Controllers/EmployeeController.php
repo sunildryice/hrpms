@@ -38,27 +38,26 @@ class EmployeeController extends Controller
      * Create a new controller instance.
      */
     public function __construct(
-        protected BloodGroupRepository          $bloodGroups,
-        protected DepartmentRepository          $departments,
-        protected DesignationRepository         $designations,
-        protected DistrictRepository            $districts,
-        protected EducationRepository           $education,
-        protected EducationLevelRepository      $educationLevel,
-        protected EmployeeRepository            $employees,
-        protected FamilyRelationRepository      $familyRelations,
-        protected GenderRepository              $genders,
-        protected LeaveRepository               $leaves,
-        protected LeaveTypeRepository           $leaveTypes,
-        protected LocalLevelRepository          $localLevels,
-        protected MaritalStatusRepository       $maritalStatus,
-        protected OfficeRepository              $offices,
-        protected PayrollFiscalYearRepository   $payrollFiscalYears,
-        protected ProvinceRepository            $provinces,
-        protected RoleRepository                $roles,
-        protected SocialMediaAccountRepository  $socialMediaAccounts,
+        protected BloodGroupRepository $bloodGroups,
+        protected DepartmentRepository $departments,
+        protected DesignationRepository $designations,
+        protected DistrictRepository $districts,
+        protected EducationRepository $education,
+        protected EducationLevelRepository $educationLevel,
+        protected EmployeeRepository $employees,
+        protected FamilyRelationRepository $familyRelations,
+        protected GenderRepository $genders,
+        protected LeaveRepository $leaves,
+        protected LeaveTypeRepository $leaveTypes,
+        protected LocalLevelRepository $localLevels,
+        protected MaritalStatusRepository $maritalStatus,
+        protected OfficeRepository $offices,
+        protected PayrollFiscalYearRepository $payrollFiscalYears,
+        protected ProvinceRepository $provinces,
+        protected RoleRepository $roles,
+        protected SocialMediaAccountRepository $socialMediaAccounts,
         protected EmployeeSocialMediaRepository $employeeSocialMediaRepository
-    )
-    {
+    ) {
         $this->destinationPath = 'employees';
     }
 
@@ -106,7 +105,7 @@ class EmployeeController extends Controller
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
                         $btn .= route('employees.edit', $employee->id) . '" rel="tooltip" title="Edit Employee"><i class="bi-pencil-square"></i></a>';
                     }
-//                    if ($authUser->can('payroll')) {
+                    //                    if ($authUser->can('payroll')) {
 //                        $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
 //                        $btn .= route('employees.payments.masters.index', $employee->id) . '" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
 //                    }
@@ -342,9 +341,13 @@ class EmployeeController extends Controller
             ->where('employee_id', $employee->id)
             ->whereYear('reported_date', date('Y'))
             ->get();
+        $annualLeaveId = config('constant.ANNUAL_LEAVE');
         $leaveTypes = $this->leaveTypes->select(['*'])
             ->whereIn('id', $leaves->pluck('leave_type_id')->toArray())
-            ->get();
+            ->get()
+            ->sortBy(function ($type) use ($annualLeaveId) {
+                return $type->id === $annualLeaveId ? 0 : 1;
+            });
         $prevLeaves = $this->leaves->select('*')
             ->where('employee_id', $employee->id)
             ->whereYear('reported_date', '<>', date('Y'))

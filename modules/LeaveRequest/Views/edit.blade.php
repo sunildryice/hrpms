@@ -679,12 +679,16 @@
                                 2MB.</small>
                             @if (file_exists('storage/' . $leaveRequest->attachment) && $leaveRequest->attachment != '')
                                 <input type="hidden" name="has_existing_attachment" value="1">
-                                <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
+                                {{-- <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="btn btn-outline-primary btn-sm"
                                     title="View Attachment">
                                     <div class ="media">
                                         <img src="{{ url('storage/' . $leaveRequest->attachment) }}"
                                             style="width: 80px;">
                                     </div>
+                                </a> --}}
+                                 <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="fs-5"
+                                    title="View Attachment">
+                                    <i class="bi bi-file-earmark-medical"></i>
                                 </a>
                             @endif
                             @if ($errors->has('attachment'))

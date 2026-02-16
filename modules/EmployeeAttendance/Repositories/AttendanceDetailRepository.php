@@ -47,6 +47,34 @@ class AttendanceDetailRepository extends Repository
             ->first();
     }
 
+    public function getDetailByEmployeeAndMonth($employeeId, $month, $year)
+    {
+
+        return $this->model->whereHas('attendance', function ($q) use ($employeeId, $month, $year) {
+            $q->where('employee_id', $employeeId);
+        })
+            ->whereNotNull('checkin')
+            ->whereNotNull('checkout')
+            ->pluck('attendance_date')->toArray();
+    }
+
+    public function isEmployeePresent($employeeId, $date)
+    {
+        $attendanceDetail = $this->model->whereHas('attendance', function ($q) use ($employeeId) {
+            $q->where('employee_id', $employeeId);
+        })
+            ->whereNotNull('checkin')
+            ->whereNotNull('checkout')
+            ->where('attendance_date', $date)
+            ->first();
+
+        if ($attendanceDetail && ($attendanceDetail->checkin != null || $attendanceDetail->checkout != null)) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();
@@ -141,7 +169,6 @@ class AttendanceDetailRepository extends Repository
             $end = new Carbon($attendanceDetail->checkout);
             $end->startOfMinute();
             $interval = $start->diff($end)->format('%H.%I');
-
         } else {
             $interval = 0;
         }
@@ -203,7 +230,6 @@ class AttendanceDetailRepository extends Repository
         }
 
         return $attendanceDetail->id;
-
     }
 
     public function getAttendanceDetail($attendanceId)

@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
+use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
 use Modules\LieuLeave\Models\LieuLeaveRequestLog;
 use Modules\LieuLeave\Notifications\LieuLeaveRequestSubmitted;
 use Modules\LieuLeave\Repositories\LieuLeaveBalanceRepository;
@@ -30,6 +32,8 @@ class RequestController extends Controller
         protected FiscalYearRepository $fiscalYears,
         protected LieuLeaveBalanceRepository $lieuLeaveBalance,
         protected EmployeeRepository $employees,
+        protected AttendanceRepository $attendance,
+        protected AttendanceDetailRepository $attendanceDetails,
     ) {}
 
 
@@ -42,7 +46,22 @@ class RequestController extends Controller
         $lieuLeaveBalance =  $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
 
 
-        if ($appliedLeaveofMonth > 0 || $lieuLeaveBalance == 0) {
+        $availableOffDayWorkDates = $this->lieuLeaveBalance->getPresentOffDayWorkDates($userId, $month);
+        $EmployeePresentDates = $this->attendanceDetails->getDetailByEmployeeAndMonth(auth()->user()->employee_id, $month->year, $month->month);
+
+        // To count how many of the available off day work dates are eligible for lieu leave balance based on employee attendance
+        $availableOffDayWorkLieuLeaveBalanceCount = $availableOffDayWorkDates->filter(function ($offDayWorkDate) use ($EmployeePresentDates) {
+            return in_array(
+                Carbon::parse($offDayWorkDate)->format('Y-m-d'),
+                array_map(function ($date) {
+                    return Carbon::parse($date)->format('Y-m-d');
+                }, $EmployeePresentDates)
+            );
+        })->count();
+
+
+
+        if ($appliedLeaveofMonth > 0 || $availableOffDayWorkLieuLeaveBalanceCount == 0) {
             $availableBalanceofMonthStatus = 'Not Available';
         } else {
             $availableBalanceofMonthStatus = 'Available';
@@ -92,7 +111,7 @@ class RequestController extends Controller
 
         return view('LieuLeave::index', [
             'appliedLeaveofMonth' => $appliedLeaveofMonth,
-            'lieuLeaveBalance' => $lieuLeaveBalance,
+            'lieuLeaveBalance' => $availableOffDayWorkLieuLeaveBalanceCount,
             'availableBalanceofMonthStatus' => $availableBalanceofMonthStatus,
         ]);
     }
@@ -154,6 +173,7 @@ class RequestController extends Controller
                 return redirect()->back()->withInput()->with('error_message', 'You do not have available Lieu Leave balance for ' . $month->format('F Y') . '.');
             }
 
+
             if ($inputs['btn'] === 'submit') {
 
 
@@ -178,6 +198,14 @@ class RequestController extends Controller
                     ->first();
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
+
+
+                $offDayWorkRequestedDate = $availableLeave->offDayWork->date;
+                $isEmployeeAttendedOnOffDayWorkDate = $this->attendanceDetails->isEmployeePresent($authUser->employee_id, $offDayWorkRequestedDate);
+
+                if (!$isEmployeeAttendedOnOffDayWorkDate) {
+                    throw new \Exception('You cannot submit the request. You were not present on ' . Carbon::parse($offDayWorkRequestedDate)->format('M j, Y') . ' which is the date of your Off Day Work.');
+                }
 
 
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();

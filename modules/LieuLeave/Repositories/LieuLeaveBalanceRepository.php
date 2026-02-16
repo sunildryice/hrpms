@@ -70,6 +70,9 @@ class LieuLeaveBalanceRepository extends Repository
             ->count();
     }
 
+
+
+
     public function getOffDayWorkAvailableDates(int $userId, $previousMonthDate)
     {
         return $this->model
@@ -77,5 +80,17 @@ class LieuLeaveBalanceRepository extends Repository
             ->where('earned_date', '>=', $previousMonthDate->toDateString())
             ->whereNull('lieu_leave_request_id')
             ->pluck('earned_date', 'id');
+    }
+
+    public function getPresentOffDayWorkDates(int $userId, $previousMonthDate)
+    {
+        return $this->model
+            ->select('llb.*', 'ofw.date as off_day_work_date')
+            ->from($this->model->getTable() . ' as llb')
+            ->join('off_day_works as ofw', 'llb.off_day_work_id', '=', 'ofw.id')
+            ->where('llb.user_id', $userId)
+            ->where('llb.earned_date', '>=', $previousMonthDate->toDateString())
+            ->whereNull('llb.lieu_leave_request_id')
+            ->pluck('off_day_work_date', 'llb.id');
     }
 }

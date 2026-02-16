@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\EmployeeAttendance\Models\Attendance;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
@@ -29,7 +30,8 @@ class DailyAttendanceController extends Controller
                 ? date('Y-m-d', (int) ($request->selected_date / 1000))
                 : now()->format('Y-m-d');
 
-            $isToday = Carbon::parse($selectedDate)->isToday();
+            $dateObj = Carbon::parse($selectedDate);
+            $isToday = $dateObj->isToday();
 
             $query = $this->employeeRepo->getActiveEmployeesQuery();
 
@@ -57,19 +59,26 @@ class DailyAttendanceController extends Controller
                         ? number_format($detail->worked_hours, 2)
                         : '-';
                 })
-                ->addColumn('remarks', function ($emp) use ($selectedDate) {
-                    $date = Carbon::parse($selectedDate);
-                    if ($date->isFuture()) {
+                ->addColumn('remarks', function ($emp) use ($selectedDate, $dateObj) {
+                    if ($dateObj->isFuture()) {
                         return 'Future Date';
                     }
 
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-
                     if ($detail && ($detail->checkin || $detail->checkout)) {
                         return 'Present';
                     }
-                    if ($date->isWeekend()) {
-                        return 'Weekend';
+
+                    if ($this->isOnApprovedLeave($emp->id, $selectedDate)) {
+                        return 'Leave';
+                    }
+
+                    if ($this->isOnApprovedTravel($emp->id, $selectedDate)) {
+                        return 'Travel';
+                    }
+
+                    if ($dateObj->isWeekend()) {
+                        return '<span class="text-secondary fw-bold">Weekend</span>';
                     }
 
                     return 'Absent';
@@ -105,6 +114,33 @@ class DailyAttendanceController extends Controller
         ];
 
         return view('EmployeeAttendance::DailyAttendance.index', $data);
+    }
+
+    private function isOnApprovedTravel(int $employeeId, string $date): bool
+    {
+        return \Modules\TravelRequest\Models\TravelRequest::query()
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where(function ($q) use ($employeeId) {
+                $q->where('employee_id', $employeeId)
+                    ->orWhereHas('requester', function ($rq) use ($employeeId) {
+                        $rq->where('employee_id', $employeeId);
+                    });
+            })
+            ->whereDate('departure_date', '<=', $date)
+            ->whereDate('return_date', '>=', $date)
+            ->exists();
+    }
+
+    private function isOnApprovedLeave(int $employeeId, string $date): bool
+    {
+        return \Modules\LeaveRequest\Models\LeaveRequest::query()
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->whereHas('requester', function ($rq) use ($employeeId) {
+                $rq->where('employee_id', $employeeId);
+            })
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
     }
 
     public function updateTime(Request $request)

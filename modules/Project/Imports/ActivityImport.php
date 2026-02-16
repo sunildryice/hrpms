@@ -4,7 +4,6 @@ namespace Modules\Project\Imports;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Modules\Project\Models\ActivityStage;
 use Modules\Project\Models\ProjectActivity;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -23,6 +22,7 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
     protected $activityMap = [];
     protected $stageCache = [];
     protected $userCache = [];
+    protected $existingActivityKeys = [];
 
     protected $errors = [];
     protected $rowNumber = 0;
@@ -32,6 +32,28 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         $this->project = $project;
         $this->stageCache = ActivityStage::pluck('id', 'title')->toArray();
         $this->userCache = \App\Models\User::pluck('id', 'full_name')->toArray();
+
+        $activities = ProjectActivity::where('project_id', $this->project->id)
+            ->get(['id', 'title', 'activity_level', 'activity_stage_id']);
+
+        foreach ($activities as $act) {
+            $key = $this->makeCompositeKey(
+                $act->title,
+                $act->activity_level,
+                $act->activity_stage_id
+            );
+            $this->existingActivityKeys[$key] = $act->id;
+            $this->activityMap[$act->title] = $act->id;
+        }
+    }
+
+    private function makeCompositeKey(string $title, ?string $level, ?int $stageId): string
+    {
+        return implode('|', [
+            trim(strtolower($title)),
+            trim(strtolower($level ?? 'activity')),
+            $stageId ?? 'null'
+        ]);
     }
 
     public function collection($rows)
@@ -39,18 +61,13 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         DB::beginTransaction();
 
         try {
-            // Pre-load existing activities for this project
-            $existingActivities = ProjectActivity::where('project_id', $this->project->id)
-                ->pluck('id', 'title')
-                ->toArray();
-
             $activitiesToInsert = [];
             $activitiesToUpdate = [];
             $memberSyncData = [];
             $parentRelations = [];
 
-            foreach ($rows as $row) {
 
+            foreach ($rows as $row) {
                 $this->rowNumber++;
 
                 if ($row->filter()->isEmpty()) {
@@ -59,11 +76,12 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
 
                 $title = trim($row['activity_name'] ?? $row['activity-name'] ?? $row['activity name'] ?? '');
                 $stage_name = trim($row['stage_name'] ?? $row['stage-name'] ?? '');
-                $level = $this->normalizeActivityLevel($row['activity_level'] ?? '');
+                $level_raw = $row['activity_level'] ?? '';
                 $start_raw = $row['start_date'] ?? null;
                 $end_raw = $row['end_date'] ?? null;
                 $members_str = trim($row['members'] ?? '');
                 $parent_title = trim($row['parent_activity'] ?? $row['parent-activity'] ?? '');
+                $status_str = trim($row['activity_status'] ?? $row['activity-status'] ?? $row['status'] ?? '');
 
                 if (empty($title) || empty($start_raw) || empty($end_raw)) {
                     continue;
@@ -72,59 +90,69 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 $start_date = $this->parseDate($start_raw);
                 $end_date = $this->parseDate($end_raw);
 
-                if (!$start_date) {
+                if (!$start_date || !$end_date) {
+                    $this->errors[] = [
+                        'row' => $this->rowNumber,
+                        'field' => 'date',
+                        'message' => 'Invalid or missing start/end date format'
+                    ];
                     continue;
                 }
 
-                $stage_id = $this->stageCache[$stage_name] ?? null;
+                $level = $this->normalizeActivityLevel($level_raw);
+                $stage_id = $stage_name ? ($this->stageCache[$stage_name] ?? null) : null;
 
                 if ($stage_name !== '' && $stage_id === null) {
                     $this->errors[] = [
                         'row' => $this->rowNumber,
                         'field' => 'stage_name',
                         'value' => $stage_name,
-                        'message' => "Invalid stage name: '$stage_name'. Please use an existing stage."
+                        'message' => "Invalid stage: '$stage_name'. Must match an existing stage title."
                     ];
                     continue;
                 }
+
+                $status = $this->parseStatus($status_str);
+
+                $compositeKey = $this->makeCompositeKey($title, $level, $stage_id);
 
                 $data = [
                     'project_id' => $this->project->id,
                     'title' => $title,
                     'activity_stage_id' => $stage_id,
-                    'activity_level' => $level ?: null,
+                    'activity_level' => $level,
                     'parent_id' => null,
                     'start_date' => $start_date,
                     'completion_date' => $end_date,
-                    'status' => ActivityStatus::NotStarted->value,
-                    'created_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
+                    'status' => $status->value,
+                    'created_by' => auth()->id() ?? 1,
+                    'updated_by' => auth()->id() ?? 1,
                 ];
 
-                if (isset($existingActivities[$title])) {
-                    $activityId = $existingActivities[$title];
-                    $activitiesToUpdate[$activityId] = $data;
-                    $this->activityMap[$title] = $activityId;
+                if (isset($this->existingActivityKeys[$compositeKey])) {
+                    $id = $this->existingActivityKeys[$compositeKey];
+                    $activitiesToUpdate[$id] = $data;
+                    $this->activityMap[$title] = $id;
                 } else {
                     $activitiesToInsert[] = array_merge($data, [
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
+                    $this->activityMap[$title] = null;
                 }
 
-                // Store member sync data for later
-                if ($members_str) {
-                    $memberSyncData[$title] = $this->parseMembers($members_str);
+                if ($members_str !== '') {
+                    $parsed = $this->parseMembers($members_str);
+                    $memberSyncData[$title] = $parsed;
                 }
 
-                // Store parent relationship for later
                 if ($parent_title) {
                     $parentRelations[$title] = $parent_title;
                 }
             }
 
             if (!empty($this->errors)) {
-                $validator = Validator::make([], []);           
+                $validator = Validator::make([], []);
                 foreach ($this->errors as $error) {
                     $key = "row_{$error['row']}.{$error['field']}";
                     $validator->errors()->add($key, $error['message']);
@@ -132,76 +160,75 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 throw new ValidationException($validator);
             }
 
-            // Bulk insert new activities
+            // Insert new activities
             if (!empty($activitiesToInsert)) {
                 ProjectActivity::insert($activitiesToInsert);
 
-                // Reload to get IDs for newly inserted
+                $titles = array_column($activitiesToInsert, 'title');
                 $newActivities = ProjectActivity::where('project_id', $this->project->id)
-                    ->whereIn('title', array_column($activitiesToInsert, 'title'))
+                    ->whereIn('title', $titles)
                     ->pluck('id', 'title')
                     ->toArray();
 
-                $this->activityMap = array_merge($this->activityMap, $newActivities);
-            }
-
-            // Bulk update existing activities
-            if (!empty($activitiesToUpdate)) {
-                foreach ($activitiesToUpdate as $id => $data) {
-                    ProjectActivity::where('id', $id)->update($data);
+                foreach ($newActivities as $title => $id) {
+                    $this->activityMap[$title] = $id;
                 }
             }
 
-            // Update parent relationships in bulk
-            if (!empty($parentRelations)) {
-                $parentUpdates = [];
-                foreach ($parentRelations as $childTitle => $parentTitle) {
-                    $childId = $this->activityMap[$childTitle] ?? null;
-                    $parentId = $this->activityMap[$parentTitle] ?? null;
+            // Update existing
+            foreach ($activitiesToUpdate as $id => $data) {
+                ProjectActivity::where('id', $id)->update($data);
+            }
 
-                    if ($childId && $parentId && $childId !== $parentId) {
-                        $parentUpdates[] = ['id' => $childId, 'parent_id' => $parentId];
-                    }
-                }
+            // Parents
+            $parentUpdates = [];
+            foreach ($parentRelations as $childTitle => $parentTitle) {
+                $childId = $this->activityMap[$childTitle] ?? null;
+                $parentId = $this->activityMap[$parentTitle] ?? null;
 
-                // Batch update parent_ids
-                foreach ($parentUpdates as $update) {
-                    ProjectActivity::where('id', $update['id'])
-                        ->update(['parent_id' => $update['parent_id']]);
+                if ($childId && $parentId && $childId !== $parentId) {
+                    $parentUpdates[] = ['id' => $childId, 'parent_id' => $parentId];
                 }
             }
 
-            // Sync members in bulk
+            foreach ($parentUpdates as $update) {
+                ProjectActivity::where('id', $update['id'])
+                    ->update(['parent_id' => $update['parent_id']]);
+            }
+
+            // Sync members – without timestamps
             if (!empty($memberSyncData)) {
-                $memberSyncBulk = [];
-                $processedPairs = []; // Track unique activity-user pairs
+                $activityIds = array_filter(array_values($this->activityMap));
+
+                if (!empty($activityIds)) {
+                    DB::table('project_activity_members')
+                        ->whereIn('activity_id', $activityIds)
+                        ->delete();
+                }
+
+                $bulkInsert = [];
+                $seen = [];
 
                 foreach ($memberSyncData as $title => $userIds) {
                     $activityId = $this->activityMap[$title] ?? null;
-                    if ($activityId && !empty($userIds)) {
-                        foreach ($userIds as $userId) {
-                            $pairKey = $activityId . '-' . $userId;
+                    if (!$activityId) {
+                        continue;
+                    }
 
-                            // Only add if this pair hasn't been added yet
-                            if (!isset($processedPairs[$pairKey])) {
-                                $memberSyncBulk[] = [
-                                    'activity_id' => $activityId,
-                                    'user_id' => $userId,
-                                ];
-                                $processedPairs[$pairKey] = true;
-                            }
+                    foreach ($userIds as $userId) {
+                        $pair = $activityId . '-' . $userId;
+                        if (!isset($seen[$pair])) {
+                            $bulkInsert[] = [
+                                'activity_id' => $activityId,
+                                'user_id' => $userId,
+                            ];
+                            $seen[$pair] = true;
                         }
                     }
                 }
 
-                if (!empty($memberSyncBulk)) {
-                    // Delete existing member relations for these activities
-                    DB::table('project_activity_members')
-                        ->whereIn('activity_id', array_values($this->activityMap))
-                        ->delete();
-
-                    // Insert new member relations
-                    DB::table('project_activity_members')->insert($memberSyncBulk);
+                if (!empty($bulkInsert)) {
+                    DB::table('project_activity_members')->insert($bulkInsert);
                 }
             }
 
@@ -211,12 +238,21 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
             throw $e;
         } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Activity import failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             throw $e;
         }
+    }
+
+    private function parseStatus(string $value): ActivityStatus
+    {
+        $value = trim(strtolower($value));
+
+        return match ($value) {
+            'completed' => ActivityStatus::Completed,
+            'under progress', 'in progress' => ActivityStatus::UnderProgress,
+            'no longer required', 'no longer needed', 'not required' => ActivityStatus::NoRequired,
+            'not started' => ActivityStatus::NotStarted,
+            default => ActivityStatus::NotStarted,
+        };
     }
 
     private function parseDate($value)
@@ -228,13 +264,13 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         if (is_numeric($value)) {
             try {
                 return Carbon::instance(PhpDate::excelToDateTimeObject($value));
-            } catch (\Exception $e) {
+            } catch (\Exception) {
             }
         }
 
         try {
             return Carbon::parse($value);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return null;
         }
     }
@@ -246,28 +282,44 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         return match ($normalized) {
             'theme', 'themes', 'activity_theme', 'activity theme' => 'theme',
             'activity', 'activities', 'act' => 'activity',
-            'sub activity', 'sub-activity', 'sub_activity', 'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
+            'sub activity', 'sub-activity', 'sub_activity',
+            'subactivity', 'sub activities', 'sub-activitys', 'sub act' => 'sub_activity',
             default => 'activity',
         };
     }
 
     private function parseMembers(string $namesCsv): array
     {
-        $names = array_filter(array_map('trim', explode(',', $namesCsv)));
+        $rawNames = preg_split('/[;,]\s*|\s{2,}/', trim($namesCsv), -1, PREG_SPLIT_NO_EMPTY);
+        $names = array_map(fn($n) => trim(preg_replace('/\s+/', ' ', $n)), $rawNames);
 
-        if (empty($names)) {
-            return [];
+        $ids = [];
+        $lowerMap = [];
+
+        foreach ($this->userCache as $fullName => $id) {
+            $lowerMap[strtolower(trim($fullName))] = $id;
         }
 
-        $userIds = [];
-        foreach ($names as $name) {
-            if (isset($this->userCache[$name])) {
-                $userIds[] = $this->userCache[$name];
+        foreach ($names as $originalName) {
+            if (empty($originalName)) {
+                continue;
+            }
+
+            $cleanName = trim(preg_replace('/\s+/', ' ', $originalName));
+            $lowerName = strtolower($cleanName);
+
+            if (isset($this->userCache[$cleanName])) {
+                $ids[] = $this->userCache[$cleanName];
+                continue;
+            }
+
+            if (isset($lowerMap[$lowerName])) {
+                $ids[] = $lowerMap[$lowerName];
+                continue;
             }
         }
 
-        // Remove duplicates and reindex
-        return array_values(array_unique($userIds));
+        return array_values(array_unique($ids));
     }
 
     public function batchSize(): int

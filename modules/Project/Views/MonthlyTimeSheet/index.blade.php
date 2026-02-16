@@ -20,12 +20,12 @@
                         name: 'month_name'
                     },
                     {
-                        data: 'total_hours',
-                        name: 'total_hours'
+                        data: 'total_worked_hours',
+                        name: 'total_worked_hours'
                     },
                     {
-                        data: 'projects',
-                        name: 'projects',
+                        data: 'project_short_names',
+                        name: 'project_short_names',
                     },
                     {
                         data: 'status',

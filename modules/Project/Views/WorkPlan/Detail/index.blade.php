@@ -208,10 +208,10 @@ it @extends('layouts.container')
                             $activitySelect.empty().append(
                                 '<option value="">Select Activity</option>');
 
-                            if (!activities.length) {
-                                $activitySelect.prop('disabled', true).trigger('change.select2');
-                                return;
-                            }
+                            // if (!activities.length) {
+                            //     $activitySelect.prop('disabled', true).trigger('change.select2');
+                            //     return;
+                            // }
 
                             $activitySelect.prop('disabled', false);
 
@@ -235,10 +235,7 @@ it @extends('layouts.container')
                             const normalizedPreset = presetValues.map(String);
                             $membersSelect.empty();
 
-                            if (!members.length) {
-                                $membersSelect.prop('disabled', true).trigger('change.select2');
-                                return;
-                            }
+
 
                             $membersSelect.prop('disabled', false);
 

@@ -93,6 +93,7 @@ class AttendanceRepository extends Repository
         }
     }
 
+
     public function update($id, $inputs)
     {
         DB::beginTransaction();
@@ -121,7 +122,7 @@ class AttendanceRepository extends Repository
                 $attendance->update($inputs);
                 $forwardInputs = [
                     'user_id' => $inputs['user_id'],
-                    'log_remarks' => 'Attendance submitted. '.$inputs['remarks'],
+                    'log_remarks' => 'Attendance submitted. ' . $inputs['remarks'],
                     'original_user_id' => $inputs['original_user_id'],
                     'status_id' => config('constant.SUBMITTED_STATUS'),
                 ];

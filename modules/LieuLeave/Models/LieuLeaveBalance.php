@@ -4,6 +4,7 @@ namespace Modules\LieuLeave\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Modules\OffDayWork\Models\OffDayWork;
 use Modules\Privilege\Models\User;
 
 class LieuLeaveBalance extends Model
@@ -46,5 +47,10 @@ class LieuLeaveBalance extends Model
     public function offDayWorkApprovedDate()
     {
         return Carbon::parse($this->earned_date)->format('M j, Y');
+    }
+
+    public function offDayWork()
+    {
+        return $this->belongsTo(OffDayWork::class, 'off_day_work_id');
     }
 }

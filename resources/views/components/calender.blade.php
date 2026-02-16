@@ -6,11 +6,11 @@
             --c-lieu-leave: #dc3545;
             --c-work-from-home: #0dcaf0;
             --c-travel: #6610f2;
-            --c-work: #fd7e14;
+            --c-work: #1f9005;
             --bg-weekend: #e9ecef;
             --c-leave: #dc3545;
             --bg-holiday: #e9ecef;
-            --bg-holiday-bar: #dc3545;
+            --bg-holiday-bar: #fd7e14;
         }
 
         #calendar {
@@ -160,7 +160,7 @@
             --c-lieu-leave: #dc3545;
             --c-work-from-home: #0dcaf0;
             --c-travel: #6610f2;
-            --c-work: #fd7e14;
+            --c-work: #1f9005;
             --bg-weekend: #e9ecef;
             --c-leave: #dc3545;
             --bg-holiday: #e9ecef;

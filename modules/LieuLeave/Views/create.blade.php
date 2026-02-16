@@ -216,7 +216,7 @@
                         <label for="leave_date" class="form-label required-label">Leave Date</label>
                     </div>
                     <div class="mb-3 col-8">
-                        <input type="date" class="form-control" id="leave_date" name="leave_date"
+                        <input type="text" class="form-control" id="leave_date" name="leave_date" readonly
                             value="{{ old('leave_date') }}" required>
                     </div>
 
@@ -230,8 +230,8 @@
                         <label for="off_day_work_date" class="form-label required-label">Off Day Work Date</label>
                     </div>
                     <div class="mb-3 col-10">
-                        <input type="date" class="form-control date" id="off_day_work_date" name="off_day_work_date"
-                            value="{{ old('off_day_work_date') }}" required>
+                        <input type="text" class="form-control date" id="off_day_work_date" readonly
+                            name="off_day_work_date" value="{{ old('off_day_work_date') }}" required>
                     </div>
                 </div>
                 <div class="row mb-3">

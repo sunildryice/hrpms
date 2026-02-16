@@ -8,7 +8,6 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#dashboard').addClass('active');
 
-
             // Check In Today with Confirmation
             $(document).on('click', '.checkin-today-btn', function() {
                 let date = $(this).data('date');
@@ -106,7 +105,7 @@
                     }
                 });
             });
-            
+
         });
     </script>
 @endsection
@@ -123,7 +122,7 @@
                 </nav>
                 <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">Dashboard</h4>
             </div>
-             <div class="add-info justify-content-end d-flex align-items-center gap-1">
+            <div class="add-info justify-content-end d-flex align-items-center gap-1">
                 <div class="py-3 rounded text-end" id="today-attendance-action">
                     @php
                         $today = now()->format('Y-m-d');
@@ -431,7 +430,7 @@
                                     <div class="mb-3 row align-items-center">
                                         <div class="col-auto">
                                             <span
-                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                                class="text-white rounded bg-success avatar d-flex align-items-center justify-content-center">
                                                 <i class="bi bi-person-workspace"></i>
                                             </span>
                                         </div>

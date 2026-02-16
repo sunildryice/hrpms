@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('dryice:update:attendance:working:hour')->dailyAt('01:30');
         $schedule->command('dryice:make:workplan')->weekly();
         $schedule->command('dryice:import:attendance ')->hourlyAt(16);
+        $schedule->command('timesheets:generate')->dailyAt('02:00');
     }
 
     /**

@@ -46,19 +46,42 @@ class ImportEmployeeAttendance extends Command
         $date = Carbon::create($this->argument('date') ?: date('Y-m-d'));
         $this->info('Getting all attendance records.');
 
-        $employees = $this->employees->get();
+        $employees = $this->employees->getActiveEmployees();
         foreach ($employees as $employee) {
             $attendanceLogs = $this->attendanceLog->where('employee_code', $employee->employee_code)
                 ->whereDate('attendance_timestamp', $date->format('Y-m-d'))
                 ->orderBy('attendance_timestamp', 'asc')
                 ->get();
+            $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($employee->employee_code, $date->format('Y-m-d'));
+            $manualCheckInExists = $attendanceDetail ? ($attendanceDetail->checkin && $attendanceDetail->checkin_from != 'Device' ? true : false) : false;
 
             if (count($attendanceLogs) > 0) {
-                $checkIn = $attendanceLogs->first()->attendance_timestamp;
-                $checkOut = NULL;
-                if ($attendanceLogs->count() > 1) {
+                $attendanceInputs = [];
+                if($manualCheckInExists){
+                    $checkIn = $attendanceDetail->checkin;
                     $checkOut = $attendanceLogs->last()->attendance_timestamp;
+                    $attendanceInputs['checkout'] = $checkOut;
+                    $attendanceInputs['checkout_from'] = 'Device';
+                } else {
+                    $checkIn = $attendanceLogs->first()->attendance_timestamp;
+                    $checkOut = NULL;
+                    if ($attendanceLogs->count() > 1) {
+                        $checkOut = $attendanceLogs->last()->attendance_timestamp;
+                    }
+                    $attendanceInputs['checkin'] = $checkIn;
+                    $attendanceInputs['checkout'] = $checkOut;
+                    $attendanceInputs['checkin_from'] = 'Device';
+                    $attendanceInputs['checkout_from'] = 'Device';
                 }
+
+                if ($checkIn && $checkOut) {
+                    $checkIn = Carbon::parse($checkIn)->startOfMinute();
+                    $checkOut = Carbon::parse($checkOut)->startOfMinute();
+
+                    $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
+                    $inputs['worked_hours'] = $workedHours;
+                }
+
                 $attendance = $this->attendances->getAttendanceObject($employee->id, $date->year, $date->month);
                 if (!$attendance) {
                     $inputs = [
@@ -77,25 +100,10 @@ class ImportEmployeeAttendance extends Command
                     $attendance = $this->attendances->create($inputs);
                 }
 
-                $inputs = [
-                    'checkin' => $checkIn,
-                    'checkout' => $checkOut,
-                ];
-                $inputs['checkin_from'] = $checkIn ? 'Device' : $attendance->checkin_from;
-                $inputs['checkout_from'] = $checkOut ? 'Device' : $attendance->checkout_from;
-
-                if ($checkIn && $checkOut) {
-                    $checkIn = Carbon::parse($checkIn)->startOfMinute();
-                    $checkOut = Carbon::parse($checkOut)->startOfMinute();
-
-                    $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
-                    $inputs['worked_hours'] = $workedHours;
-                }
-
                 $detail = $this->attendanceDetails->updateOrCreate([
                     'attendance_master_id' => $attendance->id,
                     'attendance_date' => $date->format('Y-m-d'),
-                ], $inputs);
+                ], $attendanceInputs);
                 $this->info('Attendance record updated for a employee ' . $employee->employee_code);
             }
         }

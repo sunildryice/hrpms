@@ -180,8 +180,14 @@
                             },
                             'members[]': {
                                 validators: {
-                                    notEmpty: {
-                                        message: 'Please select at least one member.'
+                                    callback: {
+                                        message: 'Please select at least one member.',
+                                        callback: function(input) {
+                                            const level = $activityLevelSelect.val();
+                                            if (level === 'theme') return true;
+                                            return $membersSelect.val() &&
+                                                $membersSelect.val().length > 0;
+                                        }
                                     }
                                 }
                             }
@@ -220,9 +226,9 @@
                     });
 
                     // Trigger change event if there's an initial value to set the correct validation state
-                    if (activityLevelSelect.value) {
-                        activityLevelSelect.dispatchEvent(new Event('change'));
-                    }
+                    // if (activityLevelSelect.value) {
+                    //     activityLevelSelect.dispatchEvent(new Event('change'));
+                    // }
 
                     $('[name="start_date"]').datepicker({
                         language: 'en-GB',

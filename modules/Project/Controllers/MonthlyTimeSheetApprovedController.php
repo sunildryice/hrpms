@@ -2,13 +2,17 @@
 
 namespace Modules\Project\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Modules\Project\Models\TimeSheet;
-use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Modules\LeaveRequest\Models\LeaveRequest;
 use Modules\Privilege\Repositories\UserRepository;
-use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\Project\Models\TimeSheet;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
+use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\TravelRequest\Models\TravelRequest;
+use Yajra\DataTables\Facades\DataTables;
+
 class MonthlyTimeSheetApprovedController extends Controller
 {
     public function __construct(
@@ -59,7 +63,7 @@ class MonthlyTimeSheetApprovedController extends Controller
 
     public function show($id)
     {
-       $authUser = auth()->user();
+        $authUser = auth()->user();
 
         $timeSheet = TimeSheet::where('id', $id)
             ->where('status_id', config('constant.APPROVED_STATUS'))
@@ -73,18 +77,32 @@ class MonthlyTimeSheetApprovedController extends Controller
         );
         $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
 
-        $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
-        $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
+        $startDate = Carbon::parse($timeSheet->start_date);
+        $endDate = Carbon::parse($timeSheet->end_date);
 
         $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
-            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
+            return Carbon::parse($ts->timesheet_date)->format('Y-m-d');
         });
 
         $allDates = [];
         $currentDate = $startDate->copy();
+        $employeeId = $timeSheet->requester_id;
+
         while ($currentDate->lte($endDate)) {
             $dateKey = $currentDate->format('Y-m-d');
-            $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
+            $items = $groupedTimeSheets->get($dateKey, collect([]));
+
+            $reason = $items->isEmpty()
+                ? $this->getAbsenceReason($employeeId, $dateKey)
+                : null;
+
+            $allDates[$dateKey] = [
+                'items' => $items,
+                'reason' => $reason,
+                'date' => $dateKey,
+                'carbon' => $currentDate->copy(),
+            ];
+
             $currentDate->addDay();
         }
 
@@ -100,7 +118,47 @@ class MonthlyTimeSheetApprovedController extends Controller
             'yearMonthFormatted',
             'stats',
             'timeSheet',
-            'authUser'
+            'authUser',
+            'employeeId'
         ));
+    }
+
+    private function getAbsenceReason(int $employeeId, string $date): string
+    {
+        $carbonDate = Carbon::parse($date);
+
+        if ($this->isOnApprovedLeave($employeeId, $date)) {
+            return '<span class="text-warning fw-bold">On Leave</span>';
+        }
+
+        if ($this->isOnApprovedTravel($employeeId, $date)) {
+            return '<span class="text-info fw-bold">On Travel</span>';
+        }
+
+        if ($carbonDate->isWeekend()) {
+            return '<span class="text-danger fw-bold">Weekend</span>';
+        }
+
+        return 'No timesheet entries';
+    }
+
+    private function isOnApprovedLeave(int $employeeId, string $date): bool
+    {
+        return LeaveRequest::query()
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where('requester_id', $employeeId)
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
+    }
+
+    private function isOnApprovedTravel(int $employeeId, string $date): bool
+    {
+        return TravelRequest::query()
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where('requester_id', $employeeId)
+            ->whereDate('departure_date', '<=', $date)
+            ->whereDate('return_date', '>=', $date)
+            ->exists();
     }
 }

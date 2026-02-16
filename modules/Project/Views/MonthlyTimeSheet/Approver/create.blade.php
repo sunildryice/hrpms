@@ -151,7 +151,6 @@
                                         <td>{{ $sn++ }}</td>
                                         <td>
                                             {{ $carbonDate->format('d, M Y') }}
-                                            <small class="text-muted">({{ $dayName }})</small>
                                         </td>
                                         <td colspan="4" class="text-center fw-bold">
                                             {!! $dayData['reason'] !!}
@@ -200,7 +199,6 @@
                                                         <td rowspan="{{ $dateRowCount }}">{{ $sn++ }}</td>
                                                         <td rowspan="{{ $dateRowCount }}">
                                                             {{ $carbonDate->format('d, M Y') }}
-                                                            <small class="text-muted">({{ $dayName }})</small>
                                                         </td>
                                                         @php $datePrinted = true; @endphp
                                                     @endif

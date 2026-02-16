@@ -2,8 +2,33 @@
 
 @section('title', 'Dashboard')
 
-@section('page_js')
+@section('page_css')
+    <style>
+        :root {
+            --c-sick-leave: #dc3545;
+            --c-annual-leave: #dc3545;
+            --c-lieu-leave: #dc3545;
+            --c-work-from-home: #0dcaf0;
+            --c-travel: #6610f2;
+            --c-work: #1f9005;
+            --bg-weekend: #e9ecef;
+            --c-leave: #dc3545;
+            --bg-holiday: #e9ecef;
+            --bg-holiday-bar: #fd7e14;
+        }
 
+        .bg-travel {
+            background-color: var(--c-travel);
+        }
+
+        .bg-work-from-home {
+            background-color: var(--c-work-from-home);
+        }
+    </style>
+@endsection
+
+
+@section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#dashboard').addClass('active');
@@ -171,42 +196,6 @@
     <div class="welcome-page">
         <div class="row">
 
-            @if ($pendingStaffClearances->isNotEmpty())
-                @if (
-                    $authUser->can('finance-staff-clearance') ||
-                        $authUser->can('hr-staff-clearance') ||
-                        $authUser->can('logistic-staff-clearance'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Pending Staff Clearance </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($pendingStaffClearances as $clearance)
-                                    <div class="mb-3 row align-items-center">
-                                        <div class="col-auto">
-                                            <span
-                                                class="text-white rounded opacity-75 bg-primary avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi-clipboard-check"></i>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="request-title">
-                                                <a href="{{ route('staff.clearance.edit', $clearance->id) }}"
-                                                    style="text-decoration: none; color:unset">
-                                                    <strong>{{ $clearance->employee->getFullName() }}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="text-muted">
-                                                <small>{{ $clearance->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
             {{-- @if ($pendingPerformanceReviews->isNotEmpty())
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
@@ -240,38 +229,6 @@
                 </div>
             @endif --}}
 
-            @if ($travelRequests->isNotEmpty())
-                @if ($authUser->can('approve-travel-request') || $authUser->can('approve-recommended-travel-request'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Travel Request </div>
-                            <div class="py-2 div-content-area">
-                                @foreach ($travelRequests as $travelRequest)
-                                    <div class="gap-2 mb-3 d-flex align-items-center">
-                                        <div class="">
-                                            <span
-                                                class="text-white rounded opacity-75 bg-primary avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi-envelope-check"></i>
-                                            </span>
-                                        </div>
-                                        <div class="">
-                                            <div class="request-title">
-                                                <a href="{{ route('approve.travel.requests.create', $travelRequest->id) }}"
-                                                    style="text-decoration: none; color:unset">
-                                                    <strong>{{ $travelRequest->getTravelRequestNumber() . ' (' . $travelRequest->getTravellerName() . ')' }}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="text-muted">
-                                                <small> {{ $travelRequest->created_at->diffForHumans() }} </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
 
             {{-- @if ($eventCompletionReports->isNotEmpty())
                 @if ($authUser->can('approve-travel-request') || $authUser->can('approve-recommended-travel-request'))
@@ -305,238 +262,6 @@
                 </div>
             @endif --}}
 
-            @if ($localTravelRequests->isNotEmpty())
-                @if ($authUser->can('approve-local-travel'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Local Travel Request
-                            </div>
-                            <div class="py-2 div-content-area">
-                                @foreach ($localTravelRequests as $localTravelRequest)
-                                    <div class="mb-3 row align-items-center">
-                                        <div class="col-auto">
-                                            <span
-                                                class="text-white rounded opacity-75 bg-primary avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi-envelope-check"></i>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="request-title">
-                                                <a href="{{ route('approve.local.travel.reimbursements.create', $localTravelRequest->id) }}"
-                                                    style="text-decoration: none; color:unset">
-                                                    <strong>{{ $localTravelRequest->getLocalTravelNumber() . ' (' . $localTravelRequest->getRequesterName() . ')' }}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="text-muted">
-                                                <small> {{ $localTravelRequest->created_at->diffForHumans() }} </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-
-            @if ($vehicleRequests->isNotEmpty())
-                @if ($authUser->can('approve-hire-vehicle-request') || $authUser->can('assign-office-vehicle'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Vehicle Request </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($vehicleRequests as $vehicleRequest)
-                                    <div class="gap-2 mb-4 d-flex align-items-start">
-                                        <div>
-                                            <span
-                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-truck"></i>
-                                            </span>
-                                        </div>
-                                        <div class="w-100">
-                                            <div class="request-title">
-                                                <a href="{{ route('approve.vehicle.requests.create', $vehicleRequest->id) }}"
-                                                    style="text-decoration: none; color:unset">
-                                                    <strong>{{ $vehicleRequest->getVehicleRequestNumber() . ' (' . $vehicleRequest->getRequesterName() . ')' }}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="text-muted">
-                                                <small>{{ $vehicleRequest->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-
-            @if ($allLeaveRequests->isNotEmpty())
-                @if ($authUser->can('approve-leave-request'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Leave Request </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($allLeaveRequests as $leaveRequest)
-                                    @php
-                                        $table = $leaveRequest->getTable();
-                                        if ($table == 'lieu_leave_requests') {
-                                            $routeName = 'approve.lieu.leave.requests.show';
-                                        } else {
-                                            $routeName = 'review.leave.requests.create';
-                                        }
-
-                                    @endphp
-                                    <div class="mb-3 row align-items-center">
-                                        <div class="col-auto">
-                                            <span
-                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-person-check"></i>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="request-title">
-                                                @if ($leaveRequest->status_id == config('constant.SUBMITTED_STATUS'))
-                                                    <a href="{{ route($routeName, $leaveRequest->id) }}"
-                                                        style="text-decoration: none; color:unset">
-                                                        <strong>{{ $leaveRequest->getLeaveNumber() . ' (' . $leaveRequest->getRequesterName() . ')' }}</strong>
-                                                    </a>
-                                                @endif
-                                            </div>
-                                            @if ($table == 'leave_requests' && ($time = $leaveRequest->getFirstLeaveTime()))
-                                                Time: <span>{{ $time }}</span>
-                                            @endif
-                                            <div class="text-muted">
-                                                <small>{{ $leaveRequest->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-
-            @if ($workFromHomeRequests->isNotEmpty())
-                @if ($authUser->can('approve-work-from-home'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Work From Home Request </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($workFromHomeRequests as $workFromHomeRequest)
-                                    <div class="mb-3 row align-items-center">
-                                        <div class="col-auto">
-                                            <span
-                                                class="text-white rounded bg-success avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-person-workspace"></i>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="request-title">
-                                                <a href="{{ route('approve.wfh.requests.show', $workFromHomeRequest->id) }}"
-                                                    style="text-decoration: none; color:unset">
-                                                    <strong>{{ $workFromHomeRequest->getRequestId() . ' (' . $workFromHomeRequest->getRequesterName() . ')' }}</strong>
-                                                </a>
-                                            </div>
-                                            <div class="text-muted">
-                                                <small>{{ $workFromHomeRequest->created_at->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-
-
-            @if ($purchaseOrders->isNotEmpty())
-                @if ($authUser->can('approve-purchase-order') || $authUser->can('review-purchase-order'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Purchase Order </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($purchaseOrders as $purchaseOrder)
-                                    <div class="mb-3 row align-items-center">
-                                        <div class="col-auto">
-                                            <span
-                                                class="text-white rounded opacity-75 bg-danger avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-truck"></i>
-                                            </span>
-                                        </div>
-                                        <div class="col">
-                                            <div class="request-title">
-                                                @if ($purchaseOrder->status_id == config('constant.SUBMITTED_STATUS'))
-                                                    <a href="{{ route('review.purchase.orders.create', $purchaseOrder->id) }}"
-                                                        style="text-decoration: none; color:unset">
-                                                        <strong>{{ $purchaseOrder->getPurchaseOrderNumber() . ' (' . $purchaseOrder->getCreatedBy() . ')' }}</strong>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('approve.purchase.orders.create', $purchaseOrder->id) }}"
-                                                        style="text-decoration: none; color:unset">
-                                                        <strong>{{ $purchaseOrder->getPurchaseOrderNumber() . ' (' . $purchaseOrder->getCreatedBy() . ')' }}</strong>
-                                                    </a>
-                                                @endif
-                                            </div>
-                                            <div class="text-muted">
-                                                <small>{{ $purchaseOrder->order_date->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
-
-            @if ($purchaseRequests->isNotEmpty())
-                @if (
-                    $authUser->can('approve-purchase-request') ||
-                        $authUser->can('finance-review-purchase-request') ||
-                        $authUser->can('approve-recommended-purchase-request'))
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold"> Purchase Request </div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($purchaseRequests as $purchaseRequest)
-                                    <div class="gap-2 mb-4 d-flex align-items-start">
-                                        <div>
-                                            <span
-                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-truck"></i>
-                                            </span>
-                                        </div>
-                                        <div class="w-100">
-                                            <div class="request-title">
-                                                @if ($purchaseRequest->status_id == config('constant.SUBMITTED_STATUS'))
-                                                    <a href="{{ route('review.purchase.requests.create', $purchaseRequest->id) }}"
-                                                        style="text-decoration: none; color:unset">
-                                                        <strong>{{ $purchaseRequest->getPurchaseRequestNumber() . ' (' . $purchaseRequest->getRequesterName() . ')' }}</strong>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('approve.purchase.requests.create', $purchaseRequest->id) }}"
-                                                        style="text-decoration: none; color:unset">
-                                                        <strong>{{ $purchaseRequest->getPurchaseRequestNumber() . ' (' . $purchaseRequest->getRequesterName() . ')' }}</strong>
-                                                    </a>
-                                                @endif
-                                            </div>
-                                            <div class="text-muted">
-                                                <small>{{ $purchaseRequest->request_date->diffForHumans() }}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-            @endif
 
             @if ($announcements->isNotEmpty())
                 <div class="mb-3 col-lg-4">
@@ -667,7 +392,7 @@
                                 <div class="mb-3 row align-items-center">
                                     <div class="col-auto">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-travel avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-check"></i>
                                         </span>
                                     </div>
@@ -690,7 +415,7 @@
                                 <div class="mb-3 row align-items-center">
                                     <div class="col-auto">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-travel avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-check"></i>
                                         </span>
                                     </div>
@@ -721,7 +446,7 @@
                                 <div class="gap-2 mb-4 d-flex align-items-start">
                                     <div class="">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-workspace"></i>
                                         </span>
                                     </div>
@@ -743,7 +468,7 @@
                                 <div class="gap-2 mb-4 d-flex align-items-start">
                                     <div class="">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person"></i>
                                         </span>
                                     </div>
@@ -764,34 +489,6 @@
                 </div>
             @endif
 
-            @if ($hallBookings->isNotEmpty())
-                <div class="mb-3 col-lg-4">
-                    <div class="mb-2 border-0 shadow-sm card">
-                        <div class="card-header fw-bold"> Hall Booking</div>
-                        <div class="p-3 div-content-area">
-                            @foreach ($hallBookings as $hallBooking)
-                                <div class="mb-3 row align-items-center">
-                                    <div class="col-auto">
-                                        <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-person-check"></i>
-                                        </span>
-                                    </div>
-                                    <div class="col">
-                                        <div class="request-title">
-                                            <strong>{{ $hallBooking->getMeetingHall() }}</strong>
-                                        </div>
-                                        <div class="text-muted">
-                                            <small>{{ $hallBooking->meeting_date->toFormattedDateString() }}</small>
-                                            <small>({{ $hallBooking->getStartTime() . ' - ' . $hallBooking->getEndTime() }})</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
 
         <x-calender />

@@ -35,34 +35,35 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee_code'=>[
+            'ste_code' => [
                 'required',
                 Rule::unique('employees')->ignore($this->consultant),
                 'min:1',
                 'max:10000'
             ],
-            'employee_type_id'=>'nullable',
-            'full_name'=>'required|string',
-            'official_email_address'=>[
-                'nullable','email',
+            'employee_type_id' => 'nullable',
+            'full_name' => 'required|string',
+            'official_email_address' => [
+                'nullable',
+                'email',
                 // Rule::unique('employees')->ignore($this->employee),
             ],
-            'personal_email_address'=>'nullable|email|different:official_email_address',
-            'telephone_number'=>'nullable|max:17',
-            'mobile_number'=>'required|max:17',
-            'marital_status'=>'nullable',
-            'gender'=>'nullable',
-            'citizenship_number'=>'nullable|required_with:citizenship_attachment',
-            'pan_number'=>'nullable|digits:9|required_with:pan_attachment',
-            'citizenship_attachment'=>'nullable|mimes:jpg,png,pdf|max:2048',
-            'pan_attachment'=>'nullable|mimes:jpg,png,pdf|max:2048',
-            'signature'=>'nullable|mimes:jpg,png|max:2048',
-            'profile_picture'=>'nullable|mimes:jpg,png|max:2048',
-            'date_of_birth'=>'nullable|date',
-            'probation_complete_date'=>'nullable|date',
-            'religion_id'=>'nullable',
-            'caste_id'=>'nullable',
-            
+            'personal_email_address' => 'nullable|email|different:official_email_address',
+            'telephone_number' => 'nullable|max:17',
+            'mobile_number' => 'required|max:17',
+            'marital_status' => 'nullable',
+            'gender' => 'nullable',
+            'citizenship_number' => 'nullable|required_with:citizenship_attachment',
+            'pan_number' => 'nullable|digits:9|required_with:pan_attachment',
+            'citizenship_attachment' => 'nullable|mimes:jpg,png,pdf|max:2048',
+            'pan_attachment' => 'nullable|mimes:jpg,png,pdf|max:2048',
+            'signature' => 'nullable|mimes:jpg,png|max:2048',
+            'profile_picture' => 'nullable|mimes:jpg,png|max:2048',
+            'date_of_birth' => 'nullable|date',
+            'probation_complete_date' => 'nullable|date',
+            'religion_id' => 'nullable',
+            'caste_id' => 'nullable',
+
             'nid_number' => 'nullable|string|max:50',
             'passport_number' => 'nullable|string|max:20',
             'passport_attachment' => 'nullable|mimes:jpg,jpeg,png,pdf|max:2048',
@@ -75,16 +76,16 @@ class UpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'employee_code.required'=>'Consultant code is required.',
-            'title.required'=>'Department name is required.',
-            'citizenship_attachment.mimes'=>'Only png,jpg or pdf files are allowed.',
-            'citizenship_attachment.max'=>'Maximum allowed file size is 2MB.',
-            'pan_attachment.mimes'=>'Only png,jpg or pdf files are allowed.',
-            'pan_attachment.max'=>'Maximum allowed file size is 2MB.',
-            'signature.mimes'=>'Only png,jpg or pdf files are allowed.',
-            'signature.max'=>'Maximum allowed file size is 2MB.',
-            'profile_picture.mimes'=>'Only png,jpg or pdf files are allowed.',
-            'profile_picture.max'=>'Maximum allowed file size is 2MB.',
+            'ste_code.required' => 'Consultant code is required.',
+            'title.required' => 'Department name is required.',
+            'citizenship_attachment.mimes' => 'Only png,jpg or pdf files are allowed.',
+            'citizenship_attachment.max' => 'Maximum allowed file size is 2MB.',
+            'pan_attachment.mimes' => 'Only png,jpg or pdf files are allowed.',
+            'pan_attachment.max' => 'Maximum allowed file size is 2MB.',
+            'signature.mimes' => 'Only png,jpg or pdf files are allowed.',
+            'signature.max' => 'Maximum allowed file size is 2MB.',
+            'profile_picture.mimes' => 'Only png,jpg or pdf files are allowed.',
+            'profile_picture.max' => 'Maximum allowed file size is 2MB.',
         ];
     }
 }

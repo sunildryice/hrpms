@@ -11,7 +11,7 @@
             const citizenshipAttachmentField = $(form.querySelector('[name="citizenship_attachment"]'));
             const fv = FormValidation.formValidation(form, {
                 fields: {
-                    employee_code: {
+                    ste_code: {
                         validators: {
                             notEmpty: {
                                 message: 'Consultant/STE code is required',
@@ -289,11 +289,11 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <input type="number" min="1"
-                                        class="form-control @if ($errors->has('employee_code')) is-invalid @endif"
-                                        name="employee_code" value="{!! old('employee_code') !!}" autofocus />
-                                    @if ($errors->has('employee_code'))
+                                        class="form-control @if ($errors->has('ste_code')) is-invalid @endif"
+                                        name="ste_code" value="{!! old('ste_code') !!}" autofocus />
+                                    @if ($errors->has('ste_code'))
                                         <div class="fv-plugins-message-container invalid-feedback">
-                                            <div data-field="employee_code">{!! $errors->first('employee_code') !!}</div>
+                                            <div data-field="ste_code">{!! $errors->first('ste_code') !!}</div>
                                         </div>
                                     @endif
                                 </div>
@@ -381,7 +381,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label for="validationphone" class="form-label">Contact Number
+                                        <label for="validationphone" class="form-label required-label">Contact Number
                                         </label>
                                     </div>
                                 </div>
@@ -442,7 +442,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label for="validationcitizenship" class="form-label">Citizenship
+                                        <label for="validationcitizenship" class="form-label required-label">Citizenship
                                             No.</label>
                                     </div>
                                 </div>

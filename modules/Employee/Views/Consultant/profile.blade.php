@@ -256,8 +256,11 @@
                             </li>
                             <li class="position-relative">
                                 <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->getFullName() }}
-                                ({{ $employee->requestSTEId }})
                                 <a href="#" class="stretched-link" rel="tooltip" title="Profile"></a>
+                            </li>
+                            <li class="position-relative">
+                                <i class="bi-person dropdown-item-icon me-2"></i>{{ $employee->requestSTEId }}
+                                <a href="#" class="stretched-link" rel="tooltip" title="Staff ID"></a>
                             </li>
                             <li><span rel="tooltip" title="Designation"><i
                                         class="bi-question-circle dropdown-item-icon me-2"></i>

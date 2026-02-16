@@ -46,6 +46,7 @@ class Employee extends Model
         'department_id',
         'employee_type_id',
         'employee_code',
+        'ste_code',
         'supervisor_id',
         'cross_supervisor_id',
         'next_line_manager_id',
@@ -110,7 +111,7 @@ class Employee extends Model
     public function requestSTEId(): Attribute
     {
         return Attribute::make(
-            get: fn() => 'STE-' . sprintf('%04d', $this->employee_code)
+            get: fn() => 'HI-STE-' . sprintf('%04d', $this->ste_code)
         );
     }
 
@@ -563,9 +564,9 @@ class Employee extends Model
     {
         if (
             GoodRequestAsset::query()
-                ->where('assigned_user_id', $this->getUserId())
-                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-                ->count()
+            ->where('assigned_user_id', $this->getUserId())
+            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+            ->count()
         ) {
             return null;
         }

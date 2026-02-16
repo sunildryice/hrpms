@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#consultant-menu').addClass('active');
         });
         var queryTab = @json(request()->query('tab'));
@@ -12,13 +12,13 @@
         if ($("[data-tag='" + $selectedTab + "']").length == 0 || $('#' + $selectedTab).length == 0) {
             $selectedTab = 'generalInformation';
         }
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             const employeeEditForm = document.getElementById('employeeEditForm');
             const panAttachmentField = $(employeeEditForm.querySelector('[name="pan_attachment"]'));
             const citizenshipAttachmentField = $(employeeEditForm.querySelector('[name="citizenship_attachment"]'));
             const fv = FormValidation.formValidation(employeeEditForm, {
                 fields: {
-                    employee_code: {
+                    ste_code: {
                         validators: {
                             notEmpty: {
                                 message: 'Consultant/STE code is required',
@@ -71,7 +71,7 @@
                                 message: 'The input must be a email address',
                             },
                             different: {
-                                compare: function () {
+                                compare: function() {
                                     return employeeEditForm.querySelector(
                                         '[name="official_email_address"]').value;
                                 },
@@ -89,7 +89,7 @@
                     },
                     citizenship_number: {
                         validators: {
-                             notEmpty: {
+                            notEmpty: {
                                 message: 'The citizenship number is required',
                             },
                             // callback: {
@@ -106,9 +106,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -121,7 +121,7 @@
                             },
                             callback: {
                                 message: 'The PAN number is required.',
-                                callback: function (input) {
+                                callback: function(input) {
                                     const value = panAttachmentField.val();
                                     return value === '' || employeeEditForm.querySelector(
                                         '[name="pan_number"]').value !== '';
@@ -133,9 +133,9 @@
                         validators: {
                             file: {
                                 extension: 'jpeg,jpg,png,pdf',
-                                    type: 'image/jpeg,image/png,application/pdf',
-                                    maxSize: '2097152',
-                                    message: 'The selected file is not valid file or must not be greater than 2 MB.',
+                                type: 'image/jpeg,image/png,application/pdf',
+                                maxSize: '2097152',
+                                message: 'The selected file is not valid file or must not be greater than 2 MB.',
                             },
                         },
                     },
@@ -166,24 +166,24 @@
                 },
             });
 
-            employeeEditForm.querySelector('[name="official_email_address"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="official_email_address"]').addEventListener('input', function() {
                 fv.revalidateField('official_email_address');
                 fv.revalidateField('personal_email_address');
             });
-            employeeEditForm.querySelector('[name="personal_email_address"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="personal_email_address"]').addEventListener('input', function() {
                 fv.revalidateField('official_email_address');
                 fv.revalidateField('personal_email_address');
             });
-            employeeEditForm.querySelector('[name="pan_attachment"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="pan_attachment"]').addEventListener('input', function() {
                 fv.revalidateField('pan_number');
             });
-            employeeEditForm.querySelector('[name="citizenship_attachment"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="citizenship_attachment"]').addEventListener('input', function() {
                 fv.revalidateField('citizenship_number');
             });
-            employeeEditForm.querySelector('[name="citizenship_number"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="citizenship_number"]').addEventListener('input', function() {
                 fv.revalidateField('citizenship_number');
             });
-            employeeEditForm.querySelector('[name="pan_number"]').addEventListener('input', function () {
+            employeeEditForm.querySelector('[name="pan_number"]').addEventListener('input', function() {
                 fv.revalidateField('pan_number');
             });
 
@@ -192,7 +192,7 @@
                 autoHide: true,
                 format: 'yyyy-mm-dd',
                 endDate: '{!! date('Y-m-d') !!}',
-            }).on('change', function (e) {
+            }).on('change', function(e) {
                 fv.revalidateField('date_of_birth');
             });
 
@@ -203,7 +203,7 @@
                 endDate: '{!! date('Y-m-d') !!}',
             });
 
-            $('.step-item').click(function () {
+            $('.step-item').click(function() {
                 $selectedTab = $(this).data('tag');
                 localStorage.setItem('c-edit-tab', $selectedTab);
                 $('.step-item').removeClass('active');
@@ -211,7 +211,7 @@
                 var tagid = $(this).data('tag');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + tagid).addClass('active').removeClass('hide');
-            }).ready(function () {
+            }).ready(function() {
                 $('[data-tag="' + $selectedTab + '"]').addClass('active');
                 $('.c-tabs-content').removeClass('active').addClass('hide');
                 $('#' + $selectedTab).addClass('active').removeClass('hide');
@@ -220,21 +220,22 @@
 
         function displayEducationEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addEducationBlock').hide();
                 $('#editEducationBlock').show();
                 $('#editEducationBlock').find('[name="education_level_id"]').val(response.education.education_level_id)
                     .select2('destroy').select2();
                 $('#editEducationBlock').find('[name="degree"]').val(response.education.degree);
                 $('#editEducationBlock').find('[name="institution"]').val(response.education.institution);
-                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2('destroy').select2();
+                $('#editEducationBlock').find('[name="passed_year"]').val(response.education.passed_year).select2(
+                    'destroy').select2();
                 if (response.attachment != '') {
                     $('#editEducationBlock').find('[name="attachment_exist"]').attr('href', response.attachment);
                     $('.media').show();
                 }
                 $('#editEducationBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -242,7 +243,7 @@
 
         function displayExperienceEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addExperienceBlock').hide();
                 $('#editExperienceBlock').show();
                 $('#editExperienceBlock').find('[name="institution"]').val(response.experience.institution);
@@ -256,7 +257,7 @@
                 }
                 $('#editExperienceBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -264,7 +265,7 @@
 
         function displayFamilyEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addFamilyMemberBlock').hide();
                 $('#editFamilyMemberBlock').show();
                 var fields = ['full_name', 'remarks', 'contact_number', 'province_id', 'district_id', 'local_level_id',
@@ -301,7 +302,7 @@
                         'change');
                 }
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -309,12 +310,13 @@
 
         function displayInsuranceEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addInsuranceBlock').hide();
                 $('#editInsuranceBlock').show();
                 $('#editInsuranceBlock').find('[name="insurer"]').val(response.insurance.insurer);
                 $('#editInsuranceBlock').find('[name="amount"]').val(response.insurance.amount);
-                $('#editInsuranceBlock').find('[name="payroll_fiscal_year_id"]').val(response.insurance.payroll_fiscal_year_id);
+                $('#editInsuranceBlock').find('[name="payroll_fiscal_year_id"]').val(response.insurance
+                    .payroll_fiscal_year_id);
                 $('#editInsuranceBlock').find('[name="paid_date"]').val(response.paid_date);
                 if (response.attachment != '') {
                     $('#editInsuranceBlock').find('[name="attachment_exist"]').attr('href', response.attachment);
@@ -322,7 +324,7 @@
                 }
                 $('#editInsuranceBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -330,7 +332,7 @@
 
         function displayTenureEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 console.log(response);
                 $('#addTenureBlock').hide();
                 $('#editTenureBlock').show();
@@ -355,7 +357,7 @@
 
 
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -363,7 +365,7 @@
 
         function displayTrainingEditForm($object, url) {
             $element = $(this);
-            var successCallback = function (response) {
+            var successCallback = function(response) {
                 $('#addTrainingBlock').hide();
                 $('#editTrainingBlock').show();
                 $('#editTrainingBlock').find('[name="institution"]').val(response.training.institution);
@@ -377,7 +379,7 @@
                 }
                 $('#editTrainingBlock').find('form').attr('action', response.updateAction);
             }
-            var errorCallback = function (error) {
+            var errorCallback = function(error) {
                 console.log(error);
             }
             ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
@@ -413,246 +415,235 @@
 
 
 
-            <div class="page-header pb-3 mb-3 border-bottom">
-                <div class="d-flex align-items-center">
-                    <div class="brd-crms flex-grow-1">
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb m-0">
-                                <li class="breadcrumb-item">
-                                    <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="{!! route('consultant.index') !!}"
-                                       class="text-decoration-none text-dark">{{ __('label.consultant') }}</a>
-                                </li>
-                                <li class="breadcrumb-item" aria-current="page">@yield('title')
-                                    : {{ $employee->getFullNameWithCode() }}</li>
-                            </ol>
-                        </nav>
-                        <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
-                    </div>
+    <div class="page-header pb-3 mb-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="brd-crms flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">
+                            <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{!! route('consultant.index') !!}"
+                                class="text-decoration-none text-dark">{{ __('label.consultant') }}</a>
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">@yield('title')
+                            : {{ $employee->getFullName() }}</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+            </div>
+        </div>
+    </div>
+
+    <section class="registration">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="rounded shadow-sm vertical-navigation sm-menu-vr pt-3 pb-3 bg-white">
+                    <ul class="m-0 list-unstyled">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="generalInformation">
+                                <i class="nav-icon bi-info-circle"></i> General Information
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="address">
+                                <i class="nav-icon bi-pin-map"></i> Address
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="family-details">
+                                <i class="nav-icon bi-people"></i>Family Details
+                            </a>
+                        </li>
+                        @if ($authUser->can('manage-tenure'))
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="tenure-details">
+                                    <i class="nav-icon bi bi-person-workspace"></i> Tenure
+                                </a>
+                            </li>
+                            {{-- <li class="nav-item"> --}}
+                            {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                            {{--        data-tag="finance-details"> --}}
+                            {{--         <i class="nav-icon bi bi-bank"></i> Finance --}}
+                            {{--     </a> --}}
+                            {{-- </li> --}}
+                            {{-- <li class="nav-item"> --}}
+                            {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                            {{--        data-tag="insurance-details"> --}}
+                            {{--         <i class="nav-icon bi bi-bank"></i> Insurance --}}
+                            {{--     </a> --}}
+                            {{-- </li> --}}
+                        @endif
+                        {{-- <li class="nav-item"> --}}
+                        {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                        {{--        data-tag="medicalInformation"> --}}
+                        {{--         <i class="nav-icon bi-calendar-heart"></i> Medical --}}
+                        {{--         Information --}}
+                        {{--     </a> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="nav-item"> --}}
+                        {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                        {{--        data-tag="education-details"> --}}
+                        {{--         <i class="nav-icon bi bi-journal-text"></i> Education --}}
+                        {{--     </a> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="nav-item"> --}}
+                        {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                        {{--        data-tag="experience-details"> --}}
+                        {{--         <i class="nav-icon bi bi-explicit"></i> Experience --}}
+                        {{--     </a> --}}
+                        {{-- </li> --}}
+                        {{-- <li class="nav-item"> --}}
+                        {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
+                        {{--        data-tag="training-details"> --}}
+                        {{--         <i class="nav-icon bi bi-calendar4-range"></i> Training --}}
+                        {{--     </a> --}}
+                        {{-- </li> --}}
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none" data-tag="finance-details">
+                                <i class="nav-icon bi bi-bank"></i> Finance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link step-item text-decoration-none"
+                                data-tag="document-upload-details">
+                                <i class="nav-icon bi bi-explicit"></i> Document Upload
+                            </a>
+                        </li>
+                        @if ($authUser->can('update-user-role'))
+                            <li class="nav-item">
+                                <a href="#" class="nav-link step-item text-decoration-none" data-tag="login-details">
+                                    <i class="nav-icon bi bi-lock"></i> Login Credentials
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
                 </div>
             </div>
-
-            <section class="registration">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <div class="rounded shadow-sm vertical-navigation sm-menu-vr pt-3 pb-3 bg-white">
-                            <ul class="m-0 list-unstyled">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="generalInformation">
-                                        <i class="nav-icon bi-info-circle"></i> General Information
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link step-item text-decoration-none" data-tag="address">
-                                        <i class="nav-icon bi-pin-map"></i> Address
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="family-details">
-                                        <i class="nav-icon bi-people"></i>Family Details
-                                    </a>
-                                </li>
-                                @if($authUser->can('manage-tenure'))
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link step-item text-decoration-none"
-                                           data-tag="tenure-details">
-                                            <i class="nav-icon bi bi-person-workspace"></i> Tenure
-                                        </a>
-                                    </li>
-                                    {{-- <li class="nav-item"> --}}
-                                    {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                    {{--        data-tag="finance-details"> --}}
-                                    {{--         <i class="nav-icon bi bi-bank"></i> Finance --}}
-                                    {{--     </a> --}}
-                                    {{-- </li> --}}
-                                    {{-- <li class="nav-item"> --}}
-                                    {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                    {{--        data-tag="insurance-details"> --}}
-                                    {{--         <i class="nav-icon bi bi-bank"></i> Insurance --}}
-                                    {{--     </a> --}}
-                                    {{-- </li> --}}
-                                @endif
-                                {{-- <li class="nav-item"> --}}
-                                {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                {{--        data-tag="medicalInformation"> --}}
-                                {{--         <i class="nav-icon bi-calendar-heart"></i> Medical --}}
-                                {{--         Information --}}
-                                {{--     </a> --}}
-                                {{-- </li> --}}
-                                {{-- <li class="nav-item"> --}}
-                                {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                {{--        data-tag="education-details"> --}}
-                                {{--         <i class="nav-icon bi bi-journal-text"></i> Education --}}
-                                {{--     </a> --}}
-                                {{-- </li> --}}
-                                {{-- <li class="nav-item"> --}}
-                                {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                {{--        data-tag="experience-details"> --}}
-                                {{--         <i class="nav-icon bi bi-explicit"></i> Experience --}}
-                                {{--     </a> --}}
-                                {{-- </li> --}}
-                                {{-- <li class="nav-item"> --}}
-                                {{--     <a href="#" class="nav-link step-item text-decoration-none" --}}
-                                {{--        data-tag="training-details"> --}}
-                                {{--         <i class="nav-icon bi bi-calendar4-range"></i> Training --}}
-                                {{--     </a> --}}
-                                {{-- </li> --}}
-                                 <li class="nav-item">
-                                    <a href="#" class="nav-link step-item text-decoration-none"
-                                        data-tag="finance-details">
-                                        <i class="nav-icon bi bi-bank"></i> Finance
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link step-item text-decoration-none"
-                                       data-tag="document-upload-details">
-                                        <i class="nav-icon bi bi-explicit"></i> Document Upload
-                                    </a>
-                                </li>
-                                @if($authUser->can('update-user-role'))
-                                    <li class="nav-item">
-                                        <a href="#" class="nav-link step-item text-decoration-none"
-                                           data-tag="login-details">
-                                            <i class="nav-icon bi bi-lock"></i> Login Credentials
-                                        </a>
-                                    </li>
-                                @endif
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        <div class="c-tabs-content" id="generalInformation">
-                            <div class="card">
-                                @include('Employee::Consultant.General.edit')
-                            </div>
-                        </div>
-                        <div class="c-tabs-content" id="address">
-                            <div class="card mb-5">
-                                @include('Employee::Address.index')
-                            </div>
-                        </div>
-                        <div class="c-tabs-content" id="family-details">
-                            <div class="card mb-5" id="addFamilyMemberBlock">
-                                @include('Employee::FamilyDetail.create')
-                            </div>
-                            <div class="card mb-5" id="editFamilyMemberBlock"
-                                 style="display: none;">
-                                @include('Employee::FamilyDetail.edit')
-                            </div>
-                            @if ($employee->familyDetails->count())
-                                <div class="card mb-5">
-                                    @include('Employee::FamilyDetail.index')
-                                </div>
-                            @endif
-                        </div>
-
-                        @if($authUser->can('manage-tenure'))
-                            <div class="c-tabs-content" id="tenure-details">
-                                <div class="card mb-5" id="addTenureBlock">
-                                    @include('Employee::Tenure.create')
-                                </div>
-                                @if ($employee->tenures->count())
-                                    <div class="card mb-5" id="editTenureBlock"
-                                         style="display: none;">
-                                        @include('Employee::Tenure.edit')
-                                    </div>
-                                    <div class="card mb-5">
-                                        @include('Employee::Tenure.index')
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="c-tabs-content" id="finance-details">
-                                <div class="card mb-5">
-                                    @include('Employee::Finance.index')
-                                </div>
-                            </div>
-                            <div class="c-tabs-content" id="insurance-details">
-                                <div class="card mb-5" id="addInsuranceBlock">
-                                    @include('Employee::Insurance.create')
-                                </div>
-                                <div class="card mb-5" id="editInsuranceBlock"
-                                     style="display: none;">
-                                    @include('Employee::Insurance.edit')
-                                </div>
-                                <div class="card mb-5">
-                                    @include('Employee::Insurance.index')
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="card c-tabs-content" id="medicalInformation">
-                            @include('Employee::MedicalCondition.index')
-                        </div>
-
-                        <div class="c-tabs-content" id="education-details">
-                            <div class="card mb-5" id="addEducationBlock">
-                                @include('Employee::Education.create')
-                            </div>
-                            <div class="card mb-5" id="editEducationBlock"
-                                 style="display: none;">
-                                @include('Employee::Education.edit')
-                            </div>
-                            @if ($employee->education->count())
-                                <div class="card mb-5">
-                                    @include('Employee::Education.index')
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="c-tabs-content" id="experience-details">
-                            <div class="card mb-5" id="addExperienceBlock">
-                                @include('Employee::Experience.create')
-                            </div>
-                            <div class="card mb-5" id="editExperienceBlock"
-                                 style="display: none;">
-                                @include('Employee::Experience.edit')
-                            </div>
-                            @if ($employee->experiences->count())
-                                <div class="card mb-5">
-                                    @include('Employee::Experience.index')
-                                </div>
-                            @endif
-                        </div>
-
-                        <div class="c-tabs-content" id="training-details">
-                            <div class="card mb-5" id="addTrainingBlock">
-                                @include('Employee::Training.create')
-                            </div>
-                            <div class="card mb-5" id="editTrainingBlock"
-                                 style="display: none;">
-                                @include('Employee::Training.edit')
-                            </div>
-                            @if ($employee->trainings->count())
-                                <div class="card mb-5">
-                                    @include('Employee::Training.index')
-                                </div>
-                            @endif
-                        </div>
-                        <div class="c-tabs-content" id="document-upload-details">
-                            <div class="card mb-5" id="addDocumentBlock">
-                                @include('Employee::DocumentUpload.create')
-                            </div>
-                            @if ($employee->signature != null || $employee->profile_picture)
-                                <div class="card mb-5">
-                                    @include('Employee::DocumentUpload.index')
-                                </div>
-                            @endif
-                        </div>
-
-                        @if($authUser->can('update-user-role'))
-                            <div class="c-tabs-content" id="login-details">
-                                <div class="card mb-5">
-                                    @include('Employee::Consultant.user')
-                                </div>
-                            </div>
-                        @endif
-
+            <div class="col-lg-9">
+                <div class="c-tabs-content" id="generalInformation">
+                    <div class="card">
+                        @include('Employee::Consultant.General.edit')
                     </div>
                 </div>
-            </section>
+                <div class="c-tabs-content" id="address">
+                    <div class="card mb-5">
+                        @include('Employee::Address.index')
+                    </div>
+                </div>
+                <div class="c-tabs-content" id="family-details">
+                    <div class="card mb-5" id="addFamilyMemberBlock">
+                        @include('Employee::FamilyDetail.create')
+                    </div>
+                    <div class="card mb-5" id="editFamilyMemberBlock" style="display: none;">
+                        @include('Employee::FamilyDetail.edit')
+                    </div>
+                    @if ($employee->familyDetails->count())
+                        <div class="card mb-5">
+                            @include('Employee::FamilyDetail.index')
+                        </div>
+                    @endif
+                </div>
+
+                @if ($authUser->can('manage-tenure'))
+                    <div class="c-tabs-content" id="tenure-details">
+                        <div class="card mb-5" id="addTenureBlock">
+                            @include('Employee::Tenure.create')
+                        </div>
+                        @if ($employee->tenures->count())
+                            <div class="card mb-5" id="editTenureBlock" style="display: none;">
+                                @include('Employee::Tenure.edit')
+                            </div>
+                            <div class="card mb-5">
+                                @include('Employee::Tenure.index')
+                            </div>
+                        @endif
+                    </div>
+                    <div class="c-tabs-content" id="finance-details">
+                        <div class="card mb-5">
+                            @include('Employee::Finance.index')
+                        </div>
+                    </div>
+                    <div class="c-tabs-content" id="insurance-details">
+                        <div class="card mb-5" id="addInsuranceBlock">
+                            @include('Employee::Insurance.create')
+                        </div>
+                        <div class="card mb-5" id="editInsuranceBlock" style="display: none;">
+                            @include('Employee::Insurance.edit')
+                        </div>
+                        <div class="card mb-5">
+                            @include('Employee::Insurance.index')
+                        </div>
+                    </div>
+                @endif
+
+                <div class="card c-tabs-content" id="medicalInformation">
+                    @include('Employee::MedicalCondition.index')
+                </div>
+
+                <div class="c-tabs-content" id="education-details">
+                    <div class="card mb-5" id="addEducationBlock">
+                        @include('Employee::Education.create')
+                    </div>
+                    <div class="card mb-5" id="editEducationBlock" style="display: none;">
+                        @include('Employee::Education.edit')
+                    </div>
+                    @if ($employee->education->count())
+                        <div class="card mb-5">
+                            @include('Employee::Education.index')
+                        </div>
+                    @endif
+                </div>
+
+                <div class="c-tabs-content" id="experience-details">
+                    <div class="card mb-5" id="addExperienceBlock">
+                        @include('Employee::Experience.create')
+                    </div>
+                    <div class="card mb-5" id="editExperienceBlock" style="display: none;">
+                        @include('Employee::Experience.edit')
+                    </div>
+                    @if ($employee->experiences->count())
+                        <div class="card mb-5">
+                            @include('Employee::Experience.index')
+                        </div>
+                    @endif
+                </div>
+
+                <div class="c-tabs-content" id="training-details">
+                    <div class="card mb-5" id="addTrainingBlock">
+                        @include('Employee::Training.create')
+                    </div>
+                    <div class="card mb-5" id="editTrainingBlock" style="display: none;">
+                        @include('Employee::Training.edit')
+                    </div>
+                    @if ($employee->trainings->count())
+                        <div class="card mb-5">
+                            @include('Employee::Training.index')
+                        </div>
+                    @endif
+                </div>
+                <div class="c-tabs-content" id="document-upload-details">
+                    <div class="card mb-5" id="addDocumentBlock">
+                        @include('Employee::DocumentUpload.create')
+                    </div>
+                    @if ($employee->signature != null || $employee->profile_picture)
+                        <div class="card mb-5">
+                            @include('Employee::DocumentUpload.index')
+                        </div>
+                    @endif
+                </div>
+
+                @if ($authUser->can('update-user-role'))
+                    <div class="c-tabs-content" id="login-details">
+                        <div class="card mb-5">
+                            @include('Employee::Consultant.user')
+                        </div>
+                    </div>
+                @endif
+
+            </div>
+        </div>
+    </section>
 
 @stop

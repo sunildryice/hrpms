@@ -70,11 +70,11 @@ class DailyAttendanceController extends Controller
                     }
 
                     if ($this->isOnApprovedLeave($emp->id, $selectedDate)) {
-                        return 'Leave';
+                        return 'On Leave';
                     }
 
                     if ($this->isOnApprovedTravel($emp->id, $selectedDate)) {
-                        return 'Travel';
+                        return 'On Travel';
                     }
 
                     if ($dateObj->isWeekend()) {

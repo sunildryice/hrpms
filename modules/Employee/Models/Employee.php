@@ -111,7 +111,7 @@ class Employee extends Model
     public function requestSTEId(): Attribute
     {
         return Attribute::make(
-            get: fn() => 'STE-' . sprintf('%04d', $this->ste_code)
+            get: fn() => 'HI-STE-' . sprintf('%04d', $this->ste_code)
         );
     }
 

@@ -20,8 +20,8 @@
                         name: 'month_name'
                     },
                     {
-                        data: 'total_hours',
-                        name: 'total_hours'
+                        data: 'total_worked_hours',
+                        name: 'total_worked_hours'
                     },
                     {
                         data: 'projects',

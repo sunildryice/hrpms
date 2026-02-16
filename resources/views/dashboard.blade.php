@@ -2,9 +2,33 @@
 
 @section('title', 'Dashboard')
 
+@section('page_css')
+    <style>
+        :root {
+            --c-sick-leave: #dc3545;
+            --c-annual-leave: #dc3545;
+            --c-lieu-leave: #dc3545;
+            --c-work-from-home: #0dcaf0;
+            --c-travel: #6610f2;
+            --c-work: #1f9005;
+            --bg-weekend: #e9ecef;
+            --c-leave: #dc3545;
+            --bg-holiday: #e9ecef;
+            --bg-holiday-bar: #fd7e14;
+        }
+
+        .bg-travel {
+            background-color: var(--c-travel);
+        }
+
+        .bg-work-from-home {
+            background-color: var(--c-work-from-home);
+        }
+    </style>
+@endsection
+
 
 @section('page_js')
-
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#dashboard').addClass('active');
@@ -368,7 +392,7 @@
                                 <div class="mb-3 row align-items-center">
                                     <div class="col-auto">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-travel avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-check"></i>
                                         </span>
                                     </div>
@@ -391,7 +415,7 @@
                                 <div class="mb-3 row align-items-center">
                                     <div class="col-auto">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-travel avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-check"></i>
                                         </span>
                                     </div>
@@ -422,7 +446,7 @@
                                 <div class="gap-2 mb-4 d-flex align-items-start">
                                     <div class="">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-workspace"></i>
                                         </span>
                                     </div>
@@ -444,7 +468,7 @@
                                 <div class="gap-2 mb-4 d-flex align-items-start">
                                     <div class="">
                                         <span
-                                            class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                            class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person"></i>
                                         </span>
                                     </div>

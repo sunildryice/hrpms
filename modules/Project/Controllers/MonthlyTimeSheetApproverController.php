@@ -27,7 +27,10 @@ class MonthlyTimeSheetApproverController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->activityTimeSheets->getApproverMonthlyTimeSheets($authUser->id);
+            $data = TimeSheet::query()
+                ->from('view_user_timesheets as v')
+                ->where('v.approver_id', $authUser->id)
+                ->where('v.status_id', config('constant.SUBMITTED_STATUS'));
 
             return DataTables::of($data)
                 ->addIndexColumn()

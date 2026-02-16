@@ -24,8 +24,8 @@
                         name: 'total_worked_hours'
                     },
                     {
-                        data: 'project_short_names',
-                        name: 'project_short_names',
+                        data: 'projects',
+                        name: 'projects',
                     },
                     {
                         data: 'status',

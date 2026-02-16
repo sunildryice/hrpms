@@ -3,7 +3,6 @@
 namespace Modules\Project\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Privilege\Models\User;
 use Modules\Master\Models\Status;
 

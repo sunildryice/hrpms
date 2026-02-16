@@ -31,6 +31,7 @@ class TimeSheetRepository extends Repository
             ->selectRaw('
                 `year`,
                 `month`,
+                `month_name`,
                 COUNT(CASE WHEN status_id = ? THEN 1 END) AS not_submitted,
                 COUNT(CASE WHEN status_id = ? THEN 1 END) AS submitted,
                 COUNT(CASE WHEN status_id = ? THEN 1 END) AS approved,
@@ -41,9 +42,9 @@ class TimeSheetRepository extends Repository
                 config('constant.APPROVED_STATUS', 6),
                 config('constant.RETURNED_STATUS', 2),
             ])
-            ->groupBy('year', 'month')
+            ->groupBy('year', 'month', 'month_name')
             ->orderBy('year', 'desc')
-            ->orderByRaw('MONTH(end_date) ASC')
+            ->orderBy('month', 'asc')
             ->get();
     }
 

@@ -26,12 +26,14 @@ class ProjectActivityController extends Controller
 
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {}
+    ) {
+    }
     public function index(Request $request, Project $project)
     {
         $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
+            ->with('parent')
             ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id) || $authUser->employee?->employee_code == 62, function ($query) {
                 // Focal Person or Team Lead can see all activities
                 return $query;
@@ -40,12 +42,20 @@ class ProjectActivityController extends Controller
                 return $query->whereHas('members', function ($q) use ($authUser) {
                     $q->where('user_id', $authUser->id);
                 });
-            })
-            ->orderBy('activity_stage_id')
-            ->orderBy('parent_id');
+            });
+
+        $activities = $data->get()->sortBy(function ($item) {
+            $path = [];
+            $current = $item;
+            while ($current) {
+                $path[] = str_pad($current->sort_order ?? $current->id, 4, '0', STR_PAD_LEFT);
+                $current = $current->parent;
+            }
+            return implode('.', array_reverse($path));
+        })->values();
 
         $authUser = auth()->user();
-        return DataTables::of($data)
+        return DataTables::of($activities)
             ->addIndexColumn()
             ->editColumn('start_date', function ($row) {
                 return $row->start_date?->format('M d, Y');

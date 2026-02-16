@@ -50,8 +50,7 @@ class ConsultantController extends Controller
         protected ProvinceRepository          $provinces,
         protected RoleRepository              $roles,
         protected EmployeeTypeRepository      $employeeTypes
-    )
-    {
+    ) {
         $this->destinationPath = 'consultant';
     }
 
@@ -61,7 +60,7 @@ class ConsultantController extends Controller
         if ($request->ajax()) {
             $query = $this->employees->with(['user', 'department', 'designation', 'office', 'latestTenure.dutyStation', 'latestTenure.supervisor'])
                 ->select(['*'])
-                ->where('employee_type_id', '<>',config('constant.FULL_TIME_EMPLOYEE'));
+                ->where('employee_type_id', '<>', config('constant.FULL_TIME_EMPLOYEE'));
             if ($request->active) {
                 $query->whereNotNull('activated_at');
             } else {
@@ -71,7 +70,7 @@ class ConsultantController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('employee_code', function ($employee) {
+                ->addColumn('ste_code', function ($employee) {
                     return $employee->requestSTEId;
                 })->addColumn('employee_type_id', function ($employee) {
                     return $employee->employeeType?->title;

@@ -69,7 +69,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5" style="width: 200px">
+                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5"
+                                    style="width: 200px">
                             </div>
                         </div>
                     </div>
@@ -89,7 +90,7 @@
                 <tbody>
                     <tr>
                         <th scope="row">Staff ID </th>
-                        <td colspan="3">{{ $employee->employee_code }}</td>
+                        <td colspan="3">{{ $employee->requestSTEId }}</td>
                         <td rowspan="5" class="staff-image text-center bg-white ">
                             @if (file_exists('storage/' . $employee->profile_picture) && $employee->profile_picture != '')
                                 <img src="{{ asset('storage/' . $employee->profile_picture) }}" alt=""

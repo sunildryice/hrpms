@@ -6,6 +6,7 @@ use App\Helper;
 use App\Repositories\NotificationRepository;
 use Carbon\Carbon;
 use Modules\Announcement\Repositories\AnnouncementRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\EventCompletion\Repositories\EventCompletionRepository;
 use Modules\ExitStaffClearance\Repositories\StaffClearanceRepository;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
@@ -60,6 +61,7 @@ class DashboardController extends Controller
         protected StaffClearanceRepository $staffClearances,
         protected WorkFromHomeRepository $workFromHomes,
         protected LieuLeaveRequestRepository $lieuLeaveRequests,
+        protected EmployeeRepository $employees,
     ) {
     }
 
@@ -73,19 +75,25 @@ class DashboardController extends Controller
 
         $authUser = auth()->user();
 
-        $currentMonday = Carbon::now()->startOfWeek(Carbon::SUNDAY);
-        $currentSunday = $currentMonday->copy()->addDays(6);
-
+        $currentWeekStart = Carbon::now()->startOfWeek(Carbon::SUNDAY);
+        $currentWeekEnd = $currentWeekStart->copy()->addDays(6);
         $currentWeekWorkPlans = collect();
 
         if ($authUser->employee) {
             $currentWeekWorkPlans = app(WorkPlanRepository::class)
-                ->getUserWorkPlanDetailsByWeek(
-                    $currentMonday->toDateString(),
-                    $currentSunday->toDateString(),
-                    $authUser->id
-                )
+                ->getUserWorkPlanDetailsByWeek($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser->id)
                 ->get();
+        }
+        
+        $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));
+
+        $upcomingBirthdays = collect();
+        $upcomingAnniversaries = collect();
+        $days = 7;
+
+        if ($canSeeTeamEvents) {
+            $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
+            $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
         }
 
         $lieuLeaveRequests = $this->lieuLeaveRequests->getLieuLeaveRequestsForApproval($authUser);
@@ -120,8 +128,11 @@ class DashboardController extends Controller
             'pendingPerformanceReviews' => $this->performanceReviews->getPendingPerformanceReview($authUser),
             'pendingStaffClearances' => $this->staffClearances->getPendingClearances(),
             'currentWeekWorkPlans' => $currentWeekWorkPlans,
-            'currentWeekStart' => $currentMonday,
-            'currentWeekEnd' => $currentSunday,
+            'currentWeekStart' => $currentWeekStart,
+            'currentWeekEnd' => $currentWeekEnd,
+            'canSeeTeamEvents' => $canSeeTeamEvents,
+            'upcomingBirthdays' => $upcomingBirthdays,
+            'upcomingAnniversaries' => $upcomingAnniversaries,
         ];
 
 

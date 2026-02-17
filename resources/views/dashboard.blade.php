@@ -498,7 +498,7 @@
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
                         <div class="card-header fw-bold">
-                            Work Plan 
+                            Work Plan
                             <small class="float-end text-muted fw-normal">
                                 {{ $currentWeekStart->format('M d') }} – {{ $currentWeekEnd->format('M d, Y') }}
                             </small>
@@ -515,7 +515,7 @@
                                     <div class="w-100">
                                         <div class="request-title d-flex justify-content-between align-items-start">
                                             <div class="fw-bold">
-                                                  {{ $detail->activity?->title ?? '—' }}
+                                                {{ $detail->activity?->title ?? '—' }}
                                             </div>
                                             <div>
                                                 <span
@@ -531,7 +531,7 @@
                                                 </span>
                                             </div>
                                         </div>
-    
+
                                         <div class="text-muted">
                                             <div class="mb-1">
                                                 {{ $detail->project?->title ?? 'No Project' }}
@@ -539,7 +539,7 @@
                                                     <small class="text-muted">({{ $detail->project->short_name }})</small>
                                                 @endif
                                             </div>
-    
+
                                             {{-- @if ($detail->plan_tasks)
                                                 <div class="small">
                                                     <strong>Planned:</strong>
@@ -567,6 +567,78 @@
                     </div>
                 </div>
             @endif
+
+
+            @if ($canSeeTeamEvents)
+                @if ($upcomingBirthdays->isNotEmpty())
+                    <div class="mb-3 col-lg-4">
+                        <div class="mb-2 border-0 shadow-sm card">
+                            <div class="card-header fw-bold">Upcoming Birthday</div>
+                            <div class="p-3 div-content-area">
+                                @foreach ($upcomingBirthdays as $emp)
+                                    <div class="gap-3 mb-4 d-flex align-items-start">
+                                        <div>
+                                            <span
+                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-person"></i>
+                                            </span>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="request-title d-flex justify-content-between">
+                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                                <small class="text-danger fw-semibold">{{ $emp->label }}</small>
+                                            </div>
+                                            <div class="text-muted">
+                                                <div class="mb-1">
+                                                    {{ $emp->upcoming_date->format('M d, Y') }}
+                                                </div>
+                                                {{-- @if ($emp->designation)
+                                                    <small>{{ $emp->designation->title }}</small>
+                                                @endif --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($upcomingAnniversaries->isNotEmpty())
+                    <div class="mb-3 col-lg-4">
+                        <div class="mb-2 border-0 shadow-sm card">
+                            <div class="card-header fw-bold">Work Anniversary</div>
+                            <div class="p-3 div-content-area">
+                                @foreach ($upcomingAnniversaries as $emp)
+                                    <div class="gap-3 mb-4 d-flex align-items-start">
+                                        <div>
+                                            <span
+                                                class="text-white rounded bg-success avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-briefcase-fill"></i>
+                                            </span>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="request-title d-flex justify-content-between">
+                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                                <small class="text-success fw-semibold">{{ $emp->label }}</small>
+                                            </div>
+                                            <div class="text-muted">
+                                                <div class="mb-1">
+                                                    {{ $emp->upcoming_date->format('M d, Y') }}
+                                                </div>
+                                                {{-- @if ($emp->designation)
+                                                    <small>{{ $emp->designation->title }}</small>
+                                                @endif --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @endif
+
         </div>
 
     </div>

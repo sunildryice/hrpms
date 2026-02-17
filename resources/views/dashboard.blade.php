@@ -498,7 +498,7 @@
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
                         <div class="card-header fw-bold">
-                            Work Plan – Current Week
+                            Work Plan 
                             <small class="float-end text-muted fw-normal">
                                 {{ $currentWeekStart->format('M d') }} – {{ $currentWeekEnd->format('M d, Y') }}
                             </small>

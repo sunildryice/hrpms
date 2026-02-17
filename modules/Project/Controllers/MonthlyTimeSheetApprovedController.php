@@ -5,13 +5,11 @@ namespace Modules\Project\Controllers;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Modules\LeaveRequest\Models\LeaveRequest;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Models\TimeSheet;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ViewUserTimeSheetRepository;
-use Modules\TravelRequest\Models\TravelRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 class MonthlyTimeSheetApprovedController extends Controller

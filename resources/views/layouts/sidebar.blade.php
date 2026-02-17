@@ -552,13 +552,23 @@
                             style="">
                             <a class="nav-link" href="{{ route('timesheet.index') }}"
                                 id="timesheets-index">Timesheet</a>
-                            <a class="nav-link" href="{{ route('monthly-timesheet.index') }}"
-                                id="monthly-timesheets-index">Monthly Timesheet</a>
-                            <a class="nav-link" href="{{ route('approve.monthly-timesheet.index') }}"
-                                id="approve-monthly-timesheets-menu">Approve Monthly Timesheet
-                                ({{ $approveMonthlyTimeSheetCount }})</a>
-                            <a class="nav-link" href="{{ route('approved.monthly-timesheet.index') }}"
-                                id="approved-monthly-timesheets-menu">Approved Monthly Timesheet</a>
+
+                            {{-- @if ($authUser->can('monthly-timesheet'))    --}}
+                                <a class="nav-link" href="{{ route('monthly-timesheet.index') }}"
+                                    id="monthly-timesheets-index">Monthly Timesheet</a>
+                            {{-- @endif --}}
+
+                            {{-- @if ($authUser->can('approve-monthly-timesheet')) --}}
+                                <a class="nav-link" href="{{ route('approve.monthly-timesheet.index') }}"
+                                    id="approve-monthly-timesheets-menu">Approve Monthly Timesheet
+                                    ({{ $approveMonthlyTimeSheetCount }})</a>
+                            {{-- @endif --}}
+
+                            {{-- @if ($authUser->can('view-approved-monthly-timesheet')) --}}
+                                <a class="nav-link" href="{{ route('approved.monthly-timesheet.index') }}"
+                                    id="approved-monthly-timesheets-menu">Approved Monthly Timesheet</a>
+                            {{-- @endif --}}
+
                             <a class="nav-link" href="{{ route('monthly-timesheet.summary.index') }}"
                                 id="monthly-timesheets-summary-menu">Monthly Timesheet Summary</a>
                         </div>

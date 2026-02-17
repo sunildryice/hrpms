@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Modules\LeaveRequest\Models\LeaveRequest;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Models\TimeSheet;
 use Modules\Project\Models\TimeSheetLog;
@@ -14,7 +13,6 @@ use Modules\Project\Notifications\TimeSheetSubmitted;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ViewUserTimeSheetRepository;
-use Modules\TravelRequest\Models\TravelRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 class MonthlyTimeSheetController extends Controller

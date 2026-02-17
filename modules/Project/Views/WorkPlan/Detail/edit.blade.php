@@ -75,7 +75,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex flex-column align-items-start h-100">
-                    <label class="form-label required-label m-0">Involved Members</label>
+                    <label class="form-label  m-0">Involved Members</label>
 
                 </div>
             </div>

@@ -164,7 +164,7 @@ class LeaveRequestRepository extends Repository
             $leaveRequest->logs()->create($inputs);
             if ($inputs['status_id'] == config('constant.APPROVED_STATUS')) {
                 Artisan::call('dryice:reconcile:employee:leave', ['employee' => $leaveRequest->requester->employee->employee_code]);
-//                app(LeaveRepository::class)
+                //                app(LeaveRepository::class)
 //                    ->reconcileEmployeeLeave($leaveRequest->requester->employee, $leaveRequest->start_date->format('Y'), $leaveRequest->start_date->format('m'));
             }
 
@@ -335,7 +335,7 @@ class LeaveRequestRepository extends Repository
         try {
             $leaveRequest = $this->model->findOrFail($id);
             $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
-            if (! $leaveRequest->leave_number) {
+            if (!$leaveRequest->leave_number) {
                 $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
                     ->where('end_date', '>=', date('Y-m-d'))
                     ->first();
@@ -364,7 +364,7 @@ class LeaveRequestRepository extends Repository
             $leaveRequest = $this->model->find($id);
             $leaveRequest->fill($inputs)->save();
             $leaveRequest->leaveDays()->delete();
-            if (! $leaveRequest->modification_number) {
+            if (!$leaveRequest->modification_number) {
                 if (array_key_exists('substitutes', $inputs)) {
                     $leaveRequest->substitutes()->sync($inputs['substitutes']);
                 } else {
@@ -415,5 +415,15 @@ class LeaveRequestRepository extends Repository
             ->where('updated_at', '<=', now()->subDays(7))
             ->orderBy('start_date', 'desc')
             ->get();
+    }
+
+    public function isEmployeeOnApprovedLeave(int $employeeId, string $date): bool
+    {
+        return $this->model
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where('requester_id', $employeeId)
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
     }
 }

@@ -48,4 +48,14 @@ class LieuLeaveRequestRepository extends Repository
             ->with(['requester'])
             ->get();
     }
+
+    public function isEmployeeOnApprovedLieuLeave(int $employeeId, string $date): bool
+    {
+        return $this->model
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where('requester_id', $employeeId)
+            ->whereDate('start_date', '<=', $date)
+            ->whereDate('end_date', '>=', $date)
+            ->exists();
+    }
 }

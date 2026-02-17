@@ -13,6 +13,7 @@ use Modules\Project\Models\TimeSheetLog;
 use Modules\Project\Notifications\TimeSheetSubmitted;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\Project\Repositories\ViewUserTimeSheetRepository;
 use Modules\TravelRequest\Models\TravelRequest;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -21,6 +22,7 @@ class MonthlyTimeSheetController extends Controller
     public function __construct(
         protected ActivityTimeSheetRepository $activityTimeSheets,
         protected TimeSheetRepository $timeSheets,
+        protected ViewUserTimeSheetRepository $viewUserTimeSheets,
         protected UserRepository $user
     ) {
         $this->destinationPath = 'TimeSheet';
@@ -31,9 +33,7 @@ class MonthlyTimeSheetController extends Controller
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = TimeSheet::query()
-                ->from('view_user_timesheets as v')
-                ->where('v.requester_id', $authUser->id);
+            $data = $this->viewUserTimeSheets->getUserTimeSheets($authUser->id);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -99,7 +99,7 @@ class MonthlyTimeSheetController extends Controller
 
             // If empty → compute reason once here
             $reason = $items->isEmpty()
-                ? $this->getAbsenceReason($employeeId, $dateKey)
+                ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
                 : null;
 
             $allDates[$dateKey] = [
@@ -130,45 +130,6 @@ class MonthlyTimeSheetController extends Controller
             'authUser',
             'employeeId'
         ));
-    }
-
-    private function getAbsenceReason(int $employeeId, string $date): string
-    {
-        $carbonDate = Carbon::parse($date);
-
-        if ($this->isOnApprovedLeave($employeeId, $date)) {
-            return '<span class="text-warning fw-bold">On Leave</span>';
-        }
-
-        if ($this->isOnApprovedTravel($employeeId, $date)) {
-            return '<span class="text-info fw-bold">On Travel</span>';
-        }
-
-        if ($carbonDate->isWeekend()) {
-            return '<span class="text-danger fw-bold">Weekend</span>';
-        }
-
-        return 'No timesheet entries';
-    }
-
-    private function isOnApprovedLeave(int $employeeId, string $date): bool
-    {
-        return LeaveRequest::query()
-            ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->where('requester_id', $employeeId)
-            ->whereDate('start_date', '<=', $date)
-            ->whereDate('end_date', '>=', $date)
-            ->exists();
-    }
-
-    private function isOnApprovedTravel(int $employeeId, string $date): bool
-    {
-        return TravelRequest::query()
-            ->where('status_id', config('constant.APPROVED_STATUS'))
-            ->where('requester_id', $employeeId)
-            ->whereDate('departure_date', '<=', $date)
-            ->whereDate('return_date', '>=', $date)
-            ->exists();
     }
 
     public function update(Request $request, $id)

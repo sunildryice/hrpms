@@ -234,7 +234,7 @@ class TravelRequestRepository extends Repository
         try {
             $travelRequest = $this->model->findOrFail($id);
             $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
-            if (! $travelRequest->travel_number) {
+            if (!$travelRequest->travel_number) {
                 $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
                     ->where('end_date', '>=', date('Y-m-d'))
                     ->first();
@@ -263,7 +263,7 @@ class TravelRequestRepository extends Repository
         try {
             $travelRequest = $this->model->find($id);
             $travelRequest->fill($inputs)->save();
-            if (! empty($inputs['accompanying_staff'])) {
+            if (!empty($inputs['accompanying_staff'])) {
                 $travelRequest->accompanyingStaffs()->sync($inputs['accompanying_staff']);
             } else {
                 $travelRequest->accompanyingStaffs()->sync([]);
@@ -321,5 +321,15 @@ class TravelRequestRepository extends Repository
 
             return false;
         }
+    }
+
+    public function isEmployeeOnApprovedTravel(int $employeeId, string $date): bool
+    {
+        return $this->model
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->where('requester_id', $employeeId)
+            ->whereDate('departure_date', '<=', $date)
+            ->whereDate('return_date', '>=', $date)
+            ->exists();
     }
 }

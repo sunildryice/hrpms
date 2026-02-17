@@ -57,7 +57,7 @@ class ImportEmployeeAttendance extends Command
 
             if (count($attendanceLogs) > 0) {
                 $attendanceInputs = [];
-                if($manualCheckInExists){
+                if ($manualCheckInExists) {
                     $checkIn = $attendanceDetail->checkin;
                     $checkOut = $attendanceLogs->last()->attendance_timestamp;
                     $attendanceInputs['checkout'] = $checkOut;
@@ -72,14 +72,6 @@ class ImportEmployeeAttendance extends Command
                     $attendanceInputs['checkout'] = $checkOut;
                     $attendanceInputs['checkin_from'] = 'Device';
                     $attendanceInputs['checkout_from'] = 'Device';
-                }
-
-                if ($checkIn && $checkOut) {
-                    $checkIn = Carbon::parse($checkIn)->startOfMinute();
-                    $checkOut = Carbon::parse($checkOut)->startOfMinute();
-
-                    $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
-                    $inputs['worked_hours'] = $workedHours;
                 }
 
                 $attendance = $this->attendances->getAttendanceObject($employee->id, $date->year, $date->month);
@@ -108,7 +100,22 @@ class ImportEmployeeAttendance extends Command
             }
         }
 
+        foreach ($employees as $employee) {
+            $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($employee->employee_code, $date->format('Y-m-d'));
+            if ($attendanceDetail) {
+                $checkIn = $attendanceDetail->checkin;
+                $checkOut = $attendanceDetail->checkout;
+                if ($checkIn && $checkOut) {
+                    $checkIn = Carbon::parse($checkIn)->startOfMinute();
+                    $checkOut = Carbon::parse($checkOut)->startOfMinute();
 
+                    $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
+                    $attendanceDetail->update(['worked_hours' => $workedHours]);
+
+                    $this->info('Work hour is updated for '. $employee->getFullName());
+                }
+            }
+        }
         $this->info('Setting all attendance records.');
     }
 }

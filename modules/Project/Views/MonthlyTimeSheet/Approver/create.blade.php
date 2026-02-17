@@ -62,7 +62,8 @@
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('approve.monthly-timesheet.index') }}" class="text-decoration-none text-dark">Approve Monthly Timesheet</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('approve.monthly-timesheet.index') }}"
+                                    class="text-decoration-none text-dark">Approve Monthly Timesheet</a></li>
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
                     </nav>
@@ -136,75 +137,95 @@
                         </thead>
                         <tbody>
                             @php $sn = 1; @endphp
-                            @foreach ($allDates as $date => $itemsByDate)
+                            @foreach ($allDates as $dateKey => $dayData)
                                 @php
-                                    // If no data for this date, show empty row
-                                    if ($itemsByDate->isEmpty()) {
-                                        echo '<tr' . ($loop->first ? '' : ' class="date-group-divider"') . '>';
-                                        echo '<td>' . $sn++ . '</td>';
-                                        echo '<td>' . \Carbon\Carbon::parse($date)->format('d, M Y') . '</td>';
-                                        echo '<td colspan="4" class="text-center text-muted">No timesheet entries</td>';
-                                        echo '</tr>';
-                                        continue;
-                                    }
-                                    $dateRowCount = $itemsByDate->count();
-                                    $datePrinted = false;
-                                    $projectGroups = collect($itemsByDate)->groupBy(function ($ts) {
-                                        return optional($ts->project)->id ?? 'unknown';
-                                    });
-                                    $dateLoop = $loop; // capture outer loop for first/last detection
+                                    $itemsByDate = $dayData['items'];
+                                    $carbonDate = $dayData['carbon'];
+                                    $isWeekend = $carbonDate->isWeekend();
+                                    $dayName = $carbonDate->format('l');
+                                    $dateLoop = $loop;
                                 @endphp
-                                @foreach ($projectGroups as $projectId => $projectItems)
+
+                                @if ($itemsByDate->isEmpty())
+                                    <tr class="{{ $dateLoop->first ? '' : 'date-group-divider' }}">
+                                        <td>{{ $sn++ }}</td>
+                                        <td>
+                                            {{ $carbonDate->format('d, M Y') }}
+                                        </td>
+                                        <td colspan="4" class="text-center fw-bold">
+                                            {!! $dayData['reason'] !!}
+                                        </td>
+                                    </tr>
+                                @else
                                     @php
-                                        $projectPrinted = false;
-                                        $projectLoop = $loop;
-                                        $activityGroups = collect($projectItems)->groupBy(function ($ts) {
-                                            return optional($ts->activity)->id ?? ($ts->activity_id ?? 'unknown');
-                                        });
+                                        $dateRowCount = $itemsByDate->count();
+                                        $datePrinted = false;
+                                        $projectGroups = $itemsByDate->groupBy(
+                                            fn($ts) => optional($ts->project)->id ?? 'unknown',
+                                        );
                                     @endphp
-                                    @foreach ($activityGroups as $activityId => $activityItems)
+
+                                    @foreach ($projectGroups as $projectId => $projectItems)
                                         @php
-                                            $activityPrinted = false;
-                                            $activityLoop = $loop;
+                                            $projectPrinted = false;
+                                            $projectLoop = $loop;
+                                            $activityGroups = $projectItems->groupBy(
+                                                fn($ts) => optional($ts->activity)->id ?? 'unknown',
+                                            );
                                         @endphp
-                                        @foreach ($activityItems as $item)
+
+                                        @foreach ($activityGroups as $activityId => $activityItems)
                                             @php
-                                                $rowClasses = [];
-                                                if (!$datePrinted && !$dateLoop->first) {
-                                                    $rowClasses[] = 'date-group-divider';
-                                                }
-                                                if (!$projectPrinted && !$projectLoop->first) {
-                                                    $rowClasses[] = 'project-group-divider';
-                                                }
-                                                if (!$activityPrinted && !$activityLoop->first) {
-                                                    $rowClasses[] = 'activity-group-divider';
-                                                }
+                                                $activityPrinted = false;
+                                                $activityLoop = $loop;
                                             @endphp
-                                            <tr class="{{ implode(' ', $rowClasses) }}">
-                                                @if (!$datePrinted)
-                                                    <td rowspan="{{ $dateRowCount }}">{{ $sn++ }}</td>
-                                                    <td rowspan="{{ $dateRowCount }}">
-                                                        {{ \Carbon\Carbon::parse($item->timesheet_date)->format('d,M Y') }}
+
+                                            @foreach ($activityItems as $item)
+                                                @php
+                                                    $rowClasses = [];
+                                                    if (!$datePrinted && !$dateLoop->first) {
+                                                        $rowClasses[] = 'date-group-divider';
+                                                    }
+                                                    if (!$projectPrinted && !$projectLoop->first) {
+                                                        $rowClasses[] = 'project-group-divider';
+                                                    }
+                                                    if (!$activityPrinted && !$activityLoop->first) {
+                                                        $rowClasses[] = 'activity-group-divider';
+                                                    }
+                                                @endphp
+
+                                                <tr class="{{ implode(' ', $rowClasses) }}">
+                                                    @if (!$datePrinted)
+                                                        <td rowspan="{{ $dateRowCount }}">{{ $sn++ }}</td>
+                                                        <td rowspan="{{ $dateRowCount }}">
+                                                            {{ $carbonDate->format('d, M Y') }}
+                                                        </td>
+                                                        @php $datePrinted = true; @endphp
+                                                    @endif
+
+                                                    @if (!$projectPrinted)
+                                                        <td rowspan="{{ $projectItems->count() }}">
+                                                            {{ optional($item->project)->short_name ?? 'N/A' }}
+                                                        </td>
+                                                        @php $projectPrinted = true; @endphp
+                                                    @endif
+
+                                                    @if (!$activityPrinted)
+                                                        <td rowspan="{{ $activityItems->count() }}">
+                                                            {{ optional($item->activity)->title ?? 'N/A' }}
+                                                        </td>
+                                                        @php $activityPrinted = true; @endphp
+                                                    @endif
+
+                                                    <td>{{ $item->description ?? '—' }}</td>
+                                                    <td>
+                                                        {{ is_numeric($item->hours_spent) ? number_format($item->hours_spent, 2) : $item->hours_spent ?? '—' }}
                                                     </td>
-                                                    @php $datePrinted = true; @endphp
-                                                @endif
-                                                @if (!$projectPrinted)
-                                                    <td rowspan="{{ $projectItems->count() }}">
-                                                        {{ optional($item->project)->short_name }}</td>
-                                                    @php $projectPrinted = true; @endphp
-                                                @endif
-                                                @if (!$activityPrinted)
-                                                    <td rowspan="{{ $activityItems->count() }}">
-                                                        {{ optional($item->activity)->title ?? 'N/A' }}</td>
-                                                    @php $activityPrinted = true; @endphp
-                                                @endif
-                                                <td>{{ $item->description }}</td>
-                                                <td>{{ is_numeric($item->hours_spent) ? number_format($item->hours_spent, 2) : $item->hours_spent }}
-                                                </td>
-                                            </tr>
+                                                </tr>
+                                            @endforeach
                                         @endforeach
                                     @endforeach
-                                @endforeach
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

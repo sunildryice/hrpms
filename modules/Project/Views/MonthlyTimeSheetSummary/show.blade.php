@@ -45,11 +45,11 @@
                             href="{{ route('dashboard.index') }}">Home</a></li>
                     <li class="breadcrumb-item"><a class="text-decoration-none text-dark"
                             href="{{ route('monthly-timesheet.summary.index') }}">Monthly Timesheet Summary</a></li>
-                    <li class="breadcrumb-item active">{{ $year }} {{ $month }}</li>
+                    <li class="breadcrumb-item active">{{ $year }} {{ $timesheets?->first()->month_name ?? '' }}</li>
                 </ol>
             </nav>
             <h4 class="m-0 mt-1 fs-6 text-uppercase fw-bold text-primary">
-                Monthly Timesheet Summary - {{ $year }} {{ $month }}
+                Monthly Timesheet Summary - {{ $year }} {{ $timesheets?->first()->month_name ?? '' }}
             </h4>
         </div>
 

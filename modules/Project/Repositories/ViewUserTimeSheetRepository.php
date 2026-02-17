@@ -2,16 +2,11 @@
 
 namespace Modules\Project\Repositories;
 
-use App\Repositories\Repository;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Modules\Employee\Models\Leave;
-use Modules\LeaveRequest\Models\LeaveRequest;
-use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
-use Modules\LieuLeave\Models\LieuLeaveRequest;
-use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
+use App\Repositories\Repository;
 use Modules\Project\Models\ViewUserTimeSheet;
-use Modules\TravelRequest\Models\TravelRequest;
+use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
+use Modules\LieuLeave\Repositories\LieuLeaveRequestRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 
 class ViewUserTimeSheetRepository extends Repository

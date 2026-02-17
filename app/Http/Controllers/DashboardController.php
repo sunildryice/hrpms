@@ -72,7 +72,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-
         $authUser = auth()->user();
 
         $currentWeekStart = Carbon::now()->startOfWeek(Carbon::SUNDAY);

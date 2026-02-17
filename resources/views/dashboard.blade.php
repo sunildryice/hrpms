@@ -568,7 +568,6 @@
                 </div>
             @endif
 
-
             @if ($canSeeTeamEvents)
                 @if ($upcomingBirthdays->isNotEmpty())
                     <div class="mb-3 col-lg-4">
@@ -579,14 +578,14 @@
                                     <div class="gap-3 mb-4 d-flex align-items-start">
                                         <div>
                                             <span
-                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-person"></i>
+                                                class="text-white rounded bg-warning avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-gift-fill"></i>
                                             </span>
                                         </div>
                                         <div class="w-100">
                                             <div class="request-title d-flex justify-content-between">
                                                 <div class="fw-bold">{{ $emp->getFullName() }}</div>
-                                                <small class="text-danger fw-semibold">{{ $emp->label }}</small>
+                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
                                             </div>
                                             <div class="text-muted">
                                                 <div class="mb-1">
@@ -620,7 +619,7 @@
                                         <div class="w-100">
                                             <div class="request-title d-flex justify-content-between">
                                                 <div class="fw-bold">{{ $emp->getFullName() }}</div>
-                                                <small class="text-success fw-semibold">{{ $emp->label }}</small>
+                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
                                             </div>
                                             <div class="text-muted">
                                                 <div class="mb-1">
@@ -640,7 +639,6 @@
             @endif
 
         </div>
-
     </div>
 @stop
 

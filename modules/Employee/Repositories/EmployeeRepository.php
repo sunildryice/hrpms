@@ -264,4 +264,59 @@ class EmployeeRepository extends Repository
                 return $employee;
             });
     }
+
+    public function getUpcomingContractEndings($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        $employees = $this->model
+            ->whereNotNull('activated_at')
+            ->whereHas('latestTenure', function ($q) use ($today, $endDate) {
+                $q->whereNotNull('contract_end_date')
+                    ->whereBetween('contract_end_date', [$today, $endDate]);
+            })
+            ->with('latestTenure')
+            ->orderBy('full_name')
+            ->get();
+
+        return $employees->map(function ($employee) use ($today) {
+            $contractEnd = $employee->latestTenure->contract_end_date;
+
+            $daysUntil = $today->diffInDays($contractEnd, false);
+
+            $employee->upcoming_date = $contractEnd;
+            $employee->days_until = $daysUntil;
+            $employee->label = $daysUntil === 0 ? 'Today'
+                : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+            return $employee;
+        })->sortBy('upcoming_date')->values();
+    }
+
+    public function getUpcomingProbationCompletions($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('probation_complete_date')
+            ->whereBetween('probation_complete_date', [$today, $endDate])
+            ->orderBy('probation_complete_date')
+            ->orderBy('full_name')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $probationEnd = \Carbon\Carbon::parse($employee->probation_complete_date);
+
+                $daysUntil = $today->diffInDays($probationEnd, false);
+
+                $employee->upcoming_date = $probationEnd;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+                return $employee;
+            })->sortBy('upcoming_date')->values();
+    }
 }

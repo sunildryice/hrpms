@@ -83,16 +83,20 @@ class DashboardController extends Controller
                 ->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)
                 ->get();
         }
-        
+
         $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));
 
         $upcomingBirthdays = collect();
         $upcomingAnniversaries = collect();
+        $upcomingContractEndings = collect();
+        $upcomingProbationCompletions = collect();
         $days = 7;
 
         if ($canSeeTeamEvents) {
             $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
             $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
+            $upcomingContractEndings = $this->employees->getUpcomingContractEndings($days);
+            $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions($days);
         }
 
         $lieuLeaveRequests = $this->lieuLeaveRequests->getLieuLeaveRequestsForApproval($authUser);
@@ -132,6 +136,8 @@ class DashboardController extends Controller
             'canSeeTeamEvents' => $canSeeTeamEvents,
             'upcomingBirthdays' => $upcomingBirthdays,
             'upcomingAnniversaries' => $upcomingAnniversaries,
+            'upcomingContractEndings' => $upcomingContractEndings,
+            'upcomingProbationCompletions' => $upcomingProbationCompletions,
         ];
 
 

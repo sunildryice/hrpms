@@ -80,7 +80,7 @@ class DashboardController extends Controller
 
         if ($authUser->employee) {
             $currentWeekWorkPlans = app(WorkPlanRepository::class)
-                ->getUserWorkPlanDetailsByWeek($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser->id)
+                ->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)
                 ->get();
         }
         

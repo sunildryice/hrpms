@@ -539,26 +539,6 @@
                                                     <small class="text-muted">({{ $detail->project->short_name }})</small>
                                                 @endif
                                             </div>
-
-                                            {{-- @if ($detail->plan_tasks)
-                                                <div class="small">
-                                                    <strong>Planned:</strong>
-                                                    {{ Str::limit($detail->plan_tasks, 90) }}
-                                                </div>
-                                            @endif
-    
-                                            @if ($detail->members->isNotEmpty())
-                                                <div class="mt-1 small">
-                                                    <strong>Members:</strong>
-                                                    {{ $detail->members->pluck('full_name')->implode(', ') }}
-                                                </div>
-                                            @endif
-    
-                                            @if (in_array($detail->status, ['completed', 'no_required']) && $detail->reason)
-                                                <div class="mt-1 small text-muted fst-italic">
-                                                    <strong>Reason:</strong> {{ $detail->reason }}
-                                                </div>
-                                            @endif --}}
                                         </div>
                                     </div>
                                 </div>
@@ -589,7 +569,7 @@
                                             </div>
                                             <div class="text-muted">
                                                 <div class="mb-1">
-                                                    {{ $emp->upcoming_date->format('M d, Y') }}
+                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
                                                 </div>
                                                 {{-- @if ($emp->designation)
                                                     <small>{{ $emp->designation->title }}</small>
@@ -623,7 +603,7 @@
                                             </div>
                                             <div class="text-muted">
                                                 <div class="mb-1">
-                                                    {{ $emp->upcoming_date->format('M d, Y') }}
+                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
                                                 </div>
                                                 {{-- @if ($emp->designation)
                                                     <small>{{ $emp->designation->title }}</small>
@@ -636,8 +616,76 @@
                         </div>
                     </div>
                 @endif
-            @endif
 
+                @if ($upcomingContractEndings->isNotEmpty())
+                    <div class="mb-3 col-lg-4">
+                        <div class="mb-2 border-0 shadow-sm card">
+                            <div class="card-header fw-bold">Contract Ending</div>
+                            <div class="p-3 div-content-area">
+                                @foreach ($upcomingContractEndings as $emp)
+                                    <div class="gap-3 mb-4 d-flex align-items-start">
+                                        <div>
+                                            <span
+                                                class="text-white rounded bg-danger avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-file-earmark-x-fill"></i>
+                                            </span>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="request-title d-flex justify-content-between">
+                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
+                                            </div>
+                                            <div class="text-muted">
+                                                <div class="mb-1">
+                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
+                                                </div>
+                                                {{-- @if ($emp->designation?->title)
+                                                    <small>{{ $emp->designation->title }}</small>
+                                                @endif --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($upcomingProbationCompletions->isNotEmpty())
+                    <div class="mb-3 col-lg-4">
+                        <div class="mb-2 border-0 shadow-sm card">
+                            <div class="card-header fw-bold">Probation Completion</div>
+                            <div class="p-3 div-content-area">
+                                @foreach ($upcomingProbationCompletions as $emp)
+                                    <div class="gap-3 mb-4 d-flex align-items-start">
+                                        <div>
+                                            <span
+                                                class="text-white rounded bg-info avatar d-flex align-items-center justify-content-center">
+                                                <i class="bi bi-check2-circle"></i>
+                                            </span>
+                                        </div>
+                                        <div class="w-100">
+                                            <div class="request-title d-flex justify-content-between">
+                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
+                                            </div>
+                                            <div class="text-muted">
+                                                <div class="mb-1">
+                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
+                                                </div>
+                                                {{-- @if ($emp->designation?->title)
+                                                    <small>{{ $emp->designation->title }}</small>
+                                                @endif --}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+            @endif
         </div>
     </div>
 @stop

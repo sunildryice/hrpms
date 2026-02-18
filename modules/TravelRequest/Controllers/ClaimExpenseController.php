@@ -104,9 +104,10 @@ class ClaimExpenseController extends Controller
         $authUser = auth()->user();
         // $activityCodes = $this->activityCodes->getActiveActivityCodes();
         $travelClaim = $this->travelClaims->find($id);
+
         $projectId = $travelClaim?->travelRequest?->project_code_id;
-        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
-        // ->where($projectId, 'project_id');
+        $activityCodes = $this->projectActivities->getActivitiesByProjectId($authUser, $projectId);
+        
         $offices = $this->offices->getActiveOffices();
 
         return view('TravelRequest::TravelClaim.Expense.create')
@@ -162,9 +163,10 @@ class ClaimExpenseController extends Controller
     {
         $authUser = auth()->user();
         $travelClaim = $this->travelClaims->find($claimId);
+
         $projectId = $travelClaim?->travelRequest?->project_code_id;
-        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
-        // ->where($projectId, 'project_id');
+        $activityCodes = $this->projectActivities->getActivitiesByProjectId($authUser, $projectId);
+
         $travelClaimExpense = $this->travelExpenses->find($id);
         $this->authorize('update', $travelClaim);
         // $activityCodes = $this->activityCodes->getActiveActivityCodes();

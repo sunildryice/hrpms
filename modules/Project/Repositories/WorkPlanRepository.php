@@ -78,6 +78,25 @@ class WorkPlanRepository extends Repository
             });
     }
 
+    public function getUserWorkPlanDetails($fromDate, $toDate, $authUser)
+    {
+        $employeeId = $authUser->employee?->id ?? 0;
+
+        return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members',])
+            ->whereHas('workPlan', fn($q) =>
+                $q->whereDate('from_date', $fromDate)
+                    ->whereDate('to_date', $toDate)
+            )->whereHas('workPlan',    fn($q) =>
+                $q->where('employee_id', $employeeId)
+            )->orWhere(function ($q) use ($fromDate, $toDate, $authUser) {
+                $q->whereHas('workPlan',   fn($sq) =>
+                    $sq->whereDate('from_date', $fromDate)
+                        ->whereDate('to_date', $toDate)
+                )->whereHas( 'members', fn($sq) =>
+                        $sq->where('user_id', $authUser->id));
+            });
+    }
+
     public function getWeekSelectionForUser(int $userId, ?string $requestedWeekStart = null): array
     {
         $weekRanges = $this->getAvailableWeekRangesForUser($userId);

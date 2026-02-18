@@ -539,26 +539,6 @@
                                                     <small class="text-muted">({{ $detail->project->short_name }})</small>
                                                 @endif
                                             </div>
-
-                                            {{-- @if ($detail->plan_tasks)
-                                                <div class="small">
-                                                    <strong>Planned:</strong>
-                                                    {{ Str::limit($detail->plan_tasks, 90) }}
-                                                </div>
-                                            @endif
-    
-                                            @if ($detail->members->isNotEmpty())
-                                                <div class="mt-1 small">
-                                                    <strong>Members:</strong>
-                                                    {{ $detail->members->pluck('full_name')->implode(', ') }}
-                                                </div>
-                                            @endif
-    
-                                            @if (in_array($detail->status, ['completed', 'no_required']) && $detail->reason)
-                                                <div class="mt-1 small text-muted fst-italic">
-                                                    <strong>Reason:</strong> {{ $detail->reason }}
-                                                </div>
-                                            @endif --}}
                                         </div>
                                     </div>
                                 </div>

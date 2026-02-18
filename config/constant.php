@@ -87,4 +87,7 @@ return [
 
     'MALE' => 1,
     'FEMALE' => 2,
+
+    'OFFICE_CHECKIN_TIME' => '09:15:00',
+    'OFFICE_CHECKOUT_TIME' => '17:15:00',
 ];

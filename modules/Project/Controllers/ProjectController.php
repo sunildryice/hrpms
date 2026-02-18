@@ -19,7 +19,8 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -106,14 +107,21 @@ class ProjectController
         return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
     }
 
-    public function dashboard($id)
+    public function dashboard(Request $request, $id)
     {
         $users = $this->userRepository->pluck('full_name', 'id');
         $project = $this->projectRepository->find($id);
 
+        $fromDate = $request->query('from_date');
+        $toDate = $request->query('to_date');
+
         // Aggregate activities excluding theme level
         $activitiesQuery = $project->activities()
             ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+        if ($fromDate && $toDate) {
+            $activitiesQuery->whereBetween('completion_date', [$fromDate, $toDate]);
+        }
 
         $statusCounts = $activitiesQuery
             ->selectRaw('status, COUNT(*) as count')
@@ -160,6 +168,8 @@ class ProjectController
             'totalStages',
             'totalMembers',
             'users',
+            'fromDate',       
+            'toDate',
         ));
     }
 

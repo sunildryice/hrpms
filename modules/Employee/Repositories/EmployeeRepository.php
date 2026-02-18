@@ -207,4 +207,61 @@ class EmployeeRepository extends Repository
     //             $join->where('s1.employee_id' , '=', 'employeees.id');
     //         });
     // }
+
+    public function getUpcomingBirthdays($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('date_of_birth')
+            ->whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN ? AND ?", [
+                $today->format('m-d'),
+                $endDate->format('m-d')
+            ])
+            ->orderByRaw("DATE_FORMAT(date_of_birth, '%m-%d') ASC")
+            ->orderBy('full_name', 'asc')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $dobThisYear = \Carbon\Carbon::parse($employee->date_of_birth)->year($today->year);
+                $daysUntil = $today->diffInDays($dobThisYear, false);
+
+                $employee->upcoming_date = $dobThisYear;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+                return $employee;
+            });
+    }
+
+    public function getUpcomingAnniversaries($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('joined_date')
+            ->whereRaw("DATE_FORMAT(joined_date, '%m-%d') BETWEEN ? AND ?", [
+                $today->format('m-d'),
+                $endDate->format('m-d')
+            ])
+            ->orderByRaw("DATE_FORMAT(joined_date, '%m-%d') ASC")
+            ->orderBy('full_name', 'asc')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $annivThisYear = \Carbon\Carbon::parse($employee->joined_date)->year($today->year);
+                $daysUntil = $today->diffInDays($annivThisYear, false);
+
+                $employee->upcoming_date = $annivThisYear;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+                $employee->years = $today->diffInYears(\Carbon\Carbon::parse($employee->joined_date));
+
+                return $employee;
+            });
+    }
 }

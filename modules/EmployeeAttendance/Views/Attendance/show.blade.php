@@ -4,21 +4,20 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function() {
-            // $('#navbarVerticalMenu').find('#attendance-index').addClass('active');
-
+        $(document).ready(function () {
+            $('#navbarVerticalMenu').find('#self-attendance').addClass('active');
 
             var oTable = $('#attendanceTable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('attendance.show', $employeeId) }}",
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
                     },
-                    // {data: 'employee_name', name:'employee_name'},
                     {
                         data: 'year',
                         name: 'year'
@@ -40,11 +39,11 @@
                 ]
             });
 
-            $(document).on('click', '.amend-attendance', function() {
+            $(document).on('click', '.amend-attendance', function () {
                 let url = $(this).attr('data-href');
                 let month = $(this).attr('data-month');
                 let year = $(this).attr('data-year');
-                let successCallback = function(response) {
+                let successCallback = function (response) {
                     toastr.success(response.message, 'Success', {
                         timeOut: 2000
                     });
@@ -66,10 +65,10 @@
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
                             <a href="{!! route('dashboard.index') !!}"
-                                class="text-decoration-none text-dark">{{ __('label.home') }}</a>
+                               class="text-decoration-none text-dark">{{ __('label.home') }}</a>
                         </li>
                         <li class="breadcrumb-item"><a href="{{ route('profile.show') }}"
-                                class="text-decoration-none text-dark">Profile</a></li>
+                                                       class="text-decoration-none text-dark">Profile</a></li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>
@@ -92,14 +91,14 @@
             <div class="table-responsive">
                 <table class="table table-borderedless" id="attendanceTable">
                     <thead class="bg-light">
-                        <tr>
-                            <th>{{ __('label.sn') }}</th>
-                            {{-- <th>Employee Name</th> --}}
-                            <th>{{ __('label.year') }}</th>
-                            <th>{{ __('label.month') }}</th>
-                            <th style="width:120px;">Process Status</th>
-                            <th style="width:95px;">{{ __('label.action') }}</th>
-                        </tr>
+                    <tr>
+                        <th>{{ __('label.sn') }}</th>
+                        {{-- <th>Employee Name</th> --}}
+                        <th>{{ __('label.year') }}</th>
+                        <th>{{ __('label.month') }}</th>
+                        <th style="width:120px;">Process Status</th>
+                        <th style="width:95px;">{{ __('label.action') }}</th>
+                    </tr>
                     </thead>
                     <tbody>
                     </tbody>

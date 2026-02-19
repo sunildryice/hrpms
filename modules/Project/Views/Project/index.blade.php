@@ -125,9 +125,9 @@
                         <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">
                             <i class="bi-plus"></i> Add New</a>
                     </div>
+                    <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
+                        View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
                 @endcan
-                <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
-                    View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
                 </a>
             </div>
         </div>

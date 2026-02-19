@@ -1,7 +1,14 @@
 @extends('layouts.container')
 
 @section('title', 'Projects')
-
+@php
+    $active = 0;
+    $label = 'Inactive ';
+    if (array_key_exists('active', $requestData)) {
+        $active = $requestData['active'] == 1 ? 0 : 1;
+        $label = $requestData['active'] == 1 ? 'Inactive ' : 'Active';
+    }
+@endphp
 @section('page_css')
     <style>
         .wrap-text {
@@ -22,7 +29,7 @@
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('project.index') }}",
+                ajax: "{{ route('project.index', ['active=' . !$active]) }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -53,6 +60,10 @@
                     {
                         data: 'completion_date',
                         name: 'completion_date'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
                     },
                     {
                         data: 'action',
@@ -114,7 +125,10 @@
                         <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">
                             <i class="bi-plus"></i> Add New</a>
                     </div>
+                    <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
+                        View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
                 @endcan
+                </a>
             </div>
         </div>
     </div>
@@ -133,6 +147,7 @@
                                 <th>{{ __('label.focal-person') }}</th>
                                 <th>{{ __('label.start-date') }}</th>
                                 <th>{{ __('label.completion-date') }}</th>
+                                <th>{{ __('label.status') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

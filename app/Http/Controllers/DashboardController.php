@@ -92,9 +92,10 @@ class DashboardController extends Controller
         $upcomingProbationCompletions = collect();
         $days = 7;
 
+        $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
+        $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
+        
         if ($canSeeTeamEvents) {
-            $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
-            $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
             $upcomingContractEndings = $this->employees->getUpcomingContractEndings($days);
             $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions($days);
         }

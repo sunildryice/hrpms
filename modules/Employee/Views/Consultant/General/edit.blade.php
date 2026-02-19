@@ -349,12 +349,14 @@
             <div class="col-lg-9">
                 <div class="form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="earnLeaveSwitch"
-                        name="earn_leave" @if ($employee->earn_leave) checked @endif>
+                        name="earn_leave" @if (old('earn_leave', $employee->consultantLeave?->earn_leave ?? false)) checked @endif>
                     <label class="form-check-label" for="earnLeaveSwitch"></label>
                 </div>
             </div>
         </div>
-        <div class="row mb-2" id="leavePercentageRow" style="{{ $employee->earn_leave ? '' : 'display: none;' }}">
+
+        <div class="row mb-2" id="leavePercentageRow"
+            style="{{ old('earn_leave', $employee->consultantLeave?->earn_leave ?? false) ? '' : 'display: none;' }}">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="leave_percentage" class="m-0 required-label">Leave %</label>
@@ -362,24 +364,28 @@
             </div>
             <div class="col-lg-9">
                 <select name="leave_percentage"
-                    class="form-control select2 @if ($errors->has('leave_percentage')) is-invalid @endif" id="leave_percentage" data-width="100%">
+                    class="form-control select2 @if ($errors->has('leave_percentage')) is-invalid @endif"
+                    id="leave_percentage" data-width="100%">
                     <option value="">Select Leave Percentage</option>
                     <option value="100"
-                        {{ old('leave_percentage', $employee->leave_percentage ?? '') == 100 ? 'selected' : '' }}>100
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 100 ? 'selected' : '' }}>
+                        100
                     </option>
                     <option value="75"
-                        {{ old('leave_percentage', $employee->leave_percentage ?? '') == 75 ? 'selected' : '' }}>75
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 75 ? 'selected' : '' }}>
+                        75
                     </option>
                     <option value="50"
-                        {{ old('leave_percentage', $employee->leave_percentage ?? '') == 50 ? 'selected' : '' }}>50
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 50 ? 'selected' : '' }}>
+                        50
                     </option>
                 </select>
 
-                @if ($errors->has('leave_percentage'))
+                @error('leave_percentage')
                     <div class="fv-plugins-message-container text-danger mt-1">
-                        <div data-field="leave_percentage">{!! $errors->first('leave_percentage') !!}</div>
+                        <div data-field="leave_percentage">{{ $message }}</div>
                     </div>
-                @endif
+                @enderror
             </div>
         </div>
         {!! csrf_field() !!}

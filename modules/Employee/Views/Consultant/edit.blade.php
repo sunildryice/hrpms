@@ -144,13 +144,16 @@
                             callback: {
                                 message: 'Leave percentage is required',
                                 callback: function(input) {
-                                    const isEnabled = $('#earnLeaveSwitch').is(':checked');
-                                    const value = $('#leave_percentage').val();
+                                    const earnLeaveChecked = document.getElementById('earnLeaveSwitch')
+                                        .checked;
 
-                                    if (!isEnabled) {
+                                    if (!earnLeaveChecked) {
                                         return true;
                                     }
-                                    return value !== null && value !== '' && value.length !== 0;
+
+                                    const val = input.value?.trim();
+                                    return val !== '' && val !== null && ['50', '75', '100'].includes(
+                                        val);
                                 }
                             }
                         }

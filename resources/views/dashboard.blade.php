@@ -548,75 +548,75 @@
                 </div>
             @endif
 
+            @if ($upcomingBirthdays->isNotEmpty())
+                <div class="mb-3 col-lg-4">
+                    <div class="mb-2 border-0 shadow-sm card">
+                        <div class="card-header fw-bold">Upcoming Birthday</div>
+                        <div class="p-3 div-content-area">
+                            @foreach ($upcomingBirthdays as $emp)
+                                <div class="gap-3 mb-4 d-flex align-items-start">
+                                    <div>
+                                        <span
+                                            class="text-white rounded bg-warning avatar d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-gift-fill"></i>
+                                        </span>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="request-title d-flex justify-content-between">
+                                            <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                            <small class="text-dark fw-semibold">{{ $emp->label }}</small>
+                                        </div>
+                                        <div class="text-muted">
+                                            <div class="mb-1">
+                                                {{ $emp->upcoming_date?->format('M d, Y') }}
+                                            </div>
+                                            {{-- @if ($emp->designation)
+                                                <small>{{ $emp->designation->title }}</small>
+                                            @endif --}}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($upcomingAnniversaries->isNotEmpty())
+                <div class="mb-3 col-lg-4">
+                    <div class="mb-2 border-0 shadow-sm card">
+                        <div class="card-header fw-bold">Work Anniversary</div>
+                        <div class="p-3 div-content-area">
+                            @foreach ($upcomingAnniversaries as $emp)
+                                <div class="gap-3 mb-4 d-flex align-items-start">
+                                    <div>
+                                        <span
+                                            class="text-white rounded bg-success avatar d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-briefcase-fill"></i>
+                                        </span>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="request-title d-flex justify-content-between">
+                                            <div class="fw-bold">{{ $emp->getFullName() }}</div>
+                                            <small class="text-dark fw-semibold">{{ $emp->label }}</small>
+                                        </div>
+                                        <div class="text-muted">
+                                            <div class="mb-1">
+                                                {{ $emp->upcoming_date?->format('M d, Y') }}
+                                            </div>
+                                            {{-- @if ($emp->designation)
+                                                <small>{{ $emp->designation->title }}</small>
+                                            @endif --}}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if ($canSeeTeamEvents)
-                @if ($upcomingBirthdays->isNotEmpty())
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold">Upcoming Birthday</div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($upcomingBirthdays as $emp)
-                                    <div class="gap-3 mb-4 d-flex align-items-start">
-                                        <div>
-                                            <span
-                                                class="text-white rounded bg-warning avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-gift-fill"></i>
-                                            </span>
-                                        </div>
-                                        <div class="w-100">
-                                            <div class="request-title d-flex justify-content-between">
-                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
-                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
-                                            </div>
-                                            <div class="text-muted">
-                                                <div class="mb-1">
-                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
-                                                </div>
-                                                {{-- @if ($emp->designation)
-                                                    <small>{{ $emp->designation->title }}</small>
-                                                @endif --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                @if ($upcomingAnniversaries->isNotEmpty())
-                    <div class="mb-3 col-lg-4">
-                        <div class="mb-2 border-0 shadow-sm card">
-                            <div class="card-header fw-bold">Work Anniversary</div>
-                            <div class="p-3 div-content-area">
-                                @foreach ($upcomingAnniversaries as $emp)
-                                    <div class="gap-3 mb-4 d-flex align-items-start">
-                                        <div>
-                                            <span
-                                                class="text-white rounded bg-success avatar d-flex align-items-center justify-content-center">
-                                                <i class="bi bi-briefcase-fill"></i>
-                                            </span>
-                                        </div>
-                                        <div class="w-100">
-                                            <div class="request-title d-flex justify-content-between">
-                                                <div class="fw-bold">{{ $emp->getFullName() }}</div>
-                                                <small class="text-dark fw-semibold">{{ $emp->label }}</small>
-                                            </div>
-                                            <div class="text-muted">
-                                                <div class="mb-1">
-                                                    {{ $emp->upcoming_date?->format('M d, Y') }}
-                                                </div>
-                                                {{-- @if ($emp->designation)
-                                                    <small>{{ $emp->designation->title }}</small>
-                                                @endif --}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
                 @if ($upcomingContractEndings->isNotEmpty())
                     <div class="mb-3 col-lg-4">
                         <div class="mb-2 border-0 shadow-sm card">

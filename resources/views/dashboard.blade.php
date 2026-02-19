@@ -489,11 +489,8 @@
                 </div>
             @endif
 
-        </div>
 
-        <x-calender />
 
-        <div class="row">
             @if ($currentWeekWorkPlans->isNotEmpty())
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
@@ -687,6 +684,9 @@
 
             @endif
         </div>
+
+        <x-calender />
+
     </div>
 @stop
 

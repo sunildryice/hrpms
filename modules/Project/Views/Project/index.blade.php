@@ -62,6 +62,10 @@
                         name: 'completion_date'
                     },
                     {
+                        data: 'status',
+                        name: 'status'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -116,15 +120,15 @@
                     </nav>
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
-                <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
-                    View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
-                </a>
                 @can('manage-pms')
                     <div class="add-info justify-content-end">
                         <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">
                             <i class="bi-plus"></i> Add New</a>
                     </div>
                 @endcan
+                <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
+                    View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -143,6 +147,7 @@
                                 <th>{{ __('label.focal-person') }}</th>
                                 <th>{{ __('label.start-date') }}</th>
                                 <th>{{ __('label.completion-date') }}</th>
+                                <th>{{ __('label.status') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

@@ -56,6 +56,9 @@ class ProjectController
                 ->editColumn('focal_person_id', function ($row) {
                     return $row->focalPerson ? $row->focalPerson->full_name : '-';
                 })
+                ->addColumn('status', function ($row) {
+                    return $row->getActiveStatus();
+                })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('project.dashboard', $row->id) . '" rel="tooltip" title="View Project">';

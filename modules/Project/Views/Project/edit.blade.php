@@ -381,6 +381,22 @@
                             </div>
                         </div>
 
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="Fdname" class="m-0">Active?</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <div class=" form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="flexSwitchCheckChecked" name="active"
+                                        @if ($project->activated_at) checked @endif>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                                </div>
+                            </div>
+                        </div>
+
                         {!! csrf_field() !!}
 
                     </div>

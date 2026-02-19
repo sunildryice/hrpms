@@ -1,7 +1,14 @@
 @extends('layouts.container')
 
 @section('title', 'Projects')
-
+@php
+    $active = 0;
+    $label = 'Inactive ';
+    if (array_key_exists('active', $requestData)) {
+        $active = $requestData['active'] == 1 ? 0 : 1;
+        $label = $requestData['active'] == 1 ? 'Inactive ' : 'Active';
+    }
+@endphp
 @section('page_css')
     <style>
         .wrap-text {
@@ -22,7 +29,7 @@
                 scrollX: true,
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('project.index') }}",
+                ajax: "{{ route('project.index', ['active=' . !$active]) }}",
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -109,6 +116,9 @@
                     </nav>
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
+                <a href="{!! route('project.index', ['active=' . $active]) !!}" class="btn btn-secondary btn-sm">
+                    View {!! $label !!} Projects <i class="fa fa-lg fa-flip-horizontal"></i>
+                </a>
                 @can('manage-pms')
                     <div class="add-info justify-content-end">
                         <a href="{!! route('project.create') !!}" class="btn btn-primary btn-sm" rel="tooltip" title="Add Project">

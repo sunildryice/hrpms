@@ -37,6 +37,11 @@ class ProjectController
                             });
                     });
                 });
+            if ($request->active) {
+                $data->whereNotNull('activated_at');
+            } else {
+                $data->whereNull('activated_at');
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('start_date', function ($row) {
@@ -72,8 +77,9 @@ class ProjectController
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
+        $requestData = $request->all();
 
-        return view('Project::Project.index');
+        return view('Project::Project.index', compact('requestData'));
     }
 
     public function create()
@@ -169,7 +175,7 @@ class ProjectController
             'totalStages',
             'totalMembers',
             'users',
-            'fromDate',       
+            'fromDate',
             'toDate',
         ));
     }

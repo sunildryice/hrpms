@@ -96,9 +96,9 @@ class ClaimLocalTravelController extends Controller
         $authUser = auth()->user();
         $travelClaim = $this->travelClaims->find($id);
         // $activityCodes = $this->activityCodes->getActiveActivityCodes();
+        
         $projectId = $travelClaim?->travelRequest?->project_code_id;
-        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
-            // ->where($projectId, 'project_id');
+        $activityCodes = $this->projectActivities->getActivitiesByProjectId($authUser, $projectId);
 
         return view('TravelRequest::TravelClaim.LocalTravelClaim.create')
             ->withActivityCodes($activityCodes)
@@ -152,8 +152,10 @@ class ClaimLocalTravelController extends Controller
         $authUser = auth()->user();
         $travelClaim = $this->travelClaims->find($claimId);
         // $activityCodes = $this->activityCodes->getActiveActivityCodes();
-        $activityCodes = $this->projectActivities->getActivitiesByProject($authUser);
-            // ->where($projectId, 'project_id');
+
+        $projectId = $travelClaim?->travelRequest?->project_code_id;
+        $activityCodes = $this->projectActivities->getActivitiesByProjectId($authUser, $projectId);
+
         $localTravel = $this->localTravels->find($id);
         $this->authorize('update', $travelClaim);
 

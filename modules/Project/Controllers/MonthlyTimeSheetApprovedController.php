@@ -2,17 +2,21 @@
 
 namespace Modules\Project\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Modules\Project\Models\TimeSheet;
-use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Modules\Privilege\Repositories\UserRepository;
-use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\Project\Models\TimeSheet;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
+use Modules\Project\Repositories\TimeSheetRepository;
+use Modules\Project\Repositories\ViewUserTimeSheetRepository;
+use Yajra\DataTables\Facades\DataTables;
+
 class MonthlyTimeSheetApprovedController extends Controller
 {
     public function __construct(
         protected ActivityTimeSheetRepository $activityTimeSheets,
+        protected ViewUserTimeSheetRepository $viewUserTimeSheets,
         protected TimeSheetRepository $timeSheets,
         protected UserRepository $userRepository
     ) {
@@ -23,7 +27,7 @@ class MonthlyTimeSheetApprovedController extends Controller
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = $this->activityTimeSheets->getApprovedMonthlyTimeSheets($authUser->id);
+            $data = $this->viewUserTimeSheets->getApprovedTimeSheets($authUser->id);
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -56,7 +60,7 @@ class MonthlyTimeSheetApprovedController extends Controller
 
     public function show($id)
     {
-       $authUser = auth()->user();
+        $authUser = auth()->user();
 
         $timeSheet = TimeSheet::where('id', $id)
             ->where('status_id', config('constant.APPROVED_STATUS'))
@@ -70,18 +74,32 @@ class MonthlyTimeSheetApprovedController extends Controller
         );
         $yearMonthFormatted = $timeSheet->month . ' ' . $timeSheet->year;
 
-        $startDate = \Carbon\Carbon::parse($timeSheet->start_date);
-        $endDate = \Carbon\Carbon::parse($timeSheet->end_date);
+        $startDate = Carbon::parse($timeSheet->start_date);
+        $endDate = Carbon::parse($timeSheet->end_date);
 
         $groupedTimeSheets = $timeSheets->groupBy(function ($ts) {
-            return \Carbon\Carbon::parse($ts->timesheet_date)->format('Y-m-d');
+            return Carbon::parse($ts->timesheet_date)->format('Y-m-d');
         });
 
         $allDates = [];
         $currentDate = $startDate->copy();
+        $employeeId = $timeSheet->requester_id;
+
         while ($currentDate->lte($endDate)) {
             $dateKey = $currentDate->format('Y-m-d');
-            $allDates[$dateKey] = $groupedTimeSheets->get($dateKey, collect([]));
+            $items = $groupedTimeSheets->get($dateKey, collect([]));
+
+            $reason = $items->isEmpty()
+                ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
+                : null;
+
+            $allDates[$dateKey] = [
+                'items' => $items,
+                'reason' => $reason,
+                'date' => $dateKey,
+                'carbon' => $currentDate->copy(),
+            ];
+
             $currentDate->addDay();
         }
 
@@ -97,7 +115,9 @@ class MonthlyTimeSheetApprovedController extends Controller
             'yearMonthFormatted',
             'stats',
             'timeSheet',
-            'authUser'
+            'authUser',
+            'employeeId'
         ));
     }
+
 }

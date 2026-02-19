@@ -15,8 +15,8 @@
                         name: 'year'
                     },
                     {
-                        data: 'month',
-                        name: 'month'
+                        data: 'month_name',
+                        name: 'month_name'
                     },
                     {
                         data: 'not_submitted',

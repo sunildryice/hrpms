@@ -6,20 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
 use Modules\Master\Models\Status;
 
-class TimeSheet extends Model
+class ViewUserTimeSheet extends Model
 {
-    protected $table = 'timesheets';
+    protected $table = 'view_user_timesheets';
 
     protected $fillable = [
         'year',
         'month',
+        'month_name',
         'start_date',
         'end_date',
-        'month_name',
-        'status_id',
-        'approver_id',
         'requester_id',
-        'updated_by',
+        'approver_id',
+        'status_id',
+        'total_worked_hours',
+        'project_short_names',
     ];
 
     protected $casts = [

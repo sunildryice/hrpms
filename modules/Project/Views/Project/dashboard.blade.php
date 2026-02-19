@@ -98,6 +98,23 @@
 
             var chart = new ApexCharts(document.querySelector("#projectPmsStatusChart"), options);
             chart.render();
+
+            $(document.querySelector('[name="from_date"]')).datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                startDate: '{{ $project->start_date->format('Y-m-d') }}',
+                endDate: '{{ $project->completion_date->format('Y-m-d') }}'
+
+            });
+
+            $(document.querySelector('[name="to_date"]')).datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                startDate: '{{ $project->start_date->format('Y-m-d') }}',
+                endDate: '{{ $project->completion_date->format('Y-m-d') }}'
+            });
         });
     </script>
 @endsection
@@ -127,6 +144,37 @@
                     </h4>
                 </div>
                 @include('Project::Partials.project-header-actions', ['project' => $project])
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    {{-- <div class="card-header">
+                        <span class="mb-0 fw-bold">Filter Activities</span>
+                    </div> --}}
+                    <div class="card-body">
+                        <form method="GET" class="row g-3 align-items-end">
+                            <div class="col-md-2 col-sm-6">
+                                <label for="from_date" class="form-label">From Date</label>
+                                <input type="text" name="from_date" id="from_date" class="form-control"
+                                    value="{{ old('from_date', $fromDate ?? '') }}" placeholder="yyyy-mm-dd">
+                            </div>
+
+                            <div class="col-md-2 col-sm-6">
+                                <label for="to_date" class="form-label">To Date</label>
+                                <input type="text" name="to_date" id="to_date" class="form-control"
+                                    value="{{ old('to_date', $toDate ?? '') }}" placeholder="yyyy-mm-dd">
+                            </div>
+
+                            <div class="col-md-2 col-sm-12 d-flex gap-1 align-items-end">
+                                <button type="submit" class="m-1 btn btn-primary btn-sm">Search</button>
+                                <a href="{{ route('project.dashboard', $project->id) }}"
+                                    class="m-1 btn btn-secondary btn-sm">Reset</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
 

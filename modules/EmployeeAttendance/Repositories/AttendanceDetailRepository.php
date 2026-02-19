@@ -18,12 +18,13 @@ use Modules\Master\Repositories\OfficeRepository;
 class AttendanceDetailRepository extends Repository
 {
     public function __construct(
-        AttendanceDetail $attendanceDetail,
-        protected OfficeRepository $office,
+        AttendanceDetail              $attendanceDetail,
+        protected OfficeRepository    $office,
         protected DonorCodeRepository $donor,
-        protected HolidayRepository $holidays,
-        protected Helper $helper
-    ) {
+        protected HolidayRepository   $holidays,
+        protected Helper              $helper
+    )
+    {
         $this->model = $attendanceDetail;
     }
 
@@ -42,8 +43,7 @@ class AttendanceDetailRepository extends Repository
     {
         return $this->model->whereHas('attendance', function ($q) use ($employeeId) {
             $q->where('employee_id', $employeeId);
-        })
-            ->where('attendance_date', $date)
+        })->where('attendance_date', $date)
             ->first();
     }
 

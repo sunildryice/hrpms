@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Helper;
 use App\Repositories\NotificationRepository;
+use Carbon\Carbon;
 use Modules\Announcement\Repositories\AnnouncementRepository;
+use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\EventCompletion\Repositories\EventCompletionRepository;
 use Modules\ExitStaffClearance\Repositories\StaffClearanceRepository;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
@@ -13,6 +15,7 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\MeetingHallBooking\Repositories\MeetingHallBookingRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
+use Modules\Project\Repositories\WorkPlanRepository;
 use Modules\PurchaseOrder\Repositories\PurchaseOrderRepository;
 use Modules\PurchaseRequest\Models\PurchaseRequest;
 use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
@@ -53,12 +56,14 @@ class DashboardController extends Controller
         protected AnnouncementRepository $announcements,
         protected PurchaseRequestRepository $purchaseRequests,
         protected LocalTravelRepository $localTravels,
-        protected EventCompletionRepository       $eventCompletion,
+        protected EventCompletionRepository $eventCompletion,
         protected PerformanceReviewRepository $performanceReviews,
         protected StaffClearanceRepository $staffClearances,
         protected WorkFromHomeRepository $workFromHomes,
         protected LieuLeaveRequestRepository $lieuLeaveRequests,
-    ) {}
+        protected EmployeeRepository $employees,
+    ) {
+    }
 
     /**
      * show dashboard page
@@ -67,8 +72,34 @@ class DashboardController extends Controller
      */
     public function index()
     {
-
         $authUser = auth()->user();
+
+        $currentWeekStart = Carbon::now()->startOfWeek(Carbon::SUNDAY);
+        $currentWeekEnd = $currentWeekStart->copy()->addDays(6);
+        $currentWeekWorkPlans = collect();
+
+        if ($authUser->employee) {
+            $currentWeekWorkPlans = app(WorkPlanRepository::class)
+                ->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)
+                ->get();
+        }
+
+        $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));
+
+        $upcomingBirthdays = collect();
+        $upcomingAnniversaries = collect();
+        $upcomingContractEndings = collect();
+        $upcomingProbationCompletions = collect();
+        $days = 7;
+
+        $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
+        $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
+        
+        if ($canSeeTeamEvents) {
+            $upcomingContractEndings = $this->employees->getUpcomingContractEndings($days);
+            $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions($days);
+        }
+
         $lieuLeaveRequests = $this->lieuLeaveRequests->getLieuLeaveRequestsForApproval($authUser);
         $leaveRequests = $this->leaveRequests->getLeaveRequestsForApproval($authUser);
 
@@ -99,8 +130,17 @@ class DashboardController extends Controller
             'localTravelRequests' => $this->localTravels->getLocalTravelsForReviewAndApproval($authUser),
             'eventCompletionReports' => $this->eventCompletion->getECRForApproval($authUser),
             'pendingPerformanceReviews' => $this->performanceReviews->getPendingPerformanceReview($authUser),
-            'pendingStaffClearances' => $this->staffClearances->getPendingClearances()
+            'pendingStaffClearances' => $this->staffClearances->getPendingClearances(),
+            'currentWeekWorkPlans' => $currentWeekWorkPlans,
+            'currentWeekStart' => $currentWeekStart,
+            'currentWeekEnd' => $currentWeekEnd,
+            'canSeeTeamEvents' => $canSeeTeamEvents,
+            'upcomingBirthdays' => $upcomingBirthdays,
+            'upcomingAnniversaries' => $upcomingAnniversaries,
+            'upcomingContractEndings' => $upcomingContractEndings,
+            'upcomingProbationCompletions' => $upcomingProbationCompletions,
         ];
+
 
         return view('dashboard', $array);
     }

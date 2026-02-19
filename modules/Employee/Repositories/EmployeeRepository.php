@@ -207,4 +207,116 @@ class EmployeeRepository extends Repository
     //             $join->where('s1.employee_id' , '=', 'employeees.id');
     //         });
     // }
+
+    public function getUpcomingBirthdays($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('date_of_birth')
+            ->whereRaw("DATE_FORMAT(date_of_birth, '%m-%d') BETWEEN ? AND ?", [
+                $today->format('m-d'),
+                $endDate->format('m-d')
+            ])
+            ->orderByRaw("DATE_FORMAT(date_of_birth, '%m-%d') ASC")
+            ->orderBy('full_name', 'asc')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $dobThisYear = \Carbon\Carbon::parse($employee->date_of_birth)->year($today->year);
+                $daysUntil = $today->diffInDays($dobThisYear, false);
+
+                $employee->upcoming_date = $dobThisYear;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+                return $employee;
+            });
+    }
+
+    public function getUpcomingAnniversaries($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('joined_date')
+            ->whereRaw("DATE_FORMAT(joined_date, '%m-%d') BETWEEN ? AND ?", [
+                $today->format('m-d'),
+                $endDate->format('m-d')
+            ])
+            ->orderByRaw("DATE_FORMAT(joined_date, '%m-%d') ASC")
+            ->orderBy('full_name', 'asc')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $annivThisYear = \Carbon\Carbon::parse($employee->joined_date)->year($today->year);
+                $daysUntil = $today->diffInDays($annivThisYear, false);
+
+                $employee->upcoming_date = $annivThisYear;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+                $employee->years = $today->diffInYears(\Carbon\Carbon::parse($employee->joined_date));
+
+                return $employee;
+            });
+    }
+
+    public function getUpcomingContractEndings($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        $employees = $this->model
+            ->whereNotNull('activated_at')
+            ->whereHas('latestTenure', function ($q) use ($today, $endDate) {
+                $q->whereNotNull('contract_end_date')
+                    ->whereBetween('contract_end_date', [$today, $endDate]);
+            })
+            ->with('latestTenure')
+            ->orderBy('full_name')
+            ->get();
+
+        return $employees->map(function ($employee) use ($today) {
+            $contractEnd = $employee->latestTenure->contract_end_date;
+
+            $daysUntil = $today->diffInDays($contractEnd, false);
+
+            $employee->upcoming_date = $contractEnd;
+            $employee->days_until = $daysUntil;
+            $employee->label = $daysUntil === 0 ? 'Today'
+                : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+            return $employee;
+        })->sortBy('upcoming_date')->values();
+    }
+
+    public function getUpcomingProbationCompletions($days = 7)
+    {
+        $today = \Carbon\Carbon::today();
+        $endDate = $today->copy()->addDays($days);
+
+        return $this->model
+            ->whereNotNull('activated_at')
+            ->whereNotNull('probation_complete_date')
+            ->whereBetween('probation_complete_date', [$today, $endDate])
+            ->orderBy('probation_complete_date')
+            ->orderBy('full_name')
+            ->get()
+            ->map(function ($employee) use ($today) {
+                $probationEnd = \Carbon\Carbon::parse($employee->probation_complete_date);
+
+                $daysUntil = $today->diffInDays($probationEnd, false);
+
+                $employee->upcoming_date = $probationEnd;
+                $employee->days_until = $daysUntil;
+                $employee->label = $daysUntil === 0 ? 'Today'
+                    : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
+
+                return $employee;
+            })->sortBy('upcoming_date')->values();
+    }
 }

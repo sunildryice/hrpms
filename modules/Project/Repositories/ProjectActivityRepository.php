@@ -23,6 +23,24 @@ class ProjectActivityRepository extends Repository
             ->whereHas('members', function ($q) use ($authUser) {
                 $q->where('user_id', $authUser->id);
             })
+            ->whereHas('project', function ($q) {
+                $q->whereNotNull('activated_at');
+            })
+            ->orderBy('parent_id')
+            ->orderBy('title')
+            ->get();
+    }
+    public function getActivitiesByProjectId($authUser, $projectId)
+    {
+        return $this->model
+            ->with('members')
+            ->whereIn('activity_level', ['activity', 'sub_activity'])
+            ->whereHas('members', function ($q) use ($authUser) {
+                $q->where('user_id', $authUser->id);
+            })
+            ->whereHas('project', function ($q) use ($projectId) {
+                $q->whereNotNull('activated_at')->where('id', $projectId);
+            })
             ->orderBy('parent_id')
             ->orderBy('title')
             ->get();

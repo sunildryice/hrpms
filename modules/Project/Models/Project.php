@@ -23,11 +23,13 @@ class Project extends Model
         'completion_date',
         'team_lead_id',
         'focal_person_id',
+        'activated_at',
     ];
 
     protected $dates = [
         'start_date',
         'completion_date',
+        'activated_at',
     ];
 
     public function members()
@@ -100,5 +102,10 @@ class Project extends Model
     public function getProjectNameWithShortName()
     {
         return $this->title . ' (' . $this->short_name . ')';
+    }
+
+    public function getActiveStatus()
+    {
+        return $this->activated_at ? 'Active' : 'Inactive';
     }
 }

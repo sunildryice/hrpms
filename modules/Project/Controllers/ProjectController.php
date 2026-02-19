@@ -19,7 +19,8 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected UserRepository $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -36,6 +37,11 @@ class ProjectController
                             });
                     });
                 });
+            if ($request->active) {
+                $data->whereNotNull('activated_at');
+            } else {
+                $data->whereNull('activated_at');
+            }
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->editColumn('start_date', function ($row) {
@@ -49,6 +55,9 @@ class ProjectController
                 })
                 ->editColumn('focal_person_id', function ($row) {
                     return $row->focalPerson ? $row->focalPerson->full_name : '-';
+                })
+                ->addColumn('status', function ($row) {
+                    return $row->getActiveStatus();
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
@@ -71,8 +80,9 @@ class ProjectController
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
+        $requestData = $request->all();
 
-        return view('Project::Project.index');
+        return view('Project::Project.index', compact('requestData'));
     }
 
     public function create()
@@ -89,6 +99,7 @@ class ProjectController
         $authUser = auth()->user();
         $inputs = $request->validated();
         $inputs['created_by'] = $authUser->id;
+        $inputs['activated_at'] = date('Y-m-d H:i:s');
         $project = $this->projectRepository->create($inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
@@ -106,14 +117,21 @@ class ProjectController
         return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
     }
 
-    public function dashboard($id)
+    public function dashboard(Request $request, $id)
     {
         $users = $this->userRepository->pluck('full_name', 'id');
         $project = $this->projectRepository->find($id);
 
+        $fromDate = $request->query('from_date');
+        $toDate = $request->query('to_date');
+
         // Aggregate activities excluding theme level
         $activitiesQuery = $project->activities()
             ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+        if ($fromDate && $toDate) {
+            $activitiesQuery->whereBetween('completion_date', [$fromDate, $toDate]);
+        }
 
         $statusCounts = $activitiesQuery
             ->selectRaw('status, COUNT(*) as count')
@@ -160,6 +178,8 @@ class ProjectController
             'totalStages',
             'totalMembers',
             'users',
+            'fromDate',
+            'toDate',
         ));
     }
 
@@ -176,6 +196,7 @@ class ProjectController
         $authUser = auth()->user();
         $inputs = $request->validated();
         $inputs['updated_by'] = $authUser->id;
+        $inputs['activated_at'] = $request->active ? date('Y-m-d H:i:s') : null;
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

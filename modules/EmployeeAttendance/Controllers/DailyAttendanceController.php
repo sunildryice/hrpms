@@ -47,11 +47,37 @@ class DailyAttendanceController extends Controller
                 ->addColumn('employee_name', fn($emp) => $emp->getFullName())
                 ->addColumn('time_in', function ($emp) use ($selectedDate) {
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-                    return $detail?->getCheckinTime() ?: '-';
+
+                    if (!$detail || !$detail->checkin) {
+                        return '-';
+                    }
+                    $checkinTime = Carbon::parse($detail->checkin)->format('H:i:s');
+                    $checkin = Carbon::parse($selectedDate . ' ' . $checkinTime);
+                    
+                    $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKIN_TIME'));
+                    $time = $checkin->format('H:i');
+
+                    if ($checkin->gt($officeCheckin)) {
+                        return '<span class="text-danger fw-bold">'. $time .'</span> <small class="text-danger">(Late Check-in)</small>';
+                    }
+                    return $time;
                 })
                 ->addColumn('time_out', function ($emp) use ($selectedDate) {
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
-                    return $detail?->getCheckoutTime() ?: '-';
+
+                    if (!$detail || !$detail->checkout) {
+                        return '-';
+                    }
+                    $checkoutTime = Carbon::parse($detail->checkout)->format('H:i:s');
+                    $checkout = Carbon::parse($selectedDate . ' ' . $checkoutTime);
+
+                    $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKOUT_TIME'));
+                    $time = $checkout->format('H:i');
+
+                    if ($checkout->lt($officeCheckout)) {
+                        return '<span class="text-danger fw-bold">'. $time .'</span> <small class="text-danger">(Early Checkout)</small>';
+                    }
+                    return $time;
                 })
                 ->addColumn('hours_worked', function ($emp) use ($selectedDate) {
                     $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($emp->id, $selectedDate);
@@ -70,11 +96,11 @@ class DailyAttendanceController extends Controller
                     }
 
                     if ($this->isOnApprovedLeave($emp->id, $selectedDate)) {
-                        return 'Leave';
+                        return 'On Leave';
                     }
 
                     if ($this->isOnApprovedTravel($emp->id, $selectedDate)) {
-                        return 'Travel';
+                        return 'On Travel';
                     }
 
                     if ($dateObj->isWeekend()) {
@@ -104,7 +130,7 @@ class DailyAttendanceController extends Controller
                             <i class="bi bi-pencil-square"></i> 
                         </button>';
                 })
-                ->rawColumns(['action', 'remarks'])
+                ->rawColumns(['action', 'remarks', 'time_in', 'time_out'])
                 ->make(true);
         }
 

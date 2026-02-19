@@ -37,6 +37,7 @@ class ProjectRepository extends Repository
                         $sq->where('user_id', $authUser->id);
                     });
             })
+            ->whereNotNull('activated_at')
             ->latest()
             ->get();
     }

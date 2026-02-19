@@ -180,8 +180,14 @@
                             },
                             'members[]': {
                                 validators: {
-                                    notEmpty: {
-                                        message: 'Please select at least one member.'
+                                    callback: {
+                                        message: 'Please select at least one member.',
+                                        callback: function(input) {
+                                            const level = $activityLevelSelect.val();
+                                            if (level === 'theme') return true;
+                                            return $membersSelect.val() &&
+                                                $membersSelect.val().length > 0;
+                                        }
                                     }
                                 }
                             }
@@ -220,9 +226,9 @@
                     });
 
                     // Trigger change event if there's an initial value to set the correct validation state
-                    if (activityLevelSelect.value) {
-                        activityLevelSelect.dispatchEvent(new Event('change'));
-                    }
+                    // if (activityLevelSelect.value) {
+                    //     activityLevelSelect.dispatchEvent(new Event('change'));
+                    // }
 
                     $('[name="start_date"]').datepicker({
                         language: 'en-GB',
@@ -765,19 +771,23 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity</span>
                         <div class="justify-content-end d-flex gap-2">
-
-                            @can('manage-project-activity-on-certain-time', $project)
-                                <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
-                                    href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
-                                    <i class="bi-plus"></i> Import Activity
-                                </button>
+                            @if (Gate::allows('manage-project-activity-on-certain-time', $project) && Gate::allows('project-is-active', $project))
+                                @can('project-is-ongoing', $project)
+                                    <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
+                                        href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
+                                        <i class="bi-plus"></i> Import Activity
+                                    </button>
+                                @endcan
                                 <a class="btn btn-secondary btn-sm text-capitalize"
                                     href="{{ route('project-activity.export.activities', $project) }}" target="_blank"><i
                                         class="bi bi-download"></i> Export Activity</a>
-                                <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                    href="{{ route('project-activity.create', ['project' => $project->id]) }}"><i
-                                        class="bi-plus"></i> Add Project Activity
+                                @can('project-is-ongoing', $project)
+                                    <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                        href="{{ route('project-activity.create', ['project' => $project->id]) }}">
+                                        <i class="bi-plus"></i> Add Project Activity
+                                    </button>
                                 @endcan
+                            @endif
                         </div>
                     </div>
                 </div>

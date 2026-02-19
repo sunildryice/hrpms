@@ -85,6 +85,7 @@
 
 @section('page_js')
     <script type="text/javascript">
+        $('#navbarVerticalMenu').find('#self-attendance').addClass('active');
         $(function() {
             // Highlight today's row
             const today = new Date().toISOString().slice(0, 10);

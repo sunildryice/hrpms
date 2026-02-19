@@ -101,7 +101,7 @@ class ImportEmployeeAttendance extends Command
         }
 
         foreach ($employees as $employee) {
-            $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($employee->employee_code, $date->format('Y-m-d'));
+            $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($employee->id, $date->format('Y-m-d'));
             if ($attendanceDetail) {
                 $checkIn = $attendanceDetail->checkin;
                 $checkOut = $attendanceDetail->checkout;

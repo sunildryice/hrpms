@@ -49,15 +49,20 @@ class ForgetPasswordController extends Controller
             ],
         ]);
         $user = $this->users->findByField('email_address', $request->email_address);
-        $user->update(['reset_token' => \Str::random(60)]);
-        if ($user) {
-            Mail::to($user->email_address)
-                ->send(new ForgetPassword($user));
+        if($user->employee->activated_at) {
+            $user->update(['reset_token' => \Str::random(60)]);
+            if ($user) {
+                Mail::to($user->email_address)
+                    ->send(new ForgetPassword($user));
+                return redirect()->route('signin')
+                    ->withSuccessMessage('Please check your email to reset your password.');
+            }
             return redirect()->route('signin')
-                ->withSuccessMessage('Please check your email to reset your password.');
+                ->withWarningMessage('Token can not be reset.');
+        } else {
+            return redirect()->back()
+                ->withWarningMessage('Employee profile is deactivated.');
         }
-        return redirect()->route('signin')
-            ->withWarningMessage('Token can not be reset.');
     }
 
 }

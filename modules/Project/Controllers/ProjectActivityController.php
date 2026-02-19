@@ -98,43 +98,44 @@ class ProjectActivityController extends Controller
             ->addColumn('action', function ($row) use ($authUser) {
 
                 $btn = '';
-                if ($row->activity_level != ActivityLevel::Theme->value) {
-                    $btn .= '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
-                    $btn .= '<i class="bi bi-eye"></i></a>';
-                }
+                if (Gate::allows('project-is-active', $row->project)) {
+                    if ($row->activity_level != ActivityLevel::Theme->value) {
+                        $btn .= '<a class="btn btn-outline-primary btn-sm" href="';
+                        $btn .= route('project-activity.show', $row->id) . '" rel="tooltip" title="View Project Activity">';
+                        $btn .= '<i class="bi bi-eye"></i></a>';
+                    }
 
-                if (Gate::allows('manage-project-activity-on-certain-time', $row->project) && ($row->status != ActivityStatus::NoRequired->value && $row->status != ActivityStatus::Completed->value)) {
-                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
-                    $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
-                    $btn .= '<i class="bi bi-pencil-square"></i></a>';
+                    if (Gate::allows('manage-project-activity-on-certain-time', $row->project) && ($row->status != ActivityStatus::NoRequired->value && $row->status != ActivityStatus::Completed->value && Gate::allows('project-is-ongoing', $row->project))) {
+                        $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
+                        $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
+                        $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
 
-                    if ($row->children->isEmpty()) {
-                        $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
+                        if ($row->children->isEmpty()) {
+                            $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';
-                        $btn .= route('project-activity.destroy', $row->id) . '"
+                            $btn .= route('project-activity.destroy', $row->id) . '"
                 data-id="';
-                        $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
-                        $btn .= '<i class="bi bi-trash"></i></button>';
+                            $btn .= $row->id . '" rel="tooltip" title="Delete Project Activity">';
+                            $btn .= '<i class="bi bi-trash"></i></button>';
+                        }
+                    }
+                    if ($row->activity_level !== ActivityLevel::Theme->value) {
+                        // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
+                        // if ($isAssigned) {
+                        $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
+                        $btn .= '<i class="bi bi-clock"></i></a>';
+                        // }
+                    }
+
+                    if (($row->status != ActivityStatus::Completed->value && $row->status != ActivityStatus::NoRequired->value)) {
+
+                        $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
+                            . route('project-activity.extension.create', $row->id)
+                            . '" rel="tooltip" title="Request Extension">'
+                            . '<i class="bi bi-calendar-plus"></i></a>';
                     }
                 }
-                if ($row->activity_level !== ActivityLevel::Theme->value) {
-                    // $isAssigned = $row->isUserAssignedToActivity($authUser->id, $row->id);
-                    // if ($isAssigned) {
-                    $btn .= ' <a class="btn btn-outline-info btn-sm open-timesheet-modal-form" href="' . route('project-activity.timesheet.create', $row->id) . '" rel="tooltip" title="Add Timesheet">';
-                    $btn .= '<i class="bi bi-clock"></i></a>';
-                    // }
-                }
-
-                if (($row->status != ActivityStatus::Completed->value && $row->status != ActivityStatus::NoRequired->value)) {
-
-                    $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-extension-modal-form" href="'
-                        . route('project-activity.extension.create', $row->id)
-                        . '" rel="tooltip" title="Request Extension">'
-                        . '<i class="bi bi-calendar-plus"></i></a>';
-                }
-
 
                 return $btn;
             })

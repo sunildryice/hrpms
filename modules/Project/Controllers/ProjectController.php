@@ -90,6 +90,7 @@ class ProjectController
         $authUser = auth()->user();
         $inputs = $request->validated();
         $inputs['created_by'] = $authUser->id;
+        $inputs['activated_at'] = date('Y-m-d H:i:s');
         $project = $this->projectRepository->create($inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
@@ -186,6 +187,7 @@ class ProjectController
         $authUser = auth()->user();
         $inputs = $request->validated();
         $inputs['updated_by'] = $authUser->id;
+        $inputs['activated_at'] = $request->active ? date('Y-m-d H:i:s') : null;
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

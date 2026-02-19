@@ -139,6 +139,23 @@
                             },
                         },
                     },
+                    leave_percentage: {
+                        validators: {
+                            callback: {
+                                message: 'Leave percentage is required',
+                                callback: function(input) {
+                                    const isEnabled = $('#earnLeaveSwitch').is(':checked');
+                                    const value = $('#leave_percentage').val();
+
+                                    if (!isEnabled) {
+                                        return true;
+                                    }
+                                    return value !== null && value !== '' && value.length !== 0;
+                                }
+                            }
+                        }
+                    },
+
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -165,6 +182,27 @@
                     }),
                 },
             });
+
+            // Toggle Leave % visibility + validation
+            const $earnLeaveCheckbox = $('#earnLeaveSwitch');
+            const $leavePercentageRow = $('#leavePercentageRow');
+            const $leavePercentage = $('#leave_percentage');
+
+            function updateLeavePercentageState() {
+                const isEnabled = $earnLeaveCheckbox.is(':checked');
+
+                $leavePercentageRow.toggle(isEnabled);
+
+                if (!isEnabled) {
+                    $leavePercentage.val(null).trigger('change');
+                    fv.resetField('leave_percentage');
+                } else {
+                    fv.revalidateField('leave_percentage');
+                }
+            }
+            updateLeavePercentageState();
+            $earnLeaveCheckbox.on('change', updateLeavePercentageState);
+
 
             employeeEditForm.querySelector('[name="official_email_address"]').addEventListener('input', function() {
                 fv.revalidateField('official_email_address');

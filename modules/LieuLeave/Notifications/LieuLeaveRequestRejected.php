@@ -40,12 +40,14 @@ class LieuLeaveRequestRejected extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('approve.lieu.leave.requests.show', $this->lieuLeaveRequest->id);
+        $url = route('lieu.leave.requests.show', $this->lieuLeaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Lieu leave request ' . $this->lieuLeaveRequest->id . ' has been rejected.')
-            ->action('View lieu leave request ', $url)
-        ;
+            ->greeting('Hey ' . $this->lieuLeaveRequest->getRequesterName() . ',')
+            ->line('Your lieu leave request has been rejected.')
+            ->line('Leave Number: ' . $this->lieuLeaveRequest->getLeaveNumber())
+            ->line('Leave dates: ' . ($this->lieuLeaveRequest->start_date ? $this->lieuLeaveRequest->getStartDate() : '') . ' to ' . ($this->lieuLeaveRequest->end_date ? $this->lieuLeaveRequest->getEndDate() : ''))
+            ->line('Rejected by: ' . (auth()->user()->full_name ?? ''))
+            ->action('View lieu leave request', $url);
     }
 
     /**

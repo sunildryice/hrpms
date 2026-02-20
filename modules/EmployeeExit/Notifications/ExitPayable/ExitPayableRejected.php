@@ -22,8 +22,7 @@ class ExitPayableRejected extends Notification
      */
     public function __construct(
         EmployeeExitPayable $employeeExitPayable
-    )
-    {
+    ) {
         $this->employeeExitPayable = $employeeExitPayable;
     }
 
@@ -49,9 +48,9 @@ class ExitPayableRejected extends Notification
         $url = route('exit.payable.show', $this->employeeExitPayable->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Employee Exit Payable for '.$this->employeeExitPayable->getEmployeeName().' has been rejected.')
+            ->line('Employee Exit Payable for ' . $this->employeeExitPayable->getEmployeeName() . ' has been rejected.')
             ->action('View Employee Exit Payable ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitPayableRejected extends Notification
         event(new NotificationPushed());
         return [
             'exit_payable_id' => $this->employeeExitPayable->id,
-            'link'=>route('exit.payable.show', $this->employeeExitPayable->id),
-            'subject'=> 'Employee Exit Payable for '.$this->employeeExitPayable->getEmployeeName().' has been rejected.'
+            'link' => route('exit.payable.show', $this->employeeExitPayable->id),
+            'subject' => 'Employee Exit Payable for ' . $this->employeeExitPayable->getEmployeeName() . ' has been rejected.'
         ];
     }
-
 }

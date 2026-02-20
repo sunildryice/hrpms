@@ -20,8 +20,7 @@ class LeaveRequestApproved extends Notification
      */
     public function __construct(
         LeaveRequest $leaveRequest
-    )
-    {
+    ) {
         $this->leaveRequest = $leaveRequest;
     }
 
@@ -45,9 +44,8 @@ class LeaveRequestApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -74,10 +72,9 @@ class LeaveRequestApproved extends Notification
         event(new NotificationPushed());
         return [
             'leave_request_id' => $this->leaveRequest->id,
-            'link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'alternate_link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'subject'=> 'Leave request '.$this->leaveRequest->getLeaveNumber().' has approved.'
+            'link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has approved.'
         ];
     }
-
 }

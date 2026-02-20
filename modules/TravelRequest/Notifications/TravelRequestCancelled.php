@@ -22,8 +22,7 @@ class TravelRequestCancelled extends Notification
      */
     public function __construct(
         TravelRequest $travelRequest
-    )
-    {
+    ) {
         $this->travelRequest = $travelRequest;
     }
 
@@ -49,9 +48,9 @@ class TravelRequestCancelled extends Notification
         $url = route('travel.requests.view', $this->travelRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel request '.$this->travelRequest->getTravelRequestNumber().' has been cancelled.')
+            ->line('Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been cancelled.')
             ->action('View travel request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelRequestCancelled extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelRequest->id,
-            'link'=>route('travel.requests.view', $this->travelRequest->id),
-            'alternate_link'=>route('travel.requests.view', $this->travelRequest->id),
-            'subject'=> 'Travel request '.$this->travelRequest->getTravelRequestNumber().' has been cancelled. Requester : '.$this->travelRequest->getRequesterName() .'.',
+            'link' => route('travel.requests.view', $this->travelRequest->id),
+            'alternate_link' => route('travel.requests.view', $this->travelRequest->id),
+            'subject' => 'Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been cancelled. Requester : ' . $this->travelRequest->getRequesterName() . '.',
         ];
     }
-
 }

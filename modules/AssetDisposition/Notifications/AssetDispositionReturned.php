@@ -22,9 +22,8 @@ class AssetDispositionReturned extends Notification
      */
     public function __construct(
         DispositionRequest $dispositionRequest
-    )
-    {
-        $this->assetDisposition= $dispositionRequest;
+    ) {
+        $this->assetDisposition = $dispositionRequest;
     }
 
     /**
@@ -51,7 +50,7 @@ class AssetDispositionReturned extends Notification
             ->greeting('Hello!')
             ->line('Your Event Completion Report has been returned.')
             ->action('View event completion ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class AssetDispositionReturned extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->assetDisposition->id,
-            'link'=>route('asset.disposition.edit', $this->assetDisposition->id),
-            'subject'=> 'Asset Disposition Request has been returned.',
+            'link' => route('asset.disposition.edit', $this->assetDisposition->id),
+            'subject' => 'Asset Disposition Request has been returned.',
         ];
-        }
-
+    }
 }

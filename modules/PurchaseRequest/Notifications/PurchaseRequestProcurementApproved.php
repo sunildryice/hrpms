@@ -22,8 +22,7 @@ class PurchaseRequestProcurementApproved extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
     }
 
@@ -51,7 +50,7 @@ class PurchaseRequestProcurementApproved extends Notification
             ->greeting('Hello!')
             ->line('test')
             ->action('View Purchase Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class PurchaseRequestProcurementApproved extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=>route('approved.purchase.requests.show', $this->purchaseRequest->id),
-            'subject'=> 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been approved. Please take action',
+            'link' => route('approved.purchase.requests.show', $this->purchaseRequest->id),
+            'subject' => 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been approved. Please take action',
         ];
     }
-
 }

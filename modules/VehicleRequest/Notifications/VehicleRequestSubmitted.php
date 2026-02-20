@@ -20,8 +20,7 @@ class VehicleRequestSubmitted extends Notification
      */
     public function __construct(
         VehicleRequest $vehicleRequest
-    )
-    {
+    ) {
         $this->vehicleRequest = $vehicleRequest;
     }
 
@@ -44,19 +43,18 @@ class VehicleRequestSubmitted extends Notification
      */
     public function toMail($notifiable)
     {
-        if ($this->vehicleRequest->vehicle_request_type_id == 1) { 
+        if ($this->vehicleRequest->vehicle_request_type_id == 1) {
             // Office Vehicle
             $url = route('assign.vehicle.requests.create', $this->vehicleRequest->id);
-        } else { 
+        } else {
             // Hire Vehicle
             $url = route('approve.vehicle.requests.create', $this->vehicleRequest->id);
         }
 
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been submitted.')
-                    ->action('View Request', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been submitted.')
+            ->action('View Request', $url);
     }
 
     /**
@@ -82,18 +80,17 @@ class VehicleRequestSubmitted extends Notification
     {
         event(new NotificationPushed());
 
-        if ($this->vehicleRequest->vehicle_request_type_id == 1) { 
+        if ($this->vehicleRequest->vehicle_request_type_id == 1) {
             // Office Vehicle
             $url = route('assign.vehicle.requests.create', $this->vehicleRequest->id);
-        } else { 
+        } else {
             // Hire Vehicle
             $url = route('approve.vehicle.requests.create', $this->vehicleRequest->id);
         }
         return [
             'vehicle_request_id'    => $this->vehicleRequest->id,
             'link'                  => $url,
-            'subject'               => 'Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been submitted.'
+            'subject'               => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been submitted.'
         ];
     }
-
 }

@@ -59,7 +59,7 @@ class LeaveRequestSubmittedReview extends Notification
             ->line('Leave Time : ' . $this->leaveRequest->getFirstLeaveTime())
             ->line('Reason : ' . $this->leaveRequest->remarks)
             ->action('View leave request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

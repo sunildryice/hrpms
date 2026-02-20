@@ -47,10 +47,9 @@ class InstallmentReturned extends Notification
         $url = route('construction.installment.submit.create', $this->installment->id);
 
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Construction installment has been returned.')
-                    ->action('View Installment', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Construction installment has been returned.')
+            ->action('View Installment', $url);
     }
 
     /**

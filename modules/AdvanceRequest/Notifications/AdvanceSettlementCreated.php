@@ -22,8 +22,7 @@ class AdvanceSettlementCreated extends Notification
      */
     public function __construct(
         Settlement $advanceSettlement
-    )
-    {
+    ) {
         $this->advanceSettlement = $advanceSettlement;
     }
 
@@ -48,10 +47,9 @@ class AdvanceSettlementCreated extends Notification
     {
         $url = route('advance.settlement.edit', $this->advanceSettlement->id);
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Advance settlement for advance request '.$this->advanceSettlement->advanceRequest->getAdvanceRequestNumber().' is pending for submission.')
-                    ->action('Submit Settlement', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Advance settlement for advance request ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . ' is pending for submission.')
+            ->action('Submit Settlement', $url);
     }
 
     /**
@@ -78,9 +76,8 @@ class AdvanceSettlementCreated extends Notification
         event(new NotificationPushed());
         return [
             'advance_settlement_id' => $this->advanceSettlement->id,
-            'link'=>route('advance.settlement.edit', $this->advanceSettlement->id),
-            'subject'=> 'Advance settlement for advance request '.$this->advanceSettlement->advanceRequest->getAdvanceRequestNumber().' is pending for submission.'
+            'link' => route('advance.settlement.edit', $this->advanceSettlement->id),
+            'subject' => 'Advance settlement for advance request ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . ' is pending for submission.'
         ];
     }
-
 }

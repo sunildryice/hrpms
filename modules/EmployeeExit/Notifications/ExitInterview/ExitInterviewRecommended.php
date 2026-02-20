@@ -22,8 +22,7 @@ class ExitInterviewRecommended extends Notification
      */
     public function __construct(
         ExitInterview $exitInterview
-    )
-    {
+    ) {
         $this->exitInterview = $exitInterview;
     }
 
@@ -49,9 +48,9 @@ class ExitInterviewRecommended extends Notification
         $url = route('approve.exit.interview.create', $this->exitInterview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Exit Interview of '.$this->exitInterview->getEmployeeName().' has been recommended for your approval.')
+            ->line('Exit Interview of ' . $this->exitInterview->getEmployeeName() . ' has been recommended for your approval.')
             ->action('View Exit Interview ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitInterviewRecommended extends Notification
         event(new NotificationPushed());
         return [
             'exit_interview_id' => $this->exitInterview->id,
-            'link'=>route('approve.exit.interview.create', $this->exitInterview->id),
-            'subject'=> 'Exit Interview of '.$this->exitInterview->getEmployeeName().' has been recommended for your approval.'
+            'link' => route('approve.exit.interview.create', $this->exitInterview->id),
+            'subject' => 'Exit Interview of ' . $this->exitInterview->getEmployeeName() . ' has been recommended for your approval.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class GoodRequestSubmitted extends Notification
      */
     public function __construct(
         GoodRequest $goodRequest
-    )
-    {
+    ) {
         $this->goodRequest = $goodRequest;
     }
 
@@ -49,9 +48,9 @@ class GoodRequestSubmitted extends Notification
         $url = route('review.good.requests.create', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Good request '.$this->goodRequest->getGoodRequestNumber().' has been submitted for your review.')
+            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your review.')
             ->action('View Good Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class GoodRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'good_request_id' => $this->goodRequest->id,
-            'link'=>route('review.good.requests.create', $this->goodRequest->id),
-            'subject'=> 'Good request '.$this->goodRequest->getGoodRequestNumber().' has been submitted for your review.'
+            'link' => route('review.good.requests.create', $this->goodRequest->id),
+            'subject' => 'Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your review.'
         ];
     }
-
 }

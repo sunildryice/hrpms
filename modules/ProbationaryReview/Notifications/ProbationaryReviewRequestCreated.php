@@ -22,8 +22,7 @@ class ProbationaryReviewRequestCreated extends Notification
      */
     public function __construct(
         ProbationaryReview $probationaryReview
-    )
-    {
+    ) {
         $this->probationaryReview = $probationaryReview;
     }
 
@@ -49,9 +48,9 @@ class ProbationaryReviewRequestCreated extends Notification
         $url = route('probation.review.detail.requests.create', $this->probationaryReview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Probationary Review request for '.$this->probationaryReview->getReviewType().' has been created for '.$this->probationaryReview->getEmployeeName().'. Please fill up the detail form for the same.')
+            ->line('Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' has been created for ' . $this->probationaryReview->getEmployeeName() . '. Please fill up the detail form for the same.')
             ->action('View Probationary Review Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ProbationaryReviewRequestCreated extends Notification
         event(new NotificationPushed());
         return [
             'probationary_review_request_id' => $this->probationaryReview->id,
-            'link'=>route('probation.review.detail.requests.create', $this->probationaryReview->id),
-            'subject'=> 'Probationary Review request for '.$this->probationaryReview->getReviewType().' has been created for '.$this->probationaryReview->getEmployeeName().'. Please fill up the detail form for the same.'
+            'link' => route('probation.review.detail.requests.create', $this->probationaryReview->id),
+            'subject' => 'Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' has been created for ' . $this->probationaryReview->getEmployeeName() . '. Please fill up the detail form for the same.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class ProbationaryReviewRequestRecommend extends Notification
      */
     public function __construct(
         ProbationaryReview $probationaryReview
-    )
-    {
+    ) {
         $this->probationaryReview = $probationaryReview;
     }
 
@@ -49,9 +48,9 @@ class ProbationaryReviewRequestRecommend extends Notification
         $url = route('send.probation.review.request.sendTo', $this->probationaryReview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Probationary Review request for '.$this->probationaryReview->getReviewType().' has been recommended. Please do needed.')
+            ->line('Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' has been recommended. Please do needed.')
             ->action('View Probationary Review Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ProbationaryReviewRequestRecommend extends Notification
         event(new NotificationPushed());
         return [
             'probationary_review_request_id' => $this->probationaryReview->id,
-            'link'=>route('send.probation.review.request.sendTo', $this->probationaryReview->id),
-            'subject'=> 'Probationary Review request for '.$this->probationaryReview->getReviewType().' has been recommended. Please do needed.'
+            'link' => route('send.probation.review.request.sendTo', $this->probationaryReview->id),
+            'subject' => 'Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' has been recommended. Please do needed.'
         ];
     }
-
 }

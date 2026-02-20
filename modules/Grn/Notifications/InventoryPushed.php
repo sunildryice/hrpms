@@ -23,8 +23,7 @@ class InventoryPushed extends Notification
      */
     public function __construct(
         InventoryItem $inventory
-    )
-    {
+    ) {
         $this->inventory = $inventory;
     }
 
@@ -48,9 +47,8 @@ class InventoryPushed extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class InventoryPushed extends Notification
     {
         return [
             'inventory_id' => $this->inventory->id,
-            'link'=>route('inventories.show', $this->inventory->id),
-            'subject'=> 'Grn item, '.$this->inventory->getItemName().', has been pushed to the inventory.'
+            'link' => route('inventories.show', $this->inventory->id),
+            'subject' => 'Grn item, ' . $this->inventory->getItemName() . ', has been pushed to the inventory.'
         ];
     }
-
 }

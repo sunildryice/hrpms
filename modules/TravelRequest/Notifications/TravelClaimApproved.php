@@ -22,8 +22,7 @@ class TravelClaimApproved extends Notification
      */
     public function __construct(
         TravelClaim $travelClaim
-    )
-    {
+    ) {
         $this->travelClaim = $travelClaim;
     }
 
@@ -47,9 +46,8 @@ class TravelClaimApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class TravelClaimApproved extends Notification
         event(new NotificationPushed());
         return [
             'travel_claim_id' => $this->travelClaim->id,
-            'link'=>route('travel.claims.view', $this->travelClaim->id),
-            'alternate_link'=>route('travel.claims.view', $this->travelClaim->id),
-            'subject'=> 'Travel claim for travel request '.$this->travelClaim->travelRequest->getTravelRequestNumber().' has been approved.'
+            'link' => route('travel.claims.view', $this->travelClaim->id),
+            'alternate_link' => route('travel.claims.view', $this->travelClaim->id),
+            'subject' => 'Travel claim for travel request ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has been approved.'
         ];
     }
-
 }

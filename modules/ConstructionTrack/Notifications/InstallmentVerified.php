@@ -47,10 +47,9 @@ class InstallmentVerified extends Notification
         $url = route('construction.installment.approve.create', $this->installment->id);
 
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Construction installment has been submitted for your approval by '.$this->installment->getReviewer().'.')
-                    ->action('Approve Installment', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Construction installment has been submitted for your approval by ' . $this->installment->getReviewer() . '.')
+            ->action('Approve Installment', $url);
     }
 
     /**
@@ -73,7 +72,7 @@ class InstallmentVerified extends Notification
         return [
             'installment_id'    => $this->installment->id,
             'link'              => route('construction.installment.approve.create', $this->installment->id),
-            'subject'           => 'Construction installment has been submitted for your approval by '.$this->installment->getReviewer().'.'
+            'subject'           => 'Construction installment has been submitted for your approval by ' . $this->installment->getReviewer() . '.'
         ];
     }
 }

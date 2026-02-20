@@ -22,9 +22,8 @@ class EventCompletionCancelled extends Notification
      */
     public function __construct(
         EventCompletion $eventCompletion
-    )
-    {
-        $this->eventCompletion= $eventCompletion;
+    ) {
+        $this->eventCompletion = $eventCompletion;
     }
 
     /**
@@ -49,9 +48,9 @@ class EventCompletionCancelled extends Notification
         $url = route('event.completion.show', $this->eventCompletion->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Event completion report by '.$this->eventCompletion->getRequesterName().' has been cancelled')
+            ->line('Event completion report by ' . $this->eventCompletion->getRequesterName() . ' has been cancelled')
             ->action('View event completion ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class EventCompletionCancelled extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->eventCompletion->id,
-            'link'=>route('event.completion.show', $this->eventCompletion->id),
-            'subject'=> 'Event completion report by '.$this->eventCompletion->getRequesterName().' has been cancelled',
+            'link' => route('event.completion.show', $this->eventCompletion->id),
+            'subject' => 'Event completion report by ' . $this->eventCompletion->getRequesterName() . ' has been cancelled',
         ];
-        }
-
+    }
 }

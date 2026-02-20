@@ -22,8 +22,7 @@ class TravelRequestAdvanceApproved extends Notification
      */
     public function __construct(
         TravelRequest $travelRequest
-    )
-    {
+    ) {
         $this->travelRequest = $travelRequest;
     }
 
@@ -47,9 +46,8 @@ class TravelRequestAdvanceApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class TravelRequestAdvanceApproved extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelRequest->id,
-            'link'=>route('travel.requests.view', $this->travelRequest->id),
-            'alternate_link'=>route('travel.requests.index', $this->travelRequest->id),
-            'subject'=> 'Advance for Travel '.$this->travelRequest->getTravelRequestNumber().' has been recieved.'
+            'link' => route('travel.requests.view', $this->travelRequest->id),
+            'alternate_link' => route('travel.requests.index', $this->travelRequest->id),
+            'subject' => 'Advance for Travel ' . $this->travelRequest->getTravelRequestNumber() . ' has been recieved.'
         ];
     }
-
 }

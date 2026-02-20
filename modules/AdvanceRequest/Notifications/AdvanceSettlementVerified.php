@@ -22,8 +22,7 @@ class AdvanceSettlementVerified extends Notification
      */
     public function __construct(
         Settlement $advanceSettlement
-    )
-    {
+    ) {
         $this->advanceSettlement = $advanceSettlement;
     }
 
@@ -49,9 +48,9 @@ class AdvanceSettlementVerified extends Notification
         $url = route('verify.advance.settlements.create', $this->advanceSettlement->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Advance settlement '.$this->advanceSettlement->advanceRequest->getAdvanceRequestNumber().' has been verified and forwarded for re-verification.')
+            ->line('Advance settlement ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . ' has been verified and forwarded for re-verification.')
             ->action('View advance settlement ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class AdvanceSettlementVerified extends Notification
         event(new NotificationPushed());
         return [
             'advance_settlement_id' => $this->advanceSettlement->id,
-            'link'=>route('verify.advance.settlements.create', $this->advanceSettlement->id),
-            'subject'=> 'Advance settlement for advance request '.$this->advanceSettlement->advanceRequest->getAdvanceRequestNumber().' has been verified and forwarded for re-verification.'
+            'link' => route('verify.advance.settlements.create', $this->advanceSettlement->id),
+            'subject' => 'Advance settlement for advance request ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . ' has been verified and forwarded for re-verification.'
         ];
     }
-
 }

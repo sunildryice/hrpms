@@ -22,9 +22,8 @@ class EventCompletionRejected extends Notification
      */
     public function __construct(
         EventCompletion $eventCompletion
-    )
-    {
-        $this->eventCompletion= $eventCompletion;
+    ) {
+        $this->eventCompletion = $eventCompletion;
     }
 
     /**
@@ -51,7 +50,7 @@ class EventCompletionRejected extends Notification
             ->greeting('Hello!')
             ->line('Your Event Completion Report has been rejected.')
             ->action('View event completion ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class EventCompletionRejected extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->eventCompletion->id,
-            'link'=>route('event.completion.show', $this->eventCompletion->id),
-            'subject'=> 'Event Completion Report has been rejected.',
+            'link' => route('event.completion.show', $this->eventCompletion->id),
+            'subject' => 'Event Completion Report has been rejected.',
         ];
-        }
-
+    }
 }

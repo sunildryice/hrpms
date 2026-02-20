@@ -53,7 +53,7 @@ class LeaveRequestSubmitted extends Notification
             ->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))
             ->line('Reason : ' . $this->leaveRequest->remarks)
             ->action('View leave request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

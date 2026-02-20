@@ -22,8 +22,7 @@ class ExitHandoverNoteRejectedToEmployee extends Notification
      */
     public function __construct(
         ExitHandOverNote $exitHandOverNote
-    )
-    {
+    ) {
         $this->exitHandOverNote = $exitHandOverNote;
     }
 
@@ -51,7 +50,7 @@ class ExitHandoverNoteRejectedToEmployee extends Notification
             ->greeting('Hello!')
             ->line('Your Exit Handover Note has been rejected.')
             ->action('View Exit Handover Note ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitHandoverNoteRejectedToEmployee extends Notification
         event(new NotificationPushed());
         return [
             'handover_id' => $this->exitHandOverNote->id,
-            'link'=>route('exit.handover.note.requests.edit'),
-            'subject'=> 'Your Exit Handover Note has been rejected.'
+            'link' => route('exit.handover.note.requests.edit'),
+            'subject' => 'Your Exit Handover Note has been rejected.'
         ];
     }
-
 }

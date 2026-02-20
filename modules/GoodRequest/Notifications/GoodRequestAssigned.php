@@ -22,8 +22,7 @@ class GoodRequestAssigned extends Notification
      */
     public function __construct(
         GoodRequest $goodRequest
-    )
-    {
+    ) {
         $this->goodRequest = $goodRequest;
     }
 
@@ -48,10 +47,10 @@ class GoodRequestAssigned extends Notification
     {
         $url = route('good.requests.show', $this->goodRequest->id);
         return (new MailMessage)
-                ->greeting('Hello!')
-                ->line('Good request '.$this->goodRequest->getGoodRequestNumber().' has been assigned. Please add receiver note.')
-                ->action('View Good Request', $url)
-                ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.')
+            ->action('View Good Request', $url)
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class GoodRequestAssigned extends Notification
         event(new NotificationPushed());
         return [
             'good_request_id' => $this->goodRequest->id,
-            'link'=>route('good.requests.show', $this->goodRequest->id),
-            'subject'=> 'Good request '.$this->goodRequest->getGoodRequestNumber().' has been assigned. Please add receiver note.'
+            'link' => route('good.requests.show', $this->goodRequest->id),
+            'subject' => 'Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.'
         ];
     }
-
 }

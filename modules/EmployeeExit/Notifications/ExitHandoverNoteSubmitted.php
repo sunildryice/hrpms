@@ -22,8 +22,7 @@ class ExitHandoverNoteSubmitted extends Notification
      */
     public function __construct(
         ExitHandOverNote $exitHandOverNote
-    )
-    {
+    ) {
         $this->exitHandOverNote = $exitHandOverNote;
     }
 
@@ -49,9 +48,9 @@ class ExitHandoverNoteSubmitted extends Notification
         $url = route('approve.exit.handover.note.create', $this->exitHandOverNote->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Exit Handover Note has been submitted by '.$this->exitHandOverNote->getEmployeeName().' for your approval.')
+            ->line('Exit Handover Note has been submitted by ' . $this->exitHandOverNote->getEmployeeName() . ' for your approval.')
             ->action('View Exit Handover Note ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitHandoverNoteSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'handover_id' => $this->exitHandOverNote->id,
-            'link'=>route('approve.exit.handover.note.create', $this->exitHandOverNote->id),
-            'subject'=> 'Exit Handover Note has been submitted by '.$this->exitHandOverNote->getEmployeeName().' for your approval.'
+            'link' => route('approve.exit.handover.note.create', $this->exitHandOverNote->id),
+            'subject' => 'Exit Handover Note has been submitted by ' . $this->exitHandOverNote->getEmployeeName() . ' for your approval.'
         ];
     }
-
 }

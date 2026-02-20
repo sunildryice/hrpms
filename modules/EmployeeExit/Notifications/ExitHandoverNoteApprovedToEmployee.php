@@ -22,8 +22,7 @@ class ExitHandoverNoteApprovedToEmployee extends Notification
      */
     public function __construct(
         ExitHandOverNote $exitHandOverNote
-    )
-    {
+    ) {
         $this->exitHandOverNote = $exitHandOverNote;
     }
 
@@ -51,7 +50,7 @@ class ExitHandoverNoteApprovedToEmployee extends Notification
             ->greeting('Hello!')
             ->line('Your Exit Handover Note submitted has been approved.')
             ->action('View Exit Handover Note ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitHandoverNoteApprovedToEmployee extends Notification
         event(new NotificationPushed());
         return [
             'handover_id' => $this->exitHandOverNote->id,
-            'link'=>route('exit.employee.handover.note.show'),
-            'subject'=> 'Your Exit Handover Note has been approved.'
+            'link' => route('exit.employee.handover.note.show'),
+            'subject' => 'Your Exit Handover Note has been approved.'
         ];
     }
-
 }

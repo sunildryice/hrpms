@@ -22,8 +22,7 @@ class LocalTravelSubmitted extends Notification
      */
     public function __construct(
         LocalTravel $localTravel
-    )
-    {
+    ) {
         $this->localTravel = $localTravel;
     }
 
@@ -49,9 +48,9 @@ class LocalTravelSubmitted extends Notification
         $url = route('approve.local.travel.reimbursements.create', $this->localTravel->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Local travel reimbursement '.$this->localTravel->getLocalTravelNumber().' has been submitted for your approval.')
+            ->line('Local travel reimbursement ' . $this->localTravel->getLocalTravelNumber() . ' has been submitted for your approval.')
             ->action('View Local travel reimbursement ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class LocalTravelSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'local_travel_reimbursement_id' => $this->localTravel->id,
-            'link'=>route('approve.local.travel.reimbursements.create', $this->localTravel->id),
-            'alternate_link'=>route('local.travel.reimbursements.show', $this->localTravel->id),
-            'subject'=> 'Local travel reimbursement '.$this->localTravel->getLocalTravelNumber().' has been submitted. Requester : '.$this->localTravel->getRequesterName() .'.',
+            'link' => route('approve.local.travel.reimbursements.create', $this->localTravel->id),
+            'alternate_link' => route('local.travel.reimbursements.show', $this->localTravel->id),
+            'subject' => 'Local travel reimbursement ' . $this->localTravel->getLocalTravelNumber() . ' has been submitted. Requester : ' . $this->localTravel->getRequesterName() . '.',
         ];
     }
-
 }

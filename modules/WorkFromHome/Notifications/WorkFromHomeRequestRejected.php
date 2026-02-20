@@ -49,7 +49,7 @@ class WorkFromHomeRequestRejected extends Notification
             ->greeting('Hello!')
             ->line('Work from home request ' . $this->workFromHomeRequest->getRequestId() . ' has been rejected.')
             ->action('View work from home request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

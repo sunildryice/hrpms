@@ -50,7 +50,7 @@ class TimeSheetSubmitted extends Notification
             ->greeting('Hello!')
             ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been submitted for your approval.')
             ->action('Review Timesheet', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -84,5 +84,4 @@ class TimeSheetSubmitted extends Notification
             'subject'          => "Timesheet for {$monthYear} has been submitted. Requester: {$requesterName}.",
         ];
     }
-
 }

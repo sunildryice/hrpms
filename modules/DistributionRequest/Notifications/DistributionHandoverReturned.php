@@ -22,8 +22,7 @@ class DistributionHandoverReturned extends Notification
      */
     public function __construct(
         DistributionHandover $distributionHandover
-    )
-    {
+    ) {
         $this->distributionHandover = $distributionHandover;
     }
 
@@ -49,9 +48,9 @@ class DistributionHandoverReturned extends Notification
         $url = route('distribution.requests.handovers.edit', $this->distributionHandover->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Distribution handover '.$this->distributionHandover->getDistributionHandoverNumber().' has been returned.')
+            ->line('Distribution handover ' . $this->distributionHandover->getDistributionHandoverNumber() . ' has been returned.')
             ->action('View Distribution Handover', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class DistributionHandoverReturned extends Notification
         event(new NotificationPushed());
         return [
             'distribution_handover_id' => $this->distributionHandover->id,
-            'link'=>route('distribution.requests.handovers.edit', $this->distributionHandover->id),
-            'subject'=> 'Distribution handover '.$this->distributionHandover->getDistributionHandoverNumber().' has been returned.'
+            'link' => route('distribution.requests.handovers.edit', $this->distributionHandover->id),
+            'subject' => 'Distribution handover ' . $this->distributionHandover->getDistributionHandoverNumber() . ' has been returned.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class TravelReportReturned extends Notification
      */
     public function __construct(
         TravelReport $travelReport
-    )
-    {
+    ) {
         $this->travelReport = $travelReport;
     }
 
@@ -47,9 +46,8 @@ class TravelReportReturned extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class TravelReportReturned extends Notification
         event(new NotificationPushed());
         return [
             'travel_report_id' => $this->travelReport->id,
-            'link'=>route('travel.reports.edit', $this->travelReport->id),
-            'alternate_link'=>route('travel.reports.show', $this->travelReport->id),
-            'subject'=> 'Travel report for travel request '.$this->travelReport->travelRequest->getTravelRequestNumber().' has been returned.'
+            'link' => route('travel.reports.edit', $this->travelReport->id),
+            'alternate_link' => route('travel.reports.show', $this->travelReport->id),
+            'subject' => 'Travel report for travel request ' . $this->travelReport->travelRequest->getTravelRequestNumber() . ' has been returned.'
         ];
     }
-
 }

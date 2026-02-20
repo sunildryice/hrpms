@@ -22,8 +22,7 @@ class MaintenanceRequestForwarded extends Notification
      */
     public function __construct(
         MaintenanceRequest $maintenanceRequest
-    )
-    {
+    ) {
         $this->maintenanceRequest = $maintenanceRequest;
     }
 
@@ -49,9 +48,9 @@ class MaintenanceRequestForwarded extends Notification
         $url = route('maintenance.requests.view', $this->maintenanceRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' requested by '.$this->maintenanceRequest->getRequesterName().' has been approved. Please take necessary action.')
+            ->line('Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' requested by ' . $this->maintenanceRequest->getRequesterName() . ' has been approved. Please take necessary action.')
             ->action('View Maintenance Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MaintenanceRequestForwarded extends Notification
         event(new NotificationPushed());
         return [
             'maintenance_id' => $this->maintenanceRequest->id,
-            'link'=>route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
-            'subject'=> 'Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' requested by '.$this->maintenanceRequest->getRequesterName().' has been approved. Please take necessary action.'
+            'link' => route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
+            'subject' => 'Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' requested by ' . $this->maintenanceRequest->getRequesterName() . ' has been approved. Please take necessary action.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class PaymentSheetApproved extends Notification
      */
     public function __construct(
         PaymentSheet $paymentSheet
-    )
-    {
+    ) {
         $this->paymentSheet = $paymentSheet;
     }
 
@@ -48,10 +47,9 @@ class PaymentSheetApproved extends Notification
     {
         $url = route('payment.sheets.show', $this->paymentSheet->id);
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been approved.')
-                    ->action('View Payment Sheet', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been approved.')
+            ->action('View Payment Sheet', $url);
     }
 
     /**
@@ -78,9 +76,8 @@ class PaymentSheetApproved extends Notification
         event(new NotificationPushed());
         return [
             'payment_sheet_id' => $this->paymentSheet->id,
-            'link'=>route('payment.sheets.show', $this->paymentSheet->id),
-            'subject'=> 'Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been approved.'
+            'link' => route('payment.sheets.show', $this->paymentSheet->id),
+            'subject' => 'Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been approved.'
         ];
     }
-
 }

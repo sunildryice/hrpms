@@ -20,8 +20,7 @@ class VehicleRequestReturned extends Notification
      */
     public function __construct(
         VehicleRequest $vehicleRequest
-    )
-    {
+    ) {
         $this->vehicleRequest = $vehicleRequest;
     }
 
@@ -45,12 +44,12 @@ class VehicleRequestReturned extends Notification
     public function toMail($notifiable)
     {
         $url = route('vehicle.requests.edit', $this->vehicleRequest->id);
-        
+
         return (new MailMessage)
-        ->greeting('Hello!')
-        ->line('Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been returned.')
-        ->action('View Request', $url)
-        ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been returned.')
+            ->action('View Request', $url)
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class VehicleRequestReturned extends Notification
         return [
             'vehicle_request_id'    => $this->vehicleRequest->id,
             'link'                  => route('vehicle.requests.edit', $this->vehicleRequest->id),
-            'subject'               => 'Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been returned.'
+            'subject'               => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been returned.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class FundRequestSubmitted extends Notification
      */
     public function __construct(
         FundRequest $fundRequest
-    )
-    {
+    ) {
         $this->fundRequest = $fundRequest;
     }
 
@@ -49,9 +48,9 @@ class FundRequestSubmitted extends Notification
         $url = route('check.fund.requests.create', $this->fundRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Fund request '.$this->fundRequest->getFundRequestNumber().' has been submitted for your review.')
+            ->line('Fund request ' . $this->fundRequest->getFundRequestNumber() . ' has been submitted for your review.')
             ->action('View Fund Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class FundRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'fund_request_id' => $this->fundRequest->id,
-            'link'=>route('check.fund.requests.create', $this->fundRequest->id),
-            'subject'=> 'Fund request '.$this->fundRequest->getFundRequestNumber().' has been submitted for you verification.'
+            'link' => route('check.fund.requests.create', $this->fundRequest->id),
+            'subject' => 'Fund request ' . $this->fundRequest->getFundRequestNumber() . ' has been submitted for you verification.'
         ];
     }
-
 }

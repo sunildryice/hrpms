@@ -44,7 +44,7 @@ class OffDayWorkRejected extends Notification
             ->greeting('Hello!')
             ->line('Off day work request ' . $this->offDayWork->id . ' has been rejected.')
             ->action('View off day work request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

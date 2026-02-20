@@ -22,8 +22,7 @@ class TrainingReportRecommended extends Notification
      */
     public function __construct(
         TrainingReport $trainingReport
-    )
-    {
+    ) {
         $this->trainingReport = $trainingReport;
     }
 
@@ -49,9 +48,9 @@ class TrainingReportRecommended extends Notification
         $url = route('approve.training.reports.create', $this->trainingReport->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Training Report for training request '.$this->trainingReport->trainingRequest->getTrainingRequestNumber().' has been recommended.')
+            ->line('Training Report for training request ' . $this->trainingReport->trainingRequest->getTrainingRequestNumber() . ' has been recommended.')
             ->action('View Training Report ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TrainingReportRecommended extends Notification
         event(new NotificationPushed());
         return [
             'training_report_id' => $this->trainingReport->id,
-            'link'=>route('approve.training.reports.create', $this->trainingReport->id),
-            'subject'=> 'Training Report for training request '.$this->trainingReport->trainingRequest->getTrainingRequestNumber().' has been recommended.'
+            'link' => route('approve.training.reports.create', $this->trainingReport->id),
+            'subject' => 'Training Report for training request ' . $this->trainingReport->trainingRequest->getTrainingRequestNumber() . ' has been recommended.'
         ];
     }
-
 }

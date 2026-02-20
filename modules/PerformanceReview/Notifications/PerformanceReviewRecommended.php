@@ -21,8 +21,7 @@ class PerformanceReviewRecommended extends Notification
      */
     public function __construct(
         PerformanceReview $performanceReview,
-    )
-    {
+    ) {
         $this->performanceReview = $performanceReview;
     }
 
@@ -48,9 +47,9 @@ class PerformanceReviewRecommended extends Notification
         $url = route('performance.approve.create', $this->performanceReview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Performance review ('.$this->performanceReview->getReviewType().') of '.$this->performanceReview->employee->getFullName().' from '.$this->performanceReview->getReviewFromDate().' to '.$this->performanceReview->getReviewToDate().' has been recommended for approval.')
+            ->line('Performance review (' . $this->performanceReview->getReviewType() . ') of ' . $this->performanceReview->employee->getFullName() . ' from ' . $this->performanceReview->getReviewFromDate() . ' to ' . $this->performanceReview->getReviewToDate() . ' has been recommended for approval.')
             ->action('View Performance Review', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class PerformanceReviewRecommended extends Notification
         return [
             'performance_review_id' => $this->performanceReview->id,
             'link'                  => route('performance.approve.create', $this->performanceReview->id),
-            'subject'               => 'Performance review ('.$this->performanceReview->getReviewType().') of '.$this->performanceReview->employee->getFullName().' from '.$this->performanceReview->getReviewFromDate().' to '.$this->performanceReview->getReviewToDate().' has been recommended for approval.'
+            'subject'               => 'Performance review (' . $this->performanceReview->getReviewType() . ') of ' . $this->performanceReview->employee->getFullName() . ' from ' . $this->performanceReview->getReviewFromDate() . ' to ' . $this->performanceReview->getReviewToDate() . ' has been recommended for approval.'
         ];
     }
-
 }

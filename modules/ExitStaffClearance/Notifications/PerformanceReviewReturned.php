@@ -21,8 +21,7 @@ class PerformanceReviewReturned extends Notification
      */
     public function __construct(
         StaffClearance $staffClearance,
-    )
-    {
+    ) {
         $this->staffClearance = $staffClearance;
     }
 
@@ -48,9 +47,9 @@ class PerformanceReviewReturned extends Notification
         $url = route('performance.fill', $this->staffClearance->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Your performance review ('.$this->staffClearance->getReviewType().') from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been returned.')
+            ->line('Your performance review (' . $this->staffClearance->getReviewType() . ') from ' . $this->staffClearance->getReviewFromDate() . ' to ' . $this->staffClearance->getReviewToDate() . ' has been returned.')
             ->action('View Performance Review', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class PerformanceReviewReturned extends Notification
         return [
             'staff_clearance_id' => $this->staffClearance->id,
             'link'          => route('performance.fill', $this->staffClearance->id),
-            'subject'       => 'Your performance review ('.$this->staffClearance->getReviewType().') from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been returned.'
+            'subject'       => 'Your performance review (' . $this->staffClearance->getReviewType() . ') from ' . $this->staffClearance->getReviewFromDate() . ' to ' . $this->staffClearance->getReviewToDate() . ' has been returned.'
         ];
     }
-
 }

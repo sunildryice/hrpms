@@ -22,8 +22,7 @@ class EmployeeRequestRejected extends Notification
      */
     public function __construct(
         EmployeeRequest $employeeRequest
-    )
-    {
+    ) {
         $this->employeeRequest = $employeeRequest;
     }
 
@@ -47,9 +46,8 @@ class EmployeeRequestRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class EmployeeRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'employee_requisition_id' => $this->employeeRequest->id,
-            'link'=>route('employee.requests.show', $this->employeeRequest->id),
-            'subject'=> 'Employee request has been rejected.'
+            'link' => route('employee.requests.show', $this->employeeRequest->id),
+            'subject' => 'Employee request has been rejected.'
         ];
     }
-
 }

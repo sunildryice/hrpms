@@ -22,8 +22,7 @@ class DirectDispatchApproved extends Notification
      */
     public function __construct(
         GoodRequest $goodRequest
-    )
-    {
+    ) {
         $this->goodRequest = $goodRequest;
     }
 
@@ -48,10 +47,10 @@ class DirectDispatchApproved extends Notification
     {
         $url = route('good.requests.direct.dispatch.show', $this->goodRequest->id);
         return (new MailMessage)
-                ->greeting('Hello!')
-                ->line('Direct dispatch good request '.$this->goodRequest->getGoodRequestNumber().' has been approved.')
-                ->action('View Direct Dispatch Good Request', $url)
-                ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been approved.')
+            ->action('View Direct Dispatch Good Request', $url)
+        ;
     }
 
     /**
@@ -80,8 +79,7 @@ class DirectDispatchApproved extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => $url,
-            'subject'=> 'Direct dispatch good request '.$this->goodRequest->getGoodRequestNumber().' has been approved.'
+            'subject' => 'Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been approved.'
         ];
     }
-
 }

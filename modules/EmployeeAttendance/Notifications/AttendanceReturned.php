@@ -23,8 +23,7 @@ class AttendanceReturned extends Notification
      */
     public function __construct(
         Attendance $attendance,
-    )
-    {
+    ) {
         $this->attendance = $attendance;
     }
 
@@ -50,9 +49,9 @@ class AttendanceReturned extends Notification
         $url = route('attendance.detail.edit', $this->attendance->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Attendance for '.$this->attendance->getYearMonth().' has been returned.')
+            ->line('Attendance for ' . $this->attendance->getYearMonth() . ' has been returned.')
             ->action('View Attendance', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -80,8 +79,7 @@ class AttendanceReturned extends Notification
         return [
             'attendance_id' => $this->attendance->id,
             'link'          => route('attendance.detail.edit', $this->attendance->id),
-            'subject'       => 'Attendance for '.$this->attendance->getYearMonth().' has been returned.'
+            'subject'       => 'Attendance for ' . $this->attendance->getYearMonth() . ' has been returned.'
         ];
     }
-
 }

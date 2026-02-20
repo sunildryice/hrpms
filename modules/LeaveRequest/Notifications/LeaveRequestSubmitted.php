@@ -22,8 +22,7 @@ class LeaveRequestSubmitted extends Notification
      */
     public function __construct(
         LeaveRequest $leaveRequest
-    )
-    {
+    ) {
         $this->leaveRequest = $leaveRequest;
     }
 
@@ -48,8 +47,11 @@ class LeaveRequestSubmitted extends Notification
     {
         $url = route('approve.leave.requests.create', $this->leaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Leave request '.$this->leaveRequest->getLeaveNumber().' has been submitted for your approval.')
+            ->greeting('Hey ' . $this->leaveRequest->getApproverName() . ',')
+            ->line('You have a new leave request (' . $this->leaveRequest->getLeaveType() . ') awaiting your approval.')
+            ->line('Employee : ' . $this->leaveRequest->getRequesterName())
+            ->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))
+            ->line('Reason : ' . $this->leaveRequest->remarks)
             ->action('View leave request ', $url)
             ->line('Thank you for using our application!');
     }
@@ -78,10 +80,9 @@ class LeaveRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'leave_request_id' => $this->leaveRequest->id,
-            'link'=>route('approve.leave.requests.create', $this->leaveRequest->id),
-            'alternate_link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'subject'=> 'Leave request '.$this->leaveRequest->getLeaveNumber().' has been submitted. Requester : '.$this->leaveRequest->getRequesterName(),
+            'link' => route('approve.leave.requests.create', $this->leaveRequest->id),
+            'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has been submitted. Requester : ' . $this->leaveRequest->getRequesterName(),
         ];
     }
-
 }

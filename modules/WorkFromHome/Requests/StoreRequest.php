@@ -62,7 +62,6 @@ class StoreRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
 
-        dd($validator->errors()->all());
         parent::failedValidation($validator);
     }
 }

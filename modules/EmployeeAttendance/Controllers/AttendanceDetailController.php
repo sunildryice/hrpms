@@ -323,10 +323,50 @@ class AttendanceDetailController extends Controller
         $attendance = $this->attendance->find($attendanceId);
         $summary = $attendance->getTotalSummary();
 
+        $officeCheckin = config('constant.OFFICE_CHECKIN_TIME');
+        $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME');
+
+        $baseDateForTime = "{$attendance->year}-" . str_pad($attendance->month, 2, '0', STR_PAD_LEFT) . "-01";
+
+        $officialCheckin = Carbon::parse("{$baseDateForTime} {$officeCheckin}");
+        $officialCheckout = Carbon::parse("{$baseDateForTime} {$officeCheckout}");
+
+        $dates = $this->attendanceDetail->getAttendanceDetail($attendanceId)
+            ->map(function ($detail) use ($officialCheckin, $officialCheckout) {
+
+                $checkinRaw = $detail['checkin'] ?? $detail['check_in_time'] ?? null;
+                $checkoutRaw = $detail['checkout'] ?? $detail['check_out_time'] ?? null;
+
+                $checkin = $checkinRaw ? Carbon::parse($checkinRaw) : null;
+                $checkout = $checkoutRaw ? Carbon::parse($checkoutRaw) : null;
+
+                $isLate = $checkin && $checkin->format('H:i:s') > $officialCheckin->format('H:i:s');
+                $isEarlyOut = $checkout && $checkout->format('H:i:s') < $officialCheckout->format('H:i:s');
+
+                $displayCheckin = $checkin
+                    ? ($isLate
+                        ? '<span class="text-danger fw-bold">' . $checkin->format('H:i') . '</span> <small class="text-danger">(Late Check-in)</small>'
+                        : $checkin->format('H:i'))
+                    : '-';
+
+                $displayCheckout = $checkout
+                    ? ($isEarlyOut
+                        ? '<span class="text-danger fw-bold">' . $checkout->format('H:i') . '</span> <small class="text-danger">(Early Checkout)</small>'
+                        : $checkout->format('H:i'))
+                    : '-';
+
+                $detail['display_checkin'] = $displayCheckin;
+                $detail['display_checkout'] = $displayCheckout;
+                $detail['is_late'] = $isLate;
+                $detail['is_early_out'] = $isEarlyOut;
+
+                return $detail;
+            });
+
         $array = [
             'attendance' => $attendance,
             'attendanceId' => $attendanceId,
-            'dates' => $this->attendanceDetail->getAttendanceDetail($attendanceId),
+            'dates' => $dates,
             'unrestrictedDonor' => $this->donor->getUnrestrictedDonor(),
             'donors' => $this->donor->getActiveDonorCodes(),
             // 'leaves'                        => $this->leaves->getEmployeeLeavesForCurrentFiscalYear($attendance->employee->id),

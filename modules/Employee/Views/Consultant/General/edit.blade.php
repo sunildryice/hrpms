@@ -357,6 +357,7 @@
 
         <div class="row mb-2" id="leavePercentageRow"
             style="{{ old('earn_leave', $employee->consultantLeave?->earn_leave ?? false) ? '' : 'display: none;' }}">
+            <input type="hidden" id="original_leave_percentage" value="{{ $employee->consultantLeave?->leave_percentage ?? '' }}">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="leave_percentage" class="m-0 required-label">Leave %</label>

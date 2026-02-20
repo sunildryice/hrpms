@@ -79,6 +79,9 @@
             function buildDeliverableRow(idx) {
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
+                        <td style="width: 10%;">
+                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]">
+                        </td>
                         <td style="width: 15%;">
                             <select class="form-select project-select"
                                     name="deliverables[${idx}][project_id]" required>
@@ -148,6 +151,19 @@
                 // If old value exists, set it
                 const selectedActivityId = $activitiesSelect.data('selected');
                 populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
+
+                // Initialize datepicker for existing date input
+                const $dateInput = $row.find('input.date');
+                $dateInput.datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                    startDate: $('[name="start_date"]').val() || new Date(),
+                    endDate: $('[name="end_date"]').val() || null,
+                    enableOnReadonly: true
+                });
+                $dateInput.prop('disabled', !($('[name="start_date"]').val() && $('[name="end_date"]')
+                    .val()));
             });
 
             $(document).on('click', '.add-row', function() {
@@ -160,6 +176,18 @@
                     width: '100%',
                     dropdownAutoWidth: true
                 });
+
+                // Initialize datepicker on new row
+                $newRow.find('input.date').datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                    startDate: $('[name="start_date"]').val() || new Date(),
+                    endDate: $('[name="end_date"]').val() || null,
+                    enableOnReadonly: true
+                });
+                $newRow.find('input.date').prop('disabled', !($('[name="start_date"]').val() && $(
+                    '[name="end_date"]').val()));
 
                 if (window.fv) {
                     fv.revalidateField('deliverables');
@@ -309,18 +337,18 @@
                 <div class="row">
                     <div class="mb-3 col-6">
                         <label for="start_date" class="form-label required-label">Start Date</label>
-                        <input type="date" class="form-control @error('start_date') is-invalid @enderror" id="start_date"
-                            name="start_date" value="{{ old('start_date', $workFromHome->start_date->format('Y-m-d')) }}"
-                            required>
+                        <input type="text" readonly class="form-control @error('start_date') is-invalid @enderror"
+                            id="start_date" name="start_date"
+                            value="{{ old('start_date', $workFromHome->start_date->format('Y-m-d')) }}" required>
                         @error('start_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-3 col-6">
                         <label for="end_date" class="form-label required-label">End Date</label>
-                        <input type="date" class="form-control @error('end_date') is-invalid @enderror" id="end_date"
-                            name="end_date" value="{{ old('end_date', $workFromHome->end_date->format('Y-m-d')) }}"
-                            required>
+                        <input type="text" readonly class="form-control @error('end_date') is-invalid @enderror"
+                            id="end_date" name="end_date"
+                            value="{{ old('end_date', $workFromHome->end_date->format('Y-m-d')) }}" required>
                         @error('end_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -342,8 +370,9 @@
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
+                                <th style="width: 10%;">Date</th>
                                 <th style="width: 15%;">Project</th>
-                                <th style="width:15%;">Activities</th>
+                                <th style="width:15%">Activities</th>
                                 <th>Task</th>
                                 <th style="width: 12%;">Action</th>
                             </tr>
@@ -366,23 +395,29 @@
 
                             @foreach ($oldDeliverables as $idx => $deliverable)
                                 @php
+                                    $dateErrorKey = "deliverables.$idx.date";
                                     $projectErrorKey = "deliverables.$idx.project_id";
                                     $activityErrorKey = "deliverables.$idx.activity_id";
                                     $taskErrorKey = "deliverables.$idx.task";
-
-                                    // Try to find project if projects is keyed, otherwise this might fail/return null
-                                    // Safe because of checks below
                                     $selectedProject = $projects[$deliverable['project_id'] ?? ''] ?? null;
                                     $activities = $selectedProject ? $selectedProject->activities : [];
                                 @endphp
                                 <tr class="deliverable-row" data-row-index="{{ $idx }}">
+                                    <td style="width: 10%;">
+                                        <input type="text"
+                                            class="form-control date @error($dateErrorKey) is-invalid @enderror" readonly
+                                            name="deliverables[{{ $idx }}][date]"
+                                            value="{{ $deliverable['date'] ?? '' }}">
+                                        @error($dateErrorKey)
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </td>
                                     <td style="width: 15%;">
                                         <select
                                             class="form-select project-select @error($projectErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][project_id]" required>
                                             <option value="" disabled
-                                                {{ empty($deliverable['project_id']) ? 'selected' : '' }}>
-                                                Select Project
+                                                {{ empty($deliverable['project_id']) ? 'selected' : '' }}>Select Project
                                             </option>
                                             @foreach ($projects as $project)
                                                 <option value="{{ $project->id }}"
@@ -445,6 +480,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <span class="text-muted text-sm">
+                        Only date between start and end date can be selected.
+                    </span>
                 </div>
 
                 <div class="mb-3">

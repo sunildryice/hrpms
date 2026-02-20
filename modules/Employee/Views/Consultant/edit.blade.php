@@ -79,6 +79,17 @@
                             },
                         },
                     },
+                    joined_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The joined date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                        },
+                    },
                     date_of_birth: {
                         validators: {
                             date: {
@@ -244,6 +255,15 @@
                 endDate: '{!! date('Y-m-d') !!}',
             }).on('change', function(e) {
                 fv.revalidateField('date_of_birth');
+            });
+
+            $('[name="joined_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('joined_date');
             });
 
             $('[name="probation_complete_date"]').datepicker({

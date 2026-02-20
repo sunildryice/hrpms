@@ -200,12 +200,8 @@
                                 {{ $date->get('date') }}<br>
                                 <small class="text-muted">{{ $date->get('day_name') }}</small>
                             </td>
-                            <td class="text-center {{ $hasCheckIn ? 'present' : '' }}">
-                                {{ $date->get('check_in_time') ?: '-' }}
-                            </td>
-                            <td class="text-center {{ $hasCheckOut ? 'present' : '' }}">
-                                {{ $date->get('check_out_time') ?: '-' }}
-                            </td>
+                            <td class="text-center">{!! $date['display_checkin'] !!}</td>
+                            <td class="text-center">{!! $date['display_checkout'] !!}</td>
                             <td class="text-center fw-bold">
                                 {{ $date->get('worked_hours') ?: '00.00' }}
                             </td>

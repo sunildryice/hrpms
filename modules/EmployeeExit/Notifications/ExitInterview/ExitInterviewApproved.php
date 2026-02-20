@@ -22,8 +22,7 @@ class ExitInterviewApproved extends Notification
      */
     public function __construct(
         ExitInterview $exitInterview
-    )
-    {
+    ) {
         $this->exitInterview = $exitInterview;
     }
 
@@ -51,7 +50,7 @@ class ExitInterviewApproved extends Notification
             ->greeting('Hello!')
             ->line('Your Exit Interview submitted has been approved.')
             ->action('View Exit Interview ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitInterviewApproved extends Notification
         event(new NotificationPushed());
         return [
             'exit_interview_id' => $this->exitInterview->id,
-            'link'=>route('exit.employee.interview.show'),
-            'subject'=> 'Your Exit Interview has been approved.'
+            'link' => route('exit.employee.interview.show'),
+            'subject' => 'Your Exit Interview has been approved.'
         ];
     }
-
 }

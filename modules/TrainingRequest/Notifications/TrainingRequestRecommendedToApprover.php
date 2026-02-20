@@ -22,8 +22,7 @@ class TrainingRequestRecommendedToApprover extends Notification
      */
     public function __construct(
         TrainingRequest $trainingRequest
-    )
-    {
+    ) {
         $this->trainingRequest = $trainingRequest;
     }
 
@@ -49,9 +48,9 @@ class TrainingRequestRecommendedToApprover extends Notification
         $url = route('approve.training.request.create', $this->trainingRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Training request '.$this->trainingRequest->getTrainingRequestNumber().' has been recommended for your approval.')
+            ->line('Training request ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been recommended for your approval.')
             ->action('View Training Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TrainingRequestRecommendedToApprover extends Notification
         event(new NotificationPushed());
         return [
             'training_request_id' => $this->trainingRequest->id,
-            'link'=>route('approve.training.request.create', $this->trainingRequest->id),
-            'subject'=> 'Training request '.$this->trainingRequest->getTrainingRequestNumber().' has been recommended for your approval.'
+            'link' => route('approve.training.request.create', $this->trainingRequest->id),
+            'subject' => 'Training request ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been recommended for your approval.'
         ];
     }
-
 }

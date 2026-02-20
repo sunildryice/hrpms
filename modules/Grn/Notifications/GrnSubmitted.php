@@ -22,8 +22,7 @@ class GrnSubmitted extends Notification
      */
     public function __construct(
         Grn $grn
-    )
-    {
+    ) {
         $this->grn = $grn;
     }
 
@@ -49,9 +48,9 @@ class GrnSubmitted extends Notification
         $url = route('approve.grns.create', $this->grn->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('GRN '.$this->grn->getGrnNumber().' has been submitted for your approval.')
+            ->line('GRN ' . $this->grn->getGrnNumber() . ' has been submitted for your approval.')
             ->action('View GRN ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class GrnSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'grn_id' => $this->grn->id,
-            'link'=>route('approve.grns.create', $this->grn->id),
-            'subject'=> 'GRN '.$this->grn->getGrnNumber().' has been submitted.'
+            'link' => route('approve.grns.create', $this->grn->id),
+            'subject' => 'GRN ' . $this->grn->getGrnNumber() . ' has been submitted.'
         ];
     }
-
 }

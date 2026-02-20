@@ -22,8 +22,7 @@ class TravelAdvanceRequestSubmitted extends Notification
      */
     public function __construct(
         TravelRequest $travelRequest
-    )
-    {
+    ) {
         $this->travelRequest = $travelRequest;
     }
 
@@ -49,9 +48,9 @@ class TravelAdvanceRequestSubmitted extends Notification
         $url = route('approve.travel.requests.create', $this->travelRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel request '.$this->travelRequest->getTravelRequestNumber().' has been submitted for your approval.')
+            ->line('Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been submitted for your approval.')
             ->action('View travel request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelAdvanceRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelRequest->id,
-            'link'=>route('approve.travel.requests.advance.create', $this->travelRequest->id),
-            'alternate_link'=>route('approve.travel.requests.advance.index'),
-            'subject'=> 'Advance for Travel '.$this->travelRequest->getTravelRequestNumber().' has been requested. Requester : '.$this->travelRequest->getRequesterName() .'.',
+            'link' => route('approve.travel.requests.advance.create', $this->travelRequest->id),
+            'alternate_link' => route('approve.travel.requests.advance.index'),
+            'subject' => 'Advance for Travel ' . $this->travelRequest->getTravelRequestNumber() . ' has been requested. Requester : ' . $this->travelRequest->getRequesterName() . '.',
         ];
     }
-
 }

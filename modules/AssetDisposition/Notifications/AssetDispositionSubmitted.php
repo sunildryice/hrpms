@@ -22,9 +22,8 @@ class AssetDispositionSubmitted extends Notification
      */
     public function __construct(
         DispositionRequest $dispositionRequest
-    )
-    {
-        $this->assetDisposition= $dispositionRequest;
+    ) {
+        $this->assetDisposition = $dispositionRequest;
     }
 
     /**
@@ -49,9 +48,9 @@ class AssetDispositionSubmitted extends Notification
         $url = route('approve.asset.disposition.create', $this->assetDisposition->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Asset Disposition Request has been submitted by'. $this->assetDisposition->getRequesterName() .'for your approval.')
+            ->line('Asset Disposition Request has been submitted by' . $this->assetDisposition->getRequesterName() . 'for your approval.')
             ->action('View Asset Disposition Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class AssetDispositionSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->assetDisposition->id,
-            'link'=>route('approve.asset.disposition.create', $this->assetDisposition->id),
-            'alternate_link'=>route('asset.disposition.show', $this->assetDisposition->id),
-            'subject'=> 'Asset Disposition Request by '.$this->assetDisposition->getRequesterName().' has been submitted for your approval.',
+            'link' => route('approve.asset.disposition.create', $this->assetDisposition->id),
+            'alternate_link' => route('asset.disposition.show', $this->assetDisposition->id),
+            'subject' => 'Asset Disposition Request by ' . $this->assetDisposition->getRequesterName() . ' has been submitted for your approval.',
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class ExitAssetHandoverRecommended extends Notification
      */
     public function __construct(
         ExitAssetHandover $exitAssetHandover
-    )
-    {
+    ) {
         $this->exitAssetHandover = $exitAssetHandover;
     }
 
@@ -49,9 +48,9 @@ class ExitAssetHandoverRecommended extends Notification
         $url = route('approve.exit.handover.asset.create', $this->exitAssetHandover->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Exit Asset Handover of '.$this->exitAssetHandover->getEmployeeName().' has been recommended for your approval.')
+            ->line('Exit Asset Handover of ' . $this->exitAssetHandover->getEmployeeName() . ' has been recommended for your approval.')
             ->action('View Exit Asset Handover ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitAssetHandoverRecommended extends Notification
         event(new NotificationPushed());
         return [
             'exit_asset_handover_id' => $this->exitAssetHandover->id,
-            'link'=>route('approve.exit.handover.asset.create', $this->exitAssetHandover->id),
-            'subject'=> 'Exit Asset Handover of '.$this->exitAssetHandover->getEmployeeName().' has been recommended for your approval.'
+            'link' => route('approve.exit.handover.asset.create', $this->exitAssetHandover->id),
+            'subject' => 'Exit Asset Handover of ' . $this->exitAssetHandover->getEmployeeName() . ' has been recommended for your approval.'
         ];
     }
-
 }

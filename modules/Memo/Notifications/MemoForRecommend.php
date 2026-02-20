@@ -22,8 +22,7 @@ class MemoForRecommend extends Notification
      */
     public function __construct(
         Memo $memo
-    )
-    {
+    ) {
         $this->memo = $memo;
     }
 
@@ -49,9 +48,9 @@ class MemoForRecommend extends Notification
         $url = route('approve.memo.create', $this->memo->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Memo '.$this->memo->getMemoNumber().' has been recommended for approval.')
+            ->line('Memo ' . $this->memo->getMemoNumber() . ' has been recommended for approval.')
             ->action('View Memo ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MemoForRecommend extends Notification
         event(new NotificationPushed());
         return [
             'memo_id' => $this->memo->id,
-            'link'=>route('approve.memo.create', $this->memo->id),
-            'subject'=> 'Memo '.$this->memo->getMemoNumber().' has been recommended for approval.'
+            'link' => route('approve.memo.create', $this->memo->id),
+            'subject' => 'Memo ' . $this->memo->getMemoNumber() . ' has been recommended for approval.'
         ];
     }
-
 }

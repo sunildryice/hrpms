@@ -22,8 +22,7 @@ class HandoverSubmitted extends Notification
      */
     public function __construct(
         GoodRequestAsset $goodRequestAsset
-    )
-    {
+    ) {
         $this->goodRequestAsset = $goodRequestAsset;
     }
 
@@ -49,9 +48,9 @@ class HandoverSubmitted extends Notification
         $url = route('approve.asset.handovers.create', $this->goodRequestAsset->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Asset Handover of '.$this->goodRequestAsset->getAssetNumber().' has been submitted.')
+            ->line('Asset Handover of ' . $this->goodRequestAsset->getAssetNumber() . ' has been submitted.')
             ->action('View Asset Handover ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class HandoverSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'good_request_asset_id' => $this->goodRequestAsset->id,
-            'link'=>route('approve.asset.handovers.create', $this->goodRequestAsset->id),
-            'subject'=> 'Asset Handover of '.$this->goodRequestAsset->getAssetNumber().' has been submitted.'
+            'link' => route('approve.asset.handovers.create', $this->goodRequestAsset->id),
+            'subject' => 'Asset Handover of ' . $this->goodRequestAsset->getAssetNumber() . ' has been submitted.'
         ];
     }
-
 }

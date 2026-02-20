@@ -23,8 +23,7 @@ class AttendanceSubmitted extends Notification
      */
     public function __construct(
         Attendance $attendance,
-    )
-    {
+    ) {
         $this->attendance = $attendance;
     }
 
@@ -50,9 +49,9 @@ class AttendanceSubmitted extends Notification
         $url = route('attendance.review.create', $this->attendance->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Attendance for '.$this->attendance->getYearMonth().' has been submitted for your verification by '.$this->attendance->getRequester())
+            ->line('Attendance for ' . $this->attendance->getYearMonth() . ' has been submitted for your verification by ' . $this->attendance->getRequester())
             ->action('View Attendance', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -80,8 +79,7 @@ class AttendanceSubmitted extends Notification
         return [
             'attendance_id' => $this->attendance->id,
             'link'          => route('attendance.review.create', $this->attendance->id),
-            'subject'       => 'Attendance for '.$this->attendance->getYearMonth().' has been submitted for your verification by '.$this->attendance->getRequester()
+            'subject'       => 'Attendance for ' . $this->attendance->getYearMonth() . ' has been submitted for your verification by ' . $this->attendance->getRequester()
         ];
     }
-
 }

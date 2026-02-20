@@ -50,7 +50,7 @@ class StaffClearanceCertified extends Notification
     //         ->greeting('Hello!')
     //         ->line('Performance review ('.$this->staffClearance->getReviewType().') of '.$this->staffClearance->employee->getFullName().' from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been submitted for recommendation.')
     //         ->action('View Performance Review', $url)
-    //         ->line('Thank you for using our application!');
+    //         ;
     // }
 
     /**
@@ -79,7 +79,7 @@ class StaffClearanceCertified extends Notification
             'staff_clearance_id' => $this->staffClearance->id,
             'link' => route('staff.clearance.endorse.create', $this->staffClearance->id),
             'alternate_link' => route('staff.clearance.endorse.index', $this->staffClearance->id),
-            'subject' => 'Exit Staff Clearance for '.$this->staffClearance->employee->getFullName().' has been certified by HR.',
+            'subject' => 'Exit Staff Clearance for ' . $this->staffClearance->employee->getFullName() . ' has been certified by HR.',
         ];
     }
 }

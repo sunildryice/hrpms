@@ -22,8 +22,7 @@ class TravelClaimForwarded extends Notification
      */
     public function __construct(
         TravelClaim $travelClaim
-    )
-    {
+    ) {
         $this->travelClaim = $travelClaim;
     }
 
@@ -49,9 +48,9 @@ class TravelClaimForwarded extends Notification
         $url = route('approve.travel.claims.create', $this->travelClaim->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel claim '.$this->travelClaim->travelRequest->getTravelRequestNumber().' has been forwarded for your approval.')
+            ->line('Travel claim ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has been forwarded for your approval.')
             ->action('View travel claim ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelClaimForwarded extends Notification
         event(new NotificationPushed());
         return [
             'travel_claim_id' => $this->travelClaim->id,
-            'link'=>route('approve.travel.claims.create', $this->travelClaim->id),
-            'alternate_link'=>route('travel.claims.view', $this->travelClaim->id),
-            'subject'=> 'Travel claim for travel request '.$this->travelClaim->travelRequest->getTravelRequestNumber().' has been submitted.'
+            'link' => route('approve.travel.claims.create', $this->travelClaim->id),
+            'alternate_link' => route('travel.claims.view', $this->travelClaim->id),
+            'subject' => 'Travel claim for travel request ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has been submitted.'
         ];
     }
-
 }

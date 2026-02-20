@@ -22,8 +22,7 @@ class WorkPlanSubmitted extends Notification
      */
     public function __construct(
         WorkPlan $workPlan
-    )
-    {
+    ) {
         $this->workPlan = $workPlan;
     }
 
@@ -49,9 +48,9 @@ class WorkPlanSubmitted extends Notification
         $url = route('approve.work.logs.create', $this->workPlan->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Work Log for '.$this->workPlan->getYearMonth().' has been submitted for your approval by '.$this->workPlan->getRequester())
+            ->line('Work Log for ' . $this->workPlan->getYearMonth() . ' has been submitted for your approval by ' . $this->workPlan->getRequester())
             ->action('View Work log', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class WorkPlanSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'work_plan_id' => $this->workPlan->id,
-            'link'=>route('approve.work.logs.create', $this->workPlan->id),
-            'subject'=> 'Work Log for '.$this->workPlan->getYearMonth().' has been submitted for your approval by '.$this->workPlan->getRequester()
+            'link' => route('approve.work.logs.create', $this->workPlan->id),
+            'subject' => 'Work Log for ' . $this->workPlan->getYearMonth() . ' has been submitted for your approval by ' . $this->workPlan->getRequester()
         ];
     }
-
 }

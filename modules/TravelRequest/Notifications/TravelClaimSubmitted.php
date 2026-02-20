@@ -22,8 +22,7 @@ class TravelClaimSubmitted extends Notification
      */
     public function __construct(
         TravelClaim $travelClaim
-    )
-    {
+    ) {
         $this->travelClaim = $travelClaim;
     }
 
@@ -49,9 +48,9 @@ class TravelClaimSubmitted extends Notification
         $url = route('review.travel.claims.create', $this->travelClaim->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel claim '.$this->travelClaim->travelRequest->getTravelRequestNumber().' has been submitted for your review.')
+            ->line('Travel claim ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has been submitted for your review.')
             ->action('View travel claim ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelClaimSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'travel_claim_id' => $this->travelClaim->id,
-            'link'=>route('review.travel.claims.create', $this->travelClaim->id),
-            'alternate_link'=>route('travel.claims.view', $this->travelClaim->id),
-            'subject'=> 'Travel claim for travel request '.$this->travelClaim->travelRequest->getTravelRequestNumber().' has been submitted. Requester : '.$this->travelClaim->travelRequest->getRequesterName() .'.',
+            'link' => route('review.travel.claims.create', $this->travelClaim->id),
+            'alternate_link' => route('travel.claims.view', $this->travelClaim->id),
+            'subject' => 'Travel claim for travel request ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has been submitted. Requester : ' . $this->travelClaim->travelRequest->getRequesterName() . '.',
         ];
     }
-
 }

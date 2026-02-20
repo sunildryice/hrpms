@@ -22,8 +22,7 @@ class ExitAssetHandoverReturned extends Notification
      */
     public function __construct(
         ExitAssetHandover $exitAssetHandover
-    )
-    {
+    ) {
         $this->$exitAssetHandover = $exitAssetHandover;
     }
 
@@ -51,7 +50,7 @@ class ExitAssetHandoverReturned extends Notification
             ->greeting('Hello!')
             ->line('Your Exit Asset Handover has been returned.')
             ->action('View Exit Asset Handover ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ExitAssetHandoverReturned extends Notification
         event(new NotificationPushed());
         return [
             'exit_asset_handover_id' => $this->exitAssetHandover->id,
-            'link'=>route('exit.employee.handover.asset.edit'),
-            'subject'=> 'Your Exit Asset Handover has been returned.'
+            'link' => route('exit.employee.handover.asset.edit'),
+            'subject' => 'Your Exit Asset Handover has been returned.'
         ];
     }
-
 }

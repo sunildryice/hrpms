@@ -22,8 +22,7 @@ class PurchaseRequestSubmittedApprove extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
     }
 
@@ -49,9 +48,9 @@ class PurchaseRequestSubmittedApprove extends Notification
         $url = route('approve.purchase.requests.create', $this->purchaseRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been submitted for your approve.')
+            ->line('Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been submitted for your approve.')
             ->action('View Purchase Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class PurchaseRequestSubmittedApprove extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=>route('approve.purchase.requests.create', $this->purchaseRequest->id),
-            'subject'=> 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been submitted for approve.'
+            'link' => route('approve.purchase.requests.create', $this->purchaseRequest->id),
+            'subject' => 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been submitted for approve.'
         ];
     }
-
 }

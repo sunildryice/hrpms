@@ -22,9 +22,8 @@ class AssetDispositionRejected extends Notification
      */
     public function __construct(
         DispositionRequest $dispositionRequest
-    )
-    {
-        $this->assetDisposition= $dispositionRequest;
+    ) {
+        $this->assetDisposition = $dispositionRequest;
     }
 
     /**
@@ -51,7 +50,7 @@ class AssetDispositionRejected extends Notification
             ->greeting('Hello!')
             ->line('Your Asset Disposition Request has been rejected.')
             ->action('View asset disposition ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class AssetDispositionRejected extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->assetDisposition->id,
-            'link'=>route('asset.disposition.show', $this->assetDisposition->id),
-            'subject'=> 'Asset Disposition Request has been rejected.',
+            'link' => route('asset.disposition.show', $this->assetDisposition->id),
+            'subject' => 'Asset Disposition Request has been rejected.',
         ];
-        }
-
+    }
 }

@@ -24,17 +24,16 @@ class PaymentSheetRecommended extends Notification
      */
     public function __construct(
         PaymentSheet $paymentSheet
-    )
-    {
+    ) {
         $this->paymentSheet = $paymentSheet;
 
         if ($paymentSheet->status_id == config('constant.RECOMMENDED_STATUS')) {
-            $this->message = 'Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been recommended for your review. Requester : '.$this->paymentSheet->getRequesterName();
+            $this->message = 'Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been recommended for your review. Requester : ' . $this->paymentSheet->getRequesterName();
             $this->url = route('review.recommended.payment.sheets.create', $this->paymentSheet->id);
         }
 
         if ($paymentSheet->status_id == config('constant.RECOMMENDED2_STATUS')) {
-            $this->message = 'Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been recommended for your approval. Requester : '.$this->paymentSheet->getRequesterName();
+            $this->message = 'Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been recommended for your approval. Requester : ' . $this->paymentSheet->getRequesterName();
             $this->url = route('approve.recommended.payment.sheets.create', $this->paymentSheet->id);
         }
     }
@@ -62,7 +61,7 @@ class PaymentSheetRecommended extends Notification
             ->greeting('Hello!')
             ->line($this->message)
             ->action('View Payment Sheet ', $this->url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -93,5 +92,4 @@ class PaymentSheetRecommended extends Notification
             'subject'           => $this->message
         ];
     }
-
 }

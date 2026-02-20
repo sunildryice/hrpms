@@ -21,9 +21,7 @@ class TravelAuthorizationSubmitted extends Notification
      */
     public function __construct(
         protected TravelAuthorization $travelAuthorization
-    )
-    {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -47,9 +45,9 @@ class TravelAuthorizationSubmitted extends Notification
         $url = route('approve.travel.requests.create', $this->travelAuthorization->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel request '.$this->travelAuthorization->getTravelAuthorizationNumber().' has been submitted for your approval.')
+            ->line('Travel request ' . $this->travelAuthorization->getTravelAuthorizationNumber() . ' has been submitted for your approval.')
             ->action('View travel request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -85,8 +83,7 @@ class TravelAuthorizationSubmitted extends Notification
             'travel_authorization_id' => $this->travelAuthorization->id,
             'link' => route('approve.ta.requests.create', $this->travelAuthorization->id),
             'alternate_link' => route('ta.requests.view', $this->travelAuthorization->id),
-            'subject' => 'Travel authorization request '.$travelAtuhNumber.' has been '.$action.'. Requester : '.$requesterName.'.',
+            'subject' => 'Travel authorization request ' . $travelAtuhNumber . ' has been ' . $action . '. Requester : ' . $requesterName . '.',
         ];
     }
-
 }

@@ -21,8 +21,7 @@ class PerformanceReviewRecommended extends Notification
      */
     public function __construct(
         StaffClearance $staffClearance,
-    )
-    {
+    ) {
         $this->staffClearance = $staffClearance;
     }
 
@@ -48,9 +47,9 @@ class PerformanceReviewRecommended extends Notification
         $url = route('performance.approve.create', $this->staffClearance->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Performance review ('.$this->staffClearance->getReviewType().') of '.$this->staffClearance->employee->getFullName().' from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been recommended for approval.')
+            ->line('Performance review (' . $this->staffClearance->getReviewType() . ') of ' . $this->staffClearance->employee->getFullName() . ' from ' . $this->staffClearance->getReviewFromDate() . ' to ' . $this->staffClearance->getReviewToDate() . ' has been recommended for approval.')
             ->action('View Performance Review', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class PerformanceReviewRecommended extends Notification
         return [
             'staff_clearance_id' => $this->staffClearance->id,
             'link'                  => route('performance.approve.create', $this->staffClearance->id),
-            'subject'               => 'Performance review ('.$this->staffClearance->getReviewType().') of '.$this->staffClearance->employee->getFullName().' from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been recommended for approval.'
+            'subject'               => 'Performance review (' . $this->staffClearance->getReviewType() . ') of ' . $this->staffClearance->employee->getFullName() . ' from ' . $this->staffClearance->getReviewFromDate() . ' to ' . $this->staffClearance->getReviewToDate() . ' has been recommended for approval.'
         ];
     }
-
 }

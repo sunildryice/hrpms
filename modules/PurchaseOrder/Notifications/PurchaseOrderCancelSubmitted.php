@@ -22,8 +22,7 @@ class PurchaseOrderCancelSubmitted extends Notification
      */
     public function __construct(
         PurchaseOrder $purchaseOrder
-    )
-    {
+    ) {
         $this->purchaseOrder = $purchaseOrder;
     }
 
@@ -49,9 +48,9 @@ class PurchaseOrderCancelSubmitted extends Notification
         $url = route('review.purchase.orders.create', $this->purchaseOrder->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Purchase order '.$this->purchaseOrder->getPurchaseOrderNumber().' has been submitted for your review.')
+            ->line('Purchase order ' . $this->purchaseOrder->getPurchaseOrderNumber() . ' has been submitted for your review.')
             ->action('View Purchase Order ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class PurchaseOrderCancelSubmitted extends Notification
         // event(new NotificationPushed());
         return [
             'purchase_order_id' => $this->purchaseOrder->id,
-            'link'=>route('approve.purchase.orders.cancel.create', $this->purchaseOrder->id),
-            'subject'=> 'Cancellation Purchase order '.$this->purchaseOrder->getPurchaseOrderNumber().' has been submitted for your approval',
+            'link' => route('approve.purchase.orders.cancel.create', $this->purchaseOrder->id),
+            'subject' => 'Cancellation Purchase order ' . $this->purchaseOrder->getPurchaseOrderNumber() . ' has been submitted for your approval',
         ];
     }
-
 }

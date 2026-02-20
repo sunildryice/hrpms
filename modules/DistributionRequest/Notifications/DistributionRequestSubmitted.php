@@ -22,8 +22,7 @@ class DistributionRequestSubmitted extends Notification
      */
     public function __construct(
         DistributionRequest $distributionRequest
-    )
-    {
+    ) {
         $this->distributionRequest = $distributionRequest;
     }
 
@@ -49,9 +48,9 @@ class DistributionRequestSubmitted extends Notification
         $url = route('approve.distribution.requests.create', $this->distributionRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Distribution request '.$this->distributionRequest->getDistributionRequestNumber().' has been submitted.')
+            ->line('Distribution request ' . $this->distributionRequest->getDistributionRequestNumber() . ' has been submitted.')
             ->action('View Distribution Request', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -79,8 +78,7 @@ class DistributionRequestSubmitted extends Notification
         return [
             'distribution_request_id'   => $this->distributionRequest->id,
             'link'                      => route('approve.distribution.requests.create', $this->distributionRequest->id),
-            'subject'                   => 'Distribution request '.$this->distributionRequest->getDistributionRequestNumber().' has been submitted.'
+            'subject'                   => 'Distribution request ' . $this->distributionRequest->getDistributionRequestNumber() . ' has been submitted.'
         ];
     }
-
 }

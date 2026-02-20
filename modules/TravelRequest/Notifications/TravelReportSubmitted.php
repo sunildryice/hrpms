@@ -22,8 +22,7 @@ class TravelReportSubmitted extends Notification
      */
     public function __construct(
         TravelReport $travelReport
-    )
-    {
+    ) {
         $this->travelReport = $travelReport;
     }
 
@@ -49,9 +48,9 @@ class TravelReportSubmitted extends Notification
         $url = route('approve.travel.reports.create', $this->travelReport->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Travel report '.$this->travelReport->travelRequest->getTravelRequestNumber().' has been submitted for your approval.')
+            ->line('Travel report ' . $this->travelReport->travelRequest->getTravelRequestNumber() . ' has been submitted for your approval.')
             ->action('View travel report ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelReportSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'travel_report_id' => $this->travelReport->id,
-            'link'=>route('approve.travel.reports.create', $this->travelReport->id),
-            'alternate_link'=>route('travel.reports.show', $this->travelReport->id),
-            'subject'=> 'Travel report for travel request '.$this->travelReport->travelRequest->getTravelRequestNumber().' has been submitted. Requester : '.$this->travelReport->getReporterName() .'.',
+            'link' => route('approve.travel.reports.create', $this->travelReport->id),
+            'alternate_link' => route('travel.reports.show', $this->travelReport->id),
+            'subject' => 'Travel report for travel request ' . $this->travelReport->travelRequest->getTravelRequestNumber() . ' has been submitted. Requester : ' . $this->travelReport->getReporterName() . '.',
         ];
     }
-
 }

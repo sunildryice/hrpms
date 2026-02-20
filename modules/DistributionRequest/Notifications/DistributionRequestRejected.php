@@ -22,8 +22,7 @@ class DistributionRequestRejected extends Notification
      */
     public function __construct(
         DistributionRequest $distributionRequest
-    )
-    {
+    ) {
         $this->distributionRequest = $distributionRequest;
     }
 
@@ -49,9 +48,9 @@ class DistributionRequestRejected extends Notification
         $url = route('distribution.requests.show', $this->distributionRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Distribution request '.$this->distributionRequest->getDistributionRequestNumber().' has been rejected.')
+            ->line('Distribution request ' . $this->distributionRequest->getDistributionRequestNumber() . ' has been rejected.')
             ->action('View Distribution Request', url('/'))
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -79,8 +78,7 @@ class DistributionRequestRejected extends Notification
         return [
             'distribution_request_id'   => $this->distributionRequest->id,
             'link'                      => route('distribution.requests.show', $this->distributionRequest->id),
-            'subject'                   => 'Distribution request '.$this->distributionRequest->getDistributionRequestNumber().' has been rejected.'
+            'subject'                   => 'Distribution request ' . $this->distributionRequest->getDistributionRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

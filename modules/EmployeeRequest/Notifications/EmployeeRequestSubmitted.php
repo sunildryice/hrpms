@@ -22,8 +22,7 @@ class EmployeeRequestSubmitted extends Notification
      */
     public function __construct(
         EmployeeRequest $employeeRequest
-    )
-    {
+    ) {
         $this->employeeRequest = $employeeRequest;
     }
 
@@ -51,7 +50,7 @@ class EmployeeRequestSubmitted extends Notification
             ->greeting('Hello!')
             ->line('Employee request has been submitted for your review.')
             ->action('View Employee Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class EmployeeRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'employee_requisition_id' => $this->employeeRequest->id,
-            'link'=>route('review.employee.requests.create', $this->employeeRequest->id),
-            'subject'=> 'Employee request has been submitted.'
+            'link' => route('review.employee.requests.create', $this->employeeRequest->id),
+            'subject' => 'Employee request has been submitted.'
         ];
     }
-
 }

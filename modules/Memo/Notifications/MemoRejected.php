@@ -22,8 +22,7 @@ class MemoRejected extends Notification
      */
     public function __construct(
         Memo $memo
-    )
-    {
+    ) {
         $this->memo = $memo;
     }
 
@@ -49,9 +48,9 @@ class MemoRejected extends Notification
         $url = route('memo.index');
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Memo '.$this->memo->getMemoNumber().' has been rejected.')
+            ->line('Memo ' . $this->memo->getMemoNumber() . ' has been rejected.')
             ->action('View Memo ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MemoRejected extends Notification
         event(new NotificationPushed());
         return [
             'memo_id' => $this->memo->id,
-            'link'=>route('memo.index'),
-            'subject'=> 'Memo '.$this->memo->getMemoNumber().' has been rejected.'
+            'link' => route('memo.index'),
+            'subject' => 'Memo ' . $this->memo->getMemoNumber() . ' has been rejected.'
         ];
     }
-
 }

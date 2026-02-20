@@ -22,8 +22,7 @@ class TravelAuthorizationCancelSubmitted extends Notification
      */
     public function __construct(
         TravelAuthorization $travel
-    )
-    {
+    ) {
         $this->travelAuthorization = $travel;
     }
 
@@ -49,9 +48,9 @@ class TravelAuthorizationCancelSubmitted extends Notification
         $url = route('approve.ta.requests.create', $this->travelAuthorization->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Cancellation of Travel Authorization request '.$this->travelAuthorization->getTravelAuthorizationNumber().' has been submitted for your approval.')
+            ->line('Cancellation of Travel Authorization request ' . $this->travelAuthorization->getTravelAuthorizationNumber() . ' has been submitted for your approval.')
             ->action('View travel request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class TravelAuthorizationCancelSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelAuthorization->id,
-            'link'=>route('approve.ta.requests.cancel.create', $this->travelAuthorization->id),
-            'alternate_link'=>route('ta.requests.view', $this->travelAuthorization->id),
-            'subject'=> 'Cancellation of Travel Authorization request '.$this->travelAuthorization->getTravelAuthorizationNumber().' has been submitted. Requester : '.$this->travelAuthorization->getRequesterName() .'.',
+            'link' => route('approve.ta.requests.cancel.create', $this->travelAuthorization->id),
+            'alternate_link' => route('ta.requests.view', $this->travelAuthorization->id),
+            'subject' => 'Cancellation of Travel Authorization request ' . $this->travelAuthorization->getTravelAuthorizationNumber() . ' has been submitted. Requester : ' . $this->travelAuthorization->getRequesterName() . '.',
         ];
     }
-
 }

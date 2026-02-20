@@ -47,7 +47,7 @@ class LeaveEncashRejected extends Notification
         return (new MailMessage)
             ->line('The introduction to the notification.')
             ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,5 +78,4 @@ class LeaveEncashRejected extends Notification
             'subject' => 'Leave encash request ' . $this->leaveEncash->getEncashNumber() . ' has been rejected',
         ];
     }
-
 }

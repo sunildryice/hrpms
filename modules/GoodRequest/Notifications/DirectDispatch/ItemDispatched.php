@@ -48,9 +48,9 @@ class ItemDispatched extends Notification
 
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Direct dispatch good request '.$this->goodRequest->getGoodRequestNumber().' has been submitted for your approval/assignment.')
+            ->line('Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your approval/assignment.')
             ->action('View Direct Dispatch Good Request', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -81,7 +81,7 @@ class ItemDispatched extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => $url,
-            'subject' => 'Item '.$dispatchedItem?->getInventoryItemName().' has been dispatched to '.$this->goodRequest?->office?->office_name.' through '.$this->goodRequest->getGoodRequestNumber().'. Please take action.',
+            'subject' => 'Item ' . $dispatchedItem?->getInventoryItemName() . ' has been dispatched to ' . $this->goodRequest?->office?->office_name . ' through ' . $this->goodRequest->getGoodRequestNumber() . '. Please take action.',
         ];
     }
 }

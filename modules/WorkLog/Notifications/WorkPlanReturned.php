@@ -22,8 +22,7 @@ class WorkPlanReturned extends Notification
      */
     public function __construct(
         WorkPlan $workPlan
-    )
-    {
+    ) {
         $this->workPlan = $workPlan;
     }
 
@@ -49,9 +48,9 @@ class WorkPlanReturned extends Notification
         $url = route('daily.work.logs.index', $this->workPlan->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Work Log for '.$this->workPlan->getYearMonth().' has been returned by '.$this->workPlan->getApprover())
+            ->line('Work Log for ' . $this->workPlan->getYearMonth() . ' has been returned by ' . $this->workPlan->getApprover())
             ->action('View Work log', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class WorkPlanReturned extends Notification
         event(new NotificationPushed());
         return [
             'work_plan_id' => $this->workPlan->id,
-            'link'=>route('daily.work.logs.index', $this->workPlan->id),
-            'subject'=> 'Work Log for '.$this->workPlan->getYearMonth().' has been returned by '.$this->workPlan->getApprover()
+            'link' => route('daily.work.logs.index', $this->workPlan->id),
+            'subject' => 'Work Log for ' . $this->workPlan->getYearMonth() . ' has been returned by ' . $this->workPlan->getApprover()
         ];
     }
-
 }

@@ -50,7 +50,7 @@ class TimeSheetReturned extends Notification
             ->greeting('Hello!')
             ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been returned to the requester.')
             ->action('Return Timesheet', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
 
@@ -84,5 +84,4 @@ class TimeSheetReturned extends Notification
             'subject' => "Timesheet for {$monthYear} has been returned",
         ];
     }
-
 }

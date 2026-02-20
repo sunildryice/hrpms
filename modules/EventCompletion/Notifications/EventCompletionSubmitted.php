@@ -22,9 +22,8 @@ class EventCompletionSubmitted extends Notification
      */
     public function __construct(
         EventCompletion $eventCompletion
-    )
-    {
-        $this->eventCompletion= $eventCompletion;
+    ) {
+        $this->eventCompletion = $eventCompletion;
     }
 
     /**
@@ -49,9 +48,9 @@ class EventCompletionSubmitted extends Notification
         $url = route('approve.event.completion.create', $this->eventCompletion->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Event Completion Report has been submitted by'. $this->eventCompletion->getRequesterName() .'for your approval.')
+            ->line('Event Completion Report has been submitted by' . $this->eventCompletion->getRequesterName() . 'for your approval.')
             ->action('View event completion ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class EventCompletionSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'event_completion_id' => $this->eventCompletion->id,
-            'link'=>route('approve.event.completion.create', $this->eventCompletion->id),
-            'alternate_link'=>route('event.completion.show', $this->eventCompletion->id),
-            'subject'=> 'Event Completion Report by '.$this->eventCompletion->getRequesterName().' has been submitted.',
+            'link' => route('approve.event.completion.create', $this->eventCompletion->id),
+            'alternate_link' => route('event.completion.show', $this->eventCompletion->id),
+            'subject' => 'Event Completion Report by ' . $this->eventCompletion->getRequesterName() . ' has been submitted.',
         ];
     }
-
 }

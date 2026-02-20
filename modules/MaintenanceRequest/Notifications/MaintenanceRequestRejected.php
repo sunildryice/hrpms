@@ -22,8 +22,7 @@ class MaintenanceRequestRejected extends Notification
      */
     public function __construct(
         MaintenanceRequest $maintenanceRequest
-    )
-    {
+    ) {
         $this->maintenanceRequest = $maintenanceRequest;
     }
 
@@ -49,9 +48,9 @@ class MaintenanceRequestRejected extends Notification
         $url = route('maintenance.requests.index', $this->maintenanceRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' has been rejected.')
+            ->line('Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' has been rejected.')
             ->action('View Maintenance Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MaintenanceRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'maintenance_id' => $this->maintenanceRequest->id,
-            'link'=>route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
-            'subject'=> 'Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' has been rejected.'
+            'link' => route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
+            'subject' => 'Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

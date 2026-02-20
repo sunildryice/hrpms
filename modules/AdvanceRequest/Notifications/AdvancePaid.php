@@ -20,8 +20,7 @@ class AdvancePaid extends Notification
      */
     public function __construct(
         protected AdvanceRequest $advance
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -48,7 +47,7 @@ class AdvancePaid extends Notification
             ->greeting('Hello!')
             ->line('Advanced Request  ' . $this->advance->getAdvanceRequestNumber() . 'has been processed and paid.')
             ->action('View advanced settlement ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -79,5 +78,4 @@ class AdvancePaid extends Notification
             'subject' => 'Advance request: ' . $this->advance->getAdvanceRequestNumber() . " as been marked as paid",
         ];
     }
-
 }

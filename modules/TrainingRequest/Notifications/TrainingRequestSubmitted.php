@@ -22,8 +22,7 @@ class TrainingRequestSubmitted extends Notification
      */
     public function __construct(
         TrainingRequest $trainingRequest
-    )
-    {
+    ) {
         $this->trainingRequest = $trainingRequest;
     }
 
@@ -49,9 +48,9 @@ class TrainingRequestSubmitted extends Notification
         $url = route('reponses.training.request.create', $this->trainingRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Training Request '.$this->trainingRequest->getTrainingRequestNumber().' has been submitted for your response by '.$this->trainingRequest->getRequesterName())
+            ->line('Training Request ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been submitted for your response by ' . $this->trainingRequest->getRequesterName())
             ->action('View Training Request', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TrainingRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'training_id' => $this->trainingRequest->id,
-            'link'=>route('reponses.training.request.create', $this->trainingRequest->id),
-            'subject'=> 'Training Request for '.$this->trainingRequest->getTrainingRequestNumber().' has been submitted for your response by '.$this->trainingRequest->getRequesterName()
+            'link' => route('reponses.training.request.create', $this->trainingRequest->id),
+            'subject' => 'Training Request for ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been submitted for your response by ' . $this->trainingRequest->getRequesterName()
         ];
     }
-
 }

@@ -210,6 +210,11 @@ class LeaveRepository extends Repository
             $month = date('m', strtotime($reportedDate));
             $leaveTypes = $this->leaveTypes->select('*')
                 ->whereNotNull('activated_at')->get();
+            if($employee->employee_type_id != config('constant.FULL_TIME_EMPLOYEE')){
+                $leaveTypes = $leaveTypes->filter(function ($leaveType) {
+                   return in_array($leaveType->id, [config('constant.SICK_LEAVE'), config('constant.ANNUAL_LEAVE')]);
+                });
+            }
 
             foreach ($leaveTypes as $leaveType) {
                 $insertFlag = true;
@@ -401,6 +406,9 @@ class LeaveRepository extends Repository
 
     protected function getWorkPercentile($employee, $reportedDate, $fiscalYear)
     {
+        if($employee->employee_type_id != config('constant.FULL_TIME_EMPLOYEE')){
+            return $employee->consultantLeave ? ($employee->consultantLeave->earn_leave ? $employee->consultantLeave->leave_percentage : 0) : 0;
+        }
         return 100;
         /**
         if ($employee->workingHours->count() == 0) {

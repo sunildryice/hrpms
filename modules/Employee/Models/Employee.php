@@ -115,6 +115,11 @@ class Employee extends Model
         );
     }
 
+    public function consultantLeave()
+    {
+        return $this->hasOne(ConsultantLeave::class, 'employee_id', 'id');
+    }
+
     public function address()
     {
         return $this->hasOne(Address::class, 'employee_id')->withDefault();
@@ -564,9 +569,9 @@ class Employee extends Model
     {
         if (
             GoodRequestAsset::query()
-            ->where('assigned_user_id', $this->getUserId())
-            ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
-            ->count()
+                ->where('assigned_user_id', $this->getUserId())
+                ->where('handover_status_id', '<>', config('constant.APPROVED_STATUS'))
+                ->count()
         ) {
             return null;
         }

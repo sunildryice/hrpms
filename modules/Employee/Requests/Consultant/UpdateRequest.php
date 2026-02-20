@@ -70,6 +70,9 @@ class UpdateRequest extends FormRequest
             'vehicle_license_number' => 'nullable|string|max:50',
             'vehicle_license_category' => 'nullable|array',
             'vehicle_license_category.*' => 'string|in:A,B,C,D,E,F,G,H,K',
+
+            'earn_leave' => 'nullable',
+            'leave_percentage' => 'nullable|integer|in:100,75,50|required_if:earn_leave,true',
         ];
     }
 

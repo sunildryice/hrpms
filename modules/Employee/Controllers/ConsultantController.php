@@ -32,24 +32,24 @@ class ConsultantController extends Controller
     protected $destinationPath;
 
     public function __construct(
-        protected BloodGroupRepository        $bloodGroups,
-        protected DepartmentRepository        $departments,
-        protected DesignationRepository       $designations,
-        protected DistrictRepository          $districts,
-        protected EducationRepository         $education,
-        protected EducationLevelRepository    $educationLevel,
-        protected EmployeeRepository          $employees,
-        protected FamilyRelationRepository    $familyRelations,
-        protected GenderRepository            $genders,
-        protected LeaveRepository             $leaves,
-        protected LeaveTypeRepository         $leaveTypes,
-        protected LocalLevelRepository        $localLevels,
-        protected MaritalStatusRepository     $maritalStatus,
-        protected OfficeRepository            $offices,
+        protected BloodGroupRepository $bloodGroups,
+        protected DepartmentRepository $departments,
+        protected DesignationRepository $designations,
+        protected DistrictRepository $districts,
+        protected EducationRepository $education,
+        protected EducationLevelRepository $educationLevel,
+        protected EmployeeRepository $employees,
+        protected FamilyRelationRepository $familyRelations,
+        protected GenderRepository $genders,
+        protected LeaveRepository $leaves,
+        protected LeaveTypeRepository $leaveTypes,
+        protected LocalLevelRepository $localLevels,
+        protected MaritalStatusRepository $maritalStatus,
+        protected OfficeRepository $offices,
         protected PayrollFiscalYearRepository $payrollFiscalYears,
-        protected ProvinceRepository          $provinces,
-        protected RoleRepository              $roles,
-        protected EmployeeTypeRepository      $employeeTypes
+        protected ProvinceRepository $provinces,
+        protected RoleRepository $roles,
+        protected EmployeeTypeRepository $employeeTypes
     ) {
         $this->destinationPath = 'consultant';
     }
@@ -97,7 +97,7 @@ class ConsultantController extends Controller
                     //     $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
                     //     $btn .= route('employees.payments.masters.index', $employee->id).'" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
                     // }
-
+    
                     return $btn;
                 })->rawColumns(['action', 'position'])
                 ->make(true);
@@ -162,6 +162,7 @@ class ConsultantController extends Controller
             'trainings',
             'address',
             'experiences',
+            'consultantLeave'
         ])->find($id);
         $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
             ->where('id', '<>', $employee->id)
@@ -234,7 +235,18 @@ class ConsultantController extends Controller
             $inputs['passport_attachment'] = $filename;
         }
         $employee = $this->employees->update($id, $inputs);
+
         if ($employee) {
+            $leaveData = [
+                'earn_leave' => $request->boolean('earn_leave'),      
+                'leave_percentage' => $request->input('leave_percentage'),
+                'updated_by' => auth()->id(),
+            ];
+
+            $employee->consultantLeave()->updateOrCreate(
+                ['employee_id' => $employee->id],
+                $leaveData
+            );
             return redirect()->back()->withInput()
                 ->withSuccessMessage('Consultant successfully updated.');
         }

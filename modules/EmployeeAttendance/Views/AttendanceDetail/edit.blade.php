@@ -84,7 +84,8 @@
 
 @endsection
 @section('page_js')
-    <script>
+    <script type="text/javascript">
+        $('#navbarVerticalMenu').find('#self-attendance').addClass('active');
         $(document).ready(function() {
             const detailForm = document.getElementById('attendanceProcessForm');
             const fv = FormValidation.formValidation(detailForm, {

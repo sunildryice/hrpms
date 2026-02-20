@@ -78,6 +78,17 @@
                             },
                         },
                     },
+                    joined_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The joined date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                        },
+                    },
                     date_of_birth: {
                         validators: {
                             date: {
@@ -222,6 +233,16 @@
                 endDate: '{!! date('Y-m-d') !!}',
                 onChange: function() {
                     fv.revalidateField('date_of_birth');
+                },
+            });
+
+            $(form.querySelector('[name="joined_date"]')).datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+                onChange: function() {
+                    fv.revalidateField('joined_date');
                 },
             });
         });
@@ -421,6 +442,22 @@
 
                                     </div>
 
+                                </div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="validationdob" class="form-label required-label">Joined Date
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" name="joined_date"
+                                        value="{{ old('joined_date') }}" onfocus="this.blur()"
+                                        placeholder="yyyy-mm-dd" />
+                                    <input type="hidden" value="{{ date('Y-m-d') }}" name="today"
+                                        class="form-control" />
                                 </div>
                             </div>
 

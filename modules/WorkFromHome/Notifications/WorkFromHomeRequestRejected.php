@@ -46,10 +46,14 @@ class WorkFromHomeRequestRejected extends Notification
     {
         $url = route('wfh.requests.show', $this->workFromHomeRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Work from home request ' . $this->workFromHomeRequest->getRequestId() . ' has been rejected.')
-            ->action('View work from home request ', $url)
-        ;
+            ->greeting('Hello ' . $this->workFromHomeRequest->getRequesterName() . ',')
+            ->line('Your work from home request has been rejected. Please find the details below:')
+            ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
+            ->line('Start Date: ' . $this->workFromHomeRequest->getStartDate())
+            ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
+            ->line('Total Days: ' . $this->workFromHomeRequest->getWorkFromHomeDuration())
+            ->line('Reason: ' . ($this->workFromHomeRequest->reason ?: 'N/A'))
+            ->action('View work from home request', $url);
     }
 
     /**

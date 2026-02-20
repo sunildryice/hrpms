@@ -100,6 +100,7 @@ class WorkFromHome extends Model
                     'project_name' => $project ? $project->short_name : $project?->title,
                     'task' => $item['task'],
                     'activity_name' => $activity ? $activity->title : 'N/A',
+                    'date' => Carbon::parse($item['date'])->format('M j, Y'),
                 ];
             })
             ->values()

@@ -44,6 +44,7 @@
                             <table class="table table-bordered mb-0">
                                 <thead>
                                     <tr>
+                                        <th style="width: 15%;">Date</th>
                                         <th style="width: 25%;">Project</th>
                                         <th style="width: 25%;">Activity</th>
                                         <th>Task</th>
@@ -52,6 +53,7 @@
                                 <tbody>
                                     @foreach ($deliverables as $task)
                                         <tr>
+                                            <td title="Date">{{ $task['date'] ?? '' }}</td>
                                             <td title="Project">{{ $task['project_name'] }}</td>
                                             <td title="Activity">{{ $task['activity_name'] }}</td>
                                             <td title="Task">{{ $task['task'] }}</td>

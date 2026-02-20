@@ -23,6 +23,7 @@ class UpdateRequest extends FormRequest
             'deliverables.*.project_id'     => ['required', 'integer', 'exists:projects,id'],
             'deliverables.*.activity_id'           => ['required', 'string'],
             'deliverables.*.task'           => ['required', 'string'],
+            'deliverables.*.date'           => ['required', 'date', 'after_or_equal:start_date', 'before_or_equal:end_date'],
 
             'btn' => ['nullable', 'string', 'in:save,submit'],
         ];
@@ -48,9 +49,14 @@ class UpdateRequest extends FormRequest
             'deliverables.array'                 => 'Deliverables must be a valid list.',
             'deliverables.min'                   => 'Please add at least one deliverable.',
 
-            'deliverables.*.project_id.required' => 'Project is required for each deliverable.',
+            'deliverables.*.project_id.required' => 'Project is required.',
             'deliverables.*.project_id.exists'   => 'Please select a valid project.',
-            'deliverables.*.task.required'       => 'Task is required for each deliverable.',
+            'deliverables.*.activity_id.required' => 'Activity is required.',
+            'deliverables.*.activity_id.exists'  => 'Please select a valid activity.',
+            'deliverables.*.task.required'       => 'Task is required.',
+
+            'deliverables.*.date.required'       => 'Date is required .',
+            'deliverables.*.date.date'           => 'Date must be a valid date.',
         ];
     }
 }

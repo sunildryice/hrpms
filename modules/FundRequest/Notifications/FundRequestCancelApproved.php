@@ -22,8 +22,7 @@ class FundRequestCancelApproved extends Notification
      */
     public function __construct(
         FundRequest $fundRequest
-    )
-    {
+    ) {
         $this->fundRequest = $fundRequest;
     }
 
@@ -47,9 +46,8 @@ class FundRequestCancelApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class FundRequestCancelApproved extends Notification
         event(new NotificationPushed());
         return [
             'fund_request_id' => $this->fundRequest->id,
-            'link'=>route('fund.requests.show', $this->fundRequest->id),
-            'subject'=> 'Cancellation for Fund request '.$this->fundRequest->getFundRequestNumber().' has been approved.'
+            'link' => route('fund.requests.show', $this->fundRequest->id),
+            'subject' => 'Cancellation for Fund request ' . $this->fundRequest->getFundRequestNumber() . ' has been approved.'
         ];
     }
-
 }

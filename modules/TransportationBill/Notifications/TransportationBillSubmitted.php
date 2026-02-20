@@ -22,8 +22,7 @@ class TransportationBillSubmitted extends Notification
      */
     public function __construct(
         TransportationBill $transportationBill
-    )
-    {
+    ) {
         $this->transportationBill = $transportationBill;
     }
 
@@ -49,9 +48,9 @@ class TransportationBillSubmitted extends Notification
         $url = route('approve.transportation.bills.create', $this->transportationBill->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Transportation bill '.$this->transportationBill->getTransportationBillNumber().' has been submitted for your approval.')
+            ->line('Transportation bill ' . $this->transportationBill->getTransportationBillNumber() . ' has been submitted for your approval.')
             ->action('View Transportation Bill ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TransportationBillSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'transportation_bill_id' => $this->transportationBill->id,
-            'link'=>route('approve.transportation.bills.create', $this->transportationBill->id),
-            'subject'=> 'Transportation bill '.$this->transportationBill->getTransportationBillNumber().' has been submitted.'
+            'link' => route('approve.transportation.bills.create', $this->transportationBill->id),
+            'subject' => 'Transportation bill ' . $this->transportationBill->getTransportationBillNumber() . ' has been submitted.'
         ];
     }
-
 }

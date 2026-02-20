@@ -47,10 +47,9 @@ class InstallmentApproved extends Notification
         $url = route('construction.show', $this->installment->construction_id);
 
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Construction installment has been approved.')
-                    ->action('View Installment', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Construction installment has been approved.')
+            ->action('View Installment', $url);
     }
 
     /**

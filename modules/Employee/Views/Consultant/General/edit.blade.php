@@ -137,6 +137,21 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label for="validationdob" class="m-0 required-label">Joined Date
+                    </label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="joined_date"
+                    value="{{ old('joined_date') ?: $employee->joined_date?->format('Y-m-d') ?? '' }}"
+                    onfocus="this.blur()" placeholder="yyyy-mm-dd" />
+                <input type="hidden" value="{{ date('Y-m-d') }}" name="today" class="form-control" />
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label for="validationdob" class="m-0">Date of Birth
                     </label>
                 </div>
@@ -338,6 +353,56 @@
                         name="active" @if ($employee->activated_at) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
+            </div>
+        </div>
+        <div class="row mb-2" id="earnLeaveRow">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="m-0">Earn Leave?</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="earnLeaveSwitch"
+                        name="earn_leave" @if (old('earn_leave', $employee->consultantLeave?->earn_leave ?? false)) checked @endif>
+                    <label class="form-check-label" for="earnLeaveSwitch"></label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-2" id="leavePercentageRow"
+            style="{{ old('earn_leave', $employee->consultantLeave?->earn_leave ?? false) ? '' : 'display: none;' }}">
+            <input type="hidden" id="original_leave_percentage"
+                value="{{ $employee->consultantLeave?->leave_percentage ?? '' }}">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="leave_percentage" class="m-0 required-label">Leave %</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="leave_percentage"
+                    class="form-control select2 @if ($errors->has('leave_percentage')) is-invalid @endif"
+                    id="leave_percentage" data-width="100%">
+                    <option value="">Select Leave Percentage</option>
+                    <option value="100"
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 100 ? 'selected' : '' }}>
+                        100
+                    </option>
+                    <option value="75"
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 75 ? 'selected' : '' }}>
+                        75
+                    </option>
+                    <option value="50"
+                        {{ old('leave_percentage', $employee->consultantLeave?->leave_percentage ?? '') == 50 ? 'selected' : '' }}>
+                        50
+                    </option>
+                </select>
+
+                @error('leave_percentage')
+                    <div class="fv-plugins-message-container text-danger mt-1">
+                        <div data-field="leave_percentage">{{ $message }}</div>
+                    </div>
+                @enderror
             </div>
         </div>
         {!! csrf_field() !!}

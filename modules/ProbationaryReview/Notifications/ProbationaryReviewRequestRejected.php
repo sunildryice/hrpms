@@ -22,8 +22,7 @@ class ProbationaryReviewRequestRejected extends Notification
      */
     public function __construct(
         ProbationaryReview $probationaryReview
-    )
-    {
+    ) {
         $this->probationaryReview = $probationaryReview;
     }
 
@@ -49,9 +48,9 @@ class ProbationaryReviewRequestRejected extends Notification
         $url = route('probation.review.request.view', $this->probationaryReview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Probationary Review request for '.$this->probationaryReview->getReviewType().' for '.$this->probationaryReview->getEmployeeName().' has been rejected.')
+            ->line('Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' for ' . $this->probationaryReview->getEmployeeName() . ' has been rejected.')
             ->action('View Probationary Review Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class ProbationaryReviewRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'probationary_review_request_id' => $this->probationaryReview->id,
-            'link'=>route('probation.review.request.view', $this->probationaryReview->id),
-            'subject'=> 'Probationary Review request for '.$this->probationaryReview->getReviewType().' for '.$this->probationaryReview->getEmployeeName().' has been rejected.'
+            'link' => route('probation.review.request.view', $this->probationaryReview->id),
+            'subject' => 'Probationary Review request for ' . $this->probationaryReview->getReviewType() . ' for ' . $this->probationaryReview->getEmployeeName() . ' has been rejected.'
         ];
     }
-
 }

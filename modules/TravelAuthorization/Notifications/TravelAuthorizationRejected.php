@@ -22,8 +22,7 @@ class TravelAuthorizationRejected extends Notification
      */
     public function __construct(
         TravelAuthorization $travel
-    )
-    {
+    ) {
         $this->travelAuthorization = $travel;
     }
 
@@ -47,9 +46,8 @@ class TravelAuthorizationRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class TravelAuthorizationRejected extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelAuthorization->id,
-            'link'=>route('ta.requests.view', $this->travelAuthorization->id),
-            'alternate_link'=>route('ta.requests.view', $this->travelAuthorization->id),
-            'subject'=> 'Travel Authorization request '.$this->travelAuthorization->getTravelAuthorizationNumber().' has been rejected.'
+            'link' => route('ta.requests.view', $this->travelAuthorization->id),
+            'alternate_link' => route('ta.requests.view', $this->travelAuthorization->id),
+            'subject' => 'Travel Authorization request ' . $this->travelAuthorization->getTravelAuthorizationNumber() . ' has been rejected.'
         ];
     }
-
 }

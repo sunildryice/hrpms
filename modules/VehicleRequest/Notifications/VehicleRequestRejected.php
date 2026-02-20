@@ -20,8 +20,7 @@ class VehicleRequestRejected extends Notification
      */
     public function __construct(
         VehicleRequest $vehicleRequest
-    )
-    {
+    ) {
         $this->vehicleRequest = $vehicleRequest;
     }
 
@@ -47,10 +46,10 @@ class VehicleRequestRejected extends Notification
         $url = route('vehicle.requests.show', $this->vehicleRequest->id);
 
         return (new MailMessage)
-        ->greeting('Hello!')
-        ->line('Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been rejected.')
-        ->action('View Request', $url)
-        ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been rejected.')
+            ->action('View Request', $url)
+        ;
     }
 
     /**
@@ -77,9 +76,8 @@ class VehicleRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'vehicle_request_id' => $this->vehicleRequest->id,
-            'link'=>route('vehicle.requests.show', $this->vehicleRequest->id),
-            'subject'=> 'Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been rejected.'
+            'link' => route('vehicle.requests.show', $this->vehicleRequest->id),
+            'subject' => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

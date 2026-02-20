@@ -21,8 +21,7 @@ class FundRequestReturnedToCertifier extends Notification
      */
     public function __construct(
         FundRequest $fundRequest
-    )
-    {
+    ) {
         $this->fundRequest = $fundRequest;
     }
 
@@ -46,9 +45,8 @@ class FundRequestReturnedToCertifier extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -75,9 +73,8 @@ class FundRequestReturnedToCertifier extends Notification
         event(new NotificationPushed());
         return [
             'fund_request_id' => $this->fundRequest->id,
-            'link'=>route('certify.fund.requests.create', $this->fundRequest->id),
-            'subject'=> 'Fund request '.$this->fundRequest->getFundRequestNumber().' has been returned.'
+            'link' => route('certify.fund.requests.create', $this->fundRequest->id),
+            'subject' => 'Fund request ' . $this->fundRequest->getFundRequestNumber() . ' has been returned.'
         ];
     }
-
 }

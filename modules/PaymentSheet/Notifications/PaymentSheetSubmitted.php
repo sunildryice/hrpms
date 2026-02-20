@@ -22,8 +22,7 @@ class PaymentSheetSubmitted extends Notification
      */
     public function __construct(
         PaymentSheet $paymentSheet
-    )
-    {
+    ) {
         $this->paymentSheet = $paymentSheet;
     }
 
@@ -49,9 +48,9 @@ class PaymentSheetSubmitted extends Notification
         $url = route('verify.payment.sheets.create', $this->paymentSheet->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been submitted by '.$this->paymentSheet->getRequesterName().' for your verification.')
+            ->line('Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been submitted by ' . $this->paymentSheet->getRequesterName() . ' for your verification.')
             ->action('View Payment Sheet ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class PaymentSheetSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'payment_sheet_id' => $this->paymentSheet->id,
-            'link'=>route('verify.payment.sheets.create', $this->paymentSheet->id),
-            'subject'=> 'Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been submitted by '.$this->paymentSheet->getRequesterName().' .'
+            'link' => route('verify.payment.sheets.create', $this->paymentSheet->id),
+            'subject' => 'Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been submitted by ' . $this->paymentSheet->getRequesterName() . ' .'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class PaymentSheetReturned extends Notification
      */
     public function __construct(
         PaymentSheet $paymentSheet
-    )
-    {
+    ) {
         $this->paymentSheet = $paymentSheet;
     }
 
@@ -48,10 +47,9 @@ class PaymentSheetReturned extends Notification
     {
         $url = route('payment.sheets.edit', $this->paymentSheet->id);
         return (new MailMessage)
-                    ->greeting('Hello!')
-                    ->line('Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been returned.')
-                    ->action('View Payment Sheet', $url)
-                    ->line('Thank you for using our application!');
+            ->greeting('Hello!')
+            ->line('Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been returned.')
+            ->action('View Payment Sheet', $url);
     }
 
     /**
@@ -78,9 +76,8 @@ class PaymentSheetReturned extends Notification
         event(new NotificationPushed());
         return [
             'payment_sheet_id' => $this->paymentSheet->id,
-            'link'=> route('payment.sheets.edit', $this->paymentSheet->id),
-            'subject'=> 'Payment sheet '.$this->paymentSheet->getPaymentSheetNumber().' has been returned.'
+            'link' => route('payment.sheets.edit', $this->paymentSheet->id),
+            'subject' => 'Payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been returned.'
         ];
     }
-
 }

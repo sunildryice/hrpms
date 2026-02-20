@@ -49,7 +49,7 @@ class StaffClearanceRecordsFilled extends Notification
     //         ->greeting('Hello!')
     //         ->line('Your performance review ('.$this->staffClearance->getReviewType().') from '.$this->staffClearance->getReviewFromDate().' to '.$this->staffClearance->getReviewToDate().' has been created.')
     //         ->action('View Performance Review', $url)
-    //         ->line('Thank you for using our application!');
+    //         ;
     // }
 
     /**
@@ -78,7 +78,7 @@ class StaffClearanceRecordsFilled extends Notification
             'staff_clearance_id' => $this->staffClearance->id,
             'link' => route('staff.clearance.edit', $this->staffClearance->id),
             'alternate_link' => route('staff.clearance.index', $this->staffClearance->id),
-            'subject' => 'Clearance Details for '.$this->staffClearance->employee->getFullName()."'s Exit Staff Clearance has been filled. Please Verify",
+            'subject' => 'Clearance Details for ' . $this->staffClearance->employee->getFullName() . "'s Exit Staff Clearance has been filled. Please Verify",
         ];
     }
 }

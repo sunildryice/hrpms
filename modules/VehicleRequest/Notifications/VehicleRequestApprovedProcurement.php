@@ -20,8 +20,7 @@ class VehicleRequestApprovedProcurement extends Notification
      */
     public function __construct(
         VehicleRequest $vehicleRequest
-    )
-    {
+    ) {
         $this->vehicleRequest = $vehicleRequest;
     }
 
@@ -48,9 +47,9 @@ class VehicleRequestApprovedProcurement extends Notification
 
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been approved.')
+            ->line('Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been approved.')
             ->action('Notification Action', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class VehicleRequestApprovedProcurement extends Notification
         return [
             'vehicle_request_id'    => $this->vehicleRequest->id,
             'link'                  => route('approved.vehicle.requests.show', $this->vehicleRequest->id),
-            'subject'               => 'Vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().' has been approved. Please take action'
+            'subject'               => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been approved. Please take action'
         ];
     }
-
 }

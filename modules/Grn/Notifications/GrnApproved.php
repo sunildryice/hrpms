@@ -22,8 +22,7 @@ class GrnApproved extends Notification
      */
     public function __construct(
         Grn $grn
-    )
-    {
+    ) {
         $this->grn = $grn;
     }
 
@@ -47,9 +46,8 @@ class GrnApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class GrnApproved extends Notification
         event(new NotificationPushed());
         return [
             'grn_id' => $this->grn->id,
-            'link'=>route('grns.show', $this->grn->id),
-            'subject'=> 'GRN '.$this->grn->getGrnNumber().' has been approved.'
+            'link' => route('grns.show', $this->grn->id),
+            'subject' => 'GRN ' . $this->grn->getGrnNumber() . ' has been approved.'
         ];
     }
-
 }

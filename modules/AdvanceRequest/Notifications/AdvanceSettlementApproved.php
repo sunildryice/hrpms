@@ -22,8 +22,7 @@ class AdvanceSettlementApproved extends Notification
      */
     public function __construct(
         Settlement $advanceSettlement
-    )
-    {
+    ) {
         $this->advanceSettlement = $advanceSettlement;
     }
 
@@ -47,9 +46,8 @@ class AdvanceSettlementApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class AdvanceSettlementApproved extends Notification
         event(new NotificationPushed());
         return [
             'advance_settlement_id' => $this->advanceSettlement->id,
-            'link'=>route('advance.settlement.show', $this->advanceSettlement->id),
-            'subject'=> 'Advance settlement for advance request '.$this->advanceSettlement->advanceRequest->getAdvanceRequestNumber().' has been approved.'
+            'link' => route('advance.settlement.show', $this->advanceSettlement->id),
+            'subject' => 'Advance settlement for advance request ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . ' has been approved.'
         ];
     }
-
 }

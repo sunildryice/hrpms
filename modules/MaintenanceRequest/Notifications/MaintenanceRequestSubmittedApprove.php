@@ -22,8 +22,7 @@ class MaintenanceRequestSubmittedApprove extends Notification
      */
     public function __construct(
         MaintenanceRequest $maintenanceRequest
-    )
-    {
+    ) {
         $this->maintenanceRequest = $maintenanceRequest;
     }
 
@@ -49,9 +48,9 @@ class MaintenanceRequestSubmittedApprove extends Notification
         $url = route('approve.maintenance.requests.create', $this->maintenanceRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' requested by '.$this->maintenanceRequest->getRequesterName().' has been submitted for your approval.')
+            ->line('Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' requested by ' . $this->maintenanceRequest->getRequesterName() . ' has been submitted for your approval.')
             ->action('View Maintenance Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,10 +77,9 @@ class MaintenanceRequestSubmittedApprove extends Notification
         event(new NotificationPushed());
         return [
             'maintenance_id' => $this->maintenanceRequest->id,
-            'link'=>route('approve.maintenance.requests.create', $this->maintenanceRequest->id),
-            'alternate_link'=>route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
-            'subject'=> 'Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' requested by '.$this->maintenanceRequest->getRequesterName().' has been submitted for your approval.'
+            'link' => route('approve.maintenance.requests.create', $this->maintenanceRequest->id),
+            'alternate_link' => route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
+            'subject' => 'Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' requested by ' . $this->maintenanceRequest->getRequesterName() . ' has been submitted for your approval.'
         ];
     }
-
 }

@@ -23,8 +23,7 @@ class ExitPayableSettlement extends Notification
      */
     public function __construct(
         ExitHandOverNote $exitHandoverNote
-    )
-    {
+    ) {
         $this->exitHandoverNote = $exitHandoverNote;
         $this->employeeExitPayable = $exitHandoverNote->employeeExitPayable;
     }
@@ -51,9 +50,9 @@ class ExitPayableSettlement extends Notification
         $url = route('exit.payable.index');
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Employee Exit Payable for '.$this->employeeExitPayable->getEmployeeName().' has been submitted.')
+            ->line('Employee Exit Payable for ' . $this->employeeExitPayable->getEmployeeName() . ' has been submitted.')
             ->action('View Employee Exit Payable ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -82,8 +81,7 @@ class ExitPayableSettlement extends Notification
         return [
             'exit_payable_id'   => $this->employeeExitPayable->id,
             'link'              => $url,
-            'subject'           => 'Employee Exit Payable for '.$this->employeeExitPayable->getEmployeeName().' has been submitted.'
+            'subject'           => 'Employee Exit Payable for ' . $this->employeeExitPayable->getEmployeeName() . ' has been submitted.'
         ];
     }
-
 }

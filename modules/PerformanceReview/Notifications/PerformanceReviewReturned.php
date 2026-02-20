@@ -21,8 +21,7 @@ class PerformanceReviewReturned extends Notification
      */
     public function __construct(
         PerformanceReview $performanceReview,
-    )
-    {
+    ) {
         $this->performanceReview = $performanceReview;
     }
 
@@ -48,9 +47,9 @@ class PerformanceReviewReturned extends Notification
         $url = route('performance.fill', $this->performanceReview->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Your performance review ('.$this->performanceReview->getReviewType().') from '.$this->performanceReview->getReviewFromDate().' to '.$this->performanceReview->getReviewToDate().' has been returned.')
+            ->line('Your performance review (' . $this->performanceReview->getReviewType() . ') from ' . $this->performanceReview->getReviewFromDate() . ' to ' . $this->performanceReview->getReviewToDate() . ' has been returned.')
             ->action('View Performance Review', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class PerformanceReviewReturned extends Notification
         return [
             'performance_review_id' => $this->performanceReview->id,
             'link'          => route('performance.fill', $this->performanceReview->id),
-            'subject'       => 'Your performance review ('.$this->performanceReview->getReviewType().') from '.$this->performanceReview->getReviewFromDate().' to '.$this->performanceReview->getReviewToDate().' has been returned.'
+            'subject'       => 'Your performance review (' . $this->performanceReview->getReviewType() . ') from ' . $this->performanceReview->getReviewFromDate() . ' to ' . $this->performanceReview->getReviewToDate() . ' has been returned.'
         ];
     }
-
 }

@@ -50,7 +50,7 @@ class AdvanceSettlementPaid extends Notification
             ->greeting('Hello!')
             ->line('Requested Advanced Settlement  ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . 'has been processed and paid.')
             ->action('View advanced settlement ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -81,5 +81,4 @@ class AdvanceSettlementPaid extends Notification
             'subject' => 'Requested advanced settlement for advance request: ' . $this->advanceSettlement->advanceRequest->getAdvanceRequestNumber() . " as been processed and marked as paid",
         ];
     }
-
 }

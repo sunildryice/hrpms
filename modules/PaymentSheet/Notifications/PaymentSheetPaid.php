@@ -50,7 +50,7 @@ class PaymentSheetPaid extends Notification
             ->greeting('Hello!')
             ->line('Request Payment for payment sheet ' . $this->paymentSheet->getPaymentSheetNumber() . 'has been processed successfully and paid.')
             ->action('View Payment sheet ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -81,5 +81,4 @@ class PaymentSheetPaid extends Notification
             'subject' => 'Requested Payment for payment sheet: ' . $this->paymentSheet->getPaymentSheetNumber() . ' has been proceesd and marked as paid',
         ];
     }
-
 }

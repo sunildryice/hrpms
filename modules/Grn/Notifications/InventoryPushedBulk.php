@@ -22,9 +22,7 @@ class InventoryPushedBulk extends Notification
      */
     public function __construct(
         protected Grn $grn
-    )
-    {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -46,9 +44,8 @@ class InventoryPushedBulk extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -75,9 +72,8 @@ class InventoryPushedBulk extends Notification
         event(new NotificationPushed());
         return [
             'grn_id' => $this->grn->id,
-            'link'=>route('inventories.index', ['grn_id' => $this->grn->id]),
-            'subject'=> 'Items from , '.$this->grn->getGrnNumber().', has been pushed to the inventory.'
+            'link' => route('inventories.index', ['grn_id' => $this->grn->id]),
+            'subject' => 'Items from , ' . $this->grn->getGrnNumber() . ', has been pushed to the inventory.'
         ];
     }
-
 }

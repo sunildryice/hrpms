@@ -55,7 +55,7 @@ class WorkFromHomeRequestApproved extends Notification
             ->line('Reason: ' . ($this->workFromHomeRequest->reason ?: 'N/A'))
             ->line('Approved by: ' . (auth()->user()?->full_name ?: ''))
             ->action('View work from home request', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

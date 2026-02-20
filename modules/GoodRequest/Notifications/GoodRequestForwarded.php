@@ -22,8 +22,7 @@ class GoodRequestForwarded extends Notification
      */
     public function __construct(
         GoodRequest $goodRequest
-    )
-    {
+    ) {
         $this->goodRequest = $goodRequest;
     }
 
@@ -49,9 +48,9 @@ class GoodRequestForwarded extends Notification
         $url = route('approve.good.requests.create', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Good request '.$this->goodRequest->getGoodRequestNumber().' has been submitted for your approval.')
+            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your approval.')
             ->action('View Good Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class GoodRequestForwarded extends Notification
         event(new NotificationPushed());
         return [
             'good_request_id' => $this->goodRequest->id,
-            'link'=>route('approve.good.requests.create', $this->goodRequest->id),
-            'subject'=> 'Good request '.$this->goodRequest->getgoodRequestNumber().' has been submitted for your approval.'
+            'link' => route('approve.good.requests.create', $this->goodRequest->id),
+            'subject' => 'Good request ' . $this->goodRequest->getgoodRequestNumber() . ' has been submitted for your approval.'
         ];
     }
-
 }

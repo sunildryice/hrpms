@@ -22,8 +22,7 @@ class TrainingRequestRejected extends Notification
      */
     public function __construct(
         TrainingRequest $trainingRequest
-    )
-    {
+    ) {
         $this->trainingRequest = $trainingRequest;
     }
 
@@ -49,9 +48,9 @@ class TrainingRequestRejected extends Notification
         $url = route('training.requests.index', $this->trainingRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Training request '.$this->trainingRequest->getTrainingRequestNumber().' has been rejected.')
+            ->line('Training request ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been rejected.')
             ->action('View Training Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TrainingRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'training_request_id' => $this->trainingRequest->id,
-            'link'=>route('training.requests.index', $this->trainingRequest->id),
-            'subject'=> 'Training request '.$this->trainingRequest->getTrainingRequestNumber().' has been rejected.'
+            'link' => route('training.requests.index', $this->trainingRequest->id),
+            'subject' => 'Training request ' . $this->trainingRequest->getTrainingRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class TrainingReportRejected extends Notification
      */
     public function __construct(
         TrainingReport $trainingReport
-    )
-    {
+    ) {
         $this->trainingReport = $trainingReport;
     }
 
@@ -49,9 +48,9 @@ class TrainingReportRejected extends Notification
         $url = route('training.report.view', $this->trainingReport->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Your Training Report for training request '.$this->trainingReport->trainingRequest->getTrainingRequestNumber().' has been rejected.')
+            ->line('Your Training Report for training request ' . $this->trainingReport->trainingRequest->getTrainingRequestNumber() . ' has been rejected.')
             ->action('View Training Report ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class TrainingReportRejected extends Notification
         event(new NotificationPushed());
         return [
             'training_report_id' => $this->trainingReport->id,
-            'link'=>route('training.report.view', $this->trainingReport->id),
-            'subject'=> 'Training Report for training request '.$this->trainingReport->trainingRequest->getTrainingRequestNumber().' has been rejected.'
+            'link' => route('training.report.view', $this->trainingReport->id),
+            'subject' => 'Training Report for training request ' . $this->trainingReport->trainingRequest->getTrainingRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

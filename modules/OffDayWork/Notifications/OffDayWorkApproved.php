@@ -45,7 +45,7 @@ class OffDayWorkApproved extends Notification
             ->greeting('Hey ' . $this->offDayWork->requester->full_name . ',')
             ->line('Your Off day work request ' . $this->offDayWork->getRequestId() . ' has been approved.')
             ->action('View off day work request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

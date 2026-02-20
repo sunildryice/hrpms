@@ -22,8 +22,7 @@ class PurchaseRequestRejected extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
     }
 
@@ -47,9 +46,8 @@ class PurchaseRequestRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class PurchaseRequestRejected extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=>route('purchase.requests.show', $this->purchaseRequest->id),
-            'subject'=> 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been rejected.'
+            'link' => route('purchase.requests.show', $this->purchaseRequest->id),
+            'subject' => 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been rejected.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class MaintenanceRequestApproved extends Notification
      */
     public function __construct(
         MaintenanceRequest $maintenanceRequest
-    )
-    {
+    ) {
         $this->maintenanceRequest = $maintenanceRequest;
     }
 
@@ -49,9 +48,9 @@ class MaintenanceRequestApproved extends Notification
         $url = route('maintenance.requests.index', $this->maintenanceRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' has been approved.')
+            ->line('Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' has been approved.')
             ->action('View Maintenance Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MaintenanceRequestApproved extends Notification
         event(new NotificationPushed());
         return [
             'maintenance_id' => $this->maintenanceRequest->id,
-            'link'=>route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
-            'subject'=> 'Maintenance request '.$this->maintenanceRequest->getMaintenanceRequestNumber().' has been approved.'
+            'link' => route('maintenance.requests.view', encrypt($this->maintenanceRequest->id)),
+            'subject' => 'Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' has been approved.'
         ];
     }
-
 }

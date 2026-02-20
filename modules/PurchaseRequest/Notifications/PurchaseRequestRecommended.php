@@ -22,17 +22,16 @@ class PurchaseRequestRecommended extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
 
-        if($purchaseRequest->status_id == config('constant.RECOMMENDED_STATUS')){
-            $this->message = 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been recommended for your review. Requester : '.$this->purchaseRequest->getRequesterName();
+        if ($purchaseRequest->status_id == config('constant.RECOMMENDED_STATUS')) {
+            $this->message = 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been recommended for your review. Requester : ' . $this->purchaseRequest->getRequesterName();
             $this->url = route('review.recommended.purchase.requests.create', $this->purchaseRequest->id);
         }
-        if($purchaseRequest->status_id == config('constant.RECOMMENDED2_STATUS')){
-            $this->message = 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been recommended for your approval. Requester : '.$this->purchaseRequest->getRequesterName();
-            $this->url = route('approve.recommended.purchase.requests.create',$this->purchaseRequest->id);
+        if ($purchaseRequest->status_id == config('constant.RECOMMENDED2_STATUS')) {
+            $this->message = 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been recommended for your approval. Requester : ' . $this->purchaseRequest->getRequesterName();
+            $this->url = route('approve.recommended.purchase.requests.create', $this->purchaseRequest->id);
         }
     }
 
@@ -58,9 +57,9 @@ class PurchaseRequestRecommended extends Notification
         $url = route('approve.purchase.requests.create', $this->purchaseRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been submitted for your approve.')
+            ->line('Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been submitted for your approve.')
             ->action('View Purchase Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -87,9 +86,8 @@ class PurchaseRequestRecommended extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=> $this->url,
-            'subject'=> $this->message
+            'link' => $this->url,
+            'subject' => $this->message
         ];
     }
-
 }

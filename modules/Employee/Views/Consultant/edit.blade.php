@@ -79,6 +79,17 @@
                             },
                         },
                     },
+                    joined_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The joined date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                        },
+                    },
                     date_of_birth: {
                         validators: {
                             date: {
@@ -139,6 +150,26 @@
                             },
                         },
                     },
+                    leave_percentage: {
+                        validators: {
+                            callback: {
+                                message: 'Leave percentage is required',
+                                callback: function(input) {
+                                    const earnLeaveChecked = document.getElementById('earnLeaveSwitch')
+                                        .checked;
+
+                                    if (!earnLeaveChecked) {
+                                        return true;
+                                    }
+
+                                    const val = input.value?.trim();
+                                    return val !== '' && val !== null && ['50', '75', '100'].includes(
+                                        val);
+                                }
+                            }
+                        }
+                    },
+
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -165,6 +196,36 @@
                     }),
                 },
             });
+
+            // Toggle Leave % visibility + validation
+            const $earnLeaveCheckbox = $('#earnLeaveSwitch');
+            const $leavePercentageRow = $('#leavePercentageRow');
+            const $leavePercentage = $('#leave_percentage');
+            let lastSelectedPercentage = null;
+
+            function updateLeavePercentageState() {
+                const isEnabled = $earnLeaveCheckbox.is(':checked');
+
+                $leavePercentageRow.toggle(isEnabled);
+
+                if (!isEnabled) {
+                    lastSelectedPercentage = $leavePercentage.val();
+                    $leavePercentage.val(null).trigger('change');
+                    fv.resetField('leave_percentage');
+                } else {
+                    const originalValue = $('#original_leave_percentage').val();
+                    const valueToRestore = lastSelectedPercentage || originalValue;
+
+                    if (valueToRestore) {
+                        $leavePercentage.val(valueToRestore).trigger('change');
+                    }
+
+                    fv.revalidateField('leave_percentage');
+                }
+            }
+            updateLeavePercentageState();
+            $earnLeaveCheckbox.on('change', updateLeavePercentageState);
+
 
             employeeEditForm.querySelector('[name="official_email_address"]').addEventListener('input', function() {
                 fv.revalidateField('official_email_address');
@@ -194,6 +255,15 @@
                 endDate: '{!! date('Y-m-d') !!}',
             }).on('change', function(e) {
                 fv.revalidateField('date_of_birth');
+            });
+
+            $('[name="joined_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('joined_date');
             });
 
             $('[name="probation_complete_date"]').datepicker({

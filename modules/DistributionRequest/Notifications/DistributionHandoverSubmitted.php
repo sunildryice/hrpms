@@ -22,8 +22,7 @@ class DistributionHandoverSubmitted extends Notification
      */
     public function __construct(
         DistributionHandover $distributionHandover
-    )
-    {
+    ) {
         $this->distributionHandover = $distributionHandover;
     }
 
@@ -49,9 +48,9 @@ class DistributionHandoverSubmitted extends Notification
         $url = route('approve.distribution.requests.handovers.create', $this->distributionHandover->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Distribution handover '.$this->distributionHandover->getDistributionHandoverNumber().' has been submitted.')
+            ->line('Distribution handover ' . $this->distributionHandover->getDistributionHandoverNumber() . ' has been submitted.')
             ->action('Approve Distribution handover ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -79,8 +78,7 @@ class DistributionHandoverSubmitted extends Notification
         return [
             'distribution_handover_id'  => $this->distributionHandover->id,
             'link'                      => route('approve.distribution.requests.handovers.create', $this->distributionHandover->id),
-            'subject'                   => 'Distribution handover '.$this->distributionHandover->getDistributionHandoverNumber().' has been submitted.'
+            'subject'                   => 'Distribution handover ' . $this->distributionHandover->getDistributionHandoverNumber() . ' has been submitted.'
         ];
     }
-
 }

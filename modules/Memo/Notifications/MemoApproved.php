@@ -22,8 +22,7 @@ class MemoApproved extends Notification
      */
     public function __construct(
         Memo $memo
-    )
-    {
+    ) {
         $this->memo = $memo;
     }
 
@@ -49,9 +48,9 @@ class MemoApproved extends Notification
         $url = route('approved.memo.show', $this->memo->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Memo '.$this->memo->getMemoNumber().' has been approved.')
+            ->line('Memo ' . $this->memo->getMemoNumber() . ' has been approved.')
             ->action('View Memo ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -80,8 +79,7 @@ class MemoApproved extends Notification
         return [
             'memo_id'   => $this->memo->id,
             'link'      => $url,
-            'subject'   => 'Memo '.$this->memo->getMemoNumber().' has been approved.'
+            'subject'   => 'Memo ' . $this->memo->getMemoNumber() . ' has been approved.'
         ];
     }
-
 }

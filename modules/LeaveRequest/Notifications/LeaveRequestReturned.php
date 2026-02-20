@@ -19,8 +19,7 @@ class LeaveRequestReturned extends Notification
      */
     public function __construct(
         protected LeaveRequest $leaveRequest
-    ) {
-    }
+    ) {}
 
     /**
      * Get the notification's delivery channels.
@@ -44,7 +43,7 @@ class LeaveRequestReturned extends Notification
         return (new MailMessage)
             ->line('The introduction to the notification.')
             ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -74,7 +73,7 @@ class LeaveRequestReturned extends Notification
             'leave_request_id' => $this->leaveRequest->id,
             'link' => route('leave.requests.edit', $this->leaveRequest->id),
             'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
-            'subject' => 'Leave request '.$this->leaveRequest->getLeaveNumber().' has been returned.',
+            'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has been returned.',
         ];
     }
 }

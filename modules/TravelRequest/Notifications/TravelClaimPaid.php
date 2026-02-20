@@ -50,7 +50,7 @@ class TravelClaimPaid extends Notification
             ->greeting('Hello!')
             ->line('Your travel claim for travel request ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . 'has been processed and marked as paid.')
             ->action('View travel claim ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -81,5 +81,4 @@ class TravelClaimPaid extends Notification
             'subject' => 'Your travel claim for travel request: ' . $this->travelClaim->travelRequest->getTravelRequestNumber() . ' has beed paid',
         ];
     }
-
 }

@@ -20,8 +20,7 @@ class VehicleRequestAssigned extends Notification
      */
     public function __construct(
         VehicleRequest $vehicleRequest
-    )
-    {
+    ) {
         $this->vehicleRequest = $vehicleRequest;
     }
 
@@ -48,9 +47,9 @@ class VehicleRequestAssigned extends Notification
 
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Vehicle has been assigned for your vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().'.')
+            ->line('Vehicle has been assigned for your vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . '.')
             ->action('View Request', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,8 +77,7 @@ class VehicleRequestAssigned extends Notification
         return [
             'vehicle_request_id'    => $this->vehicleRequest->id,
             'link'                  => route('vehicle.requests.show', $this->vehicleRequest->id),
-            'subject'               => 'Vehicle has been assigned for your vehicle request '.$this->vehicleRequest->getVehicleRequestNumber().'.'
+            'subject'               => 'Vehicle has been assigned for your vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . '.'
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class PurchaseRequestSubmittedVerify extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
     }
 
@@ -49,9 +48,9 @@ class PurchaseRequestSubmittedVerify extends Notification
         $url = route('review.purchase.requests.create', $this->purchaseRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been submitted for your review.')
+            ->line('Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been submitted for your review.')
             ->action('View Purchase Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class PurchaseRequestSubmittedVerify extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=>route('review.purchase.requests.create', $this->purchaseRequest->id),
-            'subject'=> 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been submitted for review. Requester : '.$this->purchaseRequest->getRequesterName(),
+            'link' => route('review.purchase.requests.create', $this->purchaseRequest->id),
+            'subject' => 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been submitted for review. Requester : ' . $this->purchaseRequest->getRequesterName(),
         ];
     }
-
 }

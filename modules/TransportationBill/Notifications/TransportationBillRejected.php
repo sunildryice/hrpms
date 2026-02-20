@@ -22,8 +22,7 @@ class TransportationBillRejected extends Notification
      */
     public function __construct(
         TransportationBill $transportationRequest
-    )
-    {
+    ) {
         $this->transportationRequest = $transportationRequest;
     }
 
@@ -47,9 +46,8 @@ class TransportationBillRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class TransportationBillRejected extends Notification
         event(new NotificationPushed());
         return [
             'transportation_bill_id' => $this->transportationRequest->id,
-            'link'=>route('transportation.bills.show', $this->transportationRequest->id),
-            'subject'=> 'Transportation bill '.$this->transportationRequest->getTransportationBillNumber().' has been rejected.'
+            'link' => route('transportation.bills.show', $this->transportationRequest->id),
+            'subject' => 'Transportation bill ' . $this->transportationRequest->getTransportationBillNumber() . ' has been rejected.'
         ];
     }
-
 }

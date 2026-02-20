@@ -22,8 +22,7 @@ class MemoReturned extends Notification
      */
     public function __construct(
         Memo $memo
-    )
-    {
+    ) {
         $this->memo = $memo;
     }
 
@@ -49,9 +48,9 @@ class MemoReturned extends Notification
         $url = route('memo.edit', $this->memo->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Memo '.$this->memo->getMemoNumber().' has been returned.')
+            ->line('Memo ' . $this->memo->getMemoNumber() . ' has been returned.')
             ->action('View Memo ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class MemoReturned extends Notification
         event(new NotificationPushed());
         return [
             'memo_id' => $this->memo->id,
-            'link'=>route('memo.edit', $this->memo->id),
-            'subject'=> 'Memo '.$this->memo->getMemoNumber().' has been returned.'
+            'link' => route('memo.edit', $this->memo->id),
+            'subject' => 'Memo ' . $this->memo->getMemoNumber() . ' has been returned.'
         ];
     }
-
 }

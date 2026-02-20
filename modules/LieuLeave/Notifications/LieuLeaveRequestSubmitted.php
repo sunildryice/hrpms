@@ -45,7 +45,7 @@ class LieuLeaveRequestSubmitted extends Notification
             ->greeting('Hello!')
             ->line('Lieu leave request ' . $this->lieuLeaveRequest->id . ' has been submitted for your approval.')
             ->action('View lieu leave request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**

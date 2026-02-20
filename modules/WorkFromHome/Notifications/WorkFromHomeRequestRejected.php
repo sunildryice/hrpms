@@ -53,8 +53,7 @@ class WorkFromHomeRequestRejected extends Notification
             ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
             ->line('Total Days: ' . $this->workFromHomeRequest->getWorkFromHomeDuration())
             ->line('Reason: ' . ($this->workFromHomeRequest->reason ?: 'N/A'))
-            ->action('View work from home request', $url)
-            ->line('Thank you for using our application!');
+            ->action('View work from home request', $url);
     }
 
     /**

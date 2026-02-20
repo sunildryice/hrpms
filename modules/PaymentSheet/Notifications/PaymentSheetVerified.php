@@ -24,20 +24,18 @@ class PaymentSheetVerified extends Notification
      */
     public function __construct(
         PaymentSheet $paymentSheet
-    )
-    {
+    ) {
         $this->paymentSheet = $paymentSheet;
 
         if ($paymentSheet->status_id == config('constant.VERIFIED_STATUS')) {
-            $this->message = 'Payment Sheet '.$this->paymentSheet->getPaymentSheetNumber().' submitted by '.$this->paymentSheet->getRequesterName().' has been verified and forwarded for your approval.';
+            $this->message = 'Payment Sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' submitted by ' . $this->paymentSheet->getRequesterName() . ' has been verified and forwarded for your approval.';
             $this->url = route('approve.payment.sheets.create', $this->paymentSheet->id);
         }
 
         if ($paymentSheet->status_id == config('constant.RECOMMENDED2_STATUS')) {
-            $this->message = 'Payment Sheet '.$this->paymentSheet->getPaymentSheetNumber().' submitted by '.$this->paymentSheet->getRequesterName().' has been verified and recommended for your approval.';
+            $this->message = 'Payment Sheet ' . $this->paymentSheet->getPaymentSheetNumber() . ' submitted by ' . $this->paymentSheet->getRequesterName() . ' has been verified and recommended for your approval.';
             $this->url = route('approve.recommended.payment.sheets.create', $this->paymentSheet->id);
         }
-
     }
 
     /**
@@ -63,7 +61,7 @@ class PaymentSheetVerified extends Notification
             ->greeting('Hello!')
             ->line($this->message)
             ->action('View Payment Sheet ', $this->url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -94,5 +92,4 @@ class PaymentSheetVerified extends Notification
             'subject'           => $this->message
         ];
     }
-
 }

@@ -22,8 +22,7 @@ class AdvanceRequestSubmitted extends Notification
      */
     public function __construct(
         AdvanceRequest $advanceRequest
-    )
-    {
+    ) {
         $this->advanceRequest = $advanceRequest;
     }
 
@@ -49,9 +48,9 @@ class AdvanceRequestSubmitted extends Notification
         $url = route('verify.advance.requests.create', $this->advanceRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Advance request '.$this->advanceRequest->getAdvanceRequestNumber().' has been submitted by '.$this->advanceRequest->getRequesterName().' for your verification.')
+            ->line('Advance request ' . $this->advanceRequest->getAdvanceRequestNumber() . ' has been submitted by ' . $this->advanceRequest->getRequesterName() . ' for your verification.')
             ->action('View Advance Request ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class AdvanceRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'advance_request_id' => $this->advanceRequest->id,
-            'link'=>route('verify.advance.requests.create', $this->advanceRequest->id),
-            'subject'=> 'Advance request '.$this->advanceRequest->getAdvanceRequestNumber().' has been submitted by '.$this->advanceRequest->getRequesterName().' for your verification.'
+            'link' => route('verify.advance.requests.create', $this->advanceRequest->id),
+            'subject' => 'Advance request ' . $this->advanceRequest->getAdvanceRequestNumber() . ' has been submitted by ' . $this->advanceRequest->getRequesterName() . ' for your verification.'
         ];
     }
-
 }

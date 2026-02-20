@@ -22,8 +22,7 @@ class GrnRejected extends Notification
      */
     public function __construct(
         Grn $grn
-    )
-    {
+    ) {
         $this->grn = $grn;
     }
 
@@ -47,9 +46,8 @@ class GrnRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class GrnRejected extends Notification
         event(new NotificationPushed());
         return [
             'grn_id' => $this->grn->id,
-            'link'=>route('grns.view', $this->grn->id),
-            'subject'=> 'GRN '.$this->grn->getGrnNumber().' has been rejected.'
+            'link' => route('grns.view', $this->grn->id),
+            'subject' => 'GRN ' . $this->grn->getGrnNumber() . ' has been rejected.'
         ];
     }
-
 }

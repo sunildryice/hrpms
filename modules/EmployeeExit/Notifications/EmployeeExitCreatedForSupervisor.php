@@ -22,8 +22,7 @@ class EmployeeExitCreatedForSupervisor extends Notification
      */
     public function __construct(
         ExitHandOverNote $exitHandOverNote
-    )
-    {
+    ) {
         $this->exitHandOverNote = $exitHandOverNote;
     }
 
@@ -49,9 +48,9 @@ class EmployeeExitCreatedForSupervisor extends Notification
         $url = route('dashboard.index');
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Employee exit has been created for an employee '.$this->exitHandOverNote->employee->getFullName())
+            ->line('Employee exit has been created for an employee ' . $this->exitHandOverNote->employee->getFullName())
             ->action('View Employee Exit ', $url)
-            ->line('Thank you for using our application!');
+        ;
     }
 
     /**
@@ -78,9 +77,8 @@ class EmployeeExitCreatedForSupervisor extends Notification
         event(new NotificationPushed());
         return [
             'employee_exit_id' => $this->exitHandOverNote->id,
-            'link'=>route('dashboard.index'),
-            'subject'=> 'Employee exit has been created for an employee '.$this->exitHandOverNote->employee->getFullName(). '. Please review the staff clearance.',
+            'link' => route('dashboard.index'),
+            'subject' => 'Employee exit has been created for an employee ' . $this->exitHandOverNote->employee->getFullName() . '. Please review the staff clearance.',
         ];
     }
-
 }

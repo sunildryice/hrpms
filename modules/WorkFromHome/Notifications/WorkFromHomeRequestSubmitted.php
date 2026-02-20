@@ -46,9 +46,15 @@ class WorkFromHomeRequestSubmitted extends Notification
     {
         $url = route('approve.wfh.requests.show', $this->workFromHomeRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Work from home request ' . $this->workFromHomeRequest->id . ' has been submitted for your approval.')
-            ->action('View work from home request ', $url)
+            ->greeting('Hey ' . $this->workFromHomeRequest->approver?->employee?->getFullName() . ',')
+            ->line('You have a new work from home request awaiting your approval. Please find the details below:')
+            ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
+            ->line('Requester: ' . $this->workFromHomeRequest->getRequesterName())
+            ->line('Start Date: ' . $this->workFromHomeRequest->getStartDate())
+            ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
+            ->line('Total Days: ' . $this->workFromHomeRequest->getWorkFromHomeDuration())
+            ->line('Reason: ' . ($this->workFromHomeRequest->reason ?: 'N/A'))
+            ->action('View work from home request', $url)
             ->line('Thank you for using our application!');
     }
 

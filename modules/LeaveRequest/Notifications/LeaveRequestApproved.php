@@ -19,9 +19,8 @@ class LeaveRequestApproved extends Notification
      * @return void
      */
     public function __construct(
-        LeaveRequest $leaveRequest
-    )
-    {
+        protected LeaveRequest $leaveRequest
+    ) {
         $this->leaveRequest = $leaveRequest;
     }
 
@@ -33,7 +32,7 @@ class LeaveRequestApproved extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -44,10 +43,15 @@ class LeaveRequestApproved extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('leave.requests.detail', $this->leaveRequest->id);
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->greeting('Hey ' . $this->leaveRequest->getRequesterName() . ',')
+            ->line('Your leave request (' . $this->leaveRequest->getLeaveType() . ') has been approved.')
+            ->line('Leave Number: ' . $this->leaveRequest->getLeaveNumber())
+            ->line('Leave dates: ' . ($this->leaveRequest->start_date ? $this->leaveRequest->start_date->format('d M Y') : '') . ' to ' . ($this->leaveRequest->end_date ? $this->leaveRequest->end_date->format('d M Y') : ''))
+            ->line('Approved by: ' . auth()->user()->full_name)
+            ->action('View leave request', $url)
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -74,10 +78,9 @@ class LeaveRequestApproved extends Notification
         event(new NotificationPushed());
         return [
             'leave_request_id' => $this->leaveRequest->id,
-            'link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'alternate_link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'subject'=> 'Leave request '.$this->leaveRequest->getLeaveNumber().' has approved.'
+            'link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has approved.'
         ];
     }
-
 }

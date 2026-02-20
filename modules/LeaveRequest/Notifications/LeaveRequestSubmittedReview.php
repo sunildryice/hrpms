@@ -22,9 +22,11 @@ class LeaveRequestSubmittedReview extends Notification
      */
     public function __construct(
         LeaveRequest $leaveRequest
-    )
-    {
-        $this->leaveRequest = $leaveRequest;
+    ) {
+        $this->leaveRequest = $leaveRequest->load([
+            'leaveType',
+            'requester',
+        ]);
     }
 
     /**
@@ -47,9 +49,15 @@ class LeaveRequestSubmittedReview extends Notification
     public function toMail($notifiable)
     {
         $url = route('review.leave.requests.create', $this->leaveRequest->id);
+
+
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Leave request '.$this->leaveRequest->getLeaveNumber().' has been submitted for your reviewal.')
+            ->greeting('Hey ' . $this->leaveRequest->getApproverName() . ',')
+            ->line('You have a new leave request (' . $this->leaveRequest->getLeaveType() . ') awaiting your approval.')
+            ->line('Employee : ' . $this->leaveRequest->getRequesterName())
+            ->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))
+            ->line('Leave Time : ' . $this->leaveRequest->getFirstLeaveTime())
+            ->line('Reason : ' . $this->leaveRequest->remarks)
             ->action('View leave request ', $url)
             ->line('Thank you for using our application!');
     }
@@ -77,11 +85,10 @@ class LeaveRequestSubmittedReview extends Notification
     {
         return [
             'leave_request_id' => $this->leaveRequest->id,
-            'link'=>route('review.leave.requests.create', $this->leaveRequest->id),
-            'alternate_link'=>route('leave.requests.detail', $this->leaveRequest->id),
-            'subject'=> 'Leave request '.$this->leaveRequest->getLeaveNumber().' has been submitted for you reviewal. Requester : '.$this->leaveRequest->getRequesterName(),
-            
+            'link' => route('review.leave.requests.create', $this->leaveRequest->id),
+            'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
+            'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has been submitted for you reviewal. Requester : ' . $this->leaveRequest->getRequesterName(),
+
         ];
     }
-
 }

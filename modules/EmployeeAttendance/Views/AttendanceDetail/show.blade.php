@@ -125,16 +125,23 @@
                 </div>
                 <div class="print-header-info mb-3">
                     <ul class="list-unstyled m-0 p-0">
-                        <li><span class="fw-bold me-2">Staff Name:</span><span>{{ $attendance->employee->getFullName() }}</span></li>
-                        <li><span class="fw-bold me-2">Title:</span><span>{{ $attendance->employee->latestTenure->getDesignationName() }}</span></li>
-                        <li><span class="fw-bold me-2">Duty station:</span><span>{{ $attendance->employee->latestTenure->getDutyStation() }}</span></li>
-                        <li><span class="fw-bold me-2">Month:</span><span>{{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</span></li>
+                        <li><span class="fw-bold me-2">Staff
+                                Name:</span><span>{{ $attendance->employee->getFullName() }}</span></li>
+                        <li><span
+                                class="fw-bold me-2">Title:</span><span>{{ $attendance->employee->latestTenure->getDesignationName() }}</span>
+                        </li>
+                        <li><span class="fw-bold me-2">Duty
+                                station:</span><span>{{ $attendance->employee->latestTenure->getDutyStation() }}</span></li>
+                        <li><span
+                                class="fw-bold me-2">Month:</span><span>{{ date('F', mktime(0, 0, 0, $attendance->month, 10)) }}</span>
+                        </li>
                         <li><span class="fw-bold me-2">Year:</span><span>{{ $attendance->year }}</span></li>
                     </ul>
                 </div>
             </div>
             <div class="col">
-                <div class="print-header-info mb-3 mt-4" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="print-header-info mb-3 mt-4"
+                    style="display: flex; flex-direction: column; align-items: center;">
                     <ul class="list-unstyled m-0 p-0">
                         <li><span class="fw-bold me-2">Reviewer:</span><span>{{ $attendance->getReviewer() }}</span></li>
                         <li><span class="fw-bold me-2">Approver:</span><span>{{ $attendance->getApprover() }}</span></li>
@@ -182,7 +189,14 @@
                             }
 
                             // Only show "Absent" for past dates or today (not future dates)
-                            if (!$isFuture && !$hasCheckIn && !$hasCheckOut && !$isHoliday && !$hasLeave && !$inTravel) {
+                            if (
+                                !$isFuture &&
+                                !$hasCheckIn &&
+                                !$hasCheckOut &&
+                                !$isHoliday &&
+                                !$hasLeave &&
+                                !$inTravel
+                            ) {
                                 $remarkParts[] = 'Absent';
                             }
 
@@ -194,18 +208,20 @@
                                 {{ $date->get('date') }}<br>
                                 <small class="text-muted">{{ $date->get('day_name') }}</small>
                             </td>
-                            <td class="text-center {{ $hasCheckIn ? 'present' : '' }}">
-                                {{ $date->get('check_in_time') ?: '-' }}
+                            <td class="text-center">
+                                {!! $date['display_checkin'] !!}
                             </td>
-                            <td class="text-center {{ $hasCheckOut ? 'present' : '' }}">
-                                {{ $date->get('check_out_time') ?: '-' }}
+
+                            <td class="text-center">
+                                {!! $date['display_checkout'] !!}
                             </td>
                             <td class="text-center fw-bold">
                                 {{ $date->get('worked_hours') ?: '00.00' }}
                             </td>
                             <td>
                                 @if ($remark)
-                                    <span class="{{ $isHoliday ? 'holiday' : ($hasLeave ? 'leave' : ($inTravel ? 'travel' : 'absent')) }}">
+                                    <span
+                                        class="{{ $isHoliday ? 'holiday' : ($hasLeave ? 'leave' : ($inTravel ? 'travel' : 'absent')) }}">
                                         {{ $remark }}
                                     </span>
                                 @else
@@ -236,12 +252,15 @@
                                 <i class="bi-person"></i>
                             </div>
                             <div class="w-100">
-                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                                    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
+                                <div
+                                    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                                    <div
+                                        class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-md-2 mb-2 mb-md-0">
                                         <span class="me-2">{{ $log->getCreatedBy() }}</span>
                                         <span class="badge bg-primary c-badge">{!! $log->createdBy->employee->latestTenure->getDesignationName() !!}</span>
                                     </div>
-                                    <small title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                    <small
+                                        title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                 </div>
                                 <p class="text-justify comment-text mb-0 mt-1">
                                     {{ $log->log_remarks }}

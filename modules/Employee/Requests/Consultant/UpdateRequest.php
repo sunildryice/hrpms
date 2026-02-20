@@ -60,6 +60,7 @@ class UpdateRequest extends FormRequest
             'signature' => 'nullable|mimes:jpg,png|max:2048',
             'profile_picture' => 'nullable|mimes:jpg,png|max:2048',
             'date_of_birth' => 'nullable|date',
+            'joined_date' => 'nullable|date',
             'probation_complete_date' => 'nullable|date',
             'religion_id' => 'nullable',
             'caste_id' => 'nullable',

@@ -79,6 +79,17 @@
                             },
                         },
                     },
+                    joined_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The joined date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The value is not a valid date',
+                            },
+                        },
+                    },
                     date_of_birth: {
                         validators: {
                             date: {
@@ -190,6 +201,7 @@
             const $earnLeaveCheckbox = $('#earnLeaveSwitch');
             const $leavePercentageRow = $('#leavePercentageRow');
             const $leavePercentage = $('#leave_percentage');
+            let lastSelectedPercentage = null;
 
             function updateLeavePercentageState() {
                 const isEnabled = $earnLeaveCheckbox.is(':checked');
@@ -197,9 +209,17 @@
                 $leavePercentageRow.toggle(isEnabled);
 
                 if (!isEnabled) {
+                    lastSelectedPercentage = $leavePercentage.val();
                     $leavePercentage.val(null).trigger('change');
                     fv.resetField('leave_percentage');
                 } else {
+                    const originalValue = $('#original_leave_percentage').val();
+                    const valueToRestore = lastSelectedPercentage || originalValue;
+
+                    if (valueToRestore) {
+                        $leavePercentage.val(valueToRestore).trigger('change');
+                    }
+
                     fv.revalidateField('leave_percentage');
                 }
             }
@@ -235,6 +255,15 @@
                 endDate: '{!! date('Y-m-d') !!}',
             }).on('change', function(e) {
                 fv.revalidateField('date_of_birth');
+            });
+
+            $('[name="joined_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('joined_date');
             });
 
             $('[name="probation_complete_date"]').datepicker({

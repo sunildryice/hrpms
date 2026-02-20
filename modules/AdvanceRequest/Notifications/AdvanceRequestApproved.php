@@ -22,8 +22,7 @@ class AdvanceRequestApproved extends Notification
      */
     public function __construct(
         AdvanceRequest $advanceRequest
-    )
-    {
+    ) {
         $this->advanceRequest = $advanceRequest;
     }
 
@@ -47,9 +46,8 @@ class AdvanceRequestApproved extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,9 +74,8 @@ class AdvanceRequestApproved extends Notification
         event(new NotificationPushed());
         return [
             'advance_request_id' => $this->advanceRequest->id,
-            'link'=>route('advance.requests.show', $this->advanceRequest->id),
-            'subject'=> 'Advance request '.$this->advanceRequest->getAdvanceRequestNumber().' has been approved.'
+            'link' => route('advance.requests.show', $this->advanceRequest->id),
+            'subject' => 'Advance request ' . $this->advanceRequest->getAdvanceRequestNumber() . ' has been approved.'
         ];
     }
-
 }

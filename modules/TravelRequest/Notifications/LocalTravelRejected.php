@@ -22,8 +22,7 @@ class LocalTravelRejected extends Notification
      */
     public function __construct(
         LocalTravel $localTravel
-    )
-    {
+    ) {
         $this->localTravel = $localTravel;
     }
 
@@ -47,9 +46,8 @@ class LocalTravelRejected extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class LocalTravelRejected extends Notification
         event(new NotificationPushed());
         return [
             'local_travel_reimbursement_id' => $this->localTravel->id,
-            'link'=>route('local.travel.reimbursements.show', $this->localTravel->id),
-            'alternate_link'=>route('local.travel.reimbursements.show', $this->localTravel->id),
-            'subject'=> 'Local travel reimbursement '.$this->localTravel->getLocalTravelNumber().' has been rejected.'
+            'link' => route('local.travel.reimbursements.show', $this->localTravel->id),
+            'alternate_link' => route('local.travel.reimbursements.show', $this->localTravel->id),
+            'subject' => 'Local travel reimbursement ' . $this->localTravel->getLocalTravelNumber() . ' has been rejected.'
         ];
     }
-
 }

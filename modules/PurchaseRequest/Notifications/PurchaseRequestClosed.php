@@ -22,8 +22,7 @@ class PurchaseRequestClosed extends Notification
      */
     public function __construct(
         PurchaseRequest $purchaseRequest
-    )
-    {
+    ) {
         $this->purchaseRequest = $purchaseRequest;
     }
 
@@ -47,9 +46,8 @@ class PurchaseRequestClosed extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'));
     }
 
     /**
@@ -76,10 +74,9 @@ class PurchaseRequestClosed extends Notification
         event(new NotificationPushed());
         return [
             'purchase_request_id' => $this->purchaseRequest->id,
-            'link'=>route('purchase.requests.show', $this->purchaseRequest->id),
-            'alternate_link'=>route('purchase.requests.index'),
-            'subject'=> 'Purchase request '.$this->purchaseRequest->getPurchaseRequestNumber().' has been closed.'
+            'link' => route('purchase.requests.show', $this->purchaseRequest->id),
+            'alternate_link' => route('purchase.requests.index'),
+            'subject' => 'Purchase request ' . $this->purchaseRequest->getPurchaseRequestNumber() . ' has been closed.'
         ];
     }
-
 }

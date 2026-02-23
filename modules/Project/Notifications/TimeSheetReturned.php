@@ -47,10 +47,11 @@ class TimeSheetReturned extends Notification
     {
         $url = route('monthly-timesheet.show', $this->timeSheet->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been returned to the requester.')
-            ->action('Return Timesheet', $url)
-        ;
+            ->greeting('Hey ' . ($this->timeSheet->requester->getFullName() ?? '-') . ',')
+            ->line('Your timesheet has been returned for revision.')
+            ->line('Period: ' . ($this->timeSheet->month_name ?? $this->timeSheet->month) . ' ' . $this->timeSheet->year)
+            ->line('Dates: ' . ($this->timeSheet->start_date ? $this->timeSheet->start_date->format('d M Y') : '-') . ' to ' . ($this->timeSheet->end_date ? $this->timeSheet->end_date->format('d M Y') : '-'))
+            ->action('Revise Timesheet', $url);
     }
 
 

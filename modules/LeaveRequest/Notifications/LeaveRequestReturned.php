@@ -40,10 +40,14 @@ class LeaveRequestReturned extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('leave.requests.edit', $this->leaveRequest->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-        ;
+            ->greeting('Hey ' . $this->leaveRequest->getRequesterName() . ',')
+            ->line('Your leave request (' . $this->leaveRequest->getLeaveType() . ') has been returned for revision.')
+            ->line('Leave Number: ' . $this->leaveRequest->getLeaveNumber())
+            ->line('Leave dates: ' . ($this->leaveRequest->start_date ? $this->leaveRequest->start_date->format('d M Y') : '') . ' to ' . ($this->leaveRequest->end_date ? $this->leaveRequest->end_date->format('d M Y') : ''))
+            ->line('Returned by: ' . (auth()->user()->full_name ?? ''))
+            ->action('Revise leave request', $url);
     }
 
     /**

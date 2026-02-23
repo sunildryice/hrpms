@@ -58,8 +58,7 @@ class LeaveRequestSubmittedReview extends Notification
             ->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))
             ->line('Leave Time : ' . $this->leaveRequest->getFirstLeaveTime())
             ->line('Reason : ' . $this->leaveRequest->remarks)
-            ->action('View leave request ', $url)
-        ;
+            ->action('View leave request ', $url);
     }
 
     /**

@@ -350,14 +350,16 @@ class LeaveRepository extends Repository
             }
 
             $earned = round($earned * $percentile / 100, 2);
-            if ($earned < 0.4) {
-                $earned = 0;
-            } elseif ($earned >= 0.4 && $earned < 0.9) {
-                $earned = 0.5;
-            } elseif ($earned >= 0.9 && $earned < 1.4) {
-                $earned = 1;
-            } elseif ($earned >= 1.4 && $earned <= 1.5) {
-                $earned = 1.5;
+            if($employee->employee_type_id == config('constant.FULL_TIME_EMPLOYEE')) {
+                if ($earned < 0.4) {
+                    $earned = 0;
+                } elseif ($earned >= 0.4 && $earned < 0.9) {
+                    $earned = 0.5;
+                } elseif ($earned >= 0.9 && $earned < 1.4) {
+                    $earned = 1;
+                } elseif ($earned >= 1.4 && $earned <= 1.5) {
+                    $earned = 1.5;
+                }
             }
 
             $thisMonthLeave = $this->model->select(['*'])

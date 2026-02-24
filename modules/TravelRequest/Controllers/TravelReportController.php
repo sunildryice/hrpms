@@ -46,7 +46,7 @@ class TravelReportController extends Controller
         TravelRequestItineraryRepository $travelRequestItinerary,
         RoleRepository $roles,
         StatusRepository $status,
-        UserRepository $user
+        protected UserRepository $user
     ) {
         $this->employees = $employees;
         $this->travelReport = $travelReport;

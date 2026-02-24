@@ -229,8 +229,15 @@
                 // Initialize datepicker on new row
                 initDeliverableDatepicker($newRow.find('input.date'));
 
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
+                if (window.fv && typeof window.fv.getFields === 'function') {
+                    const fields = window.fv.getFields();
+                    $('#deliverables-body select[name*="[project_id]"], #deliverables-body input[name*="[task]"]')
+                        .each(function() {
+                            const fname = $(this).attr('name');
+                            if (fields && fields[fname]) {
+                                fv.revalidateField(fname);
+                            }
+                        });
                 }
             });
 
@@ -238,8 +245,15 @@
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
 
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
+                if (window.fv && typeof window.fv.getFields === 'function') {
+                    const fields = window.fv.getFields();
+                    $('#deliverables-body select[name*="[project_id]"], #deliverables-body input[name*="[task]"]')
+                        .each(function() {
+                            const fname = $(this).attr('name');
+                            if (fields && fields[fname]) {
+                                fv.revalidateField(fname);
+                            }
+                        });
                 }
             });
 
@@ -376,29 +390,7 @@
                 populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
             });
 
-            $(document).on('click', '.add-row', function() {
-                rowIndex++;
-                const $newRow = $(buildDeliverableRow(rowIndex));
-                $tbody.append($newRow);
 
-                // Initialize select2 on new row
-                $newRow.find('.project-select, .activities-select').select2({
-                    width: '100%',
-                    dropdownAutoWidth: true
-                });
-
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
-                }
-            });
-
-            $(document).on('click', '.remove-row', function() {
-                $(this).closest('tr').remove();
-
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
-                }
-            });
 
             // if (form) {
             //     window.fv = FormValidation.formValidation(form, {

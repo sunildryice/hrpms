@@ -313,8 +313,8 @@ class AttendanceDetailController extends Controller
 
     protected function getAttendanceDatesWithLateEarlyFlags($attendance, $attendanceId)
     {
-        $officeCheckin = config('constant.OFFICE_CHECKIN_TIME', '09:15:59');
-        $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME', '17:15:00');
+        $officeCheckin = config('constant.OFFICE_CHECKIN_TIME', '09:00:59');
+        $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME', '17:30:00');
 
         $baseDate = "{$attendance->year}-" . str_pad($attendance->month, 2, '0', STR_PAD_LEFT) . "-01";
 

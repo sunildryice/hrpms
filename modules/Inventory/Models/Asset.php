@@ -34,6 +34,7 @@ class Asset extends Model
         'inventory_item_id',
         'prefix',
         'year',
+        'fiscal_year',
         'asset_number',
         'old_asset_code',
         'assigned_office_id',

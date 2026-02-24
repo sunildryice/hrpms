@@ -39,7 +39,6 @@
             if (todayDate && canAddToday) {
                 const $todayBtn = $(`.add-entry-btn[data-date="${todayDate}"]`);
                 if ($todayBtn.length && !$todayBtn.is(':disabled')) {
-                    // Click to open form but keep button visible
                     $todayBtn.click();
                 }
             }
@@ -155,79 +154,87 @@
                     });
             });
 
-            // ENTER EDIT MODE – now includes Project & Activity
-            $(document).on('click', '.edit-entry', function() {
-                const $tr = $(this).closest('tr');
 
-                const currentProjectId = $tr.data('project-id') || $tr.find('.project-cell').data(
-                    'project-id') || '';
-                const currentActivityId = $tr.data('activity-id') || $tr.find('.activity-cell').data(
-                        'activity-id') ||
-                    '';
-                const currentDesc = $tr.find('.description-cell').text().trim();
-                const currentHours = parseFloat($tr.find('.hours-cell').text().trim()) || 0;
+            // OPEN MODAL 
+            $(document).on('click', '.open-edit-modal', function() {
+                const id = $(this).data('id');
+                const projectId = $(this).data('project');
+                const activityId = $(this).data('activity');
+                const description = $(this).data('description') || '';
+                const hours = $(this).data('hours') || 0;
+                const date = $(this).data('date') || '';
 
-                let $projCell = $tr.find('.project-cell');
-                if (!$projCell.length) {
-                    $projCell = $('<td class="project-cell align-middle"></td>');
-                    $tr.find('.description-cell').before($projCell);
-                }
-                let $actCell = $tr.find('.activity-cell');
-                if (!$actCell.length) {
-                    $actCell = $('<td class="activity-cell align-middle"></td>');
-                    $projCell.after($actCell);
-                }
+                $('#edit-date').val(date);
 
-                const projectHtml = `
-                    <select class="form-select project-select-edit" required>
-                        <option value="">Select Project</option>
-                        @foreach ($projects as $p)
-                            <option value="{{ $p->id }}"
-                                    data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title ?? '']))'>
-                                {{ $p->short_name ?: $p->title }}
-                            </option>
-                        @endforeach
-                    </select>
-                `;
-                $projCell.html(projectHtml);
-                if (currentProjectId) {
-                    $projCell.find('.project-select-edit').val(currentProjectId);
-                }
+                $('#edit-project, #edit-activity').select2({
+                    placeholder: "Select...",
+                    width: '100%',
+                    dropdownParent: $(
+                        '#editEntryModal')
+                });
 
-                // Activity dropdown – build based on selected project and pre-select
-                const acts = $projCell.find('.project-select-edit option:selected').data('activities') ||
-            [];
-                let activityHtml =
-                    '<select class="form-select activity-select-edit" required><option value="">Select Activity</option>';
+                $('#edit-entry-id').val(id);
+                $('#edit-description').val(description);
+                $('#edit-hours').val(hours);
+
+                $('#edit-project').val(projectId).trigger('change');
+
+                // Populate activities based on selected project
+                const acts = $('#edit-project option:selected').data('activities') || [];
+                let activityHtml = '<option value="">Select Activity</option>';
                 acts.forEach(a => {
-                    const selected = (a.id == currentActivityId) ? 'selected' : '';
+                    const selected = (a.id == activityId) ? 'selected' : '';
                     activityHtml += `<option value="${a.id}" ${selected}>${a.title}</option>`;
                 });
-                activityHtml += '</select>';
-                $actCell.html(activityHtml);
+                $('#edit-activity').html(activityHtml);
 
-                // Cascade for edit mode
-                $tr.find('.project-select-edit').on('change', function() {
-                    const $act = $tr.find('.activity-select-edit');
-                    $act.empty().append('<option value="">Select Activity</option>');
-                    const newActs = $(this).find(':selected').data('activities') || [];
-                    newActs.forEach(a => {
-                        $act.append(`<option value="${a.id}">${a.title}</option>`);
-                    });
+                $('#editEntryModal').modal('show');
+            });
+
+            // Cascade project → activity inside modal
+            $('#edit-project').on('change', function() {
+                const acts = $(this).find(':selected').data('activities') || [];
+                let html = '<option value="">Select Activity</option>';
+                acts.forEach(a => {
+                    html += `<option value="${a.id}">${a.title}</option>`;
                 });
+                $('#edit-activity').html(html);
+            });
 
-                // Description & Hours
-                $tr.find('.description-cell').html(
-                    `<input type="text" class="form-control" value="${currentDesc.replace(/"/g, '&quot;')}">`
-                );
+            // UPDATE 
+            $('#update-entry-btn').on('click', function() {
+                const id = $('#edit-entry-id').val();
+                const payload = {
+                    _token: '{{ csrf_token() }}',
+                    _method: 'PUT',
+                    project_id: $('#edit-project').val(),
+                    activity_id: $('#edit-activity').val(),
+                    description: $('#edit-description').val().trim(),
+                    hours_spent: $('#edit-hours').val()
+                };
 
-                $tr.find('.hours-cell').html(
-                    `<input type="number" step="0.01" min="0.01" max="24" class="form-control text-end" value="${currentHours}">`
-                );
+                if (!payload.project_id || !payload.activity_id) {
+                    toastr.warning('Project and Activity are required');
+                    return;
+                }
 
-                // Toggle action buttons
-                $tr.find('.normal-actions').addClass('d-none');
-                $tr.find('.edit-actions').removeClass('d-none');
+                if (!payload.hours_spent || Number(payload.hours_spent) <= 0) {
+                    toastr.warning('Hours must be greater than 0');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('monthly-timesheet.inline.update', ':id') }}'.replace(':id', id),
+                    method: 'POST',
+                    data: payload,
+                    success: function() {
+                        toastr.success("Entry updated successfully");
+                        location.reload(); 
+                    },
+                    error: function(xhr) {
+                        toastr.error(xhr.responseJSON?.error || "Update failed");
+                    }
+                });
             });
 
             // Cancel edit → reload
@@ -244,7 +251,6 @@
                 const $act = $tr.find('.activity-select-edit');
                 const $hrs = $tr.find('.hours-cell input');
 
-                // clear old invalid markers
                 $proj.removeClass('is-invalid');
                 $act.removeClass('is-invalid');
                 $hrs.removeClass('is-invalid');
@@ -456,7 +462,7 @@
                                                         <td rowspan="{{ $projItems->count() }}"
                                                             class="project-cell align-middle"
                                                             data-project-id="{{ $item->project_id ?? '' }}">
-                                                            {{ optional($item->project)->short_name ?? (optional($item->project)->title ?? '—') }}
+                                                            {{ optional($item->project)->title ?? (optional($item->project)->short_name ?? '—') }}
                                                         </td>
                                                         @php $projPrinted = true; @endphp
                                                     @endif
@@ -477,8 +483,13 @@
                                                     <td class="text-center">
                                                         @if ($canModify && $item->created_by == auth()->id())
                                                             <div class="btn-group btn-group-sm normal-actions gap-2">
-                                                                <button class="btn btn-outline-primary edit-entry"
-                                                                    data-id="{{ $item->id }}" title="Edit">
+                                                                <button class="btn btn-outline-primary open-edit-modal"
+                                                                    data-id="{{ $item->id }}"
+                                                                    data-date="{{ $item->timesheet_date?->format('Y-m-d') }}"
+                                                                    data-project="{{ $item->project_id }}"
+                                                                    data-activity="{{ $item->activity_id }}"
+                                                                    data-description="{{ $item->description }}"
+                                                                    data-hours="{{ $item->hours_spent }}" title="Edit">
                                                                     <i class="bi bi-pencil-square"></i>
                                                                 </button>
                                                                 <button class="btn btn-outline-danger delete-entry"
@@ -515,6 +526,98 @@
                         </tbody>
                     </table>
 
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editEntryModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header bg-primary text-white mb-3">
+                                    <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit TimeSheet</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <input type="hidden" id="edit-entry-id">
+
+                                    <div class="row g-3">
+
+                                        <div class="row mb-2">
+                                            <div class="col-lg-3">
+                                                <div class="d-flex align-items-start h-100">
+                                                    <label class="form-label m-0">Date</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <input type="text" id="edit-date" class="form-control" readonly>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="row mb-2">
+                                            <div class="col-lg-3">
+                                                <div class="d-flex align-items-start h-100">
+                                                    <label class="form-label required-label m-0">Project</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <select id="edit-project" class="form-control select2">
+                                                    <option value="">Select Project</option>
+                                                    @foreach ($projects as $p)
+                                                        <option value="{{ $p->id }}"
+                                                            data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
+                                                            {{ $p->title ?: $p->short_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-2">
+                                            <div class="col-lg-3">
+                                                <div class="d-flex align-items-start h-100">
+                                                    <label class="form-label required-label m-0">Activity / Sub
+                                                        Activity</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <select id="edit-activity" class="form-control select2">
+                                                    <option value="">Select Activity</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-2">
+                                            <div class="col-lg-3">
+                                                <div class="d-flex align-items-start h-100">
+                                                    <label class="form-label required-label m-0">Hours Spent</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <input type="number" step="0.01" min="0.01" max="24"
+                                                    id="edit-hours" class="form-control">
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-2">
+                                            <div class="col-lg-3">
+                                                <div class="d-flex align-items-start h-100">
+                                                    <label class="form-label m-0">Description</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-9">
+                                                <textarea id="edit-description" class="form-control" rows="4"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" id="update-entry-btn">Update</button>
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <template id="new-entry-template">
                         <tr class="new-entry-row table-light">
                             <td class="date-display align-middle fw-bold text-center"></td>
@@ -522,8 +625,9 @@
                                 <select class="form-select project-select" required>
                                     <option value="">Select Project</option>
                                     @foreach ($projects as $p)
-                                        <option value="{{ $p->id }}" data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title ?? '']))'>
-                                            {{ $p->short_name ?: $p->title }}
+                                        <option value="{{ $p->id }}"
+                                            data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title ?? '']))'>
+                                            {{ $p->title ?: $p->short_name }}
                                         </option>
                                     @endforeach
                                 </select>

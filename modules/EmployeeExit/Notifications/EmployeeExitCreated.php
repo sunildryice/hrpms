@@ -46,15 +46,14 @@ class EmployeeExitCreated extends Notification
     public function toMail($notifiable)
     {
         $url = route('exit.employee.handover.note.edit');
-        return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Employee exit has been created for you. Please do further required.')
-            ->action('View Employee Exit ', $url)
-        ;
-    }
 
+        return (new MailMessage)
+            ->greeting('Hey ' . $this->exitHandOverNote->employee?->getFullName() . ',')
+            ->line('Employee exit has been created for you. Please do the further required actions.')
+            ->action('View Employee Exit', $url);
+    }
     /**
-     * Get the array representation of the notification.
+     * Get the array representation of the notification.re
      *
      * @param  mixed  $notifiable
      * @return array

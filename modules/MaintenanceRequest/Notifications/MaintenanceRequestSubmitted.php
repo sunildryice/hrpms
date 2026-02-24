@@ -46,11 +46,15 @@ class MaintenanceRequestSubmitted extends Notification
     public function toMail($notifiable)
     {
         $url = route('review.maintenance.requests.create', $this->maintenanceRequest->id);
+
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Maintenance request ' . $this->maintenanceRequest->getMaintenanceRequestNumber() . ' requested by ' . $this->maintenanceRequest->getRequesterName() . ' has been submitted for your approval.')
-            ->action('View Maintenance Request ', $url)
-        ;
+            ->greeting('Hey ' . $this->maintenanceRequest->getApproverName() . ',')
+            ->line('You have a new maintenance request awaiting your review.')
+            ->line('Request Number: ' . $this->maintenanceRequest->getMaintenanceRequestNumber())
+            ->line('Requester: ' . $this->maintenanceRequest->getRequesterName())
+            ->line('Request date: ' . $this->maintenanceRequest->request_date)
+            ->line('Reason: ' . $this->maintenanceRequest->remarks)
+            ->action('Review Maintenance Request', $url);
     }
 
     /**

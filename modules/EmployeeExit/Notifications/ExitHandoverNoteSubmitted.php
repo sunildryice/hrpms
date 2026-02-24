@@ -47,10 +47,9 @@ class ExitHandoverNoteSubmitted extends Notification
     {
         $url = route('approve.exit.handover.note.create', $this->exitHandOverNote->id);
         return (new MailMessage)
-            ->greeting('Hello!')
+            ->greeting('Hello')
             ->line('Exit Handover Note has been submitted by ' . $this->exitHandOverNote->getEmployeeName() . ' for your approval.')
-            ->action('View Exit Handover Note ', $url)
-        ;
+            ->action('View Exit Handover Note ', $url);
     }
 
     /**

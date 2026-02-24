@@ -19,7 +19,6 @@ class AssetRepository extends Repository
     public function getAssetNumber($prefix)
     {
         $max = $this->model->where('prefix', $prefix)
-                // ->where('year', $year)
             ->max('asset_number') + 1;
 
         return $max;
@@ -29,9 +28,9 @@ class AssetRepository extends Repository
     {
         DB::beginTransaction();
         try {
-            $prefix = 'OHW/KTM'.strtoupper(substr($inventory->item->item_code, 0, 3));
+            $prefix = strtoupper(substr($inventory->item->item_code, 0, 3));
             if (isset($inventory->office_id)) {
-                $prefix = 'OHW/'.strtoupper($inventory->office->office_code).'/'.strtoupper(substr($inventory->item->item_code, 0, 3));
+                $prefix = strtoupper(substr($inventory->item->item_code, 0, 3));
             }
             $year = date('Y');
             for ($i = 1; $i <= $inventory->quantity; $i++) {
@@ -57,7 +56,6 @@ class AssetRepository extends Repository
             return $inventory;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
-
             return false;
         }
     }

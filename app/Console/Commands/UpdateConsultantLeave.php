@@ -50,7 +50,7 @@ class UpdateConsultantLeave extends Command
     {
         $month = $this->argument('month') ?: date('m');
         $reportedDate = date('Y-' . $month . '-01');
-        $this->info('Getting all employees.');
+        $this->info('Getting all consultants.');
         $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
             ->where('end_date', '>=', date('Y-m-d'))
             ->first();
@@ -68,8 +68,10 @@ class UpdateConsultantLeave extends Command
         $employees = $this->employees->getActiveConsultants();
 
         foreach ($employees as $employee) {
-            $this->call('dryice:reconcile:employee:leave', ['employee' => $employee->employee_code]);
-            $this->info($employee->employee_code);
+            if($employee->consultantLeave) {
+                $this->call('dryice:reconcile:consultant:leave', ['employee' => $employee->ste_code]);
+                $this->info($employee->ste_code);
+            }
         }
         $this->info('Leave of all employees are updated.');
     }

@@ -80,9 +80,9 @@ class TravelRequestPolicy
             $travelRequest->travelReport && !$travelRequest->travelClaim;
 
         //        return now() >= $travelRequest->return_date &&
-//            $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
-//            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
-//            $travelRequest->travelReport && ! $travelRequest->travelClaim;
+        //            $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
+        //            in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
+        //            $travelRequest->travelReport && ! $travelRequest->travelClaim;
     }
 
     /**

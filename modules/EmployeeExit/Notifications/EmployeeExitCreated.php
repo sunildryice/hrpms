@@ -53,7 +53,7 @@ class EmployeeExitCreated extends Notification
             ->action('View Employee Exit', $url);
     }
     /**
-     * Get the array representation of the notification.
+     * Get the array representation of the notification.re
      *
      * @param  mixed  $notifiable
      * @return array

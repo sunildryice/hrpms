@@ -65,9 +65,9 @@ class UpdateConsultantLeave extends Command
         $this->info($fiscalYear->start_date);
         $this->info($fiscalYear->end_date);
 
-        $employees = $this->employees->getActiveConsultants();
+        $consultants = $this->employees->getActiveConsultants();
 
-        foreach ($employees as $employee) {
+        foreach ($consultants as $employee) {
             if($employee->consultantLeave) {
                 $this->call('dryice:reconcile:consultant:leave', ['consultant' => $employee->ste_code]);
                 $this->info($employee->ste_code);

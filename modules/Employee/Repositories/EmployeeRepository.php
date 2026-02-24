@@ -95,7 +95,7 @@ class EmployeeRepository extends Repository
 
     public function getActiveConsultants()
     {
-        return $this->model->select(['id', 'full_name', 'employee_code'])
+        return $this->model->select(['id', 'full_name', 'employee_code', 'ste_code'])
             ->with(['user'])
             ->whereNotNull('activated_at')
             ->where('employee_type_id', '<>', config('constant.FULL_TIME_EMPLOYEE'))

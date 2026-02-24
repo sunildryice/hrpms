@@ -180,7 +180,7 @@ class InventoryImport implements WithHeadingRow, ToCollection
     {
         DB::beginTransaction();
         try {
-            $prefix = 'OHW/'.strtoupper($inventory['office_code']).'/'.strtoupper($inputs['item_code']);
+            $prefix = strtoupper($inputs['item_code']);
             $year = date('Y');
             if(isset($inputs['purchase_year'])){
                 $year = $inputs['purchase_year'];

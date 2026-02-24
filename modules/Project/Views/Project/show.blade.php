@@ -42,6 +42,13 @@
         .activity-doc-row {
             gap: 0.75rem;
         }
+
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 350px;
+        }
     </style>
 @endsection
 
@@ -76,11 +83,13 @@
                     },
                     {
                         data: 'title',
-                        name: 'title'
+                        name: 'title',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'parent',
-                        name: 'parent'
+                        name: 'parent',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'start_date',

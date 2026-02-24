@@ -181,7 +181,7 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3 d-flex align-items-start h-100">
                                             <label class="form-label required-label">General Objective/Purpose of
-                                                travel</label>
+                                                Travel</label>
                                         </div>
                                         <div class="col-lg-9">
                                             <textarea name="objectives" class="form-control" rows="8">{{ old('objectives', $travelReport->objectives) }}</textarea>
@@ -247,7 +247,7 @@
 
                                                             <td>
                                                                 {{ $itinerary->planned_activities ?? '' }}
-
+                                                            </td>
                                                             <td>
                                                                 <select name="itinerary[status][{{ $index }}]"
                                                                     class="form-select select2 @if (old("itinerary.status.$index", $itinerary->status ?? '') == '') is-invalid @endif">
@@ -317,7 +317,7 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
-                                            @php $selectedApproverId = old('approver_id') ?: $travelReport->approver_id; @endphp
+                                            @php $selectedApproverId = old('approver_id', $travelReport->approver_id); @endphp
                                             <select name="approver_id"
                                                 class="select2 form-control
                                                 @if ($errors->has('approver_id')) is-invalid @endif"

@@ -69,7 +69,7 @@ class UpdateConsultantLeave extends Command
 
         foreach ($employees as $employee) {
             if($employee->consultantLeave) {
-                $this->call('dryice:reconcile:consultant:leave', ['employee' => $employee->ste_code]);
+                $this->call('dryice:reconcile:consultant:leave', ['consultant' => $employee->ste_code]);
                 $this->info($employee->ste_code);
             }
         }

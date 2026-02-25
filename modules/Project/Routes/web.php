@@ -94,6 +94,10 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/monthly-timesheet/{id}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
     Route::put('/monthly-timesheet/{id}', [MonthlyTimeSheetController::class, 'update'])->name('monthly-timesheet.update');
 
+    Route::put('{id}/inline', [MonthlyTimeSheetController::class, 'inlineUpdate'])->name('monthly-timesheet.inline.update');
+    Route::post('{id}/inline', [MonthlyTimeSheetController::class, 'inlineStore'])->name('monthly-timesheet.inline.store');
+    Route::delete('entry/{entryId}/inline', [MonthlyTimeSheetController::class, 'inlineDestroy'])->name('monthly-timesheet.inline.destroy');
+
     Route::get('/monthly-timesheet/summary/index', [MonthlyTimeSheetSummaryController::class, 'index'])->name('monthly-timesheet.summary.index');
     Route::get('/monthly-timesheet/summary/{year}/{month}/show', [MonthlyTimeSheetSummaryController::class, 'show'])->name('monthly-timesheet.summary.show');
 

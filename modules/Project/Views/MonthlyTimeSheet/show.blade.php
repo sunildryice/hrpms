@@ -428,7 +428,7 @@
                                         <td class="text-center">
                                             @if ($canAdd)
                                                 <button type="button" class="btn btn-sm btn-outline-success add-entry-btn"
-                                                    data-date="{{ $dateYmd }}" title="Add entry">
+                                                    data-date="{{ $dateYmd }}" title="Add">
                                                     <i class="bi bi-plus-lg"></i>
                                                 </button>
                                             @endif
@@ -512,7 +512,7 @@
                                                         @if ($canAdd && $loop->parent->parent->last)
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-success add-entry-btn"
-                                                                data-date="{{ $dateYmd }}" title="Add another entry">
+                                                                data-date="{{ $dateYmd }}" title="Add another timesheet">
                                                                 <i class="bi bi-plus-lg"></i>
                                                             </button>
                                                         @endif

@@ -233,8 +233,8 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form"
-                        rel="tooltip" title="Add TimeSheet">
+                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm" rel="tooltip"
+                        title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New</a>
                 </div>
             </div>

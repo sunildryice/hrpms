@@ -74,6 +74,7 @@ class TimeSheetController extends Controller
         return view('Project::TimeSheet.index');
     }
 
+
     public function create()
     {
         $authUser = auth()->user();
@@ -82,21 +83,45 @@ class TimeSheetController extends Controller
         return view('Project::TimeSheet.create', compact('projects', 'activities'));
     }
 
+
+
     public function store(StoreRequest $request, ProjectActivity $projectActivity)
     {
-        $inputs = $request->validated();
-        if ($request->file('attachment')) {
-            $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath . '/' . $projectActivity->id, time() . '_timesheet.' . $request->file('attachment')->getClientOriginalExtension());
-            $inputs['attachment'] = $filename;
+        $validated = $request->validated();
+        $userId = auth()->id();
+        $date = $validated['timesheet_date'];
+        $entries = $request->input('entries', []);
+
+        foreach ($entries as $idx => $entry) {
+            $data = [
+                'timesheet_date' => $date,
+                'project_id' => $entry['project_id'],
+                'activity_id' => $entry['activity_id'],
+                'description' => $entry['description'] ?? null,
+                'hours_spent' => $entry['hours_spent'],
+                'created_by' => $userId,
+            ];
+
+            // handle per-entry attachment if present
+            if ($request->hasFile("entries.{$idx}.attachment")) {
+                $file = $request->file("entries.{$idx}.attachment");
+                $filename = $file
+                    ->storeAs($this->destinationPath . '/' . ($entry['project_id'] ?? '0'), time() . '_ts_' . $idx . '.' . $file->getClientOriginalExtension());
+                $data['attachment'] = $filename;
+            }
+
+            $this->timeSheets->create($data);
         }
-        $inputs['created_by'] = auth()->id();
 
-        $this->timeSheets->create($inputs);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Timesheet created successfully.',
+            ]);
+        }
 
-        return response()->json([
-            'message' => 'Timesheet created successfully.',
-        ]);
+        return redirect()
+            ->route('timesheet.index')
+            ->with('success_message', 'Timesheet created successfully.');
     }
 
     public function edit(ActivityTimeSheet $timesheet)

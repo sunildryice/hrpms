@@ -131,13 +131,20 @@ class TravelRequestPolicy
         if (!$travelRequest->departure_date || !$travelRequest->return_date) {
             return false;
         }
-        $start = \Carbon\Carbon::parse($travelRequest->departure_date);
-        $end = \Carbon\Carbon::parse($travelRequest->return_date);
-        $totalTravelDurationDays = $start->diffInDays($end) + 1;
-
+        $startDate = \Carbon\Carbon::parse($travelRequest->departure_date);
+        $endDate = \Carbon\Carbon::parse($travelRequest->return_date);
+        $period = \Carbon\CarbonPeriod::create($startDate, '1 day', $endDate);
         $itineraries = $travelRequest->travelRequestDayItineraries;
 
-        return $itineraries->count() == $totalTravelDurationDays;
+        foreach ($period as $date){
+            $exists = $itineraries->filter(function ($itinerary) use ($date) {
+                return $itinerary->date->format('Y-m-d') == $date->format('Y-m-d');
+            })->count();
+            if ($exists == 0){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

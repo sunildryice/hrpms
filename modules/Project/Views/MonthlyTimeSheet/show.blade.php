@@ -526,7 +526,7 @@
                                                                 </button>
                                                             </div>
                                                         @endif
-                                                        @if ($canAdd && $loop->parent->parent->last)
+                                                        @if ($canAdd && $loop->parent->parent->last && $loop->parent->last && $loop->last)
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-success add-entry-btn"
                                                                 data-date="{{ $dateYmd }}"

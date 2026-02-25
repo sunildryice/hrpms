@@ -130,7 +130,7 @@ class ClaimController extends Controller
         $travelClaim = $this->travelClaim->find($claimId);
         $this->authorize('update', $travelClaim);
         $reviewers = $this->user->permissionBasedUsers('finance-review-travel-claim');
-         $approvers = $this->user->getSupervisors($authUser);
+        $approvers = $this->user->getSupervisors($authUser);
 
         return view('TravelRequest::TravelClaim.edit')
             ->withAuthUser($authUser)

@@ -1488,8 +1488,8 @@
                                     <th style="width: 120px;">{{ __('label.activity') }}</th>
                                     <th>{{ __('label.planned-activities') }}</th>
                                     <th class="text-center">{{ __('label.accommodation') }}</th>
-                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
                                     <th class="text-center">{{ __('label.vehicle') }}</th>
+                                    <th class="text-center">{{ __('label.air-ticket') }}</th>
                                     <th class="air-ticket-col">{{ __('label.from') }}</th>
                                     <th class="air-ticket-col">{{ __('label.to') }}</th>
                                     <th class="air-ticket-col">{{ __('label.departure-time') }}</th>

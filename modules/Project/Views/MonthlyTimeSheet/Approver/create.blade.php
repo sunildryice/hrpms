@@ -8,6 +8,12 @@
             max-width: 350px;
             white-space: pre-line;
         }
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 350px;
+        }
     </style>
 
 @section('page_js')
@@ -26,13 +32,13 @@
                             },
                         },
                     },
-                    log_remarks: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Remarks is required',
-                            },
-                        },
-                    }
+                    // log_remarks: {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'Remarks is required',
+                    //         },
+                    //     },
+                    // }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -204,20 +210,20 @@
                                                     @endif
 
                                                     @if (!$projectPrinted)
-                                                        <td rowspan="{{ $projectItems->count() }}">
+                                                        <td class="wrap-text" rowspan="{{ $projectItems->count() }}">
                                                             {{ optional($item->project)->short_name ?? 'N/A' }}
                                                         </td>
                                                         @php $projectPrinted = true; @endphp
                                                     @endif
 
                                                     @if (!$activityPrinted)
-                                                        <td rowspan="{{ $activityItems->count() }}">
+                                                        <td class="wrap-text" rowspan="{{ $activityItems->count() }}">
                                                             {{ optional($item->activity)->title ?? 'N/A' }}
                                                         </td>
                                                         @php $activityPrinted = true; @endphp
                                                     @endif
 
-                                                    <td>{{ $item->description ?? '—' }}</td>
+                                                    <td class="wrap-text">{{ $item->description ?? '—' }}</td>
                                                     <td>
                                                         {{ is_numeric($item->hours_spent) ? number_format($item->hours_spent, 2) : $item->hours_spent ?? '—' }}
                                                     </td>
@@ -262,7 +268,7 @@
                                 <div class="row mb-2">
                                     <div class="col-lg-3">
                                         <div class="d-flex align-items-start h-100">
-                                            <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                            <label for="validationRemarks" class="form-label">Remarks</label>
                                         </div>
                                     </div>
                                     <div class="col-lg-9">

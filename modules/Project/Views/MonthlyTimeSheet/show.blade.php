@@ -2,6 +2,17 @@
 
 @section('title', 'Monthly Timesheet Detail')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 350px;
+        }
+    </style>
+@endsection
+
 @php
     $today = \Carbon\Carbon::today()->format('Y-m-d');
     $canAddToday =
@@ -146,7 +157,7 @@
 
                 $.post('{{ route('monthly-timesheet.inline.store', $timeSheet->id) }}', payload)
                     .done(() => {
-                        toastr.success("Entry added");
+                        toastr.success("Timesheet added");
                         location.reload();
                     })
                     .fail(xhr => {
@@ -228,8 +239,8 @@
                     method: 'POST',
                     data: payload,
                     success: function() {
-                        toastr.success("Entry updated successfully");
-                        location.reload(); 
+                        toastr.success("Timesheet updated successfully");
+                        location.reload();
                     },
                     error: function(xhr) {
                         toastr.error(xhr.responseJSON?.error || "Update failed");
@@ -315,7 +326,7 @@
                             _token: '{{ csrf_token() }}'
                         },
                         success: function() {
-                            toastr.success("Entry deleted");
+                            toastr.success("Timesheet deleted");
                             location.reload();
                         },
                         error: function(xhr) {
@@ -460,7 +471,7 @@
 
                                                     @if (!$projPrinted)
                                                         <td rowspan="{{ $projItems->count() }}"
-                                                            class="project-cell align-middle"
+                                                            class="project-cell align-middle wrap-text"
                                                             data-project-id="{{ $item->project_id ?? '' }}">
                                                             {{ optional($item->project)->title ?? (optional($item->project)->short_name ?? '—') }}
                                                         </td>
@@ -469,14 +480,14 @@
 
                                                     @if (!$actPrinted)
                                                         <td rowspan="{{ $actItems->count() }}"
-                                                            class="activity-cell align-middle"
+                                                            class="activity-cell align-middle wrap-text"
                                                             data-activity-id="{{ $item->activity_id ?? '' }}">
                                                             {{ optional($item->activity)->title ?? '—' }}
                                                         </td>
                                                         @php $actPrinted = true; @endphp
                                                     @endif
 
-                                                    <td class="description-cell">{{ $item->description ?: '—' }}</td>
+                                                    <td class="description-cell wrap-text">{{ $item->description ?: '—' }}</td>
                                                     <td class="hours-cell text-end">
                                                         {{ number_format($item->hours_spent, 2) }}</td>
 
@@ -512,7 +523,8 @@
                                                         @if ($canAdd && $loop->parent->parent->last)
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-success add-entry-btn"
-                                                                data-date="{{ $dateYmd }}" title="Add another timesheet">
+                                                                data-date="{{ $dateYmd }}"
+                                                                title="Add another timesheet">
                                                                 <i class="bi bi-plus-lg"></i>
                                                             </button>
                                                         @endif

@@ -68,6 +68,11 @@
                 $new.attr('data-date', dateYmd);
                 $new.find('.date-display').text(moment(dateYmd, 'YYYY-MM-DD').format('DD, MMM YYYY'));
 
+                $new.find('.project-select, .activity-select').select2({
+                    placeholder: "Select...",
+                    width: '100%',
+                });
+
                 initCascade($new);
 
                 let $targetRow = $(`tr:has(td:contains("No timesheet entries"))`)
@@ -487,7 +492,8 @@
                                                         @php $actPrinted = true; @endphp
                                                     @endif
 
-                                                    <td class="description-cell wrap-text">{{ $item->description ?: '—' }}</td>
+                                                    <td class="description-cell wrap-text">{{ $item->description ?: '—' }}
+                                                    </td>
                                                     <td class="hours-cell text-end">
                                                         {{ number_format($item->hours_spent, 2) }}</td>
 
@@ -634,7 +640,7 @@
                         <tr class="new-entry-row table-light">
                             <td class="date-display align-middle fw-bold text-center"></td>
                             <td>
-                                <select class="form-select project-select" required>
+                                <select class="form-control select2 project-select" required>
                                     <option value="">Select Project</option>
                                     @foreach ($projects as $p)
                                         <option value="{{ $p->id }}"
@@ -645,7 +651,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-select activity-select" required>
+                                <select class="form-control select2 activity-select" required>
                                     <option value="">Select Activity</option>
                                 </select>
                             </td>

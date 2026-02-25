@@ -2,6 +2,17 @@
 
 @section('title', 'Monthly Timesheet Detail')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 350px;
+        }
+    </style>
+@endsection
+
 @php
     $today = \Carbon\Carbon::today()->format('Y-m-d');
     $canAddToday =
@@ -56,6 +67,11 @@
                 const $new = $($('#new-entry-template').html());
                 $new.attr('data-date', dateYmd);
                 $new.find('.date-display').text(moment(dateYmd, 'YYYY-MM-DD').format('DD, MMM YYYY'));
+
+                $new.find('.project-select, .activity-select').select2({
+                    placeholder: "Select...",
+                    width: '100%',
+                });
 
                 initCascade($new);
 
@@ -146,7 +162,7 @@
 
                 $.post('{{ route('monthly-timesheet.inline.store', $timeSheet->id) }}', payload)
                     .done(() => {
-                        toastr.success("Entry added");
+                        toastr.success("Timesheet added");
                         location.reload();
                     })
                     .fail(xhr => {
@@ -228,8 +244,8 @@
                     method: 'POST',
                     data: payload,
                     success: function() {
-                        toastr.success("Entry updated successfully");
-                        location.reload(); 
+                        toastr.success("Timesheet updated successfully");
+                        location.reload();
                     },
                     error: function(xhr) {
                         toastr.error(xhr.responseJSON?.error || "Update failed");
@@ -315,7 +331,7 @@
                             _token: '{{ csrf_token() }}'
                         },
                         success: function() {
-                            toastr.success("Entry deleted");
+                            toastr.success("Timesheet deleted");
                             location.reload();
                         },
                         error: function(xhr) {
@@ -460,7 +476,7 @@
 
                                                     @if (!$projPrinted)
                                                         <td rowspan="{{ $projItems->count() }}"
-                                                            class="project-cell align-middle"
+                                                            class="project-cell align-middle wrap-text"
                                                             data-project-id="{{ $item->project_id ?? '' }}">
                                                             {{ optional($item->project)->title ?? (optional($item->project)->short_name ?? '—') }}
                                                         </td>
@@ -469,14 +485,15 @@
 
                                                     @if (!$actPrinted)
                                                         <td rowspan="{{ $actItems->count() }}"
-                                                            class="activity-cell align-middle"
+                                                            class="activity-cell align-middle wrap-text"
                                                             data-activity-id="{{ $item->activity_id ?? '' }}">
                                                             {{ optional($item->activity)->title ?? '—' }}
                                                         </td>
                                                         @php $actPrinted = true; @endphp
                                                     @endif
 
-                                                    <td class="description-cell">{{ $item->description ?: '—' }}</td>
+                                                    <td class="description-cell wrap-text">{{ $item->description ?: '—' }}
+                                                    </td>
                                                     <td class="hours-cell text-end">
                                                         {{ number_format($item->hours_spent, 2) }}</td>
 
@@ -509,10 +526,11 @@
                                                                 </button>
                                                             </div>
                                                         @endif
-                                                        @if ($canAdd && $loop->parent->parent->last)
+                                                        @if ($canAdd && $loop->parent->parent->last && $loop->parent->last && $loop->last)
                                                             <button type="button"
                                                                 class="btn btn-sm btn-outline-success add-entry-btn"
-                                                                data-date="{{ $dateYmd }}" title="Add another timesheet">
+                                                                data-date="{{ $dateYmd }}"
+                                                                title="Add another timesheet">
                                                                 <i class="bi bi-plus-lg"></i>
                                                             </button>
                                                         @endif
@@ -622,7 +640,7 @@
                         <tr class="new-entry-row table-light">
                             <td class="date-display align-middle fw-bold text-center"></td>
                             <td>
-                                <select class="form-select project-select" required>
+                                <select class="form-control select2 project-select" required>
                                     <option value="">Select Project</option>
                                     @foreach ($projects as $p)
                                         <option value="{{ $p->id }}"
@@ -633,7 +651,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-select activity-select" required>
+                                <select class="form-control select2 activity-select" required>
                                     <option value="">Select Activity</option>
                                 </select>
                             </td>

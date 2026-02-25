@@ -25,14 +25,14 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id'=>'required',
-            'log_remarks'=>'required',
+            'log_remarks'=>'nullable',
         ];
     }
 
     public function messages()
     {
         return [
-            'log_remarks.required'=>'Remarks is required.'
+            // 'log_remarks.required'=>'Remarks is required.'
         ];
     }
 }

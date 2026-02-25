@@ -100,6 +100,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('/monthly-timesheet/summary/index', [MonthlyTimeSheetSummaryController::class, 'index'])->name('monthly-timesheet.summary.index');
     Route::get('/monthly-timesheet/summary/{year}/{month}/show', [MonthlyTimeSheetSummaryController::class, 'show'])->name('monthly-timesheet.summary.show');
+    Route::get('/monthly-timesheet/{year}/{month}/employee/{timesheet}', [MonthlyTimeSheetSummaryController::class, 'showMonthlyTimesheet'])->name('monthly-timesheet.summary.employee.show');
 
     Route::get('/work-plan', [WorkPlanController::class, 'index'])->name('work-plan.index');
     Route::post('/work-plan/store', [WorkPlanDetailController::class, 'store'])->name('work-plan.store');

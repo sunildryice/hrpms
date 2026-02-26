@@ -44,6 +44,7 @@ class GenerateTimesheet extends Command
                 $endDate = Carbon::now()->addMonthNoOverflow()->day(25);
             }
             $monthName = Carbon::create($endDate)->format('M');
+            $month = Carbon::create($endDate)->format('m');
 
             $timeSheet = $this->timeSheets->getTimeSheetOfUserByYearAndMonth($user->id, $year, $month);
 

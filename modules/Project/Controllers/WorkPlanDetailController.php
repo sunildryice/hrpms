@@ -43,7 +43,9 @@ class WorkPlanDetailController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('work_plan_date', function ($row) {
-                    return optional($row->workPlan->from_date)->format('M j, Y');
+
+                    $formattedDate = $row->work_plan_date ? Carbon::parse($row->work_plan_date)->format('M d, Y') : '-';
+                    return $formattedDate;
                 })
                 ->editColumn('status', function ($row) {
                     return $row->status ? ucfirst(str_replace('_', ' ', $row->status)) : 'Not Started';
@@ -137,13 +139,22 @@ class WorkPlanDetailController extends Controller
         $data = $request->validated();
         $user = auth()->user();
 
-        // Use work_plan_date for both from_date and to_date
-        $data['from_date'] = $data['work_plan_date'];
-        $data['to_date'] = $data['work_plan_date'];
-
         if (!isset($data['entries']) || !is_array($data['entries'])) {
             return response()->json(['message' => 'No entries provided.'], 422);
         }
+
+        // determine overall plan range from the entry dates (week bounds already validated)
+        $dates = collect($data['entries'])
+            ->pluck('work_plan_date')
+            ->filter()
+            ->sort();
+
+        if ($dates->isEmpty()) {
+            return response()->json(['message' => 'Entry dates are required.'], 422);
+        }
+
+        $data['from_date'] = $dates->first();
+        $data['to_date'] = $dates->last();
 
         // Create a temporary instance to check policy against the date
         $checkPlan = new WorkPlan(['from_date' => $data['from_date']]);
@@ -160,9 +171,10 @@ class WorkPlanDetailController extends Controller
             $data['to_date']
         );
 
-        // Save each entry with its members
+        // Save each entry with its members and date
         foreach ($data['entries'] as $entry) {
             $entryData = [
+                'work_plan_date' => $entry['work_plan_date'] ?? null,
                 'project_id' => $entry['project_id'] ?? null,
                 'activity_id' => $entry['activity_id'] ?? null,
                 'planned_task' => $entry['planned_task'] ?? null,
@@ -199,6 +211,7 @@ class WorkPlanDetailController extends Controller
     {
         $data = $request->validated();
         $data['members'] = $request->input('members', []);
+        $data['work_plan_date'] = $request->input('work_plan_date');
         $detail = $this->workPlans->findDetailById($id);
 
         if (auth()->user()->cannot('update', $detail->workPlan)) {
@@ -206,6 +219,7 @@ class WorkPlanDetailController extends Controller
         }
 
         $this->workPlans->updateDetail($id, [
+            'work_plan_date' => $data['work_plan_date'],
             'project_id' => $data['project_id'],
             'activity_id' => $data['activity_id'],
             'planned_task' => $data['planned_task'],

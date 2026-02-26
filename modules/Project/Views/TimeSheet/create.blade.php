@@ -119,7 +119,11 @@
                 function initRow($row) {
                     const idx = $row.data('row-index');
                     // make sure the project dropdown starts blank (avoids Chrome autofill)
-                    $row.find('.project-select').val('').trigger('change.select2');
+                    $row.find('.project-select').val('').trigger('change').trigger('change.select2');
+                    // in case Chrome still tries to autofill on focus, clear again
+                    $row.find('.project-select').on('focus', function() {
+                        $(this).val('').trigger('change').trigger('change.select2');
+                    });
 
                     $row.find('.select2').select2({
                         placeholder: 'Select...',
@@ -373,7 +377,7 @@
                         <td class="col-project">
                             <select name="entries[__IDX__][project_id]" autocomplete="off"
                                 class="form-control select2 project-select" required>
-                                <option value="" disabled selected>Select Project</option>
+                                <option value="">Select Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}" data-activities='@json($project->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
                                         {{ $project->short_name ?: $project->title }}
@@ -388,7 +392,7 @@
                             </select>
                         </td>
                         <td>
-                            <textarea name="entries[__IDX__][description]" class="form-control" rows="3" required></textarea>
+                            <textarea name="entries[__IDX__][description]" class="form-control" rows="4" required></textarea>
                         </td>
                         <td>
                             <input type="number" step="0.01" min="0.01" max="24"

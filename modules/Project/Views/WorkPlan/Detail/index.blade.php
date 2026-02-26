@@ -15,6 +15,39 @@
          .select2-container--default .select2-selection--single .select2-selection__arrow {
              height: 36px !important;
          }
+
+         /* column width helpers (match create view) */
+         .col-date {
+             width: 12%;
+             overflow: hidden;
+             word-wrap: break-word;
+         }
+
+         .col-project {
+             width: 18%;
+             overflow: hidden;
+             word-wrap: break-word;
+         }
+
+         .col-activity {
+             width: 18%;
+             overflow: hidden;
+             word-wrap: break-word;
+         }
+
+         .col-task {}
+
+         .col-members {
+             width: 30%;
+             overflow: hidden;
+             word-wrap: break-word;
+         }
+
+         .col-action {
+             width: 8%;
+             overflow: hidden;
+             word-wrap: break-word;
+         }
      </style>
  @endsection
 
@@ -22,6 +55,10 @@
      <script type="text/javascript">
          $(document).ready(function() {
              $('#navbarVerticalMenu').find('#weekly-plan-index').addClass('active');
+
+             // week bounds for datepicker inside modal forms
+             var wpMin = '{{ $week['start_date']->format('Y-m-d') }}';
+             var wpMax = '{{ $week['end_date']->format('Y-m-d') }}';
 
              $('.activity-select').select2({
                  dropdownParent: $('#addPlanModal'),
@@ -181,6 +218,7 @@
                          const $projectSelect = $form.find('.project-select');
                          const $activitySelect = $form.find('.activity-select');
                          const $membersSelect = $form.find('.members-select');
+                         const $dateInput = $form.find('.wp-date');
 
                          const parseJsonPayload = function(payload) {
                              if (!payload) return [];
@@ -285,11 +323,36 @@
                              placeholder: 'Select Members'
                          });
 
+                         // initialize datepicker if present
+                         if ($dateInput.length) {
+                             $dateInput.datepicker({
+                                 startDate: wpMin,
+                                 endDate: wpMax,
+                                 autoclose: true,
+                                 autoHide: true,
+                                 format: 'yyyy-mm-dd',
+                                 zIndex: 1200
+                             }).on('show', function() {
+                                 $(this).attr('readonly', true);
+                             });
+                         }
+
                          refreshDependentSelects(true);
 
                          const form = document.getElementById('addPlanForm');
                          FormValidation.formValidation(form, {
                              fields: {
+                                 work_plan_date: {
+                                     validators: {
+                                         notEmpty: {
+                                             message: 'Date is required'
+                                         },
+                                         date: {
+                                             format: 'YYYY-MM-DD',
+                                             message: 'Invalid date'
+                                         }
+                                     }
+                                 },
                                  project_id: {
                                      validators: {
                                          notEmpty: {
@@ -393,15 +456,15 @@
                  <table class="table" id="WeeklyPlanTable">
                      <thead class="bg-light">
                          <tr>
-                             <th>Date</th>
-                             <th>Project</th>
-                             <th>Activity</th>
-                             <th>Planned Tasks</th>
+                             <th class="col-date">Date</th>
+                             <th class="col-project">Project</th>
+                             <th class="col-activity">Activity</th>
+                             <th class="col-task">Planned Tasks</th>
                              <th>Status</th>
                              <th>Remarks</th>
-                             <th>Members</th>
+                             <th class="col-members">Members</th>
                              @if ($isEditable)
-                                 <th>{{ __('label.action') }}</th>
+                                 <th class="col-action">{{ __('label.action') }}</th>
                              @endif
                          </tr>
                      </thead>

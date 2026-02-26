@@ -2,6 +2,7 @@
 
 namespace Modules\Project\Requests\WorkPlan;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -23,14 +24,36 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        // the request can be used for both creating multiple entries (store) and
+        // updating a single detail (update).  differentiate based on presence of
+        // the `entries` array.
+        if ($this->has('entries')) {
+            return [
+                'entries' => 'required|array|min:1',
+                'entries.*.work_plan_date' => [
+                    'required',
+                    'date',
+                ],
+                'entries.*.project_id' => 'required|exists:projects,id',
+                'entries.*.activity_id' => 'required|exists:project_activities,id',
+                'entries.*.planned_task' => 'required|string|max:500',
+                'entries.*.members' => 'required|array|min:1',
+                'entries.*.members.*' => 'exists:users,id',
+                'reason' => 'nullable|string',
+            ];
+        }
+
+        // single-detail update
         return [
-            'work_plan_date' => 'required|date',
-            'entries' => 'required|array|min:1',
-            'entries.*.project_id' => 'required|exists:projects,id',
-            'entries.*.activity_id' => 'required|exists:project_activities,id',
-            'entries.*.planned_task' => 'nullable|string',
-            'entries.*.members' => 'nullable|array',
-            'entries.*.members.*' => 'exists:users,id',
+            'work_plan_date' => [
+                'required',
+                'date',
+            ],
+            'project_id' => 'required|exists:projects,id',
+            'activity_id' => 'required|exists:project_activities,id',
+            'planned_task' => 'required|string|max:500',
+            'members' => 'required|array|min:1',
+            'members.*' => 'exists:users,id',
             'reason' => 'nullable|string',
         ];
     }
@@ -39,8 +62,15 @@ class StoreRequest extends FormRequest
     {
         return [
             'entries.required' => 'Please add at least one work plan entry.',
+            'entries.*.work_plan_date.required' => 'Date is required for each entry.',
             'entries.*.project_id.required' => 'Project is required for each entry.',
             'entries.*.activity_id.required' => 'Activity is required for each entry.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        dd($validator->errors());
+        return parent::failedValidation($validator);
     }
 }

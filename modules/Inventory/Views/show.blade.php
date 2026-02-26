@@ -37,12 +37,12 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'purchase_date',
-                        name: 'purchase_date',
-                        orderable: false,
-                        searchable: false
-                    },
+                    // {
+                    //     data: 'purchase_date',
+                    //     name: 'purchase_date',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                     {
                         data: 'serial_number',
                         name: 'serial_number',
@@ -480,7 +480,7 @@
                                                     <tr>
                                                         <th>{{ __('label.sn') }}</th>
                                                         <th scope="col">{{ __('label.asset-number') }}</th>
-                                                        <th scope="col">{{ __('label.purchase-date') }}</th>
+                                                        {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.room-no') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>

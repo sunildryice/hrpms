@@ -30,6 +30,13 @@
                         data: 'status_badge',
                         name: 'status_name'
                     },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
                 ],
             });
         });
@@ -45,7 +52,8 @@
                             href="{{ route('dashboard.index') }}">Home</a></li>
                     <li class="breadcrumb-item"><a class="text-decoration-none text-dark"
                             href="{{ route('monthly-timesheet.summary.index') }}">Monthly Timesheet Summary</a></li>
-                    <li class="breadcrumb-item active">{{ $year }} {{ $timesheets?->first()->month_name ?? '' }}</li>
+                    <li class="breadcrumb-item active">{{ $year }} {{ $timesheets?->first()->month_name ?? '' }}
+                    </li>
                 </ol>
             </nav>
             <h4 class="m-0 mt-1 fs-6 text-uppercase fw-bold text-primary">
@@ -61,6 +69,7 @@
                             <th>{{ __('label.sn') }}</th>
                             <th>{{ __('label.employee') }}</th>
                             <th>{{ __('label.status') }}</th>
+                            <th>{{ __('label.action') }}</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

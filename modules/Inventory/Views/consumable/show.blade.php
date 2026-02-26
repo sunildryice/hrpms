@@ -344,9 +344,9 @@
                                                         {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
+                                                        <th scope="col">{{ __('label.model-number') }}</th>
                                                         <th scope="col">{{ __('label.brand') }}</th>
                                                         <th scope="col">{{ __('label.specification') }}</th>
-                                                        <th scope="col">{{ __('label.remarks') }}</th>
                                                         <th>{{ __('label.action') }}</th>
                                                     </tr>
                                                 </thead>

@@ -16,7 +16,9 @@ class UpdateRequest extends FormRequest
             'serial_number' => 'nullable',
             'remarks'       => 'nullable',
             'voucher_number' => 'nullable',
-            'room_number' => 'nullable'
+            'room_number' => 'nullable',
+            'brand' => 'nullable|exists:lkup_brands,id',
+            'model_number' => 'nullable',
         ];
     }
 

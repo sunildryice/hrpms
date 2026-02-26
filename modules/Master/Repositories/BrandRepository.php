@@ -11,4 +11,9 @@ class BrandRepository extends Repository
     {
         $this->model = $brand;
     }
+
+    public function getBrands()
+    {
+        return $this->model->orderBy('title', 'asc')->get();
+    }
 }

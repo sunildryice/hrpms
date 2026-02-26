@@ -35,11 +35,11 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="remarks" class="m-0">Remarks</label>
+                    <label for="remarks" class="m-0">Specification</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea class="form-control" name="remarks" id="remarks" rows="2" placeholder="Remarks">{{ $asset->remarks }}</textarea>
+                <textarea class="form-control" name="remarks" id="remarks" rows="2" placeholder="Specification">{{ $asset->remarks }}</textarea>
             </div>
         </div>
 

@@ -470,7 +470,7 @@
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.room-no') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
-                                                        <th scope="col">{{ __('label.remarks') }}</th>
+                                                        <th scope="col">{{ __('label.specification') }}</th>
                                                         <th>{{ __('label.action') }}</th>
                                                     </tr>
                                                 </thead>

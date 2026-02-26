@@ -62,6 +62,7 @@ return [
     'b' => 'B',
     'bank-name' => 'Bank Name',
     'branch-name' => 'Branch Name',
+    'brands' => 'Brands',
     'bill-amount' => 'Bill Amount',
     'bill-categories' => 'Bill Categories',
     'bill-category' => 'Bill Category',

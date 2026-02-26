@@ -282,7 +282,7 @@
                             <label class="form-label required-label m-0">Date</label>
                         </div>
                     </div>
-                    <div class="col-lg-9">
+                    <div class="col-lg-2">
                         <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
                             onfocus="this.blur()" autocomplete="off" />
                     </div>

@@ -32,6 +32,8 @@ class TimeSheetController extends Controller
             $data = $this->timeSheets->getQuery()
                 ->with(['project', 'activity'])
                 ->where('created_by', $authUser->id)
+                ->orderBy('timesheet_date', 'asc')
+                ->orderBy('project_id', 'asc')
                 ->get();
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -42,6 +44,11 @@ class TimeSheetController extends Controller
                     return $row->activity?->title;
                 })
                 ->addColumn('timesheet_date', function ($row) {
+                    // Return raw date for grouping
+                    return $row->timesheet_date?->format('Y-m-d');
+                })
+                ->addColumn('timesheet_date_display', function ($row) {
+                    // Display formatted date
                     return $row->timesheet_date?->format('M d, Y');
                 })
                 ->addColumn('attachment', function ($row) {

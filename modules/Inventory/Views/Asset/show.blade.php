@@ -504,7 +504,7 @@
                                                                 <th scope="col">{{ __('label.item') }}</th>
                                                                 <th scope="col">{{ __('label.model-number') }}</th>
                                                                 <th scope="col">{{ __('label.brand') }}</th>
-                                                                <th scope="col">{{ __('label.remarks') }}</th>
+                                                                <th scope="col">{{ __('label.specification') }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>

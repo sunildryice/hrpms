@@ -75,6 +75,7 @@
 
                 initCascade($new);
 
+                // determine insertion point
                 let $targetRow = $(`tr:has(td:contains("No timesheet entries"))`)
                     .filter(function() {
                         return $(this).find('td:first').text().trim().includes(
@@ -88,6 +89,21 @@
 
                 if (!$targetRow.length) {
                     $targetRow = $(`tr.add-row-indicator[data-date="${dateYmd}"]`);
+                }
+
+                const hasExisting = $(`tr[data-date-group="${dateYmd}"]`).not('.new-entry-row').length > 0;
+                if (hasExisting && $targetRow.length && !$targetRow.find(
+                        'td:contains("No timesheet entries")').length) {
+                    // keep the cell but make it invisible so it still occupies space
+                    $new.find('td.date-display').addClass('invisible');
+
+                    // bump rowspan on the existing date cell
+                    const $first = $(`tr[data-date-group="${dateYmd}"]`).not('.new-entry-row').first();
+                    const $firstDateCell = $first.find('td.date-display');
+                    if ($firstDateCell.length) {
+                        const oldRowspan = parseInt($firstDateCell.attr('rowspan') || '1', 10);
+                        $firstDateCell.attr('rowspan', oldRowspan + 1);
+                    }
                 }
 
                 if ($targetRow.length) {
@@ -160,16 +176,37 @@
                     hours_spent: hours
                 };
 
+                // disable inputs/buttons on this row and show inline spinner
+                const $saveBtn = $row.find('.save-new');
+                const originalSaveHtml = $saveBtn.html();
+                $row.find('input, select, button').prop('disabled', true);
+                $saveBtn.html(
+                    '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+                );
+
                 $.post('{{ route('monthly-timesheet.inline.store', $timeSheet->id) }}', payload)
                     .done(() => {
                         toastr.success("Timesheet added");
-                        location.reload();
+                        refreshTimeSheetSection();
                     })
                     .fail(xhr => {
                         toastr.error(xhr.responseJSON?.error || "Failed to save");
+                        // re-enable row so user can try again
+                        $row.find('input, select, button').prop('disabled', false);
+                        $saveBtn.html(originalSaveHtml);
                     });
             });
 
+
+            // helper to reload table body via ajax (avoids full page refresh)
+            function refreshTimeSheetSection() {
+                $.get('{{ route('monthly-timesheet.show', $timeSheet->id) }}', function(html) {
+                    const $newBody = $(html).find('#MonthlyTimeSheetTable tbody');
+                    if ($newBody.length) {
+                        $('#MonthlyTimeSheetTable tbody').replaceWith($newBody);
+                    }
+                });
+            }
 
             // OPEN MODAL 
             $(document).on('click', '.open-edit-modal', function() {
@@ -401,7 +438,9 @@
                                 <th>Activities</th>
                                 <th>Tasks</th>
                                 <th>Hours</th>
-                                <th style="width: 160px; text-align: center;">Action</th>
+                                @if (false)
+                                    <th style="width: 160px; text-align: center;">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -434,6 +473,7 @@
                                     $canAdd = $canModify && !$isAbsence;
                                 @endphp
 
+
                                 @if ($items->isEmpty())
                                     <tr class="date-group-start {{ $loop->first ? '' : 'border-top border-2' }}"
                                         data-date-group="{{ $dateYmd }}">
@@ -441,14 +481,14 @@
                                         <td colspan="4" class="text-center text-muted fw-bold py-3">
                                             {!! $dayData['reason'] ?? 'No timesheet entries' !!}
                                         </td>
-                                        <td class="text-center">
+                                        {{-- <td class="text-center">
                                             @if ($canAdd)
                                                 <button type="button" class="btn btn-sm btn-outline-success add-entry-btn"
                                                     data-date="{{ $dateYmd }}" title="Add">
                                                     <i class="bi bi-plus-lg"></i>
                                                 </button>
                                             @endif
-                                        </td>
+                                        </td> --}}
                                     </tr>
                                 @else
                                     @php
@@ -478,7 +518,7 @@
                                                         <td rowspan="{{ $projItems->count() }}"
                                                             class="project-cell align-middle wrap-text"
                                                             data-project-id="{{ $item->project_id ?? '' }}">
-                                                            {{ optional($item->project)->title ?? (optional($item->project)->short_name ?? '—') }}
+                                                            {{ optional($item->project)->short_name ?? (optional($item->project)->title ?? '—') }}
                                                         </td>
                                                         @php $projPrinted = true; @endphp
                                                     @endif
@@ -497,44 +537,48 @@
                                                     <td class="hours-cell text-end">
                                                         {{ number_format($item->hours_spent, 2) }}</td>
 
-                                                    <td class="text-center">
-                                                        @if ($canModify && $item->created_by == auth()->id())
-                                                            <div class="btn-group btn-group-sm normal-actions gap-2">
-                                                                <button class="btn btn-outline-primary open-edit-modal"
-                                                                    data-id="{{ $item->id }}"
-                                                                    data-date="{{ $item->timesheet_date?->format('Y-m-d') }}"
-                                                                    data-project="{{ $item->project_id }}"
-                                                                    data-activity="{{ $item->activity_id }}"
-                                                                    data-description="{{ $item->description }}"
-                                                                    data-hours="{{ $item->hours_spent }}" title="Edit">
-                                                                    <i class="bi bi-pencil-square"></i>
-                                                                </button>
-                                                                <button class="btn btn-outline-danger delete-entry"
-                                                                    data-id="{{ $item->id }}" title="Delete">
-                                                                    <i class="bi bi-trash"></i>
-                                                                </button>
-                                                            </div>
+                                                    @if (false)
+                                                        <td class="text-center">
+                                                            @if ($canModify && $item->created_by == auth()->id())
+                                                                <div class="btn-group btn-group-sm normal-actions gap-2">
+                                                                    <button class="btn btn-outline-primary open-edit-modal"
+                                                                        data-id="{{ $item->id }}"
+                                                                        data-date="{{ $item->timesheet_date?->format('Y-m-d') }}"
+                                                                        data-project="{{ $item->project_id }}"
+                                                                        data-activity="{{ $item->activity_id }}"
+                                                                        data-description="{{ $item->description }}"
+                                                                        data-hours="{{ $item->hours_spent }}"
+                                                                        title="Edit">
+                                                                        <i class="bi bi-pencil-square"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-outline-danger delete-entry"
+                                                                        data-id="{{ $item->id }}" title="Delete">
+                                                                        <i class="bi bi-trash"></i>
+                                                                    </button>
+                                                                </div>
 
-                                                            <div class="btn-group btn-group-sm edit-actions d-none gap-2">
-                                                                <button class="btn btn-success save-entry"
-                                                                    data-id="{{ $item->id }}" title="Save">
-                                                                    <i class="bi bi-check-lg"></i>
+                                                                <div
+                                                                    class="btn-group btn-group-sm edit-actions d-none gap-2">
+                                                                    <button class="btn btn-success save-entry"
+                                                                        data-id="{{ $item->id }}" title="Save">
+                                                                        <i class="bi bi-check-lg"></i>
+                                                                    </button>
+                                                                    <button class="btn btn-secondary cancel-entry"
+                                                                        title="Cancel">
+                                                                        <i class="bi bi-x-lg"></i>
+                                                                    </button>
+                                                                </div>
+                                                            @endif
+                                                            @if ($canAdd && $loop->parent->parent->last && $loop->parent->last && $loop->last)
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-outline-success add-entry-btn"
+                                                                    data-date="{{ $dateYmd }}"
+                                                                    title="Add another timesheet">
+                                                                    <i class="bi bi-plus-lg"></i>
                                                                 </button>
-                                                                <button class="btn btn-secondary cancel-entry"
-                                                                    title="Cancel">
-                                                                    <i class="bi bi-x-lg"></i>
-                                                                </button>
-                                                            </div>
-                                                        @endif
-                                                        @if ($canAdd && $loop->parent->parent->last && $loop->parent->last && $loop->last)
-                                                            <button type="button"
-                                                                class="btn btn-sm btn-outline-success add-entry-btn"
-                                                                data-date="{{ $dateYmd }}"
-                                                                title="Add another timesheet">
-                                                                <i class="bi bi-plus-lg"></i>
-                                                            </button>
-                                                        @endif
-                                                    </td>
+                                                            @endif
+                                                        </td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         @endforeach
@@ -582,7 +626,7 @@
                                                     @foreach ($projects as $p)
                                                         <option value="{{ $p->id }}"
                                                             data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
-                                                            {{ $p->title ?: $p->short_name }}
+                                                            {{ $p->short_name ?: $p->title }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -645,7 +689,7 @@
                                     @foreach ($projects as $p)
                                         <option value="{{ $p->id }}"
                                             data-activities='@json($p->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title ?? '']))'>
-                                            {{ $p->title ?: $p->short_name }}
+                                            {{ $p->short_name }}
                                         </option>
                                     @endforeach
                                 </select>

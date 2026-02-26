@@ -53,6 +53,8 @@ class InventoryAssetController extends Controller
                     return $inventoryItem->getPurchaseDate();
                 })->addColumn('item_name', function ($row) use ($inventoryItem) {
                     return $inventoryItem->getItemName();
+                })->addColumn('brand_name', function ($row) {
+                    return $row->getBrandName();
                 })->addColumn('asset_number', function ($row) {
                     return $row->getAssetNumber();
                 })->addColumn('action', function ($row) use ($authUser) {

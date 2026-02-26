@@ -7,7 +7,7 @@
         .wrap-text {
             white-space: normal !important;
             word-break: break-word;
-            min-width: 250px;
+            min-width: 150px;
             max-width: 400px;
         }
     </style>
@@ -55,6 +55,14 @@
                         data: 'item_name',
                         name: 'item_name',
                         className: 'wrap-text'
+                    },
+                    {
+                        data: 'model_number',
+                        name: 'model_number',
+                    },
+                    {
+                        data: 'brand_name',
+                        name: 'brand_name',
                     },
                     {
                         data: 'remarks',
@@ -480,6 +488,8 @@
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.room-no') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
+                                                        <th scope="col">{{ __('label.model-number') }}</th>
+                                                        <th scope="col">{{ __('label.brand') }}</th>
                                                         <th scope="col">{{ __('label.specification') }}</th>
                                                         <th>{{ __('label.action') }}</th>
                                                     </tr>

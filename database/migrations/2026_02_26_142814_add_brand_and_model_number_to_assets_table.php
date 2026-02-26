@@ -13,8 +13,10 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('assets', function (Blueprint $table) {
-            $table->string('brand')->nullable()->after('serial_number');
-            $table->string('model_number')->nullable()->after('brand');
+            $table->unsignedBigInteger('brand_id')->nullable()->after('serial_number');
+            $table->string('model_number')->nullable()->after('brand_id');
+
+            $table->foreign('brand_id')->references('id')->on('lkup_brands');
         });
     }
 
@@ -26,7 +28,8 @@ return new class extends Migration {
     public function down()
     {
         Schema::table('assets', function (Blueprint $table) {
-            $table->dropColumn(['model_number', 'brand']);
+            $table->dropForeign(['brand_id']);
+            $table->dropColumn(['brand_id', 'model_number']);
         });
     }
 };

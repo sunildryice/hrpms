@@ -53,10 +53,10 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <select name="brand" id="brand" class="form-control select2">
+                <select name="brand_id" id="brand" class="form-control select2">
                     <option value="">Select Brand</option>
                     @foreach ($brands as $brand)
-                        <option value="{{ $brand->id }}" {{ $asset->brand == $brand->id ? 'selected' : '' }}>
+                        <option value="{{ $brand->id }}" {{ $asset->brand_id == $brand->id ? 'selected' : '' }}>
                             {{ $brand->title }}</option>
                     @endforeach
                 </select>

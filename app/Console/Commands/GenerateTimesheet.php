@@ -48,7 +48,7 @@ class GenerateTimesheet extends Command
             $timeSheet = $this->timeSheets->getTimeSheetOfUserByYearAndMonth($user->id, $year, $month);
 
             if (!$timeSheet) {
-                $this->timeSheets->create([
+                $upd = $this->timeSheets->create([
                     'year' => $year,
                     'month' => $month,
                     'month_name' => $monthName,
@@ -59,6 +59,7 @@ class GenerateTimesheet extends Command
                     'approver_id' => null,
                     'updated_by' => null,
                 ]);
+                $this->info($upd);
             }
         }
         $this->info("Timesheet generated for {$year} - {$month} if not exists.");

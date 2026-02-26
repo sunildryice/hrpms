@@ -109,6 +109,56 @@
                 }
             });
 
+
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+                e.preventDefault();
+                $('#timeSheetModal').find('.modal-content').html('');
+                $('#timeSheetModal').modal('show')
+                    .find('.modal-content')
+                    .load($(this).attr('href') || $(this).data('href'), function(response, status) {
+                        if (status === 'error') {
+                            toastr.error('Could not load form');
+                            return;
+                        }
+
+                        var $form = $('#timeSheetModal').find('#TimeSheetForm');
+                        if ($form.length) {
+                            // select2 for dropdowns
+                            $form.find('.select2').select2({
+                                dropdownParent: $('#timeSheetModal'),
+                                width: '100%'
+                            });
+
+                            // datepicker initialization (same as create)
+                            $form.find('[name="timesheet_date"]').datepicker({
+                                language: 'en-GB',
+                                autoHide: true,
+                                format: 'yyyy-mm-dd',
+                                zIndex: 2048,
+                                endDate: new Date(),
+                                todayHighlight: true,
+                                todayBtn: 'true'
+                            });
+                        }
+                    });
+            });
+
+            // handle create/edit form submission via AJAX
+            $(document).on('submit', '#TimeSheetForm', function(e) {
+                e.preventDefault();
+                var form = this;
+                var url = $(form).attr('action');
+                var method = $(form).attr('method') || 'POST';
+                var formData = new FormData(form);
+
+                // send regardless of PUT override (server handles method override)
+                ajaxSubmitFormData(url, method, formData, function(response) {
+                    $('#timeSheetModal').modal('hide');
+                    toastr.success(response.message || 'Saved successfully');
+                    oTable.ajax.reload();
+                });
+            });
+
             $('#TimeSheetTable').on('click', '.delete-record', function(e) {
                 e.preventDefault();
                 $object = $(this);
@@ -170,6 +220,15 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- modal for timesheet forms --}}
+    <div class="modal fade" id="timeSheetModal" tabindex="-1" aria-labelledby="timeSheetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                {{-- content loaded dynamically --}}
             </div>
         </div>
     </div>

@@ -278,13 +278,11 @@
 
                 <div class="row mb-2">
                     <div class="col-lg-3">
-                        <div class="d-flex align-items-start h-100">
+                        <div class=" h-100">
                             <label class="form-label required-label m-0">Date</label>
+                            <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
+                                readonly onfocus="this.blur()" autocomplete="off" />
                         </div>
-                    </div>
-                    <div class="col-lg-2">
-                        <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
-                            onfocus="this.blur()" autocomplete="off" />
                     </div>
                 </div>
 

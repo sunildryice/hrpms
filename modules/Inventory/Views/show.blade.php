@@ -37,12 +37,12 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'purchase_date',
-                        name: 'purchase_date',
-                        orderable: false,
-                        searchable: false
-                    },
+                    // {
+                    //     data: 'purchase_date',
+                    //     name: 'purchase_date',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                     {
                         data: 'serial_number',
                         name: 'serial_number',
@@ -297,13 +297,13 @@
                                     <span>
                                         Inventory Details
                                     </span>
-                                    @can('manage-inventory')
+                                    {{-- @can('manage-inventory')
                                         <span>
                                             <a class="btn btn-outline-primary btn-sm open-asset-edit-modal-form"
                                                 href="{{ route('inventories.edit', $inventory->id) }}" rel="tooltip"
                                                 title="Edit Inventory Details"><i class="bi bi-pencil-square"></i></a>
                                         </span>
-                                    @endcan
+                                    @endcan --}}
                                 </div>
                             </div>
                             <div class="card-body">
@@ -337,8 +337,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getUnitPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Unit Price"></span>
@@ -346,8 +345,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Price"></span>
@@ -355,8 +353,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getVatAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="VAT Amount"></span>
@@ -364,8 +361,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>
@@ -484,7 +480,7 @@
                                                     <tr>
                                                         <th>{{ __('label.sn') }}</th>
                                                         <th scope="col">{{ __('label.asset-number') }}</th>
-                                                        <th scope="col">{{ __('label.purchase-date') }}</th>
+                                                        {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.room-no') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>

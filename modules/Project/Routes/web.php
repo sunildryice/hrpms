@@ -105,13 +105,14 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('/work-plan', [WorkPlanController::class, 'index'])->name('work-plan.index');
     Route::post('/work-plan/store', [WorkPlanDetailController::class, 'store'])->name('work-plan.store');
-    Route::get('/work-plan/create', [WorkPlanDetailController::class, 'create'])->name('work-plan.create');
+    Route::get('/work-plan/{workPlan}/create', [WorkPlanDetailController::class, 'create'])->name('work-plan.create');
     Route::get('/work-plan/{id}/edit', [WorkPlanDetailController::class, 'edit'])->name('work-plan.edit');
     Route::put('/work-plan/{id}/update', [WorkPlanDetailController::class, 'update'])->name('work-plan.update');
     Route::put('/work-plan/{id}/update-status', [WorkPlanDetailController::class, 'updateStatus'])->name('work-plan.update-status');
     Route::delete('/work-plan/{id}/delete', [WorkPlanDetailController::class, 'destroy'])->name('work-plan.destroy');
     Route::get('/work-plan/get-activities', [WorkPlanDetailController::class, 'getActivities'])->name('work-plan.get-activities');
     Route::get('/work-plan/{workPlan}/details', [WorkPlanDetailController::class, 'index'])->name('work-plan.details');
+
 
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');

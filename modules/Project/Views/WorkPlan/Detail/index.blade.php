@@ -30,14 +30,13 @@
 
 
              var oTable = $('#WeeklyPlanTable').DataTable({
-                 processing: true,
                  serverSide: true,
                  ajax: window.location.href,
+                 scrollX: true,
                  columns: [{
-                         data: 'DT_RowIndex',
-                         name: 'DT_RowIndex',
-                         orderable: false,
-                         searchable: false
+                         data: 'work_plan_date',
+                         name: 'work_plan_date',
+                         defaultContent: ''
                      },
                      {
                          data: 'project.short_name',
@@ -380,9 +379,7 @@
              </div>
              <div class="add-info justify-content-end">
                  @if ($isEditable)
-                     <a href=""
-                         data-href="{{ route('work-plan.create', ['from_date' => $week['start_date']->format('Y-m-d'), 'to_date' => $week['end_date']->format('Y-m-d')]) }}"
-                         class="btn btn-primary btn-sm open-plan-modal">
+                     <a href="{{ route('work-plan.create', $workPlan->id) }}" class="btn btn-primary btn-sm">
                          <i class="bi bi-plus"></i> Add Plan
                      </a>
                  @endif
@@ -396,7 +393,7 @@
                  <table class="table" id="WeeklyPlanTable">
                      <thead class="bg-light">
                          <tr>
-                             <th>SN</th>
+                             <th>Date</th>
                              <th>Project</th>
                              <th>Activity</th>
                              <th>Planned Tasks</th>

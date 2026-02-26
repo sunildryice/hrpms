@@ -45,9 +45,14 @@ class TravelRequestReturned extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('travel.requests.edit', $this->travelRequest->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'));
+            ->greeting('Hey ' . $this->travelRequest->getRequesterName() . ',')
+            ->line('Your travel request (' . $this->travelRequest->getTravelRequestNumber() . ') has been returned for correction.')
+            ->line('Travel Number: ' . $this->travelRequest->getTravelRequestNumber())
+            ->line('Travel dates: ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())
+            ->line('Returned by: ' . ($this->travelRequest->getApproverName() ?? ''))
+            ->action('Edit travel request', $url);
     }
 
     /**

@@ -47,11 +47,6 @@ class GenerateTimesheet extends Command
             $month = Carbon::create($endDate)->format('m');
 
             $timeSheet = $this->timeSheets->getTimeSheetOfUserByYearAndMonth($user->id, $year, $month);
-
-            $this->info($user->id);
-            $this->info($year);
-            $this->info($month);
-            $this->info($timeSheet->id);
             if (!$timeSheet) {
                 $upd = $this->timeSheets->create([
                     'year' => $year,

@@ -669,6 +669,9 @@
                                     <a class="nav-link" href="{{ route('approved.travel.requests.index') }}"
                                        id="approved-travel-request-menu">Approved
                                         Travel Requests </a>
+                                    <a class="nav-link" href="{{ route('approved.travel.ticket.requests.index') }}"
+                                       id="approved-travel-ticket-request-menu">
+                                        Travel Ticket Requests </a>
                                     <a class="nav-link" href="{{ route('approved.travel.reports.index') }}"
                                        id="approved-travel-report-menu">Approved
                                         Travel Reports</a>

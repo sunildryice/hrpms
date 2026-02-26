@@ -17,6 +17,10 @@ return new class extends Migration
             if (!Schema::hasColumn('work_plan_details', 'reason')) {
                 $table->text('reason')->nullable()->after('status');
             }
+
+            if (!Schema::hasColumn('work_plan_details', 'work_plan_date')) {
+                $table->date('work_plan_date')->nullable()->after('work_plan_id');
+            }
         });
     }
 
@@ -30,6 +34,9 @@ return new class extends Migration
         Schema::table('work_plan_details', function (Blueprint $table) {
             if (Schema::hasColumn('work_plan_details', 'reason')) {
                 $table->dropColumn('reason');
+            }
+            if (Schema::hasColumn('work_plan_details', 'work_plan_date')) {
+                $table->dropColumn('work_plan_date');
             }
         });
     }

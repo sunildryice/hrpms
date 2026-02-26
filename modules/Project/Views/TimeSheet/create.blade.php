@@ -12,6 +12,43 @@
             top: 50%;
             transform: translateY(-50%);
         }
+
+        /* keep activity column fixed width in create form table */
+        #entries-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-activity {
+            width: 20%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-project {
+            width: 15%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-hours {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        /* attachment column narrower */
+        .col-attachment {
+            width: 15%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-action {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
     </style>
 @endsection
 
@@ -43,6 +80,21 @@
                     }
                 }
 
+                function parseJsonPayload(payload) {
+                    if (!payload) return [];
+                    if (Array.isArray(payload)) return payload;
+                    if (typeof payload === 'object') return payload;
+                    if (typeof payload === 'string') {
+                        if (!payload.trim()) return [];
+                        try {
+                            return JSON.parse(payload);
+                        } catch (_e) {
+                            return [];
+                        }
+                    }
+                    return [];
+                }
+
                 function refreshActions() {
                     const $rows = $('#entries-body .entry-row');
                     $rows.find('.add-entry').remove();
@@ -66,6 +118,9 @@
 
                 function initRow($row) {
                     const idx = $row.data('row-index');
+                    // make sure the project dropdown starts blank (avoids Chrome autofill)
+                    $row.find('.project-select').val('').trigger('change.select2');
+
                     $row.find('.select2').select2({
                         placeholder: 'Select...',
                         width: '100%'
@@ -116,7 +171,8 @@
 
                     // cascade project -> activity for this row
                     $row.find('.project-select').on('change', function() {
-                        const acts = $(this).find(':selected').data('activities') || [];
+                        const raw = $(this).find(':selected').data('activities');
+                        const acts = parseJsonPayload(raw);
                         const $act = $row.find('.activity-select');
                         $act.empty().append('<option value="">Select Activity</option>');
                         acts.forEach(a => {
@@ -292,18 +348,18 @@
                     <table class="table table-bordered" id="entries-table">
                         <thead>
                             <tr>
-                                <th class="reqired-label" style="width:20%">
+                                <th class="reqired-label col-project">
                                     <label class="required-label" for="">Project</label>
                                 </th>
-                                <th style="width:20%">
+                                <th class="col-activity">
                                     <label class="required-label" for="">Activity</label>
                                 </th>
                                 <th>
                                     <label class="">Task / Description</label>
                                 </th>
-                                <th style="width:10%"><label class="required-label" for="">Hours</label></th>
-                                <th style="width:20%">Attachment</th>
-                                <th style="width:5%; text-align:center">Action</th>
+                                <th class="col-hours"><label class="required-label" for="">Hours</label></th>
+                                <th class="col-attachment">Attachment</th>
+                                <th class="col-action">Action</th>
                             </tr>
                         </thead>
                         <tbody id="entries-body">
@@ -314,10 +370,10 @@
 
                 <template id="entry-row-template">
                     <tr class="entry-row" data-row-index="__IDX__">
-                        <td>
-                            <select name="entries[__IDX__][project_id]" class="form-control select2 project-select"
-                                required>
-                                <option value="">Select Project</option>
+                        <td class="col-project">
+                            <select name="entries[__IDX__][project_id]" autocomplete="off"
+                                class="form-control select2 project-select" required>
+                                <option value="" disabled selected>Select Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}" data-activities='@json($project->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
                                         {{ $project->short_name ?: $project->title }}
@@ -325,21 +381,20 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td>
+                        <td class="col-activity">
                             <select name="entries[__IDX__][activity_id]" class="form-control select2 activity-select"
                                 required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
                         <td>
-                            <input type="text" name="entries[__IDX__][description]" class="form-control"
-                                maxlength="500" />
+                            <textarea name="entries[__IDX__][description]" class="form-control" rows="3" required></textarea>
                         </td>
                         <td>
                             <input type="number" step="0.01" min="0.01" max="24"
                                 name="entries[__IDX__][hours_spent]" class="form-control text-end" required />
                         </td>
-                        <td>
+                        <td class="col-attachment">
                             <input type="file" name="entries[__IDX__][attachment]" class="form-control" />
                         </td>
                         <td class="text-center action-col">

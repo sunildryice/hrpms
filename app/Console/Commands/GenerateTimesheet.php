@@ -28,7 +28,10 @@ class GenerateTimesheet extends Command
         $year = date('Y');
         $month = date('m');
         $this->info("Creating timesheets for {$year} - {$month}");
-        $users = $this->users->select(['id'])->whereNotNull('activated_at')->get();
+        $users = $this->users->select(['id'])
+            ->whereHas('employee')
+            ->whereNotNull('activated_at')
+            ->get();
 
         $this->info("Found {$users->count()} users. Generating timesheets for each users.");
 

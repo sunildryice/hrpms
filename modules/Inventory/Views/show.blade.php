@@ -90,6 +90,15 @@
                 $('#openModal').find('.modal-content').html('');
                 $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('assetEditForm');
+                    $(form).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
+                    });
                     const fv = FormValidation.formValidation(form, {
                         fields: {
                             // title: {
@@ -212,7 +221,8 @@
                             var successCallback = function(response) {
                                 response.users.forEach(function(user) {
                                     htmlToReplace += '<option value="' +
-                                        user.id + '">' + user.full_name + '</option>';
+                                        user.id + '">' + user.full_name +
+                                        '</option>';
                                 });
                                 $($element).closest('form').find(
                                         '[name="receiver_id"]').html(htmlToReplace)

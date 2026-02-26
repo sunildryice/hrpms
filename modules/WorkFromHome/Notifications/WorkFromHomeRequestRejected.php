@@ -6,6 +6,7 @@ use App\Events\NotificationPushed;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Models\WorkFromHome;
 
 class WorkFromHomeRequestRejected extends Notification
@@ -45,10 +46,13 @@ class WorkFromHomeRequestRejected extends Notification
     public function toMail($notifiable)
     {
         $url = route('wfh.requests.show', $this->workFromHomeRequest->id);
+        $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return (new MailMessage)
+            ->subject("{$typeLabel} request rejected: " . $this->workFromHomeRequest->getRequestId())
             ->greeting('Hey ' . $this->workFromHomeRequest->getRequesterName() . ',')
             ->line('Your work from home request has been rejected. Please find the details below:')
             ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
+            ->line('Type: ' . $typeLabel)
             ->line('Start Date: ' . $this->workFromHomeRequest->getStartDate())
             ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
             ->line('Total Days: ' . $this->workFromHomeRequest->getWorkFromHomeDuration())
@@ -78,11 +82,12 @@ class WorkFromHomeRequestRejected extends Notification
     public function toDatabase($notifiable)
     {
         event(new NotificationPushed());
+        $typeLabel = WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return [
             'work_from_home_id' => $this->workFromHomeRequest->id,
             'link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
             'alternate_link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
-            'subject' => 'Work from home request ' . $this->workFromHomeRequest->getRequestId() . ' has been rejected. Requester : ' . $this->workFromHomeRequest->requester->full_name,
+            'subject' => "Work from home request {$typeLabel} " . $this->workFromHomeRequest->getRequestId() . " has been rejected. Requester : " . $this->workFromHomeRequest->requester->full_name,
         ];
     }
 }

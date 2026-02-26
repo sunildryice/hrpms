@@ -37,7 +37,7 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
-            $('#send_to').addClass('select2').select2({
+            $('#send_to, #type').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true
             });
@@ -205,6 +205,13 @@
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
                     fields: {
+                        type: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The type is required'
+                                }
+                            }
+                        },
                         start_date: {
                             validators: {
                                 notEmpty: {
@@ -296,8 +303,8 @@
                 });
             }
 
-            $(form).on('change', '#send_to', function() {
-                fv.revalidateField('send_to');
+            $(form).on('change', '#send_to, #type', function() {
+                fv.revalidateField($(this).attr('id'));
             });
         });
     </script>
@@ -335,7 +342,22 @@
                 @method('PUT')
 
                 <div class="row">
-                    <div class="mb-3 col-6">
+                    <div class="mb-3 col-2">
+                        <label for="type" class="form-label required-label">Type</label>
+                        <select class="form-select @error('type') is-invalid @enderror" id="type" name="type"
+                            required>
+                            <option value="">Select Type</option>
+                            @foreach ($typeOptions as $val => $label)
+                                <option value="{{ $val }}"
+                                    {{ old('type', $workFromHome->type) == $val ? 'selected' : '' }}>{{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3 col-4">
                         <label for="start_date" class="form-label required-label">Start Date</label>
                         <input type="text" readonly class="form-control @error('start_date') is-invalid @enderror"
                             id="start_date" name="start_date"
@@ -344,7 +366,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="mb-3 col-6">
+                    <div class="mb-3 col-4">
                         <label for="end_date" class="form-label required-label">End Date</label>
                         <input type="text" readonly class="form-control @error('end_date') is-invalid @enderror"
                             id="end_date" name="end_date"

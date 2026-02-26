@@ -6,7 +6,9 @@ use App\Events\NotificationPushed;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Models\WorkFromHome;
+
 
 class WorkFromHomeRequestSubmitted extends Notification
 {
@@ -45,10 +47,13 @@ class WorkFromHomeRequestSubmitted extends Notification
     public function toMail($notifiable)
     {
         $url = route('approve.wfh.requests.show', $this->workFromHomeRequest->id);
+        $typeLabel = WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return (new MailMessage)
+            ->subject("New {$typeLabel} request: " . $this->workFromHomeRequest->getRequestId())
             ->greeting('Hey ' . $this->workFromHomeRequest->approver?->employee?->getFullName() . ',')
-            ->line('You have a new work from home request awaiting your approval. Please find the details below:')
+            ->line("You have a new {$typeLabel} request awaiting your approval. Please find the details below:")
             ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
+            ->line('Type: ' . $typeLabel)
             ->line('Requester: ' . $this->workFromHomeRequest->getRequesterName())
             ->line('Start Date: ' . $this->workFromHomeRequest->getStartDate())
             ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
@@ -80,11 +85,12 @@ class WorkFromHomeRequestSubmitted extends Notification
     public function toDatabase($notifiable)
     {
         event(new NotificationPushed());
+        $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return [
             'work_from_home_id' => $this->workFromHomeRequest->id,
             'link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
             'alternate_link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
-            'subject' => 'Work from home request ' . $this->workFromHomeRequest->id . ' has been submitted. Requester : ' . $this->workFromHomeRequest->requester->full_name,
+            'subject' => "Work from home request {$typeLabel} {$this->workFromHomeRequest->id} has been submitted. Requester : {$this->workFromHomeRequest->requester->full_name}",
         ];
     }
 }

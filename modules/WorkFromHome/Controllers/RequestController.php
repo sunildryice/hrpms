@@ -12,6 +12,7 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Repositories\ProjectRepository;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestSubmitted;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
@@ -44,6 +45,9 @@ class RequestController extends Controller
                 })
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
+                })
+                ->addColumn('type', function ($row) {
+                    return \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$row->type] ?? ucfirst(str_replace('_', ' ', $row->type));
                 })
                 ->editColumn('start_date', function ($row) {
                     return $row->getStartDate();
@@ -92,12 +96,14 @@ class RequestController extends Controller
         $projects = $this->projects
             ->getAssignedProjects($authUser);
 
-
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
+
+        $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
 
         return view('WorkFromHome::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
+            'typeOptions' => $typeOptions,
         ]);
     }
 
@@ -168,10 +174,13 @@ class RequestController extends Controller
 
         $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
+        $typeOptions = WorkFromHomeTypes::options();
+        $typeLabel = $typeOptions[$wfhRequest->type] ?? ucfirst(str_replace('_', ' ', $wfhRequest->type));
 
         return view('WorkFromHome::show', [
             'wfhRequest' => $wfhRequest,
             'deliverables' => $deliverables,
+            'typeLabel' => $typeLabel,
         ]);
     }
 
@@ -182,11 +191,13 @@ class RequestController extends Controller
         $authUser = auth()->user();
         $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
+        $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
 
         return view('WorkFromHome::edit', compact(
             'workFromHome',
             'projects',
             'supervisors',
+            'typeOptions',
         ));
     }
 

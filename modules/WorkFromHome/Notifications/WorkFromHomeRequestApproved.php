@@ -45,10 +45,13 @@ class WorkFromHomeRequestApproved extends Notification
     public function toMail($notifiable)
     {
         $url = route('approve.wfh.requests.show', $this->workFromHomeRequest->id);
+        $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return (new MailMessage)
+            ->subject("{$typeLabel} request approved: " . $this->workFromHomeRequest->getRequestId())
             ->greeting('Hey ' . $this->workFromHomeRequest->getRequesterName() . ',')
             ->line('Your work from home request has been approved. Please find the details below:')
             ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
+            ->line('Type: ' . $typeLabel)
             ->line('Start Date: ' . $this->workFromHomeRequest->getStartDate())
             ->line('End Date: ' . $this->workFromHomeRequest->getEndDate())
             ->line('Total Days: ' . $this->workFromHomeRequest->getWorkFromHomeDuration())
@@ -80,11 +83,12 @@ class WorkFromHomeRequestApproved extends Notification
     public function toDatabase($notifiable)
     {
         event(new NotificationPushed());
+        $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return [
             'work_from_home_id' => $this->workFromHomeRequest->id,
             'link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
             'alternate_link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
-            'subject' => 'Work from home request ' . $this->workFromHomeRequest->getRequestId() . ' has been approved. Requester : ' . $this->workFromHomeRequest->requester->full_name,
+            'subject' => "Work from home request {$typeLabel} " . $this->workFromHomeRequest->getRequestId() . " has been approved. Requester : " . $this->workFromHomeRequest->requester->full_name,
         ];
     }
 }

@@ -19,28 +19,54 @@
          /* column width helpers (match create view) */
          .col-date {
              width: 12%;
+             min-width: 80px;
+             max-width: 120px;
              overflow: hidden;
              word-wrap: break-word;
          }
 
          .col-project {
              width: 18%;
+             min-width: 120px;
+             max-width: 200px;
              overflow: hidden;
              word-wrap: break-word;
          }
 
          .col-activity {
              width: 18%;
+             min-width: 120px;
+             max-width: 220px;
              overflow: hidden;
              word-wrap: break-word;
+             overflow-wrap: break-word;
+             word-break: break-word;
+             white-space: normal;
+             /* allow wrapping */
          }
 
-         .col-task {}
+         .col-task {
+             /* width: 18%; */
+             min-width: 250px;
+             max-width: 450px;
+             overflow: hidden;
+             word-wrap: break-word;
+             overflow-wrap: break-word;
+             word-break: break-word;
+             white-space: normal;
+             /* allow wrapping */
+         }
 
          .col-members {
              width: 30%;
+             min-width: 200px;
+             max-width: 340px;
              overflow: hidden;
              word-wrap: break-word;
+             overflow-wrap: break-word;
+             word-break: break-word;
+             white-space: normal;
+             /* allow wrapping */
          }
 
          .col-action {
@@ -54,7 +80,7 @@
  @section('page_js')
      <script type="text/javascript">
          $(document).ready(function() {
-             $('#navbarVerticalMenu').find('#weekly-plan-index').addClass('active');
+             $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
 
              // week bounds for datepicker inside modal forms
              var wpMin = '{{ $week['start_date']->format('Y-m-d') }}';
@@ -83,11 +109,13 @@
                      {
                          data: 'activity.title',
                          name: 'activity.title',
-                         defaultContent: ''
+                         defaultContent: '',
+                         className: 'col-activity' // ensure cell uses wrapping style
                      },
                      {
                          data: 'plan_tasks',
                          name: 'plan_tasks',
+                         className: 'col-task',
                          defaultContent: ''
                      },
                      {
@@ -102,7 +130,8 @@
                      },
                      {
                          data: 'members',
-                         name: 'members'
+                         name: 'members',
+                         className: 'col-members'
                      }
                      @if ($isEditable)
                          , {
@@ -110,7 +139,7 @@
                              name: 'action',
                              orderable: false,
                              searchable: false,
-                             className: 'text-center'
+                             className: 'sticky-col text-center'
                          }
                      @endif
                  ],
@@ -464,7 +493,7 @@
                              <th>Remarks</th>
                              <th class="col-members">Members</th>
                              @if ($isEditable)
-                                 <th class="col-action">{{ __('label.action') }}</th>
+                                 <th class="col-action sticky-col">{{ __('label.action') }}</th>
                              @endif
                          </tr>
                      </thead>

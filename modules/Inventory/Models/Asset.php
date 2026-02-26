@@ -45,7 +45,9 @@ class Asset extends Model
         'voucher_number',
         'room_number',
         'condition_id',
-        'remarks'
+        'remarks',
+        'brand',
+        'model_number'
     ];
 
     /**

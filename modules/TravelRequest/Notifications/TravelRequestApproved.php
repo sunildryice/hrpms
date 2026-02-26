@@ -45,9 +45,14 @@ class TravelRequestApproved extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('travel.requests.view', $this->travelRequest->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'));
+            ->greeting('Hey ' . $this->travelRequest->getRequesterName() . ',')
+            ->line('Your travel request (' . $this->travelRequest->getTravelRequestNumber() . ') has been approved.')
+            ->line('Travel Number: ' . $this->travelRequest->getTravelRequestNumber())
+            ->line('Travel dates: ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())
+            ->line('Approved by: ' . (auth()->user()->full_name ?? ''))
+            ->action('View travel request', $url);
     }
 
     /**

@@ -24,22 +24,23 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => 'required|exists:projects,id',
-            'activity_id' => 'required|exists:project_activities,id',
-            'planned_task' => 'nullable|string',
+            'work_plan_date' => 'required|date',
+            'entries' => 'required|array|min:1',
+            'entries.*.project_id' => 'required|exists:projects,id',
+            'entries.*.activity_id' => 'required|exists:project_activities,id',
+            'entries.*.planned_task' => 'nullable|string',
+            'entries.*.members' => 'nullable|array',
+            'entries.*.members.*' => 'exists:users,id',
             'reason' => 'nullable|string',
-            'from_date' => 'required|date',
-            'to_date' => 'required|date|after_or_equal:from_date',
-            'members' => 'nullable|array',
-            'members.*' => 'exists:users,id',
         ];
     }
 
     public function messages()
     {
         return [
-            'project_id.required' => 'Please select a project.',
-            'activity_id.required' => 'Please select an activity.',
+            'entries.required' => 'Please add at least one work plan entry.',
+            'entries.*.project_id.required' => 'Project is required for each entry.',
+            'entries.*.activity_id.required' => 'Activity is required for each entry.',
         ];
     }
 }

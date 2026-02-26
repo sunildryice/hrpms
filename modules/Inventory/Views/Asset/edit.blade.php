@@ -24,7 +24,7 @@
             <div class="row mb-2">
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
-                        <label for="room_number" class="m-0 required-label">Room Number</label>
+                        <label for="room_number" class="m-0">Room Number</label>
                     </div>
                 </div>
                 <div class="col-lg-9">

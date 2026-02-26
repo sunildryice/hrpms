@@ -17,6 +17,7 @@ use Modules\Master\Controllers\ActivityAreaController;
 use Modules\Master\Controllers\ActivityCodeController;
 use Modules\Master\Controllers\ActivityCodeImportController;
 use Modules\Master\Controllers\BillCategoryController;
+use Modules\Master\Controllers\BrandController;
 use Modules\Master\Controllers\DepartmentController;
 use Modules\Master\Controllers\DesignationController;
 use Modules\Master\Controllers\DistrictController;
@@ -385,6 +386,16 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             Route::get('purchase/request/packages/{package}/items/{item}/edit', [PackageItemController::class, 'edit'])->name('master.packages.items.edit');
             Route::put('purchase/request/packages/{package}/items/{item}', [PackageItemController::class, 'update'])->name('master.packages.items.update');
             Route::delete('purchase/request/packages/{package}/items/{item}', [PackageItemController::class, 'destroy'])->name('master.packages.items.destroy');
+        });
+
+        Route::middleware('can:manage-brands')->group(function () {
+            Route::get('brands', [BrandController::class, 'index'])->name('master.brands.index');
+            Route::get('brands/create', [BrandController::class, 'create'])->name('master.brands.create');
+            Route::post('brands', [BrandController::class, 'store'])->name('master.brands.store');
+            Route::get('brands/{brand}', [BrandController::class, 'show'])->name('master.brands.show');
+            Route::get('brands/{brand}/edit', [BrandController::class, 'edit'])->name('master.brands.edit');
+            Route::put('brands/{brand}', [BrandController::class, 'update'])->name('master.brands.update');
+            Route::delete('brands/{brand}', [BrandController::class, 'destroy'])->name('master.brands.destroy');
         });
     });
 });

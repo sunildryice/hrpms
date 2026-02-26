@@ -2,6 +2,17 @@
 
 @section('title', 'Inventories')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -28,7 +39,8 @@
                     },
                     {
                         data: 'item_name',
-                        name: 'item_name'
+                        name: 'item_name',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'batch_number',

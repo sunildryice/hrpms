@@ -2,10 +2,10 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Asset</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{{ route('inventories.assets.update', $asset->id) }}" method="POST"
-      enctype="multipart/form-data" id="assetEditForm" autocomplete="off">
-      @csrf
-      @method('PUT')
+<form action="{{ route('inventories.assets.update', $asset->id) }}" method="POST" enctype="multipart/form-data"
+    id="assetEditForm" autocomplete="off">
+    @csrf
+    @method('PUT')
 
     <div class="modal-body">
         <div class="row mb-2">
@@ -15,7 +15,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-               <input type="text" class="form-control" name="serial_number" id="serial_number" value="{{ $asset->serial_number }}" placeholder="Serial Number">
+                <input type="text" class="form-control" name="serial_number" id="serial_number"
+                    value="{{ $asset->serial_number }}" placeholder="Serial Number">
             </div>
         </div>
 
@@ -27,7 +28,8 @@
                     </div>
                 </div>
                 <div class="col-lg-9">
-                    <input type="text" class="form-control" name="room_number" id="room_number" value="{{ $asset->room_number }}" >
+                    <input type="text" class="form-control" name="room_number" id="room_number"
+                        value="{{ $asset->room_number }}">
                 </div>
             </div>
         @endcan
@@ -35,11 +37,40 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="remarks" class="m-0">Remarks</label>
+                    <label for="model_number" class="m-0">Model Number</label>
                 </div>
             </div>
             <div class="col-lg-9">
-                <textarea class="form-control" name="remarks" id="remarks" rows="2" placeholder="Remarks">{{ $asset->remarks }}</textarea>
+                <input type="text" class="form-control" name="model_number" id="model_number"
+                    value="{{ $asset->model_number }}" placeholder="Model Number">
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="brand" class="m-0">Brand</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select name="brand_id" id="brand" class="form-control select2">
+                    <option value="">Select Brand</option>
+                    @foreach ($brands as $brand)
+                        <option value="{{ $brand->id }}" {{ $asset->brand_id == $brand->id ? 'selected' : '' }}>
+                            {{ $brand->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="remarks" class="m-0">Specification</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <textarea class="form-control" name="remarks" id="remarks" rows="2" placeholder="Specification">{{ $asset->remarks }}</textarea>
             </div>
         </div>
 

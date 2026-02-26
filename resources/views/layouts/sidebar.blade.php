@@ -977,7 +977,10 @@
                                        id="activity-update-periods-index">Activity Update Periods</a>
                                 @endif
 
-
+                                @if ($authUser->can('manage-brands'))
+                                    <a class="nav-link" href="{{ route('master.brands.index') }}"
+                                       id="brands-menu">Brands</a>
+                                @endif
 
                                 @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"

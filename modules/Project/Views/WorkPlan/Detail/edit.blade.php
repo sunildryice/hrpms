@@ -15,6 +15,18 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
+                    <label class="form-label required-label m-0">Date</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" name="work_plan_date" class="form-control wp-date" placeholder="yyyy-mm-dd"
+                    readonly value="{{ $workPlanDetail->work_plan_date }}" required />
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Project</label>
                 </div>
             </div>

@@ -17,6 +17,41 @@
             width: 100%;
         }
 
+        /* column width helpers like timesheet */
+        .col-date {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-project {
+            width: 15%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-activity {
+            width: 18%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-task {
+            /* flexible */
+        }
+
+        .col-members {
+            width: 30%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-action {
+            width: 8%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
         #entries-table td {
             /* allow members to wrap but prevent project/activity overflow */
             overflow: visible;
@@ -29,7 +64,8 @@
 
         /* ensure single-select elements do not spill out */
         #entries-table td:nth-child(1) .select2-container,
-        #entries-table td:nth-child(2) .select2-container {
+        #entries-table td:nth-child(2) .select2-container,
+        #entries-table td.col-activity .select2-container {
             min-width: 120px;
             max-width: 100% !important;
         }
@@ -94,19 +130,9 @@
                 width: '100%'
             });
 
-            // restrict work plan date to the week range
+            // restrict work plan date to the week range (used for row inputs)
             var wpMin = '{{ $week['start_date']->format('Y-m-d') }}';
             var wpMax = '{{ $week['end_date']->format('Y-m-d') }}';
-            $('[name="work_plan_date"]').datepicker({
-                startDate: wpMin,
-                endDate: wpMax,
-                autoclose: true,
-                autoHide: true,
-                format: 'yyyy-mm-dd',
-                zIndex: 1200
-            }).on('show', function() {
-                $(this).attr('readonly', true);
-            });
 
             const form = document.getElementById('WorkPlanForm');
             if (form) {
@@ -119,6 +145,22 @@
                             fv.revalidateField('entries');
                         } catch (e) {}
                     }
+                }
+
+                // helper to coerce various data-* forms into an array
+                function parseJsonPayload(payload) {
+                    if (!payload) return [];
+                    if (Array.isArray(payload)) return payload;
+                    if (typeof payload === 'object') return payload;
+                    if (typeof payload === 'string') {
+                        if (!payload.trim()) return [];
+                        try {
+                            return JSON.parse(payload);
+                        } catch (_e) {
+                            return [];
+                        }
+                    }
+                    return [];
                 }
 
                 function refreshActions() {
@@ -165,6 +207,13 @@
                     const $activitySelect = $row.find('.activity-select');
                     const $membersSelect = $row.find('.members-select');
 
+                    // make sure project select starts empty to thwart Chrome autofill
+                    $projectSelect.val(null).trigger('change').trigger('change.select2');
+                    // if Chrome still tries to inject a value on focus, clear it again
+                    $projectSelect.on('focus', function() {
+                        $(this).val(null).trigger('change').trigger('change.select2');
+                    });
+
                     function populateMembers() {
                         let membersData = $projectSelect.find(':selected').attr('data-members');
                         let members = [];
@@ -206,7 +255,8 @@
                     }
 
                     function populateActivities() {
-                        const acts = $projectSelect.find(':selected').data('activities') || [];
+                        const raw = $projectSelect.find(':selected').data('activities');
+                        const acts = parseJsonPayload(raw);
                         $activitySelect.empty().append('<option value="">Select Activity</option>');
 
                         acts.forEach(a => {
@@ -223,6 +273,18 @@
                             dropdownParent: $(document.body)
                         });
                     }
+
+                    // initialize datepicker on the row's date input
+                    $row.find('.wp-date').datepicker({
+                        startDate: wpMin,
+                        endDate: wpMax,
+                        autoclose: true,
+                        autoHide: true,
+                        format: 'yyyy-mm-dd',
+                        zIndex: 1200
+                    }).on('show', function() {
+                        $(this).attr('readonly', true);
+                    });
 
                     // Project change handler
                     $projectSelect.off('change.projectHandler').on('change.projectHandler', function() {
@@ -242,6 +304,17 @@
                     // FormValidation fields (delayed to avoid conflicts)
                     setTimeout(() => {
                         if (fv) {
+                            fv.addField(`entries[${idx}][work_plan_date]`, {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Date is required'
+                                    },
+                                    date: {
+                                        format: 'YYYY-MM-DD',
+                                        message: 'Invalid date'
+                                    }
+                                }
+                            });
                             fv.addField(`entries[${idx}][project_id]`, {
                                 validators: {
                                     notEmpty: {
@@ -273,16 +346,17 @@
                         }
                     }, 300);
 
-                    // Revalidate on any change
-                    $row.off('changeinput.rowHandler').on('changeinput.rowHandler', 'select, textarea', function() {
-                        if (fv) {
-                            const name = $(this).attr('name');
-                            if (name) {
-                                fv.revalidateField(name);
+                    // Revalidate on any change (includes inputs such as date picker)
+                    $row.off('changeinput.rowHandler').on('changeinput.rowHandler', 'select, textarea, input',
+                        function() {
+                            if (fv) {
+                                const name = $(this).attr('name');
+                                if (name) {
+                                    fv.revalidateField(name);
+                                }
                             }
-                        }
-                        safeRevalidate();
-                    });
+                            safeRevalidate();
+                        });
                 }
 
                 // Create first row
@@ -321,13 +395,7 @@
                 // Initialize FormValidation
                 fv = FormValidation.formValidation(form, {
                     fields: {
-                        work_plan_date: {
-                            validators: {
-                                notEmpty: {
-                                    message: 'The work plan date is required'
-                                }
-                            }
-                        }
+                        // row-level date fields are added dynamically
                     },
                     plugins: {
                         trigger: new FormValidation.plugins.Trigger(),
@@ -366,6 +434,7 @@
                     </ol>
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Work Plan</h4>
+
             </div>
         </div>
     </div>
@@ -374,32 +443,18 @@
         <div class="card-body">
             <form action="{{ route('work-plan.store') }}" method="post" id="WorkPlanForm" autocomplete="off">
                 @csrf
-                <div class="row mb-2">
-                    <div class="col-lg-3">
-                        <div class="d-flex align-items-start h-100">
-                            <label class="form-label required-label m-0">Work Plan Date</label>
-                        </div>
-                    </div>
-                    <div class="col-lg-2">
-                        <input type="text" name="work_plan_date" class="form-control" placeholder="yyyy-mm-dd" readonly
-                            required />
-                    </div>
-                    <div class="col-lg-6">
-                        <span class="text-sm">(Week: {{ $week['start_date']->format('M d, Y') }} -
-                            {{ $week['end_date']->format('M d, Y') }})</span>
-                    </div>
-                </div>
 
                 <div class="mb-3">
                     <label class="form-label required-label">Entries</label>
                     <table class="table table-bordered" id="entries-table">
                         <thead>
                             <tr>
-                                <th style="width:18%"><label class="required-label">Project</label></th>
-                                <th style="width:18%"><label class="required-label">Activity</label></th>
-                                <th><label class="required-label">Task</label></th>
-                                <th style="width:30%"><label class="required-label">Involved Members</label></th>
-                                <th style="width:8%; text-align:center">Action</th>
+                                <th class="col-date"><label class="required-label">Date</label></th>
+                                <th class="col-project"><label class="required-label">Project</label></th>
+                                <th class="col-activity"><label class="required-label">Activity</label></th>
+                                <th class="col-task"><label class="required-label">Task</label></th>
+                                <th class="col-members"><label class="required-label">Involved Members</label></th>
+                                <th class="col-action" style="text-align:center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="entries-body">
@@ -409,7 +464,11 @@
 
                 <template id="entry-row-template">
                     <tr class="entry-row" data-row-index="__IDX__">
-                        <td>
+                        <td class="col-date">
+                            <input type="text" name="entries[__IDX__][work_plan_date]" class="form-control wp-date"
+                                placeholder="yyyy-mm-dd" readonly required />
+                        </td>
+                        <td class="col-project">
                             <select name="entries[__IDX__][project_id]" class="form-control select2 project-select"
                                 required>
                                 <option value="">Select Project</option>
@@ -421,22 +480,22 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td>
+                        <td class="col-activity">
                             <select name="entries[__IDX__][activity_id]" class="form-control select2 activity-select"
                                 required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
-                        <td>
-                            <textarea name="entries[__IDX__][planned_task]" class="form-control" rows="2" maxlength="500" required></textarea>
+                        <td class="col-task">
+                            <textarea name="entries[__IDX__][planned_task]" class="form-control" rows="4" maxlength="500" required></textarea>
                         </td>
-                        <td>
+                        <td class="col-members">
                             <select name="entries[__IDX__][members][]" class="form-control select2 members-select" multiple
                                 required>
                                 <!-- Options populated dynamically -->
                             </select>
                         </td>
-                        <td class="text-center action-col">
+                        <td class="col-action text-center action-col">
                             <button type="button" class="btn btn-sm btn-outline-success add-entry"><i
                                     class="bi bi-plus-lg"></i></button>
                             <button type="button" class="btn btn-sm btn-outline-danger remove-entry"><i

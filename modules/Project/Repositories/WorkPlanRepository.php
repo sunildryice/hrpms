@@ -47,6 +47,7 @@ class WorkPlanRepository extends Repository
     {
         $detail = WorkPlanDetail::create([
             'work_plan_id' => $workPlanId,
+            'work_plan_date' => $data['work_plan_date'] ?? null,
             'project_id' => $data['project_id'],
             'project_activity_id' => $data['activity_id'],
             'plan_tasks' => $data['planned_task'],
@@ -83,17 +84,23 @@ class WorkPlanRepository extends Repository
         $employeeId = $authUser->employee?->id ?? 0;
 
         return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members',])
-            ->whereHas('workPlan', fn($q) =>
+            ->whereHas(
+                'workPlan',
+                fn($q) =>
                 $q->whereDate('from_date', $fromDate)
                     ->whereDate('to_date', $toDate)
-            )->whereHas('workPlan',    fn($q) =>
+            )->whereHas(
+                'workPlan',
+                fn($q) =>
                 $q->where('employee_id', $employeeId)
             )->orWhere(function ($q) use ($fromDate, $toDate, $authUser) {
-                $q->whereHas('workPlan',   fn($sq) =>
+                $q->whereHas(
+                    'workPlan',
+                    fn($sq) =>
                     $sq->whereDate('from_date', $fromDate)
                         ->whereDate('to_date', $toDate)
-                )->whereHas( 'members', fn($sq) =>
-                        $sq->where('user_id', $authUser->id));
+                )->whereHas('members', fn($sq) =>
+                $sq->where('user_id', $authUser->id));
             });
     }
 
@@ -178,6 +185,10 @@ class WorkPlanRepository extends Repository
 
         if (array_key_exists('planned_task', $data)) {
             $payload['plan_tasks'] = $data['planned_task'];
+        }
+
+        if (array_key_exists('work_plan_date', $data)) {
+            $payload['work_plan_date'] = $data['work_plan_date'];
         }
 
         if (array_key_exists('status', $data)) {

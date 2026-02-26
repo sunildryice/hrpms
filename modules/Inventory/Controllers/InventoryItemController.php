@@ -156,12 +156,6 @@ class InventoryItemController extends Controller
                     return $row->getPurchaseDate();
                 })->addColumn('supplier', function ($row) {
                     return $row->getSupplierName();
-                })->addColumn('activity_code', function ($row) {
-                    return $row->activityCode->getActivityCode();
-                })->addColumn('account_code', function ($row) {
-                    return $row->accountCode->getAccountCode();
-                })->addColumn('donor_code', function ($row) {
-                    return $row->donorCode->getDonorCode();
                 })->addColumn('specification', function ($row) {
                     return $row->specification;
                 })->addColumn('execution_type', function ($row) {
@@ -236,12 +230,6 @@ class InventoryItemController extends Controller
                     return $row->getPurchaseDate();
                 })->addColumn('supplier', function ($row) {
                     return $row->getSupplierName();
-                })->addColumn('activity_code', function ($row) {
-                    return $row->activityCode->getActivityCode();
-                })->addColumn('account_code', function ($row) {
-                    return $row->accountCode->getAccountCode();
-                })->addColumn('donor_code', function ($row) {
-                    return $row->donorCode->getDonorCode();
                 })->addColumn('specification', function ($row) {
                     return $row->specification;
                 })->addColumn('execution_type', function ($row) {

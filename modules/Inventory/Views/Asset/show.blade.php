@@ -312,7 +312,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><span class="text-small">Rs</span></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getUnitPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Unit Price"></span>
@@ -320,7 +320,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><span class="text-small">Rs</span></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Price"></span>
@@ -328,7 +328,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><span class="text-small">Rs</span></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getVatAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="VAT Amount"></span>
@@ -336,7 +336,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><span class="text-small">Rs</span></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>

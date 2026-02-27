@@ -240,8 +240,15 @@
                 $newRow.find('input.date').prop('disabled', !($('[name="start_date"]').val() && $(
                     '[name="end_date"]').val()));
 
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
+                if (window.fv && typeof window.fv.getFields === 'function') {
+                    var fields = window.fv.getFields();
+                    $('#deliverables-body select[name*="[project_id]"], #deliverables-body textarea[name*="[task]"]')
+                        .each(function() {
+                            var fname = $(this).attr('name');
+                            if (fields && fields[fname]) {
+                                fv.revalidateField(fname);
+                            }
+                        });
                 }
             });
 
@@ -249,8 +256,15 @@
                 $(this).closest('tr').remove();
                 updateRowButtons();
 
-                if (window.fv) {
-                    fv.revalidateField('deliverables');
+                if (window.fv && typeof window.fv.getFields === 'function') {
+                    var fields = window.fv.getFields();
+                    $('#deliverables-body select[name*="[project_id]"], #deliverables-body textarea[name*="[task]"]')
+                        .each(function() {
+                            var fname = $(this).attr('name');
+                            if (fields && fields[fname]) {
+                                fv.revalidateField(fname);
+                            }
+                        });
                 }
             });
 
@@ -355,7 +369,7 @@
                 });
             }
 
-            $(form).on('change', '#send_to, #type', function() {
+            $form.on('change', '#send_to, #type', function() {
                 fv.revalidateField($(this).attr('id'));
             });
         });
@@ -525,10 +539,8 @@
                                         @enderror
                                     </td>
                                     <td class="col-task align-middle">
-                                        <input type="text"
-                                            class="form-control @error($taskErrorKey) is-invalid @enderror"
-                                            name="deliverables[{{ $idx }}][task]"
-                                            value="{{ $deliverable['task'] ?? '' }}" required>
+                                        <textarea rows="4" class="form-control @error($taskErrorKey) is-invalid @enderror"
+                                            name="deliverables[{{ $idx }}][task]" required>{{ $deliverable['task'] ?? '' }}</textarea>
                                         @error($taskErrorKey)
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror

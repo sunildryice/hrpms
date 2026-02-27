@@ -3,16 +3,16 @@
 namespace Modules\Inventory\Models;
 
 use App\Traits\ModelEventLogger;
-
-use Modules\Master\Models\Office;
-use Modules\Privilege\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Modules\GoodRequest\Models\GoodRequestAsset;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Modules\AssetDisposition\Models\AssetDisposition;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\AssetDisposition\Models\AssetDisposition;
 use Modules\AssetDisposition\Models\DispositionRequest;
 use Modules\AssetDisposition\Models\DispositionRequestAsset;
+use Modules\GoodRequest\Models\GoodRequestAsset;
+use Modules\Master\Models\Brand;
+use Modules\Master\Models\Office;
+use Modules\Privilege\Models\User;
 
 class Asset extends Model
 {
@@ -34,6 +34,7 @@ class Asset extends Model
         'inventory_item_id',
         'prefix',
         'year',
+        'fiscal_year',
         'asset_number',
         'old_asset_code',
         'assigned_office_id',
@@ -44,7 +45,9 @@ class Asset extends Model
         'voucher_number',
         'room_number',
         'condition_id',
-        'remarks'
+        'remarks',
+        'brand_id',
+        'model_number'
     ];
 
     /**
@@ -62,6 +65,16 @@ class Asset extends Model
     public function inventoryItem()
     {
         return $this->belongsTo(InventoryItem::class, 'inventory_item_id');
+    }
+
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class, 'brand_id');
+    }
+
+    public function getBrandName()
+    {
+        return $this->brand?->title ?? $this->brand ?? '';
     }
 
     /**
@@ -84,7 +97,7 @@ class Asset extends Model
         return $this->belongsTo(Office::class, 'assigned_office_id');
     }
 
-      /**
+    /**
      * get latest assign log for the asset.
      * @return mixed
      */
@@ -103,12 +116,12 @@ class Asset extends Model
 
     public function getAssetNumber()
     {
-        return $this->prefix .'/'. sprintf('%03d',$this->asset_number).'/'.$this->year;
+        return $this->prefix . '/' . sprintf('%03d', $this->asset_number) . '/' . $this->year;
     }
 
     public function getAssetCodeAttribute()
     {
-        return $this->prefix .'/'. sprintf('%03d',$this->asset_number).'/'.$this->year;
+        return $this->prefix . '/' . sprintf('%03d', $this->asset_number) . '/' . $this->year;
     }
 
     public function assignedTo()

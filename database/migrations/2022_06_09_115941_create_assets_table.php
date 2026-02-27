@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('inventory_item_id');
             $table->string('prefix')->nullable()->default(null);
             $table->year('year')->nullable()->default(null);
+            $table->string('fiscal_year')->nullable()->default(null);
             $table->unsignedInteger('asset_number')->nullable()->default(null);
             $table->unsignedBigInteger('assigned_office_id')->nullable()->default(null);
             $table->unsignedBigInteger('assigned_department_id')->nullable()->default(null);

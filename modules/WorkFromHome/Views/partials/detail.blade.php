@@ -15,6 +15,15 @@
                 </li>
                 <li class="position-relative">
                     <div class="gap-2 d-flex align-items-center">
+                        <div class="icon-section"><i class="bi-gear-wide-connected dropdown-item-icon"></i></div>
+                        <div class="d-content-section">
+                            {{ $typeLabel }}
+                        </div>
+                    </div>
+                    <span class="stretched-link" rel="tooltip" title="Type"></span>
+                </li>
+                <li class="position-relative">
+                    <div class="gap-2 d-flex align-items-center">
                         <div class="icon-section"><i class="bi-person-bounding-box dropdown-item-icon"></i></div>
                         <div class="d-content-section">{{ $wfhRequest->requester->full_name ?? '-' }}</div>
                     </div>

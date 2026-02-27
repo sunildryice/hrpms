@@ -45,9 +45,14 @@ class LeaveRequestRejected extends Notification
      */
     public function toMail($notifiable)
     {
+        $url = route('leave.requests.detail', $this->leaveRequest->id);
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'));
+            ->greeting('Hey ' . $this->leaveRequest->getRequesterName() . ',')
+            ->line('Your leave request (' . $this->leaveRequest->getLeaveType() . ') has been rejected.')
+            ->line('Leave Number: ' . $this->leaveRequest->getLeaveNumber())
+            ->line('Leave dates: ' . ($this->leaveRequest->start_date ? $this->leaveRequest->start_date->format('d M Y') : '') . ' to ' . ($this->leaveRequest->end_date ? $this->leaveRequest->end_date->format('d M Y') : ''))
+            ->line('Rejected by: ' . (auth()->user()->full_name ?? ''))
+            ->action('View leave request', $url);
     }
 
     /**

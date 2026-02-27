@@ -28,7 +28,10 @@ class GenerateTimesheet extends Command
         $year = date('Y');
         $month = date('m');
         $this->info("Creating timesheets for {$year} - {$month}");
-        $users = $this->users->select(['id'])->whereNotNull('activated_at')->get();
+        $users = $this->users->select(['id'])
+            ->whereHas('employee')
+            ->whereNotNull('activated_at')
+            ->get();
 
         $this->info("Found {$users->count()} users. Generating timesheets for each users.");
 
@@ -41,11 +44,11 @@ class GenerateTimesheet extends Command
                 $endDate = Carbon::now()->addMonthNoOverflow()->day(25);
             }
             $monthName = Carbon::create($endDate)->format('M');
+            $month = Carbon::create($endDate)->format('m');
 
             $timeSheet = $this->timeSheets->getTimeSheetOfUserByYearAndMonth($user->id, $year, $month);
-
             if (!$timeSheet) {
-                $this->timeSheets->create([
+                $upd = $this->timeSheets->create([
                     'year' => $year,
                     'month' => $month,
                     'month_name' => $monthName,
@@ -56,6 +59,7 @@ class GenerateTimesheet extends Command
                     'approver_id' => null,
                     'updated_by' => null,
                 ]);
+                $this->info($upd);
             }
         }
         $this->info("Timesheet generated for {$year} - {$month} if not exists.");

@@ -189,13 +189,13 @@
                             },
                         },
                     },
-                    log_remarks: {
-                        validators: {
-                            notEmpty: {
-                                message: 'The remarks is required',
-                            },
-                        },
-                    },
+                    // log_remarks: {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'The remarks is required',
+                    //         },
+                    //     },
+                    // },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -473,7 +473,7 @@
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
                                                 <label for="validationRemarks"
-                                                    class="form-label required-label">Remarks</label>
+                                                    class="form-label">Remarks</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">

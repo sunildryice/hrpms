@@ -56,12 +56,20 @@ class TimeSheetRepository extends Repository
     {
         return $this->model
             ->with([
-                'requester',
+                'requester.employee',
+                'approver.employee',
                 'status',
                 'approvedLog' => function ($q) {
                     $q->latest();
                 }
             ])
+            ->whereHas('requester.employee', function ($q) {
+                $q->whereNotNull('activated_at');
+                    // ->where(function ($sub) {
+                    //     $sub->where('employee_type_id', config('constant.FULL_TIME_EMPLOYEE'))
+                    //         ->orWhereNull('employee_type_id');
+                    // });
+            })
             ->where('year', $year)
             ->where('month', $month)
             ->orderBy('status_id')

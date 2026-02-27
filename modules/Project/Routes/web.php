@@ -20,6 +20,7 @@ use Modules\Project\Controllers\MonthlyTimeSheetApproverController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityTimeSheetController;
 use Modules\Project\Controllers\ProjectActivityAttachmentController;
+use Modules\Project\Controllers\ProjectActivityOtherDetailsController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -94,18 +95,24 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/monthly-timesheet/{id}/show', [MonthlyTimeSheetController::class, 'show'])->name('monthly-timesheet.show');
     Route::put('/monthly-timesheet/{id}', [MonthlyTimeSheetController::class, 'update'])->name('monthly-timesheet.update');
 
+    Route::put('{id}/inline', [MonthlyTimeSheetController::class, 'inlineUpdate'])->name('monthly-timesheet.inline.update');
+    Route::post('{id}/inline', [MonthlyTimeSheetController::class, 'inlineStore'])->name('monthly-timesheet.inline.store');
+    Route::delete('entry/{entryId}/inline', [MonthlyTimeSheetController::class, 'inlineDestroy'])->name('monthly-timesheet.inline.destroy');
+
     Route::get('/monthly-timesheet/summary/index', [MonthlyTimeSheetSummaryController::class, 'index'])->name('monthly-timesheet.summary.index');
     Route::get('/monthly-timesheet/summary/{year}/{month}/show', [MonthlyTimeSheetSummaryController::class, 'show'])->name('monthly-timesheet.summary.show');
+    Route::get('/monthly-timesheet/{year}/{month}/employee/{timesheet}', [MonthlyTimeSheetSummaryController::class, 'showMonthlyTimesheet'])->name('monthly-timesheet.summary.employee.show');
 
     Route::get('/work-plan', [WorkPlanController::class, 'index'])->name('work-plan.index');
     Route::post('/work-plan/store', [WorkPlanDetailController::class, 'store'])->name('work-plan.store');
-    Route::get('/work-plan/create', [WorkPlanDetailController::class, 'create'])->name('work-plan.create');
+    Route::get('/work-plan/{workPlan}/create', [WorkPlanDetailController::class, 'create'])->name('work-plan.create');
     Route::get('/work-plan/{id}/edit', [WorkPlanDetailController::class, 'edit'])->name('work-plan.edit');
     Route::put('/work-plan/{id}/update', [WorkPlanDetailController::class, 'update'])->name('work-plan.update');
     Route::put('/work-plan/{id}/update-status', [WorkPlanDetailController::class, 'updateStatus'])->name('work-plan.update-status');
     Route::delete('/work-plan/{id}/delete', [WorkPlanDetailController::class, 'destroy'])->name('work-plan.destroy');
     Route::get('/work-plan/get-activities', [WorkPlanDetailController::class, 'getActivities'])->name('work-plan.get-activities');
     Route::get('/work-plan/{workPlan}/details', [WorkPlanDetailController::class, 'index'])->name('work-plan.details');
+
 
 
     Route::get('/employee-work-plan', [EmployeeWorkPlanController::class, 'index'])->name('employee-work-plan.index');
@@ -125,9 +132,9 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('approved/monthly-timesheet/{id}/show', [MonthlyTimeSheetApprovedController::class, 'show'])->name('approved.monthly-timesheet.show');
 });
 
-Route::get('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'show'])->name('project-activity.other-details');
-Route::patch('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'update'])->name('project-activity.update-other-details');
+Route::get('/project-activity/{projectActivity}/other-details', [ProjectActivityOtherDetailsController::class, 'show'])->name('project-activity.other-details');
+Route::patch('/project-activity/{projectActivity}/other-details', [ProjectActivityOtherDetailsController::class, 'update'])->name('project-activity.update-other-details');
 // Other Details CRUD
-Route::post('/project-activity/{projectActivity}/other-details', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'store'])->name('project-activity.other-details.store');
-Route::put('/project-activity/other-details/{id}', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'updateDetail'])->name('project-activity.other-details.update');
-Route::delete('/project-activity/other-details/{id}', [\Modules\Project\Controllers\ProjectActivityOtherDetailsController::class, 'destroy'])->name('project-activity.other-details.destroy');
+Route::post('/project-activity/{projectActivity}/other-details', [ProjectActivityOtherDetailsController::class, 'store'])->name('project-activity.other-details.store');
+Route::put('/project-activity/other-details/{id}', [ProjectActivityOtherDetailsController::class, 'updateDetail'])->name('project-activity.other-details.update');
+Route::delete('/project-activity/other-details/{id}', [ProjectActivityOtherDetailsController::class, 'destroy'])->name('project-activity.other-details.destroy');

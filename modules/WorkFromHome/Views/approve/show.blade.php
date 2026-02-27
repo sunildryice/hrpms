@@ -7,6 +7,35 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-approve').addClass('active');
         });
+        document.addEventListener('DOMContentLoaded', function(e) {
+            const form = document.getElementById('wfhRequestApproveForm');
+            const fv = FormValidation.formValidation(form, {
+                fields: {
+                    status_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Status is required',
+                            },
+                        },
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                    submitButton: new FormValidation.plugins.SubmitButton(),
+                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                    icon: new FormValidation.plugins.Icon({
+                        valid: 'bi bi-check2-square',
+                        invalid: 'bi bi-x-lg',
+                        validating: 'bi bi-arrow-repeat',
+                    }),
+                },
+            });
+
+            $(form).on('change', '[name="status_id"]', function(e) {
+                fv.revalidateField('status_id');
+            });
+        });
     </script>
 @endsection
 @section('page-content')
@@ -44,6 +73,7 @@
                             <table class="table table-bordered mb-0">
                                 <thead>
                                     <tr>
+                                        <th style="width: 15%;">Date</th>
                                         <th style="width: 25%;">Project</th>
                                         <th style="width: 25%;">Activity</th>
                                         <th>Task</th>
@@ -52,6 +82,7 @@
                                 <tbody>
                                     @foreach ($deliverables as $task)
                                         <tr>
+                                            <td title="Date">{{ $task['date'] ?? '' }}</td>
                                             <td title="Project">{{ $task['project_name'] }}</td>
                                             <td title="Activity">{{ $task['activity_name'] }}</td>
                                             <td title="Task">{{ $task['task'] }}</td>
@@ -117,7 +148,7 @@
 
                                 {{-- STATUS --}}
                                 <div class="row mb-3">
-                                    <label class="col-lg-3 col-form-label required">Status</label>
+                                    <label class="col-lg-3 col-form-label required-label">Status</label>
                                     <div class="col-lg-9">
                                         <select name="status_id" class="select2 form-control" data-width="100%">
                                             <option value="">Select a Status</option>

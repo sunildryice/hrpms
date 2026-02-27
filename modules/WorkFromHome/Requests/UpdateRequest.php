@@ -3,6 +3,7 @@
 namespace Modules\WorkFromHome\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 
 class UpdateRequest extends FormRequest
 {
@@ -13,7 +14,10 @@ class UpdateRequest extends FormRequest
 
     public function rules()
     {
+        $typeOptions = implode(',', array_keys(WorkFromHomeTypes::options()));
+
         return [
+            'type'       => ['required', 'string', "in:{$typeOptions}"],
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
             'reason'  => ['required', 'string'],
@@ -23,6 +27,7 @@ class UpdateRequest extends FormRequest
             'deliverables.*.project_id'     => ['required', 'integer', 'exists:projects,id'],
             'deliverables.*.activity_id'           => ['required', 'string'],
             'deliverables.*.task'           => ['required', 'string'],
+            'deliverables.*.date'           => ['required', 'date', 'after_or_equal:start_date', 'before_or_equal:end_date'],
 
             'btn' => ['nullable', 'string', 'in:save,submit'],
         ];
@@ -31,6 +36,7 @@ class UpdateRequest extends FormRequest
     public function attributes()
     {
         return [
+            'type'                     => 'type',
             'start_date'               => 'start date',
             'end_date'                 => 'end date',
             'reason'                   => 'reason for off day work',
@@ -48,9 +54,14 @@ class UpdateRequest extends FormRequest
             'deliverables.array'                 => 'Deliverables must be a valid list.',
             'deliverables.min'                   => 'Please add at least one deliverable.',
 
-            'deliverables.*.project_id.required' => 'Project is required for each deliverable.',
+            'deliverables.*.project_id.required' => 'Project is required.',
             'deliverables.*.project_id.exists'   => 'Please select a valid project.',
-            'deliverables.*.task.required'       => 'Task is required for each deliverable.',
+            'deliverables.*.activity_id.required' => 'Activity is required.',
+            'deliverables.*.activity_id.exists'  => 'Please select a valid activity.',
+            'deliverables.*.task.required'       => 'Task is required.',
+
+            'deliverables.*.date.required'       => 'Date is required .',
+            'deliverables.*.date.date'           => 'Date must be a valid date.',
         ];
     }
 }

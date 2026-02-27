@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
             'employee_id' => 'required|exists:employees,id',
             'room_number' => 'nullable|string',
             'handover_date' => 'nullable|date',
-            'approver_id' => 'required|exists:users,id',
+            // 'approver_id' => 'required|exists:users,id',
         ];
     }
 

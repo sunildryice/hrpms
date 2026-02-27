@@ -227,6 +227,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::middleware('can:view-approved-travel-request')->group(function () {
         Route::get('approved/travel/requests', [TravelRequestApprovedController::class, 'index'])->name('approved.travel.requests.index');
+        Route::get('approved/travel/ticket/requests', [TravelRequestApprovedController::class, 'ticketIndex'])->name('approved.travel.ticket.requests.index');
         Route::get('approved/travel/requests/{travelRequest}/show', [TravelRequestApprovedController::class, 'show'])->name('approved.travel.requests.show');
 
         Route::get('approved/travel/reports', [TravelReportApprovedController::class, 'index'])->name('approved.travel.reports.index');

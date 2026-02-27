@@ -2,10 +2,22 @@
 
 @section('title', 'Timesheet')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            min-width: 200px;
+            max-width: 400px;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#timesheets-index').addClass('active');
+
 
             var oTable = $('#TimeSheetTable').DataTable({
                 scrollX: true,
@@ -13,14 +25,23 @@
                 serverSide: true,
                 ajax: "{{ route('timesheet.index') }}",
                 columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'timesheet_date',
-                        name: 'timesheet_date'
+                        data: 'timesheet_date_display',
+                        name: 'timesheet_date_display',
+                        render: function(data, type, row, meta) {
+                            // Hide duplicate dates except for the first row in each group
+                            if (type === 'display') {
+                                var api = meta.settings;
+                                var rowIdx = meta.row;
+                                var prevDate = '';
+                                if (rowIdx > 0) {
+                                    prevDate = api.json.data[rowIdx - 1].timesheet_date_display;
+                                }
+                                if (prevDate === data) {
+                                    return '';
+                                }
+                            }
+                            return data;
+                        }
                     },
                     {
                         data: 'project_id',
@@ -28,7 +49,8 @@
                     },
                     {
                         data: 'activity_id',
-                        name: 'activity_id'
+                        name: 'activity_id',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'hours_spent',
@@ -36,7 +58,8 @@
                     },
                     {
                         data: 'description',
-                        name: 'description'
+                        name: 'description',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'attachment',
@@ -49,7 +72,91 @@
                         searchable: false,
                         className: 'sticky-col'
                     },
-                ]
+                ],
+                rowGroup: {
+                    dataSrc: 'timesheet_date'
+                },
+                drawCallback: function(settings) {
+                    var api = this.api();
+                    var rows = api.rows({
+                        page: 'current'
+                    }).nodes();
+                    var lastDate = null;
+                    var rowspan = 1;
+                    var dateColumnIndex = 0; // DATE column is first
+                    api.column(dateColumnIndex, {
+                        page: 'current'
+                    }).data().each(function(date, i) {
+                        if (lastDate === date) {
+                            $(rows).eq(i).find('td').eq(dateColumnIndex).remove();
+                            rowspan++;
+                        } else {
+                            if (rowspan > 1) {
+                                $(rows).eq(i - rowspan).find('td').eq(dateColumnIndex).attr(
+                                    'rowspan', rowspan);
+                            }
+                            lastDate = date;
+                            rowspan = 1;
+                        }
+                    });
+                    // Handle last group
+                    if (rowspan > 1) {
+                        $(rows).eq(api.column(dateColumnIndex, {
+                            page: 'current'
+                        }).data().length - rowspan).find('td').eq(dateColumnIndex).attr('rowspan',
+                            rowspan);
+                    }
+                }
+            });
+
+
+            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+                e.preventDefault();
+                $('#timeSheetModal').find('.modal-content').html('');
+                $('#timeSheetModal').modal('show')
+                    .find('.modal-content')
+                    .load($(this).attr('href') || $(this).data('href'), function(response, status) {
+                        if (status === 'error') {
+                            toastr.error('Could not load form');
+                            return;
+                        }
+
+                        var $form = $('#timeSheetModal').find('#TimeSheetForm');
+                        if ($form.length) {
+                            // select2 for dropdowns
+                            $form.find('.select2').select2({
+                                dropdownParent: $('#timeSheetModal'),
+                                width: '100%'
+                            });
+
+                            // datepicker initialization (same as create)
+                            $form.find('[name="timesheet_date"]').datepicker({
+                                language: 'en-GB',
+                                autoHide: true,
+                                format: 'yyyy-mm-dd',
+                                zIndex: 2048,
+                                endDate: new Date(),
+                                todayHighlight: true,
+                                todayBtn: 'true'
+                            });
+                        }
+                    });
+            });
+
+            // handle create/edit form submission via AJAX
+            $(document).on('submit', '#TimeSheetForm', function(e) {
+                e.preventDefault();
+                var form = this;
+                var url = $(form).attr('action');
+                var method = $(form).attr('method') || 'POST';
+                var formData = new FormData(form);
+
+                // send regardless of PUT override (server handles method override)
+                ajaxSubmitFormData(url, method, formData, function(response) {
+                    $('#timeSheetModal').modal('hide');
+                    toastr.success(response.message || 'Saved successfully');
+                    oTable.ajax.reload();
+                });
             });
 
             $('#TimeSheetTable').on('click', '.delete-record', function(e) {
@@ -64,159 +171,10 @@
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
             });
-
-            $(document).on('click', '.open-timesheet-modal-form', function(e) {
-                e.preventDefault();
-                $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
-                    const form = document.getElementById('TimeSheetForm');
-
-                    $(form).find(".select2").each(function() {
-                        $(this)
-                            .wrap("<div class=\"position-relative\"></div>")
-                            .select2({
-                                dropdownParent: $(this).parent(),
-                                width: '100%',
-                                dropdownAutoWidth: true
-                            });
-                    });
-
-                    $('#project_id').on('change', function() {
-                        const projectId = $(this).val();
-                        const $activitySelect = $('#activity_id');
-
-                        $.ajax({
-                            url: '{{ route('timesheet.get-activities-by-project') }}',
-                            method: 'GET',
-                            data: {
-                                project_id: projectId
-                            },
-                            dataType: 'json',
-                            success: function(response) {
-                                $activitySelect.html(
-                                    '<option value="">Select Activity / Sub Activity</option>'
-                                );
-
-                                $.each(response.activities, function(index,
-                                    activity) {
-                                    $activitySelect.append(
-                                        $('<option>', {
-                                            value: activity.id,
-                                            text: activity.title
-                                        })
-                                    );
-                                });
-
-                                $activitySelect.trigger(
-                                    'change');
-                            },
-                            error: function() {
-                                toastr.error('Failed to load activities');
-                            }
-                        });
-                    });
-
-                    const fv = FormValidation.formValidation(form, {
-                        fields: {
-                            project_id: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The Project is required'
-                                    }
-                                }
-                            },
-                            activity_id: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The Activity / Sub Activity is required'
-                                    }
-                                }
-                            },
-                            timesheet_date: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The date is required'
-                                    },
-                                    date: {
-                                        format: 'YYYY-MM-DD',
-                                        message: 'The date is not a valid date'
-                                    }
-                                },
-                            },
-                            hours_spent: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'The hours spent is required'
-                                    },
-                                    numeric: {
-                                        message: 'The hours spent must be a number'
-                                    },
-                                    between: {
-                                        min: 0.1,
-                                        max: 24,
-                                        message: 'Hours spent should be between 0.1 and 24'
-                                    }
-                                },
-                            },
-                            attachment: {
-                                validators: {
-                                    file: {
-                                        extension: 'jpeg,jpg,png,pdf',
-                                        type: 'image/jpeg,image/png,application/pdf',
-                                        maxSize: '5097152',
-                                        message: 'The selected file is not valid file or must not be greater than 5 MB.',
-                                    },
-                                },
-                            },
-                        },
-                        plugins: {
-                            trigger: new FormValidation.plugins.Trigger(),
-                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
-                            submitButton: new FormValidation.plugins.SubmitButton(),
-                            icon: new FormValidation.plugins.Icon({
-                                valid: 'bi bi-check2-square',
-                                invalid: 'bi bi-x-lg',
-                                validating: 'bi bi-arrow-repeat',
-                            }),
-                        },
-                    }).on('core.form.valid', function() {
-                        const $url = fv.form.action;
-                        const formData = new FormData(form);
-
-                        const successCallback = function(response) {
-                            $('#openModal').modal('hide');
-                            toastr.success(response.message || 'Saved successfully');
-                            oTable.ajax.reload();
-                        };
-
-                        ajaxSubmitFormData($url, 'POST', formData, successCallback);
-                    });
-
-
-                    $('[name="timesheet_date"]').datepicker({
-                        language: 'en-GB',
-                        autoHide: true,
-                        format: 'yyyy-mm-dd',
-                        zIndex: 2048,
-                        endDate: new Date(),
-                        todayHighlight: true,
-                        todayBtn: 'true'
-                    }).on('change', function(e) {
-                        fv.revalidateField('timesheet_date');
-                    });
-
-                    // Auto-select today only if the field is empty (create mode)
-                    if (!$('[name="timesheet_date"]').val().trim()) {
-                        const today = new Date().toISOString().split('T')[0];
-                        $('[name="timesheet_date"]').val(today);
-                        $('[name="timesheet_date"]').datepicker('setDate', today);
-                    }
-                });
-            });
-
         });
     </script>
 @endsection
+
 @section('page-content')
     <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
@@ -233,9 +191,10 @@
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
                 <div class="add-info justify-content-end">
-                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm open-timesheet-modal-form"
-                        rel="tooltip" title="Add TimeSheet">
-                        <i class="bi-plus"></i> Add New</a>
+                    <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm" rel="tooltip"
+                        title="Add TimeSheet">
+                        <i class="bi-plus"></i> Add New
+                    </a>
                 </div>
             </div>
         </div>
@@ -245,15 +204,14 @@
         <div class="card shadow-sm border rounded c-tabs-content active">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="TimeSheetTable">
+                    <table class="table table-bordered" id="TimeSheetTable">
                         <thead class="bg-light">
                             <tr>
-                                <th>{{ __('label.sn') }}</th>
                                 <th>{{ __('label.date') }}</th>
                                 <th>{{ __('label.project') }}</th>
-                                <th>{{ __('label.activity') }}</th>
+                                <th class="wrap-text">{{ __('label.activity') }}</th>
                                 <th>Hours Spent</th>
-                                <th>{{ __('label.description') }}</th>
+                                <th class="wrap-text">{{ __('label.description') }}</th>
                                 <th>{{ __('label.attachment') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
@@ -262,7 +220,15 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
 
+    {{-- modal for timesheet forms --}}
+    <div class="modal fade" id="timeSheetModal" tabindex="-1" aria-labelledby="timeSheetModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                {{-- content loaded dynamically --}}
             </div>
         </div>
     </div>

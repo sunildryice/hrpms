@@ -64,7 +64,6 @@ class ReconcileConsultantLeave extends Command
                     ->where('end_date', '>=', date('Y-m-d'))
                     ->first();
 
-
                 $previousYear = collect();
                 if ($month == '01') {
                     $pyDate = Carbon::now()->startOfYear()->subMonth()->format('Y-m-d');

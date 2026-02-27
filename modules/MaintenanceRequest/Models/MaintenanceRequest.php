@@ -249,11 +249,11 @@ class MaintenanceRequest extends Model
 
     public function getMaintenanceRequestNumber()
     {
-        $maintenanceNumebr = $this->prefix.'-'.$this->maintenance_number;
-        $maintenanceNumebr .= $this->modification_number ? '-'.$this->modification_number : '';
-        $fiscalYear = $this->fiscalYear ? '/'.substr($this->fiscalYear->title, 2) : '';
+        $maintenanceNumebr = $this->prefix . '-' . $this->maintenance_number;
+        $maintenanceNumebr .= $this->modification_number ? '-' . $this->modification_number : '';
+        $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
-        return $this->maintenance_number ? $maintenanceNumebr.$fiscalYear : '';
+        return $this->maintenance_number ? $maintenanceNumebr . $fiscalYear : '';
     }
 
     public function getLogisticOfficerName()

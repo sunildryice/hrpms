@@ -36,10 +36,17 @@ class WorkPlanDetailController extends Controller
                 return DataTables::of(collect([]))->make(true);
             }
 
-            $query = $this->workPlans->getWorkPlanDetails($workPlan->id);
+            // ensure we can access the parent plan for the date
+            $query = $this->workPlans->getWorkPlanDetails($workPlan->id)
+                ->with('workPlan');
 
             return DataTables::of($query)
                 ->addIndexColumn()
+                ->addColumn('work_plan_date', function ($row) {
+
+                    $formattedDate = $row->work_plan_date ? Carbon::parse($row->work_plan_date)->format('M d, Y') : '-';
+                    return $formattedDate;
+                })
                 ->editColumn('status', function ($row) {
                     return $row->status ? ucfirst(str_replace('_', ' ', $row->status)) : 'Not Started';
                 })
@@ -96,6 +103,7 @@ class WorkPlanDetailController extends Controller
                 'start_date' => $workPlan->from_date,
                 'end_date' => $workPlan->to_date,
             ],
+            'workPlan' => $workPlan,
             'projects' => $projects,
             'isEditable' => $isEditable,
         ]);
@@ -112,32 +120,47 @@ class WorkPlanDetailController extends Controller
         return response()->json(['activities' => $activities]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request, WorkPlan $workPlan)
     {
         $week = [
-            'start_date' => Carbon::parse($request->from_date),
-            'end_date' => Carbon::parse($request->to_date),
+            'start_date' => $workPlan->from_date,
+            'end_date' => $workPlan->to_date,
         ];
 
         $projects = $this->projects->getAssignedProjects(auth()->user());
 
 
-        return view('Project::WorkPlan.Detail.create', compact('week', 'projects'));
+
+        return view('Project::WorkPlan.Detail.create', compact('week', 'projects', 'workPlan'));
     }
 
     public function store(WorkPlanStoreRequest $request)
     {
         $data = $request->validated();
-        $data['members'] = $request->input('members', []);
         $user = auth()->user();
+
+        if (!isset($data['entries']) || !is_array($data['entries'])) {
+            return response()->json(['message' => 'No entries provided.'], 422);
+        }
+
+        // determine overall plan range from the entry dates (week bounds already validated)
+        $dates = collect($data['entries'])
+            ->pluck('work_plan_date')
+            ->filter()
+            ->sort();
+
+        if ($dates->isEmpty()) {
+            return response()->json(['message' => 'Entry dates are required.'], 422);
+        }
+
+        $data['from_date'] = $dates->first();
+        $data['to_date'] = $dates->last();
 
         // Create a temporary instance to check policy against the date
         $checkPlan = new WorkPlan(['from_date' => $data['from_date']]);
-
         if ($user->cannot('update', $checkPlan)) {
-            return response()->json(['message' => 'Work plan cannot be added for this week.'], 403);
+            return response()->json(['message' => 'Work plan cannot be added for this date.'], 403);
         }
-
         if (!$user->employee) {
             return response()->json(['message' => 'Employee record not found for user.'], 403);
         }
@@ -148,9 +171,20 @@ class WorkPlanDetailController extends Controller
             $data['to_date']
         );
 
-        $this->workPlans->createWorkPlanDetail($workPlan->id, $data);
+        // Save each entry with its members and date
+        foreach ($data['entries'] as $entry) {
+            $entryData = [
+                'work_plan_date' => $entry['work_plan_date'] ?? null,
+                'project_id' => $entry['project_id'] ?? null,
+                'activity_id' => $entry['activity_id'] ?? null,
+                'planned_task' => $entry['planned_task'] ?? null,
+                'members' => $entry['members'] ?? [],
+            ];
+            $this->workPlans->createWorkPlanDetail($workPlan->id, $entryData);
+        }
 
-        return response()->json(['message' => 'Work plan added successfully.']);
+        return redirect()->route('work-plan.details', $workPlan->id)
+            ->with('success', 'Work plan added successfully.');
     }
 
     public function edit($id)
@@ -177,6 +211,7 @@ class WorkPlanDetailController extends Controller
     {
         $data = $request->validated();
         $data['members'] = $request->input('members', []);
+        $data['work_plan_date'] = $request->input('work_plan_date');
         $detail = $this->workPlans->findDetailById($id);
 
         if (auth()->user()->cannot('update', $detail->workPlan)) {
@@ -184,6 +219,7 @@ class WorkPlanDetailController extends Controller
         }
 
         $this->workPlans->updateDetail($id, [
+            'work_plan_date' => $data['work_plan_date'],
             'project_id' => $data['project_id'],
             'activity_id' => $data['activity_id'],
             'planned_task' => $data['planned_task'],
@@ -224,6 +260,7 @@ class WorkPlanDetailController extends Controller
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();
+            dd($exception->getMessage());
             report($exception);
 
             return response()->json([

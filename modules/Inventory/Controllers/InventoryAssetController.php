@@ -2,13 +2,13 @@
 
 namespace Modules\Inventory\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DataTables;
-
+use Illuminate\Http\Request;
 use Modules\Inventory\Repositories\AssetRepository;
 use Modules\Inventory\Repositories\InventoryItemRepository;
 use Modules\Inventory\Requests\Asset\UpdateRequest;
+use Modules\Master\Repositories\BrandRepository;
 
 class InventoryAssetController extends Controller
 {
@@ -17,14 +17,17 @@ class InventoryAssetController extends Controller
      *
      * @param AssetRepository $assets
      * @param InventoryItemRepository $inventoryItems
+     * @param BrandRepository $brandsepository
      */
     public function __construct(
         AssetRepository $assets,
-        InventoryItemRepository $inventoryItems
+        InventoryItemRepository $inventoryItems,
+        BrandRepository $brands
     )
     {
         $this->assets = $assets;
         $this->inventoryItems = $inventoryItems;
+        $this->brands = $brands;
         $this->destinationPath = 'inventory';
     }
 
@@ -50,6 +53,8 @@ class InventoryAssetController extends Controller
                     return $inventoryItem->getPurchaseDate();
                 })->addColumn('item_name', function ($row) use ($inventoryItem) {
                     return $inventoryItem->getItemName();
+                })->addColumn('brand_name', function ($row) {
+                    return $row->getBrandName();
                 })->addColumn('asset_number', function ($row) {
                     return $row->getAssetNumber();
                 })->addColumn('action', function ($row) use ($authUser) {
@@ -68,9 +73,11 @@ class InventoryAssetController extends Controller
     public function edit($assetId)
     {
         $asset = $this->assets->find($assetId);
+        $brands = $this->brands->getBrands();
 
         return view('Inventory::Asset.edit')
-        ->withAsset($asset);
+        ->withAsset($asset)
+        ->withBrands($brands);
     }
 
     public function update(UpdateRequest $request, $assetId)

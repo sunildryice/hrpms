@@ -2,6 +2,17 @@
 
 @section('title', 'Inventories')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -28,7 +39,8 @@
                     },
                     {
                         data: 'item_name',
-                        name: 'item_name'
+                        name: 'item_name',
+                        className: 'wrap-text'
                     },
                     {
                         data: 'batch_number',
@@ -66,21 +78,6 @@
                     {
                         data: 'execution_type',
                         name: 'execution_type',
-                        orderable: false
-                    },
-                    {
-                        data: 'activity_code',
-                        name: 'activity_code',
-                        orderable: false
-                    },
-                    {
-                        data: 'account_code',
-                        name: 'account_code',
-                        orderable: false
-                    },
-                    {
-                        data: 'donor_code',
-                        name: 'donor_code',
                         orderable: false
                     },
                     {
@@ -156,9 +153,6 @@
                                 <th scope="col">{{ __('label.available-quantity') }}</th>
                                 <th scope="col">{{ __('label.description') }}</th>
                                 <th scope="col">{{ __('label.execution-type') }}</th>
-                                <th scope="col">{{ __('label.activity-code') }}</th>
-                                <th scope="col">{{ __('label.account-code') }}</th>
-                                <th scope="col">{{ __('label.donor-code') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

@@ -12,6 +12,7 @@ class WorkPlanDetail extends Model
 
     protected $fillable = [
         'work_plan_id',
+        'work_plan_date',
         'project_id',
         'project_activity_id',
         'plan_tasks',

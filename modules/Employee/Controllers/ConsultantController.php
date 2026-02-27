@@ -97,7 +97,7 @@ class ConsultantController extends Controller
                     //     $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
                     //     $btn .= route('employees.payments.masters.index', $employee->id).'" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
                     // }
-    
+
                     return $btn;
                 })->rawColumns(['action', 'position'])
                 ->make(true);
@@ -164,11 +164,7 @@ class ConsultantController extends Controller
             'experiences',
             'consultantLeave'
         ])->find($id);
-        $supervisors = $this->employees->select(['id', 'full_name', 'official_email_address'])
-            ->where('id', '<>', $employee->id)
-            // ->whereNotNull('activated_at')
-            ->orderBy('full_name', 'asc')
-            ->get();
+        $supervisors = $this->employees->getActiveEmployees();
 
         $actionMode = 'edit';
         return view('Employee::Consultant.edit')
@@ -238,7 +234,7 @@ class ConsultantController extends Controller
 
         if ($employee) {
             $leaveData = [
-                'earn_leave' => $request->boolean('earn_leave'),      
+                'earn_leave' => $request->boolean('earn_leave'),
                 'leave_percentage' => $request->input('leave_percentage'),
                 'updated_by' => auth()->id(),
             ];

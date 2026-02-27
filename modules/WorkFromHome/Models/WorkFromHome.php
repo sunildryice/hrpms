@@ -31,6 +31,7 @@ class WorkFromHome extends Model
         'office_id',
         'department_id',
         'status_id',
+        'type',
         'created_by',
         'updated_by',
     ];
@@ -100,6 +101,7 @@ class WorkFromHome extends Model
                     'project_name' => $project ? $project->short_name : $project?->title,
                     'task' => $item['task'],
                     'activity_name' => $activity ? $activity->title : 'N/A',
+                    'date' => isset($item['date']) ? Carbon::parse($item['date'])->format('M j, Y') : '-',
                 ];
             })
             ->values()
@@ -176,7 +178,12 @@ class WorkFromHome extends Model
 
     public function getRequestId()
     {
-        $workFromHomeNumber = $this->work_from_home_number ? 'WFH-' . $this->work_from_home_number : '';
+        $prefix = 'WFH';
+        if ($this->type && $this->type !== 'work_from_home') {
+            $prefix = 'FW';
+        }
+
+        $workFromHomeNumber = $this->work_from_home_number ? $prefix . '-' . $this->work_from_home_number : '';
         $fiscalYear = $this->fiscalYear ? '/' . substr($this->fiscalYear->title, 2) : '';
 
         return $workFromHomeNumber . $fiscalYear;

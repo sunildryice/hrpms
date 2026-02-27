@@ -1,0 +1,1 @@
+ALTER TABLE `assets` ADD `fiscal_year` VARCHAR(7) NULL DEFAULT NULL AFTER `year`;

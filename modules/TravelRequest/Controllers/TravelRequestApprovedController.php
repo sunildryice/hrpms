@@ -4,75 +4,25 @@ namespace Modules\TravelRequest\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Master\Repositories\DepartmentRepository;
-use Modules\Master\Repositories\DsaCategoryRepository;
-use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\Master\Repositories\ProjectCodeRepository;
-use Modules\Master\Repositories\StatusRepository;
-use Modules\Master\Repositories\TravelModeRepository;
-use Modules\Master\Repositories\TravelTypeRepository;
-use Modules\Privilege\Repositories\RoleRepository;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\TravelRequest\Repositories\TravelRequestEstimateRepository;
-use Modules\TravelRequest\Repositories\TravelRequestItineraryRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
+use Modules\TravelRequest\Repositories\TravelRequestViewRepository;
 use Yajra\DataTables\DataTables;
 
 class TravelRequestApprovedController extends Controller
 {
-    private $travelRequest;
-
     /**
      * Create a new controller instance.
      *
-     * @param DsaCategoryRepository   $dsaCategory,
-     * @param DepartmentRepository    $departments,
-     * @param EmployeeRepository      $employees,
-     * @param FiscalYearRepository    $fiscalYear,
-     * @param OfficeRepository        $offices,
-     * @param ProjectCodeRepository   $projectCodes,
-     * @param StatusRepository        $status,
-     * @param TravelRequestRepository $travelRequest,
-     * @param TravelRequestEstimateRepository $travelRequestEstimate,
-     * @param TravelRequestItineraryRepository $travelRequestItinerary,
-     * @param TravelModeRepository   $travelModes,
-     * @param TravelTypeRepository    $travelTypes,
-     * @param RoleRepository          $roles,
-     * @param UserRepository          $user
+     * @param TravelRequestRepository $travelRequest
+     * @param TravelRequestViewRepository $travelRequestView
      */
     public function __construct(
-        DsaCategoryRepository $dsaCategory,
-        DepartmentRepository $departments,
-        EmployeeRepository $employees,
-        FiscalYearRepository $fiscalYear,
-        OfficeRepository $offices,
-        ProjectCodeRepository $projectCodes,
-        TravelModeRepository $travelModes,
-        TravelRequestRepository $travelRequest,
-        TravelRequestEstimateRepository $travelRequestEstimate,
-        TravelRequestItineraryRepository $travelRequestItinerary,
-        StatusRepository $status,
-        TravelTypeRepository $travelTypes,
-        RoleRepository $roles,
-        UserRepository $user
-    ) {
-        $this->dsaCategory = $dsaCategory;
-        $this->departments = $departments;
-        $this->employees = $employees;
-        $this->fiscalYear = $fiscalYear;
-        $this->offices = $offices;
-        $this->projectCodes = $projectCodes;
-        $this->status = $status;
+        TravelRequestRepository     $travelRequest,
+        TravelRequestViewRepository $travelRequestView,
+    )
+    {
         $this->travelRequest = $travelRequest;
-        $this->travelRequestEstimate = $travelRequestEstimate;
-        $this->travelRequestItinerary = $travelRequestItinerary;
-        $this->travelModes = $travelModes;
-        $this->travelTypes = $travelTypes;
-        $this->roles = $roles;
-        $this->user = $user;
-        $this->destinationPath = 'travelrequest';
+        $this->travelRequestView = $travelRequestView;
     }
 
     /**
@@ -86,37 +36,91 @@ class TravelRequestApprovedController extends Controller
         $authUser = auth()->user();
 
         if ($request->ajax()) {
-            $data = $this->travelRequest->getApproved();
+            $accessibleOfficeIds = $authUser->getAccessibleOfficesIds();
+            $query = $this->travelRequestView->select(['*'])
+                ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')]);
+            if ($authUser->employee->office->office_type_id == config('constant.HEAD_OFFICE')) {
+                $query->where(function ($q) use ($accessibleOfficeIds) {
+                    $q->whereNull('office_id');
+                    $q->orWhereIn('office_id', $accessibleOfficeIds);
+                });
+            } else {
+                $query->whereIn('office_id', $accessibleOfficeIds);
+            }
+            $data = $query->orderBy('departure_date', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('requester', function ($row) {
-                    return $row->getRequesterName();
-                })->addColumn('departure_date', function ($row) {
-                return $row->getDepartureDate();
-            })->addColumn('return_date', function ($row) {
-                return $row->getReturnDate();
-            })->addColumn('total_days', function ($row) {
-                return $row->getTotalDays();
-            })->addColumn('travel_number', function ($row) {
-                return $row->getTravelRequestNumber();
-            })->addColumn('status', function ($row) {
-                return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
-            })->addColumn('action', function ($row) use ($authUser) {
-                $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                $btn .= route('approved.travel.requests.show', $row->id) . '" rel="tooltip" title="View Travel Request">';
-                $btn .= '<i class="bi bi-eye"></i></a>';
-                if ($authUser->can('print', $row)) {
-                    $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
-                    $btn .= route('travel.request.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
-                }
-                return $btn;
-            })
+                ->addColumn('departure_date', function ($row) {
+                    return $row->getDepartureDate();
+                })->addColumn('return_date', function ($row) {
+                    return $row->getReturnDate();
+                })->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })->addColumn('travel_number', function ($row) {
+                    return $row->getTravelRequestNumber();
+                })->addColumn('status', function ($row) {
+                    return '<span class="' . $row->status_class . '">' . $row->status_title . '</span>';
+                })->addColumn('action', function ($row) use ($authUser) {
+                    $btn = '<a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= route('approved.travel.requests.show', $row->id) . '" rel="tooltip" title="View Travel Request">';
+                    $btn .= '<i class="bi bi-eye"></i></a>';
+                    if ($authUser->can('print', $row)) {
+                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
+                        $btn .= route('travel.request.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
+                    }
+                    return $btn;
+                })
                 ->rawColumns(['action', 'status'])
                 ->make(true);
         }
 
         return view('TravelRequest::TravelRequestApproved.index');
+    }
+
+    /**
+     * Display a listing of the travel request by employee id.
+     *
+     * @return mixed
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function ticketIndex(Request $request)
+    {
+        $authUser = auth()->user();
+
+        if ($request->ajax()) {
+            $data = $this->travelRequestView->select(['*'])
+                ->where(function ($query) {
+                    $query->where('air_ticket_count', '>', 0)
+                        ->orWhere('vehicle_count', '>', 0);
+                })->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
+                ->orderBy('departure_date', 'desc');
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('departure_date', function ($row) {
+                    return $row->getDepartureDate();
+                })->addColumn('return_date', function ($row) {
+                    return $row->getReturnDate();
+                })->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })->addColumn('travel_number', function ($row) {
+                    return $row->getTravelRequestNumber();
+                })->addColumn('action', function ($row) use ($authUser) {
+                    $btn = '<a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= route('approved.travel.requests.show', $row->id) . '" rel="tooltip" title="View Travel Request">';
+                    $btn .= '<i class="bi bi-eye"></i></a>';
+                    if ($authUser->can('print', $row)) {
+                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
+                        $btn .= route('travel.request.print', $row->id) . '" rel="tooltip" title="Print"><i class="bi bi-printer"></i></a>';
+                    }
+                    return $btn;
+                })
+                ->rawColumns(['action', 'status'])
+                ->make(true);
+        }
+
+        return view('TravelRequest::TravelRequestApproved.ticketIndex');
     }
 
     /**
@@ -128,7 +132,6 @@ class TravelRequestApprovedController extends Controller
     public function print($id)
     {
         $travelRequest = $this->travelRequest->find($id);
-        // $this->authorize('print', $travelRequest);
 
         return view('TravelRequest::TravelRequestApproved.print')
             ->withRequester($travelRequest->requester->employee)
@@ -145,7 +148,7 @@ class TravelRequestApprovedController extends Controller
     {
         $authUser = auth()->user();
         $travelRequest = $this->travelRequest->find($id);
-        // $this->authorize('print', $travelRequest);
+
         return view('TravelRequest::TravelRequestApproved.show')
             ->withRequester($travelRequest->requester->employee)
             ->withTravelRequest($travelRequest);

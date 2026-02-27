@@ -47,10 +47,12 @@ class TravelRequestSubmitted extends Notification
     {
         $url = route('approve.travel.requests.create', $this->travelRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been submitted for your approval.')
-            ->action('View travel request ', $url)
-        ;
+            ->greeting('Hey ' . $this->travelRequest->getApproverName() . ',')
+            ->line('You have a new travel request (' . $this->travelRequest->getTravelRequestNumber() . ') awaiting your approval.')
+            ->line('Employee : ' . $this->travelRequest->getRequesterName())
+            ->line('Travel dates : ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())
+            ->line('Purpose : ' . $this->travelRequest->purpose_of_travel)
+            ->action('View travel request ', $url);
     }
 
     /**

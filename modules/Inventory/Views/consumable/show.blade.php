@@ -26,12 +26,12 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'purchase_date',
-                        name: 'purchase_date',
-                        orderable: false,
-                        searchable: false
-                    },
+                    // {
+                    //     data: 'purchase_date',
+                    //     name: 'purchase_date',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                     {
                         data: 'serial_number',
                         name: 'serial_number',
@@ -39,6 +39,14 @@
                     {
                         data: 'item_name',
                         name: 'item_name'
+                    },
+                    {
+                        data: 'model_number',
+                        name: 'model_number'
+                    },
+                    {
+                        data: 'brand_name',
+                        name: 'brand_name'
                     },
                     {
                         data: 'remarks',
@@ -227,8 +235,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getUnitPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Unit Price"></span>
@@ -236,8 +243,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Price"></span>
@@ -245,8 +251,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getVatAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="VAT Amount"></span>
@@ -254,8 +259,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>
@@ -337,10 +341,12 @@
                                                     <tr>
                                                         <th>{{ __('label.sn') }}</th>
                                                         <th scope="col">{{ __('label.asset-number') }}</th>
-                                                        <th scope="col">{{ __('label.purchase-date') }}</th>
+                                                        {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
-                                                        <th scope="col">{{ __('label.remarks') }}</th>
+                                                        <th scope="col">{{ __('label.model-number') }}</th>
+                                                        <th scope="col">{{ __('label.brand') }}</th>
+                                                        <th scope="col">{{ __('label.specification') }}</th>
                                                         <th>{{ __('label.action') }}</th>
                                                     </tr>
                                                 </thead>

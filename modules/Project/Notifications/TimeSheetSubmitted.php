@@ -47,10 +47,12 @@ class TimeSheetSubmitted extends Notification
     {
         $url = route('approve.monthly-timesheet.create', $this->timeSheet->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Timesheet for ' . $this->timeSheet->month . ' ' . $this->timeSheet->year . ' has been submitted for your approval.')
-            ->action('Review Timesheet', $url)
-        ;
+            ->greeting('Hey ' . ($this->timeSheet->approver->getFullName() ?? '-') . ',')
+            ->line('You have a new timesheet awaiting your review.')
+            ->line('Employee: ' . ($this->timeSheet->requester->getFullName() ?? '-'))
+            ->line('Period: ' . ($this->timeSheet->month_name ?? $this->timeSheet->month) . ' ' . $this->timeSheet->year)
+            ->line('Dates: ' . ($this->timeSheet->start_date ? $this->timeSheet->start_date->format('d M Y') : '-') . ' to ' . ($this->timeSheet->end_date ? $this->timeSheet->end_date->format('d M Y') : '-'))
+            ->action('Review Timesheet', $url);
     }
 
     /**

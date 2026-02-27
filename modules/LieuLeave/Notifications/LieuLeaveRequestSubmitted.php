@@ -42,11 +42,16 @@ class LieuLeaveRequestSubmitted extends Notification
     {
         $url = route('approve.lieu.leave.requests.show', $this->lieuLeaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Lieu leave request ' . $this->lieuLeaveRequest->id . ' has been submitted for your approval.')
-            ->action('View lieu leave request ', $url)
-        ;
+            ->greeting('Hey ' . $this->lieuLeaveRequest->getApproverName() . ',')
+            ->line('You have a new lieu leave request awaiting your approval.')
+            ->line('Employee: ' . $this->lieuLeaveRequest->getRequesterName())
+            ->line('Leave Number: ' . $this->lieuLeaveRequest->getLeaveNumber())
+            ->line('Leave dates: ' . ($this->lieuLeaveRequest->start_date ? $this->lieuLeaveRequest->getStartDate() : '') . ' to ' . ($this->lieuLeaveRequest->end_date ? $this->lieuLeaveRequest->getEndDate() : ''))
+            ->line('Reason: ' . $this->lieuLeaveRequest->reason)
+            ->action('View lieu leave request', $url);
     }
+
+
 
     /**
      * Get the array representation of the notification.

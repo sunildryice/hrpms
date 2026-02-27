@@ -10,6 +10,18 @@
             border-color: #dee2e6;
         }
 
+        /* deliverables table fixed layout similar to timesheet create */
+        #deliverables-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-date { width: 10%; overflow: hidden; word-wrap: break-word; }
+        .col-project { width: 20%; overflow: hidden; word-wrap: break-word; }
+        .col-activities { width: 20%; overflow: hidden; word-wrap: break-word; }
+        .col-task { width: 40%; overflow: hidden; word-wrap: break-word; }
+        .col-action { width: 10%; overflow: hidden; word-wrap: break-word; text-align: center; }
+
         .task-item+.task-item {
             margin-top: .35rem;
         }
@@ -205,6 +217,17 @@
                 populateActivities($(this), $activitiesSelect);
             });
 
+            // Utility: show plus only on last row and hide delete when only one row exists
+            function updateRowButtons() {
+                var $rows = $('#deliverables-body .deliverable-row');
+                $rows.find('.add-row').hide();
+                $rows.find('.remove-row').show();
+                if ($rows.length === 1) {
+                    $rows.find('.remove-row').hide();
+                }
+                $rows.last().find('.add-row').show();
+            }
+
             // On page load, initialize activities selects for existing rows
             $('#deliverables-body .deliverable-row').each(function() {
                 var $row = $(this);
@@ -216,12 +239,17 @@
                 // Initialize datepicker for deliverable date
                 initDeliverableDatepicker($row.find('input.date'));
             });
+            // ensure buttons correct on load
+            updateRowButtons();
 
             // Add row handler
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
                 var $newRow = $(buildDeliverableRow(rowIndex));
                 $tbody.append($newRow);
+
+                // After insertion update buttons
+                updateRowButtons();
 
                 // clear any autofilled values before initializing plugins
                 $newRow.find('.project-select, .activities-select').val('').trigger('change');
@@ -249,6 +277,8 @@
             // Remove row handler
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
+                // after remove update visibility
+                updateRowButtons();
 
                 if (window.fv && typeof window.fv.getFields === 'function') {
                     var fields = window.fv.getFields();
@@ -446,11 +476,11 @@
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
-                                <th style="width: 10%;">Date</th>
-                                <th style="width: 15%;">Project</th>
-                                <th style="width:15%;">Activities</th>
-                                <th>Task</th>
-                                <th style="width: 12%;">Action</th>
+                        <th class="col-date align-middle">Date</th>
+                                <th class="col-project align-middle">Project</th>
+                                <th class="col-activities align-middle">Activities</th>
+                                <th class="col-task align-middle">Task</th>
+                                <th class="col-action align-middle">Action</th>
                             </tr>
                         </thead>
                         <tbody id="deliverables-body">
@@ -470,7 +500,7 @@
                                     $dateErrorKey = "deliverables.$idx.date";
                                 @endphp
                                 <tr class="deliverable-row" data-row-index="{{ $idx }}">
-                                    <td style="width: 10%;">
+                                    <td class="col-date align-middle">
                                         <input type="text" class="form-control date" readonly
                                             name="deliverables[{{ $idx }}][date]"
                                             value="{{ $deliverable['date'] ?? '' }}">
@@ -478,7 +508,7 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td style="width: 15%;">
+                                    <td class="col-project align-middle">
                                         <select
                                             class="form-select project-select @error($projectErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][project_id]" required>
@@ -517,11 +547,9 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td>
-                                        <input type="text"
-                                            class="form-control @error($taskErrorKey) is-invalid @enderror"
-                                            name="deliverables[{{ $idx }}][task]"
-                                            value="{{ $deliverable['task'] ?? '' }}" required>
+                                    <td class="col-task align-middle">
+                                        <textarea rows="4" class="form-control @error($taskErrorKey) is-invalid @enderror"
+                                            name="deliverables[{{ $idx }}][task]" required>{{ $deliverable['task'] ?? '' }}</textarea>
                                         @error($taskErrorKey)
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror

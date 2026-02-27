@@ -10,6 +10,43 @@
             border-color: #dee2e6;
         }
 
+        /* mirror create-workplan styling */
+        #deliverables-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-date {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-project {
+            width: 20%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-activities {
+            width: 20%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-task {
+            width: 40%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-action {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+            text-align: center;
+        }
+
         .task-item+.task-item {
             margin-top: .35rem;
         }
@@ -79,10 +116,10 @@
             function buildDeliverableRow(idx) {
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
-                        <td style="width: 10%;">
+                        <td class="col-date align-middle">
                             <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]" autocomplete="off">
                         </td>
-                        <td style="width: 15%;">
+                        <td class="col-project align-middle">
                             <select class="form-select project-select" autocomplete="off"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
@@ -91,27 +128,19 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td>
+                        <td class="col-activities align-middle">
                             <select class="form-select activities-select" autocomplete="off" name="deliverables[${idx}][activity_id]" required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
-                        <td>
-                            <input type="text"
-                                   class="form-control"
-                                   name="deliverables[${idx}][task]"
-                                   autocomplete="off"
-                                   required>
+                        <td class="col-task align-middle">
+                            <textarea rows="4" class="form-control" name="deliverables[${idx}][task]" autocomplete="off" required></textarea>
                         </td>
-                        <td>
-                            <button type="button"
-                                    class="btn btn-outline-primary btn-sm add-row"
-                                    title="Add deliverable row">
+                        <td class="col-action align-middle text-center">
+                            <button type="button" class="btn btn-outline-primary btn-sm add-row" title="Add deliverable row">
                                 <i class="bi bi-plus"></i>
                             </button>
-                            <button type="button"
-                                    class="btn btn-outline-danger btn-sm remove-row"
-                                    title="Remove row">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-row" title="Remove row">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </td>
@@ -146,6 +175,17 @@
                 populateActivities($(this), $activitiesSelect);
             });
 
+            // Utility to handle row buttons like create page
+            function updateRowButtons() {
+                var $rows = $('#deliverables-body .deliverable-row');
+                $rows.find('.add-row').hide();
+                $rows.find('.remove-row').show();
+                if ($rows.length === 1) {
+                    $rows.find('.remove-row').hide();
+                }
+                $rows.last().find('.add-row').show();
+            }
+
             // On page load, initialize activities selects for existing rows
             $('#deliverables-body .deliverable-row').each(function() {
                 var $row = $(this);
@@ -168,11 +208,16 @@
                 $dateInput.prop('disabled', !($('[name="start_date"]').val() && $('[name="end_date"]')
                     .val()));
             });
+            // fix buttons initial
+            updateRowButtons();
 
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
                 var $newRow = $(buildDeliverableRow(rowIndex));
                 $tbody.append($newRow);
+
+                // update buttons
+                updateRowButtons();
 
                 // clear any autofilled values before plugin init
                 $newRow.find('.project-select, .activities-select').val('').trigger('change');
@@ -202,6 +247,7 @@
 
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
+                updateRowButtons();
 
                 if (window.fv) {
                     fv.revalidateField('deliverables');
@@ -398,11 +444,11 @@
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
-                                <th style="width: 10%;">Date</th>
-                                <th style="width: 15%;">Project</th>
-                                <th style="width:15%">Activities</th>
-                                <th>Task</th>
-                                <th style="width: 12%;">Action</th>
+                                <th class="col-date align-middle">Date</th>
+                                <th class="col-project align-middle">Project</th>
+                                <th class="col-activities align-middle">Activities</th>
+                                <th class="col-task align-middle">Task</th>
+                                <th class="col-action align-middle">Action</th>
                             </tr>
                         </thead>
                         <tbody id="deliverables-body">
@@ -431,7 +477,7 @@
                                     $activities = $selectedProject ? $selectedProject->activities : [];
                                 @endphp
                                 <tr class="deliverable-row" data-row-index="{{ $idx }}">
-                                    <td style="width: 10%;">
+                                    <td class="col-date align-middle">
                                         <input type="text"
                                             class="form-control date @error($dateErrorKey) is-invalid @enderror" readonly
                                             name="deliverables[{{ $idx }}][date]"
@@ -440,7 +486,7 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td style="width: 15%;">
+                                    <td class="col-project align-middle">
                                         <select
                                             class="form-select project-select @error($projectErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][project_id]" required>
@@ -459,7 +505,7 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td>
+                                    <td class="col-activities align-middle">
                                         <select
                                             class="form-select activities-select @error($activityErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][activity_id]"
@@ -478,7 +524,7 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td>
+                                    <td class="col-task align-middle">
                                         <input type="text"
                                             class="form-control @error($taskErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][task]"

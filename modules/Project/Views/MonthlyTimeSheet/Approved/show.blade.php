@@ -37,7 +37,7 @@
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
                     </nav>
-                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title') - {{ $timeSheet->requester?->full_name ?? '—' }}</h4>
                 </div>
             </div>
         </div>

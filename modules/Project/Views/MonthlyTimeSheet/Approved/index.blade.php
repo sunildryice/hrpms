@@ -16,6 +16,10 @@
                         searchable: false
                     },
                     {
+                        data: 'requester_name',
+                        name: 'requester_name'
+                    },
+                    {
                         data: 'month_name',
                         name: 'month_name'
                     },
@@ -101,6 +105,7 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
+                                <th>{{ __('label.employee') }}</th>
                                 <th>{{ __('label.month') }}</th>
                                 <th>{{ __('label.total-hours') }}</th>
                                 <th>{{ __('label.project') }}</th>

@@ -46,13 +46,15 @@ class DirectAssignController extends Controller
     {
         $asset = $this->assets->find($id);
         $employees = $this->employees->getActiveEmployees();
-        $approvers = $this->users->permissionBasedUsers('approve-direct-dispatch-good-request');
+        $approvers = $this->users->permissionBasedUsers('approve-direct-dispatch-good-request')
+            ->where('employee_id', '!=', null);
+
         return view('GoodRequest::Assign.Direct.create', compact('asset', 'employees', 'approvers'));
     }
 
     public function store(StoreRequest $request, $id)
     {
-        $action = $request->input('submit_action'); 
+        $action = $request->input('submit_action');
         $inputs = $request->validated();
 
         $asset = $this->assets->find($id);
@@ -72,18 +74,24 @@ class DirectAssignController extends Controller
                 $inputs['good_request_number'] = $this->goodRequests->generateGoodRequestNumber($inputs['fiscal_year_id']);
                 $inputs['logistic_officer_id'] = auth()->id();
 
+
                 $goodRequest = $this->goodRequests->storeDirectAssignDraft($asset->id, $inputs);
 
                 $message = 'Asset assignment saved as draft.';
             } else if ($action === 'assign') {
+
                 $inputs['status_id'] = config('constant.ASSIGNED_STATUS');
                 $inputs['is_direct_assign'] = true;
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
                 $inputs['prefix'] = 'GR';
                 $inputs['good_request_number'] = $this->goodRequests->generateGoodRequestNumber($inputs['fiscal_year_id']);
+
                 $inputs['logistic_officer_id'] = auth()->id();
 
+
+
                 $goodRequest = $this->goodRequests->storeAndDirectlyAssignAsset($asset->id, $inputs);
+
 
                 // $goodRequest->receiver->notify(new AssetAssigned($goodRequest));
 
@@ -96,10 +104,10 @@ class DirectAssignController extends Controller
 
             return response()->json([
                 'status' => 'ok',
+                'asset' => $asset->refresh(),
                 'message' => $message,
-                
-            ], 200);
 
+            ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
             dd($e->getMessage());
@@ -181,5 +189,4 @@ class DirectAssignController extends Controller
 
         return redirect()->back()->withWarningMessage('Direct Asset Assign request could not be processed.');
     }
-
 }

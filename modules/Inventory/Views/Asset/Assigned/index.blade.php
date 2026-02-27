@@ -78,13 +78,13 @@
 
                     const fv = FormValidation.formValidation(form, {
                         fields: {
-                             assigned_office_id: {
-                                 validators: {
-                                     notEmpty: {
-                                         message: 'The assigned office is required.',
-                                     },
-                                 },
-                             },
+                            assigned_office_id: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'The assigned office is required.',
+                                    },
+                                },
+                            },
                         },
                         plugins: {
                             trigger: new FormValidation.plugins.Trigger(),

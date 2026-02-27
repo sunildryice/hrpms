@@ -32,12 +32,12 @@
             </div>
         </div>
 
-    
+
 
 
     </div>
     <div class="modal-footer">
-        <button type="submit" name="submit_action" value="save" class="btn btn-outline-primary">Save</button>
+        {{-- <button type="submit" name="submit_action" value="save" class="btn btn-outline-primary">Save</button> --}}
 
         <button type="submit" name="submit_action" value="assign" class="btn btn-primary">Assign</button>
     </div>

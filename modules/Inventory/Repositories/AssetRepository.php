@@ -114,7 +114,6 @@ class AssetRepository extends Repository
                 //     $q->whereIn('assigned_office_id', $accessibleOfficeIds);
                 // })
                 ->select(['*'])->orderBy('created_at', 'desc')->get();
-
         }
 
         return collect();
@@ -135,9 +134,11 @@ class AssetRepository extends Repository
                 'latestConditionLog',
                 'latestConditionLog.condition',
             ])->select(['*'])
+                ->where('assigned_user_id', auth()->id())
                 ->where(function ($q) {
                     $q->where(function ($q) {
-                        $q->whereNotNull('assigned_user_id');
+                        $q->where('assigned_user_id', auth()->id());
+
                         // $q->where(function ($q) use ($accessibleOfficeIds) {
                         //     $q->whereIn('assigned_office_id', $accessibleOfficeIds);
                         //     $q->orWhereHas('assignedTo', function ($q) use ($accessibleOfficeIds) {

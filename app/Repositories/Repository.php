@@ -43,6 +43,14 @@ class Repository
         return $this->model->findOrFail($id);
     }
 
+    /**
+     * Alias for find() to match Eloquent naming
+     */
+    public function findOrFail($id)
+    {
+        return $this->find($id);
+    }
+
     public function findOrNull($id)
     {
         return $this->model->find($id);
@@ -113,6 +121,11 @@ class Repository
     public function where($field, $operator = null, $value)
     {
         return $this->model->where($field, $operator, $value);
+    }
+
+    public function whereNotNull($field)
+    {
+        return $this->model->whereNotNull($field);
     }
 
     public function whereIn($field, $value)

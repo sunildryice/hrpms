@@ -26,19 +26,28 @@ class AssetPolicy
         return $user->can('manage-asset') && $asset;
     }
 
-    public function directAssign(User $user, Asset $asset)
+    public function directAssign(User $user, ?Asset $asset)
     {
-        if(!$user->can('direct-assign-good-request')){
+        // if no asset provided, deny access
+        if (!$asset) {
             return false;
         }
 
-        if($asset->dispositionRequest?->status_id == config('constant.APPROVED_STATUS')){
+        if (!$user->can('direct-assign-good-request')) {
             return false;
         }
 
-        if($goodRequestAsset = $asset->goodRequestAsset()->latest()->first()){
-            if($goodRequestAsset->goodRequest){
-                if($goodRequestAsset->assigned_user_id == null){
+        if ($asset->dispositionRequest?->status_id == config('constant.APPROVED_STATUS')) {
+            return false;
+        }
+
+        if ($asset->status == config('constant.CREATED_STATUS')) {
+            return true;
+        }
+
+        if ($goodRequestAsset = $asset->goodRequestAsset()->latest()->first()) {
+            if ($goodRequestAsset->goodRequest) {
+                if ($goodRequestAsset->assigned_user_id == null) {
                     return $goodRequestAsset->goodRequest?->status_id == config('constant.REJECTED_STATUS');
                 }
                 return $goodRequestAsset->handover_status_id == config('constant.APPROVED_STATUS');
@@ -46,5 +55,4 @@ class AssetPolicy
         }
         return !isset($asset->assigned_user_id);
     }
-
 }

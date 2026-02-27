@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
 
@@ -56,6 +57,9 @@ class ApprovedController extends Controller
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
                 })
+                ->addColumn('type', function ($row) {
+                    return WorkFromHomeTypes::options()[$row->type] ?? ucfirst(str_replace('_', ' ', $row->type));
+                })
                 ->addColumn('total_days', function ($row) {
                     return $row->getTotalDays();
                 })
@@ -83,6 +87,9 @@ class ApprovedController extends Controller
 
         $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
-        return view('WorkFromHome::approved.show', compact('wfhRequest', 'deliverables'));
+        $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
+        $typeLabel = $typeOptions[$wfhRequest->type] ?? ucfirst(str_replace('_', ' ', $wfhRequest->type));
+
+        return view('WorkFromHome::approved.show', compact('wfhRequest', 'deliverables', 'typeLabel'));
     }
 }

@@ -10,6 +10,18 @@
             border-color: #dee2e6;
         }
 
+        /* deliverables table fixed layout similar to timesheet create */
+        #deliverables-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-date { width: 10%; overflow: hidden; word-wrap: break-word; }
+        .col-project { width: 20%; overflow: hidden; word-wrap: break-word; }
+        .col-activities { width: 20%; overflow: hidden; word-wrap: break-word; }
+        .col-task { width: 40%; overflow: hidden; word-wrap: break-word; }
+        .col-action { width: 10%; overflow: hidden; word-wrap: break-word; text-align: center; }
+
         .task-item+.task-item {
             margin-top: .35rem;
         }
@@ -37,7 +49,7 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
 
-            $('#send_to').addClass('select2').select2({
+            $('#send_to, #type').addClass('select2').select2({
                 width: '100%',
                 dropdownAutoWidth: true
             });
@@ -48,8 +60,8 @@
                 dropdownAutoWidth: true
             });
 
-            const form = document.getElementById('wfhRequestCreateForm');
-            const $tbody = $('#deliverables-table tbody');
+            var $form = $('#wfhRequestCreateForm');
+            var $tbody = $('#deliverables-table tbody');
 
             // Datepicker for start and end date
             $('[name="start_date"]').datepicker({
@@ -67,19 +79,19 @@
 
             // Helper to get start/end date values
             function getWFHDateRange() {
-                const start = $('[name="start_date"]').val();
-                const end = $('[name="end_date"]').val();
+                var start = $('[name="start_date"]').val();
+                var end = $('[name="end_date"]').val();
                 return {
-                    start,
-                    end
+                    start: start,
+                    end: end
                 };
             }
 
             // detect last existing row index from server-rendered rows
-            let rowIndex = (function() {
-                let maxIndex = 0;
+            var rowIndex = (function() {
+                var maxIndex = 0;
                 $tbody.find('.deliverable-row').each(function() {
-                    const idx = parseInt($(this).data('row-index'), 10);
+                    var idx = parseInt($(this).data('row-index'), 10);
                     if (!isNaN(idx) && idx > maxIndex) {
                         maxIndex = idx;
                     }
@@ -91,10 +103,10 @@
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
                         <td style="width: 10%;">
-                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]">
+                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]" autocomplete="off">
                         </td>
                         <td style="width: 15%;">
-                            <select class="form-select project-select"
+                            <select class="form-select project-select" autocomplete="off"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
                                 @foreach ($projects as $project)
@@ -103,15 +115,16 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-select activities-select" name="deliverables[${idx}][activity_id]" required>
+                            <select class="form-select activities-select" autocomplete="off" name="deliverables[${idx}][activity_id]" required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
                         <td>
-                            <input type="text"
+                            <textarea rows="4"
                                    class="form-control"
                                    name="deliverables[${idx}][task]"
-                                   required>
+                                   autocomplete="off"
+                                   required></textarea>
                         </td>
                         <td>
                             <button type="button"
@@ -131,10 +144,9 @@
 
             // Datepicker for deliverables date column
             function initDeliverableDatepicker($input) {
-                const {
-                    start,
-                    end
-                } = getWFHDateRange();
+                var range = getWFHDateRange();
+                var start = range.start;
+                var end = range.end;
                 // If both start and end date are selected, enable datepicker with range
                 if (start && end) {
                     $input.datepicker({
@@ -179,16 +191,18 @@
             }
 
             // Populate activities select based on selected project
-            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId = null) {
-                const activitiesData = $projectSelect.find('option:selected').data('activities');
+            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId) {
+                selectedActivityId = selectedActivityId || null;
+                var activitiesData = $projectSelect.find('option:selected').data('activities');
                 $activitiesSelect.empty();
                 $activitiesSelect.append('<option value="">Select Activity</option>');
                 if (activitiesData && Array.isArray(activitiesData)) {
                     activitiesData.forEach(function(activity) {
-                        const selected = selectedActivityId && String(activity.id) === String(
+                        var selected = selectedActivityId && String(activity.id) === String(
                             selectedActivityId) ? 'selected' : '';
                         $activitiesSelect.append(
-                            `<option value="${activity.id}" ${selected}>${activity.name || activity.title || activity.activity_name}</option>`
+                            '<option value="' + activity.id + '" ' + selected + '>' + (activity.name ||
+                                activity.title || activity.activity_name) + '</option>'
                         );
                     });
                 }
@@ -198,28 +212,47 @@
 
             // On project change, update activities select
             $(document).on('change', '.project-select', function() {
-                const $row = $(this).closest('tr');
-                const $activitiesSelect = $row.find('.activities-select');
+                var $row = $(this).closest('tr');
+                var $activitiesSelect = $row.find('.activities-select');
                 populateActivities($(this), $activitiesSelect);
             });
 
+            // Utility: show plus only on last row and hide delete when only one row exists
+            function updateRowButtons() {
+                var $rows = $('#deliverables-body .deliverable-row');
+                $rows.find('.add-row').hide();
+                $rows.find('.remove-row').show();
+                if ($rows.length === 1) {
+                    $rows.find('.remove-row').hide();
+                }
+                $rows.last().find('.add-row').show();
+            }
+
             // On page load, initialize activities selects for existing rows
             $('#deliverables-body .deliverable-row').each(function() {
-                const $row = $(this);
-                const $projectSelect = $row.find('.project-select');
-                const $activitiesSelect = $row.find('.activities-select');
+                var $row = $(this);
+                var $projectSelect = $row.find('.project-select');
+                var $activitiesSelect = $row.find('.activities-select');
                 // If old value exists, set it
-                const selectedActivityId = $activitiesSelect.data('selected');
+                var selectedActivityId = $activitiesSelect.data('selected');
                 populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
                 // Initialize datepicker for deliverable date
                 initDeliverableDatepicker($row.find('input.date'));
             });
+            // ensure buttons correct on load
+            updateRowButtons();
 
             // Add row handler
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
-                const $newRow = $(buildDeliverableRow(rowIndex));
+                var $newRow = $(buildDeliverableRow(rowIndex));
                 $tbody.append($newRow);
+
+                // After insertion update buttons
+                updateRowButtons();
+
+                // clear any autofilled values before initializing plugins
+                $newRow.find('.project-select, .activities-select').val('').trigger('change');
 
                 // Initialize select2 on new row
                 $newRow.find('.project-select, .activities-select').select2({
@@ -230,10 +263,10 @@
                 initDeliverableDatepicker($newRow.find('input.date'));
 
                 if (window.fv && typeof window.fv.getFields === 'function') {
-                    const fields = window.fv.getFields();
+                    var fields = window.fv.getFields();
                     $('#deliverables-body select[name*="[project_id]"], #deliverables-body input[name*="[task]"]')
                         .each(function() {
-                            const fname = $(this).attr('name');
+                            var fname = $(this).attr('name');
                             if (fields && fields[fname]) {
                                 fv.revalidateField(fname);
                             }
@@ -244,12 +277,14 @@
             // Remove row handler
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
+                // after remove update visibility
+                updateRowButtons();
 
                 if (window.fv && typeof window.fv.getFields === 'function') {
-                    const fields = window.fv.getFields();
+                    var fields = window.fv.getFields();
                     $('#deliverables-body select[name*="[project_id]"], #deliverables-body input[name*="[task]"]')
                         .each(function() {
-                            const fname = $(this).attr('name');
+                            var fname = $(this).attr('name');
                             if (fields && fields[fname]) {
                                 fv.revalidateField(fname);
                             }
@@ -265,9 +300,16 @@
                 });
             });
 
-            if (form) {
-                window.fv = FormValidation.formValidation(form, {
+            if ($form.length) {
+                window.fv = FormValidation.formValidation($form[0], {
                     fields: {
+                        type: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The type is required'
+                                }
+                            }
+                        },
                         send_to: {
                             validators: {
                                 notEmpty: {
@@ -301,17 +343,16 @@
                                 callback: {
                                     message: 'Project and task are required for each deliverable',
                                     callback: function() {
-                                        const projectSelects = $(
+                                        var projectSelects = $(
                                             '#deliverables-body select[name*="[project_id]"]');
-                                        const taskInputs = $(
-                                            '#deliverables-body input[name*="[task]"]');
+                                        var taskInputs = $('#deliverables-body input[name*="[task]"]');
 
-                                        const allProjectsFilled = projectSelects.length > 0 &&
+                                        var allProjectsFilled = projectSelects.length > 0 &&
                                             projectSelects.filter(function() {
                                                 return $(this).val() && $(this).val() !== '';
                                             }).length === projectSelects.length;
 
-                                        const allTasksFilled = taskInputs.length > 0 &&
+                                        var allTasksFilled = taskInputs.length > 0 &&
                                             taskInputs.filter(function() {
                                                 return $(this).val().trim() !== '';
                                             }).length === taskInputs.length;
@@ -351,135 +392,8 @@
                 });
             }
 
-            $(form).on('change', '#send_to', function() {
-                fv.revalidateField('send_to');
-            });
-
-            // Populate activities select based on selected project
-            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId = null) {
-                const activitiesData = $projectSelect.find('option:selected').data('activities');
-                $activitiesSelect.empty();
-                $activitiesSelect.append('<option value="">Select Activity</option>');
-                if (activitiesData && Array.isArray(activitiesData)) {
-                    activitiesData.forEach(function(activity) {
-                        const selected = selectedActivityId && String(activity.id) === String(
-                            selectedActivityId) ? 'selected' : '';
-                        $activitiesSelect.append(
-                            `<option value="${activity.id}" ${selected}>${activity.name || activity.title || activity.activity_name}</option>`
-                        );
-                    });
-                }
-                // Notify Select2 of updates
-                $activitiesSelect.trigger('change');
-            }
-
-            // On project change, update activities select
-            $(document).on('change', '.project-select', function() {
-                const $row = $(this).closest('tr');
-                const $activitiesSelect = $row.find('.activities-select');
-                populateActivities($(this), $activitiesSelect);
-            });
-
-            // On page load, initialize activities selects for existing rows
-            $('#deliverables-body .deliverable-row').each(function() {
-                const $row = $(this);
-                const $projectSelect = $row.find('.project-select');
-                const $activitiesSelect = $row.find('.activities-select');
-                // If old value exists, set it
-                const selectedActivityId = $activitiesSelect.data('selected');
-                populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
-            });
-
-
-
-            // if (form) {
-            //     window.fv = FormValidation.formValidation(form, {
-            //         fields: {
-            //             send_to: {
-            //                 validators: {
-            //                     notEmpty: {
-            //                         message: 'The approver is required'
-            //                     }
-            //                 }
-            //             },
-            //             start_date: {
-            //                 validators: {
-            //                     notEmpty: {
-            //                         message: 'The start date is required'
-            //                     }
-            //                 }
-            //             },
-            //             end_date: {
-            //                 validators: {
-            //                     notEmpty: {
-            //                         message: 'The end date is required'
-            //                     }
-            //                 }
-            //             },
-            //             reason: {
-            //                 validators: {
-            //                     notEmpty: {
-            //                         message: 'Reason is required'
-            //                     }
-            //                 }
-            //             },
-            //             deliverables: {
-            //                 validators: {
-            //                     callback: {
-            //                         message: 'Project and task are required for each deliverable',
-            //                         callback: function() {
-            //                             const projectSelects = $(
-            //                                 '#deliverables-body select[name*="[project_id]"]');
-            //                             const taskInputs = $(
-            //                                 '#deliverables-body input[name*="[task]"]');
-
-            //                             const allProjectsFilled = projectSelects.length > 0 &&
-            //                                 projectSelects.filter(function() {
-            //                                     return $(this).val() && $(this).val() !== '';
-            //                                 }).length === projectSelects.length;
-
-            //                             const allTasksFilled = taskInputs.length > 0 &&
-            //                                 taskInputs.filter(function() {
-            //                                     return $(this).val().trim() !== '';
-            //                                 }).length === taskInputs.length;
-
-            //                             return allProjectsFilled && allTasksFilled;
-            //                         }
-            //                     }
-            //                 }
-            //             },
-            //         },
-            //         plugins: {
-            //             trigger: new FormValidation.plugins.Trigger(),
-            //             bootstrap5: new FormValidation.plugins.Bootstrap5({
-            //                 rowSelector: '.mb-3',
-            //                 eleInvalidClass: 'is-invalid',
-            //                 eleValidClass: 'is-valid',
-            //             }),
-            //             submitButton: new FormValidation.plugins.SubmitButton(),
-            //             defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-            //             icon: new FormValidation.plugins.Icon({
-            //                 valid: 'bi bi-check2-square',
-            //                 invalid: 'bi bi-x-lg',
-            //                 validating: 'bi bi-arrow-repeat',
-            //             }),
-            //             startEndDate: new FormValidation.plugins.StartEndDate({
-            //                 format: 'YYYY-MM-DD',
-            //                 startDate: {
-            //                     field: 'start_date',
-            //                     message: 'Start date must be earlier than end date.'
-            //                 },
-            //                 endDate: {
-            //                     field: 'end_date',
-            //                     message: 'End date must be later than start date.'
-            //                 },
-            //             }),
-            //         },
-            //     });
-            // }
-
-            $(form).on('change', '#send_to', function() {
-                fv.revalidateField('send_to');
+            $form.on('change', '#send_to, #type', function() {
+                fv.revalidateField($(this).attr('id'));
             });
         });
     </script>
@@ -515,7 +429,21 @@
                 @csrf
 
                 <div class="row">
-                    <div class="mb-3 col-6">
+                    <div class="mb-3 col-2">
+                        <label for="type" class="form-label required-label">Type</label>
+                        <select class="form-select @error('type') is-invalid @enderror" id="type" name="type"
+                            required>
+                            <option value="">Select Type</option>
+                            @foreach ($typeOptions as $val => $label)
+                                <option value="{{ $val }}" {{ old('type') == $val ? 'selected' : '' }}>
+                                    {{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="mb-3 col-2">
                         <label for="start_date" class="form-label required-label">Start Date</label>
                         <input type="text" readonly class="form-control date @error('start_date') is-invalid @enderror"
                             id="start_date" name="start_date" value="{{ old('start_date') }}" required>
@@ -523,7 +451,7 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-                    <div class="mb-3 col-6">
+                    <div class="mb-3 col-2">
                         <label for="end_date" class="form-label required-label">End Date</label>
                         <input type="text" readonly class="form-control @error('end_date') is-invalid @enderror"
                             id="end_date" name="end_date" value="{{ old('end_date') }}" required>
@@ -548,11 +476,11 @@
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
-                                <th style="width: 10%;">Date</th>
-                                <th style="width: 15%;">Project</th>
-                                <th style="width:15%;">Activities</th>
-                                <th>Task</th>
-                                <th style="width: 12%;">Action</th>
+                        <th class="col-date align-middle">Date</th>
+                                <th class="col-project align-middle">Project</th>
+                                <th class="col-activities align-middle">Activities</th>
+                                <th class="col-task align-middle">Task</th>
+                                <th class="col-action align-middle">Action</th>
                             </tr>
                         </thead>
                         <tbody id="deliverables-body">
@@ -572,7 +500,7 @@
                                     $dateErrorKey = "deliverables.$idx.date";
                                 @endphp
                                 <tr class="deliverable-row" data-row-index="{{ $idx }}">
-                                    <td style="width: 10%;">
+                                    <td class="col-date align-middle">
                                         <input type="text" class="form-control date" readonly
                                             name="deliverables[{{ $idx }}][date]"
                                             value="{{ $deliverable['date'] ?? '' }}">
@@ -580,7 +508,7 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td style="width: 15%;">
+                                    <td class="col-project align-middle">
                                         <select
                                             class="form-select project-select @error($projectErrorKey) is-invalid @enderror"
                                             name="deliverables[{{ $idx }}][project_id]" required>
@@ -619,11 +547,9 @@
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
                                     </td>
-                                    <td>
-                                        <input type="text"
-                                            class="form-control @error($taskErrorKey) is-invalid @enderror"
-                                            name="deliverables[{{ $idx }}][task]"
-                                            value="{{ $deliverable['task'] ?? '' }}" required>
+                                    <td class="col-task align-middle">
+                                        <textarea rows="4" class="form-control @error($taskErrorKey) is-invalid @enderror"
+                                            name="deliverables[{{ $idx }}][task]" required>{{ $deliverable['task'] ?? '' }}</textarea>
                                         @error($taskErrorKey)
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror

@@ -4,6 +4,7 @@ namespace Modules\WorkFromHome\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 
 class StoreRequest extends FormRequest
 {
@@ -14,7 +15,10 @@ class StoreRequest extends FormRequest
 
     public function rules()
     {
+        $typeOptions = implode(',', array_keys(WorkFromHomeTypes::options()));
+
         return [
+            'type'       => ['required', 'string', "in:{$typeOptions}"],
             'start_date' => 'required|date',
             'end_date'   => 'required|date|after_or_equal:start_date',
             'reason'  => ['required', 'string'],
@@ -35,6 +39,7 @@ class StoreRequest extends FormRequest
     public function attributes()
     {
         return [
+            'type'                     => 'type',
             'start_date'               => 'start date',
             'end_date'                 => 'end date',
             'reason'                   => 'reason for off day work',

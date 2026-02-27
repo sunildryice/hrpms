@@ -20,28 +20,44 @@
         /* column width helpers like timesheet */
         .col-date {
             width: 10%;
+            min-width: 80px;
+            max-width: 120px;
             overflow: hidden;
             word-wrap: break-word;
         }
 
         .col-project {
             width: 15%;
+            min-width: 120px;
+            max-width: 180px;
             overflow: hidden;
             word-wrap: break-word;
         }
 
         .col-activity {
             width: 18%;
+            min-width: 120px;
+            max-width: 220px;
             overflow: hidden;
             word-wrap: break-word;
         }
 
         .col-task {
-            /* flexible */
+            width: 30%;
+            min-width: 150px;
+            max-width: 260px;
+            /* increased from flexible to give more room */
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
         }
 
         .col-members {
-            width: 30%;
+            width: 20%;
+            min-width: 200px;
+            max-width: 320px;
             overflow: hidden;
             word-wrap: break-word;
         }
@@ -122,7 +138,7 @@
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#weekly-plan-index').addClass('active');
+            $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
 
             // Global Select2 initialization
             $('.select2').select2({
@@ -433,7 +449,8 @@
                         <li class="breadcrumb-item active" aria-current="page">Create</li>
                     </ol>
                 </nav>
-                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Work Plan</h4>
+                <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">Create Work Plan :
+                    {{ $week['start_date']->format('M j') }} - {{ $week['end_date']->format('M j, Y') }}</h4>
 
             </div>
         </div>

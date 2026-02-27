@@ -9,6 +9,7 @@ use Modules\WorkFromHome\Requests\Approve\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestApproved;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestRejected;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
@@ -58,6 +59,9 @@ class ApproveController extends Controller
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
                 })
+                ->addColumn('type', function ($row) {
+                    return WorkFromHomeTypes::options()[$row->type] ?? ucfirst(str_replace('_', ' ', $row->type));
+                })
                 ->addColumn('status', function ($row) {
 
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
@@ -82,8 +86,10 @@ class ApproveController extends Controller
 
         $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
 
+        $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
+        $typeLabel = $typeOptions[$wfhRequest->type] ?? ucfirst(str_replace('_', ' ', $wfhRequest->type));
 
-        return view('WorkFromHome::approve.show', compact('wfhRequest', 'deliverables'));
+        return view('WorkFromHome::approve.show', compact('wfhRequest', 'deliverables', 'typeLabel'));
     }
 
     public function update(UpdateRequest $request, $id)

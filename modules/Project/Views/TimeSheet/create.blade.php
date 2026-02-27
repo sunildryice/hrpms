@@ -70,12 +70,16 @@
                 let rowIndex = 0;
                 let fv; // will hold FormValidation instance
 
-                function safeRevalidate() {
-                    if (fv && typeof fv.revalidateField === 'function') {
+                function safeRevalidateField(fieldName) {
+                    if (!fv || typeof fv.revalidateField !== 'function' || !fieldName) {
+                        return;
+                    }
+                    // only attempt if the field actually exists
+                    if (fv.getField && fv.getField(fieldName)) {
                         try {
-                            fv.revalidateField('entries');
-                        } catch (e) {
-                            // ignore if field not registered yet
+                            fv.revalidateField(fieldName);
+                        } catch (_e) {
+                            console.warn(`Failed to revalidate field ${fieldName}:`, _e);
                         }
                     }
                 }
@@ -182,18 +186,10 @@
                         acts.forEach(a => {
                             $act.append(`<option value="${a.id}">${a.title}</option>`);
                         });
-                        safeRevalidate();
-                    });
-
-                    // when any input changes inside row, validate its field
-                    $row.on('change input', 'select, input[type="number"], input[type="file"]', function() {
-                        if (fv) {
-                            const name = $(this).attr('name');
-                            if (name) {
-                                fv.revalidateField(name);
-                            }
-                        }
-                        safeRevalidate();
+                        // revalidate the project and activity fields for this row
+                        const idx = $row.data('row-index');
+                        safeRevalidateField(`entries[${idx}][project_id]`);
+                        safeRevalidateField(`entries[${idx}][activity_id]`);
                     });
                 }
 
@@ -221,12 +217,12 @@
                         $row.remove();
                         refreshActions();
                     }
-                    safeRevalidate();
+                    // no need to revalidate a non-existent group field
                 });
 
-                // revalidate entries field when any row input changes
+                // individual inputs are validated in their own change handlers above; nothing else required here
                 $('#entries-body').on('change', 'select, input', function() {
-                    safeRevalidate();
+                    // noop
                 });
 
                 // delegate add-entry button in rows
@@ -236,7 +232,7 @@
                     $('#entries-body').append($new);
                     initRow($new);
                     refreshActions();
-                    safeRevalidate();
+                    // new row handled individually by initRow
                 });
 
                 // existing validation fields: modify to include entries callback

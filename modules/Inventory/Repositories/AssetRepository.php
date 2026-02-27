@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Repositories;
 
 use App\Repositories\Repository;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ class AssetRepository extends Repository
             if (isset($inventory->office_id)) {
                 $prefix = strtoupper(substr($inventory->item->item_code, 0, 3));
             }
-            $year = date('Y');
+            $year = $inventory->purchase_date ? Carbon::create($inventory->purchase_date)->format('Y') : date('Y');
             for ($i = 1; $i <= $inventory->quantity; $i++) {
                 $asset = $this->model->create([
                     'inventory_item_id' => $inventory->id,

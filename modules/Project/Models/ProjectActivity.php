@@ -179,6 +179,16 @@ class ProjectActivity extends Model
         return $this->hasMany(ProjectActivityAttachment::class, 'project_activity_id');
     }
 
+    public function getProjectName()
+    {
+        return $this->project ? $this->project->title : '';
+    }
+
+    public function getProjectShortName()
+    {
+        return $this->project ? $this->project->short_name : '';
+    }
+
     public function parentName()
     {
         return $this->parent ? $this->parent->title : '';

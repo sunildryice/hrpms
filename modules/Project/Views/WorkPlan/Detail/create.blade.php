@@ -274,6 +274,7 @@
                         const raw = $projectSelect.find(':selected').data('activities');
                         const acts = parseJsonPayload(raw);
                         $activitySelect.empty().append('<option value="">Select Activity</option>');
+                        debugger;
 
                         acts.forEach(a => {
                             $activitySelect.append(`<option value="${a.id}">${a.title}</option>`);

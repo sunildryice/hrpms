@@ -299,9 +299,10 @@ class InventoryItemController extends Controller
         $inputs['created_by'] = auth()->id();
         $inputs['category_id'] = $item->inventory_category_id;
         $inputs['item_name'] = $item->title;
-        // $inputs['office_id'] = $authUser->employee->office_id;
         $inputs['asset_flag'] = $item->category->getInventoryType() != 'Consumable' && $distributionType->title != 'Distribution';
-        $inputs['fiscal_year_id'] = $this->fiscalYear->getCurrentFiscalYearId();
+        $fiscalYear = $inputs['purchase_date'] ? $this->fiscalYear->getFiscalYearOfDate($inputs['purchase_date']) : $this->fiscalYear->getCurrentFiscalYear();
+        $inputs['fiscal_year_id'] = $fiscalYear->id;
+        $inputs['fiscal_year'] = $fiscalYear->title;
         $inventoryItem = $this->inventoryItems->create($inputs);
 
         if ($inventoryItem) {

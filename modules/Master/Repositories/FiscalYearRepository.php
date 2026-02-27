@@ -24,6 +24,13 @@ class FiscalYearRepository extends Repository
             ->first();
     }
 
+    public function getFiscalYearOfDate($date)
+    {
+        return $this->model->where('start_date', '<=', $date)
+            ->where('end_date', '>=', $date)
+            ->first();
+    }
+
     public function getCurrentFiscalYearId()
     {
         return $this->getCurrentFiscalYear()->id;

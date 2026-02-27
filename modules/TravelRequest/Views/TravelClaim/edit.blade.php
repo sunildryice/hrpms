@@ -104,32 +104,32 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'expense_date',
-                    name: 'expense_date'
-                },
-                {
-                    data: 'expense_description',
-                    name: 'expense_description'
-                },
-                {
-                    data: 'expense_amount',
-                    name: 'expense_amount'
-                },
-                {
-                    data: 'invoice_bill_number',
-                    name: 'invoice_bill_number'
-                },
-                {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+                    {
+                        data: 'expense_date',
+                        name: 'expense_date'
+                    },
+                    {
+                        data: 'expense_description',
+                        name: 'expense_description'
+                    },
+                    {
+                        data: 'expense_amount',
+                        name: 'expense_amount'
+                    },
+                    {
+                        data: 'invoice_bill_number',
+                        name: 'invoice_bill_number'
+                    },
+                    {
+                        data: 'attachment',
+                        name: 'attachment'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
 
@@ -147,36 +147,36 @@
                     data: 'travel_date',
                     name: 'travel_date'
                 },
-                {
-                    data: 'purpose',
-                    name: 'purpose'
-                },
-                {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'travel_fare',
-                    name: 'travel_fare'
-                },
-                {
-                    data: 'remarks',
-                    name: 'remarks'
-                },
-                {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+                    {
+                        data: 'purpose',
+                        name: 'purpose'
+                    },
+                    {
+                        data: 'departure_place',
+                        name: 'departure_place'
+                    },
+                    {
+                        data: 'arrival_place',
+                        name: 'arrival_place'
+                    },
+                    {
+                        data: 'travel_fare',
+                        name: 'travel_fare'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
+                    },
+                    {
+                        data: 'attachment',
+                        name: 'attachment'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
 
@@ -188,87 +188,56 @@
                 bPaginate: false,
                 bInfo: false,
                 columns: [
-                // {
-                //     data: 'activity',
-                //     name: 'activity'
-                // }, {
-                //     data: 'activities',
-                //     name: 'activities'
-                // },
-                {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'departure_date',
-                    name: 'departure_date'
-                },
-                {
-                    data: 'arrival_date',
-                    name: 'arrival_date'
-                },
-                {
-                    data: 'days_spent',
-                    name: 'days_spent'
-                },
-                {
-                    data: 'breakfast',
-                    name: 'breakfast'
-                },
-                {
-                    data: 'lunch',
-                    name: 'lunch'
-                },
-                {
-                    data: 'dinner',
-                    name: 'dinner'
-                },
-                {
-                    data: 'incident_cost',
-                    name: 'incident_cost'
-                },
-                {
-                    data: 'total_dsa',
-                    name: 'total_dsa'
-                },
-                {
-                    data: 'daily_allowance',
-                    name: 'daily_allowance'
-                },
-                {
-                    data: 'lodging_expense',
-                    name: 'lodging_expense'
-                },
-                {
-                    data: 'other_expense',
-                    name: 'other_expense'
-                },
-                {
-                    data: 'total_amount',
-                    name: 'total_amount'
-                },
-                {
-                    data: 'mode_of_travel',
-                    name: 'mode_of_travel'
-                },
-                {
-                    data: 'remarks',
-                    name: 'remarks'
-                },
-                {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+                    {
+                        data: 'departure_date',
+                        name: 'departure_date'
+                    },
+                    {
+                        data: 'breakfast',
+                        name: 'breakfast'
+                    },
+                    {
+                        data: 'lunch',
+                        name: 'lunch'
+                    },
+                    {
+                        data: 'dinner',
+                        name: 'dinner'
+                    },
+                    {
+                        data: 'incident_cost',
+                        name: 'incident_cost'
+                    },
+                    {
+                        data: 'total_dsa',
+                        name: 'total_dsa'
+                    },
+                    {
+                        data: 'lodging_expense',
+                        name: 'lodging_expense'
+                    },
+                    {
+                        data: 'other_expense',
+                        name: 'other_expense'
+                    },
+                    {
+                        data: 'total_amount',
+                        name: 'total_amount'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
+                    },
+                    {
+                        data: 'attachment',
+                        name: 'attachment'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
                 ]
             });
 
@@ -699,37 +668,13 @@
                             const incidental = parseFloat($form.find('[name="incident_cost"]').val()) ||
                                 0;
 
-                            const totalDsaPerDay = breakfast + lunch + dinner + incidental;
-                            $form.find('[name="total_dsa"]').val(totalDsaPerDay.toFixed(2));
-
-                            const depDateStr = $form.find('[name="departure_date"]').val();
-                            const arrDateStr = $form.find('[name="arrival_date"]').val();
-
-
-                            let daysSpent = 0;
-
-                            if (depDateStr && arrDateStr) {
-                                const dep = new Date(depDateStr);
-                                const arr = new Date(arrDateStr);
-
-                                const diffInDays = Math.floor((arr - dep) / (1000 * 60 * 60 * 24));
-
-                                if (arrDateStr === depDateStr) {
-                                    daysSpent = diffInDays + 1;
-                                } else {
-                                    daysSpent = diffInDays + 1;
-                                }
-                            }
-
-                            $form.find('[name="days_spent"]').val(daysSpent);
-
-                            const dailyAllowance = totalDsaPerDay * daysSpent;
-                            $form.find('[name="daily_allowance"]').val(dailyAllowance.toFixed(2));
+                            const totalDsa = breakfast + lunch + dinner + incidental;
+                            $form.find('[name="total_dsa"]').val(totalDsa.toFixed(2));
 
                             const lodging = parseFloat($form.find('[name="lodging_expense"]').val()) ||
                                 0;
                             const other = parseFloat($form.find('[name="other_expense"]').val()) || 0;
-                            const totalAmount = dailyAllowance + lodging + other;
+                            const totalAmount = totalDsa + lodging + other;
 
                             $form.find('[name="total_amount"]').val(totalAmount.toFixed(2));
                         }
@@ -748,147 +693,112 @@
 @endsection
 @section('page-content')
 
-
-<div class="pb-3 mb-3 page-header border-bottom">
-    <div class="d-flex align-items-center">
-        <div class="brd-crms flex-grow-1">
-            <nav aria-label="breadcrumb">
-                <ol class="m-0 breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('travel.claims.index') }}" class="text-decoration-none text-dark">Travel
-                            Claims
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
-                </ol>
-            </nav>
-            <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+    <div class="pb-3 mb-3 page-header border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="brd-crms flex-grow-1">
+                <nav aria-label="breadcrumb">
+                    <ol class="m-0 breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('travel.claims.index') }}" class="text-decoration-none text-dark">Travel
+                                Claims
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
+                    </ol>
+                </nav>
+                <h4 class="m-0 mt-1 lh1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+            </div>
         </div>
     </div>
-</div>
 
-<section class="registration">
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    Travel Request Details
+    <section class="registration">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        Travel Request Details
+                    </div>
+                    @include('TravelRequest::Partials.detail')
                 </div>
-                @include('TravelRequest::Partials.detail')
+                @if ($travelClaim->returnLog()->exists())
+                    <div class="card">
+                        <div class="card-header fw-bold text-danger">
+                            Return Remarks
+                        </div>
+                        <div class="card-body">
+                            <ul class="mb-0 list-unstyled list-py-2 text-dark">
+
+                                <li class="position-relative">
+                                    <div class="gap-2 d-flex align-items-start">
+                                        <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i></div>
+                                        <div class="d-content-section"> {{ $travelClaim->returnLog->log_remarks }}</div>
+                                    </div>
+                                    <a href="#" class="stretched-link" rel="tooltip" title="Remarks"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                @endif
             </div>
-            @if ($travelClaim->returnLog()->exists())
-                <div class="card">
-                    <div class="card-header fw-bold text-danger">
-                        Return Remarks
-                    </div>
-                    <div class="card-body">
-                        <ul class="mb-0 list-unstyled list-py-2 text-dark">
+            <div class="col-lg-9">
+                <form action="{{ route('travel.claims.update', $travelClaim->id) }}" id="travelClaimEditForm"
+                      method="post"
+                      enctype="multipart/form-data" autocomplete="off">
 
-                            <li class="position-relative">
-                                <div class="gap-2 d-flex align-items-start">
-                                    <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i></div>
-                                    <div class="d-content-section"> {{ $travelClaim->returnLog->log_remarks }}</div>
-                                </div>
-                                <a href="#" class="stretched-link" rel="tooltip" title="Remarks"></a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            @endif
-        </div>
-        <div class="col-lg-9">
-            <form action="{{ route('travel.claims.update', $travelClaim->id) }}" id="travelClaimEditForm" method="post"
-                enctype="multipart/form-data" autocomplete="off">
-
-                <div class="card">
-                    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                        <span> TADA Claim</span>
-                        @if ($authUser->can('update', $travelClaim))
-                            <button data-toggle="modal"
-                                class="m-2 btn btn-primary btn-sm text-capitalize open-itinerary-modal-form"
-                                href="{!! route('travel.claims.dsa.create', $travelClaim->id) !!}"><i class="bi-plus"></i>
-                                New TADA Claim
-                            </button>
-                        @endif
-                    </div>
-                    <div class="container-fluid-s">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table" id="itineraryTable">
-                                        <thead class="thead-light">
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> TADA Claim</span>
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="itineraryTable">
+                                            <thead class="thead-light">
                                             <tr>
-                                                {{-- <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
-                                                <th scope="col" rowspan="2">Activities/Tasks
-                                                </th> --}}
-                                                <th scope="col" colspan="2" class="text-center">
-                                                    {{ __('label.destination') }}
-                                                </th>
-                                                <th scope="col" colspan="2" class="text-center">
-                                                    {{ __('label.date') }}
-                                                </th>
-                                                <th scope="col" rowspan="2">Days Spent
-                                                </th>
-                                                <th scope="col" colspan="4" class="text-center">
-                                                    DSA per day</th>
-                                                <th scope="col" rowspan="2">Total DSA
-                                                </th>
-                                                <th scope="col" rowspan="2">Daily Allowance
-                                                </th>
-                                                <th scope="col" rowspan="2">Lodging Expense
-                                                </th>
-                                                <th scope="col" rowspan="2">Other Expense
-                                                </th>
-                                                <th scope="col" rowspan="2">Total Amount
-                                                </th>
-                                                <th scope="col" rowspan="2">{{ __('label.mode-of-travel') }}</th>
-                                                <th scope="col" rowspan="2">{{ __('label.remarks') }}
-                                                </th>
-                                                <th scope="col" rowspan="2">{{ __('label.attachment') }}
-                                                </th>
-                                                <th scope="col" rowspan="2">{{ __('label.action') }}
-                                                </th>
-                                            </tr>
-                                            <tr>
-                                                <th scope="col">{{ __('label.from') }}</th>
-                                                <th scope="col">{{ __('label.to') }}</th>
-                                                <th scope="col">{{ __('label.from') }}</th>
-                                                <th scope="col">{{ __('label.to') }}</th>
+                                                <th scope="col">Date</th>
                                                 <th scope="col">Breakfast</th>
                                                 <th scope="col">Lunch</th>
                                                 <th scope="col">Dinner</th>
                                                 <th scope="col">Incidental</th>
+                                                <th scope="col">Total DSA</th>
+                                                <th scope="col">Lodging Expense</th>
+                                                <th scope="col">Other Expense</th>
+                                                <th scope="col">Total Amount</th>
+                                                <th scope="col">{{ __('label.remarks') }}</th>
+                                                <th scope="col">{{ __('label.attachment') }}</th>
+                                                <th scope="col">{{ __('label.action') }}</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                        <span> Local Travel Claim</span>
-                        @if ($authUser->can('update', $travelClaim))
-                            <button data-toggle="modal"
-                                class="m-2 btn btn-primary btn-sm text-capitalize open-local-travel-modal-form"
-                                href="{!! route('travel.claims.local.travel.create', $travelClaim->id) !!}"><i
-                                    class="bi-plus"></i> New Local Travel Claim
-                            </button>
-                        @endif
-                    </div>
-                    <div class="container-fluid-s">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table" id="claimLocalTravelTable">
-                                        <thead class="thead-light">
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> Local Travel Claim</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                        class="m-2 btn btn-primary btn-sm text-capitalize open-local-travel-modal-form"
+                                        href="{!! route('travel.claims.local.travel.create', $travelClaim->id) !!}"><i
+                                        class="bi-plus"></i> New Local Travel Claim
+                                </button>
+                            @endif
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="claimLocalTravelTable">
+                                            <thead class="thead-light">
                                             <tr>
                                                 <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
                                                 <th scope="col" rowspan="2">{{ __('label.date') }}</th>
@@ -905,34 +815,34 @@
                                                 <th scope="col">{{ __('label.from') }}</th>
                                                 <th scope="col">{{ __('label.to') }}</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                        <span> {{ __('label.other-expense') }}</span>
-                        @if ($authUser->can('update', $travelClaim))
-                            <button data-toggle="modal"
-                                class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"
-                                href="{!! route('travel.claims.expenses.create', $travelClaim->id) !!}"><i
-                                    class="bi-plus"></i> New Expense
-                            </button>
-                        @endif
-                    </div>
-                    <div class="container-fluid-s">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table" id="expenseTable">
-                                        <thead class="thead-light">
+                    <div class="card">
+                        <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                            <span> {{ __('label.other-expense') }}</span>
+                            @if ($authUser->can('update', $travelClaim))
+                                <button data-toggle="modal"
+                                        class="m-2 btn btn-primary btn-sm text-capitalize open-expense-modal-form"
+                                        href="{!! route('travel.claims.expenses.create', $travelClaim->id) !!}"><i
+                                        class="bi-plus"></i> New Expense
+                                </button>
+                            @endif
+                        </div>
+                        <div class="container-fluid-s">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table" id="expenseTable">
+                                            <thead class="thead-light">
                                             <tr>
                                                 <th scope="col">{{ __('label.activity') }}</th>
                                                 {{-- <th scope="col">{{ __('label.donor') }}</th> --}}
@@ -944,10 +854,10 @@
                                                 <th scope="col">{{ __('label.attachment') }}</th>
                                                 <th style="width: 150px">{{ __('label.action') }}</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tbody>
-                                        <tfoot>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                            <tfoot>
                                             <tr>
                                                 <td colspan="3">{{ __('label.sub-total') }}</td>
                                                 <td colspan="4" id="total_expense_amount">
@@ -985,126 +895,130 @@
                                                 </td>
                                                 <td colspan="4">
                                                     <input readonly class="form-control" name="refundable_amount"
-                                                        value="{{ $travelClaim->refundable_amount }}" />
+                                                           value="{{ $travelClaim->refundable_amount }}"/>
                                                 </td>
                                             </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
+                                            </tfoot>
+                                        </table>
+                                    </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header fw-bold">Process</div>
-                    <div class="card-body">
-                        <div class="mb-2 row">
-                            <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label for="Fdname" class="form-label required-label">
-                                        {{ __('label.approval') }}
-                                    </label>
+                    <div class="card">
+                        <div class="card-header fw-bold">Process</div>
+                        <div class="card-body">
+                            <div class="mb-2 row">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="Fdname" class="form-label required-label">
+                                            {{ __('label.approval') }}
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-9">
-                                <div class=" form-switch">
-                                    @php $selectedReviewerId = old('reviewer_id') ?: $travelClaim->reviewer_id; @endphp
-                                    <select name="approver_id" class="select2 form-control
+                                <div class="col-lg-9">
+                                    <div class=" form-switch">
+                                        @php $selectedReviewerId = old('reviewer_id') ?: $travelClaim->reviewer_id; @endphp
+                                        <select name="approver_id" class="select2 form-control
                                         @if ($errors->has('reviewer_id')) is-invalid @endif" data-width="100%">
-                                        @if ($approvers->count() !== 1)
-                                            <option value="">Select an Approver</option>
+                                            @if ($approvers->count() !== 1)
+                                                <option value="">Select an Approver</option>
+                                            @endif
+                                            @foreach ($approvers as $approver)
+                                                <option
+                                                    value="{{ $approver->id }}" @selected($approver->id == (old('approver_id') ?: $travelClaim->approver_id))>
+                                                    {{ $approver->full_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->has('reviewer_id'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div data-field="reviewer_id">
+                                                    {!! $errors->first('reviewer_id') !!}
+                                                </div>
+                                            </div>
                                         @endif
-                                        @foreach ($approvers as $approver)
-                                            <option value="{{ $approver->id }}" @selected($approver->id == (old('approver_id') ?: $travelClaim->approver_id))>
-                                                {{ $approver->full_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @if ($errors->has('reviewer_id'))
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <div data-field="reviewer_id">
-                                                {!! $errors->first('reviewer_id') !!}
-                                            </div>
-                                        </div>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mb-2 row">
-                            <div class="col-lg-3">
-                                <div class="d-flex align-items-start h-100">
-                                    <label for="Fdname" class="form-label required-label">
-                                        Send To
-                                    </label>
+                            <div class="mb-2 row">
+                                <div class="col-lg-3">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="Fdname" class="form-label required-label">
+                                            Send To
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-9">
-                                <div class=" form-switch">
-                                    @php $selectedReviewerId = old('reviewer_id') ?: $travelClaim->reviewer_id; @endphp
-                                    <select name="reviewer_id" class="select2 form-control
+                                <div class="col-lg-9">
+                                    <div class=" form-switch">
+                                        @php $selectedReviewerId = old('reviewer_id') ?: $travelClaim->reviewer_id; @endphp
+                                        <select name="reviewer_id" class="select2 form-control
                                         @if ($errors->has('reviewer_id')) is-invalid @endif" data-width="100%">
-                                        <option value="">Select a Verifier</option>
-                                        @foreach ($reviewers as $reviewer)
-                                            <option value="{{ $reviewer->id }}" {{ $reviewer->id == $selectedReviewerId ? 'selected' : '' }}>
-                                                {{ $reviewer->full_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @if ($errors->has('reviewer_id'))
-                                        <div class="fv-plugins-message-container invalid-feedback">
-                                            <div data-field="reviewer_id">
-                                                {!! $errors->first('reviewer_id') !!}
+                                            <option value="">Select a Verifier</option>
+                                            @foreach ($reviewers as $reviewer)
+                                                <option
+                                                    value="{{ $reviewer->id }}" {{ $reviewer->id == $selectedReviewerId ? 'selected' : '' }}>
+                                                    {{ $reviewer->full_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @if ($errors->has('reviewer_id'))
+                                            <div class="fv-plugins-message-container invalid-feedback">
+                                                <div data-field="reviewer_id">
+                                                    {!! $errors->first('reviewer_id') !!}
+                                                </div>
                                             </div>
-                                        </div>
-                                    @endif
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="mb-2 row">
-                            <div class="col-lg-2">
-                                <div class=" form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                        id="flexSwitchCheckChecked" name="agree" @if ($travelClaim->agree_at) checked
-                                        @endif>
-                                    <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                            <div class="mb-2 row">
+                                <div class="col-lg-2">
+                                    <div class=" form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                               id="flexSwitchCheckChecked" name="agree"
+                                               @if ($travelClaim->agree_at) checked
+                                            @endif>
+                                        <label class="form-check-label" for="flexSwitchCheckChecked"></label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-10">
-                                <div class="d-flex align-items-start h-100">
-                                    <label for="Fdname" class="m-0">
-                                        I certify that the following information is correct and per the approved Travel
-                                        authorization. I authorize HERDi to treat this as the final claim and I will
-                                        repay any travel allowances to which I am not entitled. If office provides
-                                        breakfast, lunch, dinner or accommodation, this must be deducted from claim,
-                                        i.e. % change should be 100%-deducted %
-                                    </label>
+                                <div class="col-lg-10">
+                                    <div class="d-flex align-items-start h-100">
+                                        <label for="Fdname" class="m-0">
+                                            I certify that the following information is correct and per the approved
+                                            Travel
+                                            authorization. I authorize HERDi to treat this as the final claim and I will
+                                            repay any travel allowances to which I am not entitled. If office provides
+                                            breakfast, lunch, dinner or accommodation, this must be deducted from claim,
+                                            i.e. % change should be 100%-deducted %
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="gap-2 justify-content-end d-flex">
-                    <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Update
-                    </button>
-                    <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                        Submit
-                    </button>
-                    <a href="{!! route('travel.claims.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                </div>
-                {!! method_field('PUT') !!}
-                {!! csrf_field() !!}
-            </form>
+                    <div class="gap-2 justify-content-end d-flex">
+                        <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Update
+                        </button>
+                        <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                            Submit
+                        </button>
+                        <a href="{!! route('travel.claims.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                    </div>
+                    {!! method_field('PUT') !!}
+                    {!! csrf_field() !!}
+                </form>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<div class="modal fade" id="claimItineraryModal" data-bs-backdrop="static" data-bs-keyboard="false"
-    aria-labelledby="claimItineraryModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal fade" id="claimItineraryModal" data-bs-backdrop="static" data-bs-keyboard="false"
+         aria-labelledby="claimItineraryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            </div>
         </div>
     </div>
-</div>
 @stop

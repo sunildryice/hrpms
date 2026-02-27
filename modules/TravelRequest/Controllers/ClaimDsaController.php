@@ -179,6 +179,9 @@ class ClaimDsaController extends Controller
             $inputs['attachment'] = $filename;
         }
         $inputs['updated_by'] = auth()->id();
+        $inputs['total_dsa'] = floor($inputs['breakfast']) + floor($inputs['lunch']) + floor($inputs['dinner']) + floor($inputs['incident_cost']);
+        $inputs['daily_allowance'] = $inputs['total_dsa'];
+        $inputs['total_amount'] = $inputs['total_dsa'] + floor($inputs['lodging_expense']) + floor($inputs['other_expense']);
         $travelDsaClaims = $this->travelDsaClaims->update($id, $inputs);
         if ($travelDsaClaims) {
             return response()->json([

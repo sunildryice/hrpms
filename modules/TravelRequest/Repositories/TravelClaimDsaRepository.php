@@ -39,11 +39,6 @@ class TravelClaimDsaRepository extends Repository
         try {
             $claimDsa = $this->model->findOrFail($id);
             $claimDsa->fill($inputs)->save();
-            if (array_key_exists('travel_modes', $inputs)) {
-                $claimDsa->travelModes()->sync($inputs['travel_modes']);
-            } else {
-                $claimDsa->travelModes()->sync([]);
-            }
             $this->travelClaims->updateTotalAmount($claimDsa->travel_claim_id);
             DB::commit();
             return $claimDsa;

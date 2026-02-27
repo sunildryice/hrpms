@@ -57,12 +57,11 @@ class TravelClaimRepository extends Repository
 
     public function createClaim($travelRequestId, $authId)
     {
+
         DB::beginTransaction();
         try {
             $travelRequest = $this->travelRequest->find($travelRequestId);
-
-            $advanceAmount = $travelRequest->travelRequestEstimate?->total_amount
-                ?? 0;
+            $advanceAmount = $travelRequest->travelRequestEstimate?->total_amount ?? 0;
 
             $travelClaim = $this->model->create([
                 'travel_request_id' => $travelRequestId,
@@ -71,6 +70,23 @@ class TravelClaimRepository extends Repository
                 'status_id' => 1
             ]);
             $this->updateTotalAmount($travelClaim->id);
+
+            $startDate = \Carbon\Carbon::parse($travelRequest->departure_date);
+            $endDate = \Carbon\Carbon::parse($travelRequest->return_date);
+            $period = \Carbon\CarbonPeriod::create($startDate, '1 day', $endDate);
+            $itineraries = $travelRequest->travelRequestDayItineraries;
+
+            foreach ($period as $date){
+                $travelItinerary = $itineraries->filter(function ($itinerary) use ($date) {
+                    return $itinerary->date->format('Y-m-d') == $date->format('Y-m-d');
+                })->first();
+                $travelClaim->dsaClaims()->create([
+                    'activity_code_id'=>$travelItinerary->activity_id,
+                    'activities'=>$travelItinerary->planned_activities,
+                    'departure_date'=>$travelItinerary->date,
+                    'created_by'=>$authId,
+                ]);
+            }
             DB::commit();
             return $travelClaim;
         } catch (\Illuminate\Database\QueryException $e) {

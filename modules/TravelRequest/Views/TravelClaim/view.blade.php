@@ -84,91 +84,7 @@
             ]
         });
 
-        var itineraryTable = $('#itineraryTable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('travel.claims.dsa.index', $travelClaim->id) }}",
-            bFilter: false,
-            bPaginate: false,
-            bInfo: false,
-            columns: [
-                // {
-                //     data: 'activity',
-                //     name: 'activity'
-                // }, {
-                //     data: 'activities',
-                //     name: 'activities'
-                // },
-                {
-                    data: 'departure_place',
-                    name: 'departure_place'
-                },
-                {
-                    data: 'arrival_place',
-                    name: 'arrival_place'
-                },
-                {
-                    data: 'departure_date',
-                    name: 'departure_date'
-                },
-                {
-                    data: 'arrival_date',
-                    name: 'arrival_date'
-                },
-                {
-                    data: 'days_spent',
-                    name: 'days_spent'
-                },
-                {
-                    data: 'breakfast',
-                    name: 'breakfast'
-                },
-                {
-                    data: 'lunch',
-                    name: 'lunch'
-                },
-                {
-                    data: 'dinner',
-                    name: 'dinner'
-                },
-                {
-                    data: 'incident_cost',
-                    name: 'incident_cost'
-                },
-                {
-                    data: 'total_dsa',
-                    name: 'total_dsa'
-                },
-                {
-                    data: 'daily_allowance',
-                    name: 'daily_allowance'
-                },
-                {
-                    data: 'lodging_expense',
-                    name: 'lodging_expense'
-                },
-                {
-                    data: 'other_expense',
-                    name: 'other_expense'
-                },
-                {
-                    data: 'total_amount',
-                    name: 'total_amount'
-                },
-                {
-                    data: 'mode_of_travel',
-                    name: 'mode_of_travel'
-                },
-                {
-                    data: 'remarks',
-                    name: 'remarks'
-                },
-                {
-                    data: 'attachment',
-                    name: 'attachment'
-                },
-            ]
-        });
+
     </script>
 @endsection
 @section('page-content')
@@ -221,59 +137,7 @@
             </div>
             <div class="col-lg-9">
                 <div>
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            TADA Claim
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="itineraryTable">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            {{-- <th scope="col" rowspan="2">{{ __('label.activity') }}</th>
-                                            <th scope="col" rowspan="2">Activities/Tasks
-                                            </th> --}}
-                                            <th scope="col" colspan="2" class="text-center">
-                                                {{ __('label.destination') }}</th>
-                                            <th scope="col" colspan="2" class="text-center">
-                                                {{ __('label.date') }}</th>
-                                            <th scope="col" rowspan="2">Days Spent
-                                            </th>
-                                            <th scope="col" colspan="4" class="text-center">
-                                                DSA per day</th>
-                                            <th scope="col" rowspan="2">Total DSA
-                                            </th>
-                                            <th scope="col" rowspan="2">Daily Allowance
-                                            </th>
-                                            <th scope="col" rowspan="2">Lodging Expense
-                                            </th>
-                                            <th scope="col" rowspan="2">Other Expense
-                                            </th>
-                                            <th scope="col" rowspan="2">Total Amount
-                                            </th>
-                                            <th scope="col" rowspan="2">{{ __('label.mode-of-travel') }}</th>
-                                            <th scope="col" rowspan="2">{{ __('label.remarks') }}
-                                            </th>
-                                            <th scope="col" rowspan="2">{{ __('label.attachment') }}
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th scope="col">{{ __('label.from') }}</th>
-                                            <th scope="col">{{ __('label.to') }}</th>
-                                            <th scope="col">{{ __('label.from') }}</th>
-                                            <th scope="col">{{ __('label.to') }}</th>
-                                            <th scope="col">Breakfast</th>
-                                            <th scope="col">Lunch</th>
-                                            <th scope="col">Dinner</th>
-                                            <th scope="col">Incidental</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    @include('TravelRequest::Partials.claim.dsa-detail')
 
                     <div class="card">
                         <div class="card-header fw-bold">

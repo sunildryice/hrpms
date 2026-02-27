@@ -275,7 +275,7 @@ class GoodRequestRepository extends Repository
         try {
             $goodRequest = $this->model->findOrFail($id);
             $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
-            if (! $goodRequest->good_request_number) {
+            if (!$goodRequest->good_request_number) {
                 $fiscalYear = $this->fiscalYears->where('start_date', '<=', date('Y-m-d'))
                     ->where('end_date', '>=', date('Y-m-d'))
                     ->first();
@@ -354,27 +354,29 @@ class GoodRequestRepository extends Repository
         }
     }
 
-    public function storeDirectAssign($assetId, $inputs)
+    public function storeDirectAssignDraft($assetId, $inputs)
     {
         DB::beginTransaction();
         try {
             $asset = $this->assets->find($assetId);
             $employee = $this->employees->find($inputs['employee_id']);
 
-            $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
-            $inputs['is_direct_assign'] = '1';
-            $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
-            $inputs['prefix'] = 'GR';
-            $inputs['good_request_number'] = $this->generateGoodRequestNumber($inputs['fiscal_year_id']);
-            $inputs['receiver_id'] = $employee->getUserId();
-            $inputs['is_direct_assign'] = true;
-            $inputs['logistic_officer_id'] = $inputs['created_by'];
-            $goodRequest = $this->model->create($inputs);
+            $goodRequest = $this->model->create([
+                'fiscal_year_id' => $inputs['fiscal_year_id'],
+                'prefix' => $inputs['prefix'],
+                'good_request_number' => $inputs['good_request_number'],
+                'receiver_id' => $employee->getUserId(),
+                'handover_date' => $inputs['handover_date'],
+                'status_id' => $inputs['status_id'],           // CREATED / DRAFT
+                'is_direct_assign' => true,
+                'logistic_officer_id' => $inputs['logistic_officer_id'],
+                'created_by' => $inputs['created_by'],
+            ]);
 
             $goodRequest->logs()->create([
                 'user_id' => $inputs['created_by'],
-                'original_user_id' => $inputs['original_user_id'],
-                'log_remarks' => 'Direct assign good request has been submitted.',
+                'original_user_id' => $inputs['original_user_id'] ?? null,
+                'log_remarks' => 'Direct assign request saved as draft.',
                 'status_id' => $inputs['status_id'],
             ]);
 
@@ -392,18 +394,97 @@ class GoodRequestRepository extends Repository
             $goodRequestItem->goodRequestAssets()->create([
                 'assign_asset_id' => $asset->id,
                 'good_request_id' => $goodRequest->id,
-                'room_number' => $inputs['room_number'],
-                'handover_status_id' => 0,
+                'handover_status_id' => config('constant.CREATED_STATUS'),
             ]);
 
             DB::commit();
-
             return $goodRequest;
-        } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
-            DB::rollback();
 
-            return false;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function storeAndDirectlyAssignAsset($assetId, array $inputs)
+    {
+        DB::beginTransaction();
+        try {
+            $asset = $this->assets->findOrFail($assetId);
+            $employee = $this->employees->findOrFail($inputs['employee_id']);
+            $receiverUserId = $employee->getUserId();
+
+            $goodRequest = $this->model->create([
+                'fiscal_year_id' => $inputs['fiscal_year_id'],
+                'prefix' => $inputs['prefix'],
+                'good_request_number' => $inputs['good_request_number'],
+                'receiver_id' => $receiverUserId,
+                'handover_date' => $inputs['handover_date'],
+                'status_id' => config('constant.ASSIGNED_STATUS'),
+                'is_direct_assign' => true,
+                'logistic_officer_id' => $inputs['logistic_officer_id'] ?? auth()->id(),
+                'created_by' => $inputs['created_by'],
+            ]);
+
+            $goodRequest->logs()->create([
+                'user_id' => $inputs['created_by'],
+                'original_user_id' => $inputs['original_user_id'] ?? null,
+                'log_remarks' => 'Asset directly assigned',
+                'status_id' => $goodRequest->status_id,
+            ]);
+
+            $goodRequestItem = $goodRequest->goodRequestItems()->create([
+                'item_name' => $asset->inventoryItem->getItemName(),
+                'unit_id' => $asset->inventoryItem->unit_id,
+                'quantity' => 1,
+                'assigned_quantity' => 1,
+                'assigned_specification' => $asset->inventoryItem->specification ?? null,
+                'inventory_category_id' => $asset->inventoryItem->category_id,
+                'assigned_inventory_item_id' => $asset->inventory_item_id,
+                'assigned_item_id' => $asset->inventory_item_id,
+                'assigned_unit_id' => $asset->inventoryItem->unit_id,
+            ]);
+
+            $goodRequestAsset = $goodRequestItem->goodRequestAssets()->create([
+                'assign_asset_id' => $asset->id,
+                'good_request_id' => $goodRequest->id,
+                'handover_status_id' => config('constant.ASSIGNED_STATUS'),
+                'status' => 2,
+                'assigned_user_id' => $receiverUserId,
+                'assigned_office_id' => $employee->office_id,
+                'assigned_department_id' => $employee->department_id,
+                'assigned_on' => now(),
+                'asset_condition' => optional($asset->latestConditionLog)->condition->title ?? 'Good',
+            ]);
+
+            $asset->update([
+                'assigned_user_id' => $receiverUserId,
+                'assigned_office_id' => $employee->office_id,
+                'assigned_department_id' => $employee->department_id,
+                'status' => '2',
+                'assigned_on' => now(),
+                // 'room_number'       => $inputs['room_number'] ?? null, 
+            ]);
+
+            $asset->inventoryItem->increment('assigned_quantity');
+
+            $asset->assetAssignLogs()->create([
+                'good_request_id' => $goodRequest->id,
+                'good_request_asset_id' => $goodRequestAsset->id,
+                'assigned_user_id' => $receiverUserId,
+                'assigned_office_id' => $employee->office_id,
+                'assigned_department_id' => $employee->department_id,
+                'condition_id' => optional($asset->latestConditionLog)->condition_id,
+                'remarks' => 'Directly assigned without approval',
+                'created_by' => $inputs['created_by'],
+            ]);
+
+            DB::commit();
+            return $goodRequest;
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
     }
 

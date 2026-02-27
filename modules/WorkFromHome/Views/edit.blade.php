@@ -48,8 +48,8 @@
                 dropdownAutoWidth: true
             });
 
-            const form = document.getElementById('wfhRequestEditForm');
-            const $tbody = $('#deliverables-body');
+            var $form = $('#wfhRequestEditForm');
+            var $tbody = $('#deliverables-body');
 
             $('[name="start_date"]').datepicker({
                 language: 'en-GB',
@@ -65,10 +65,10 @@
             });
 
             // detect last existing row index
-            let rowIndex = (function() {
-                let maxIndex = 0;
+            var rowIndex = (function() {
+                var maxIndex = 0;
                 $tbody.find('.deliverable-row').each(function() {
-                    const idx = parseInt($(this).data('row-index'), 10);
+                    var idx = parseInt($(this).data('row-index'), 10);
                     if (!isNaN(idx) && idx > maxIndex) {
                         maxIndex = idx;
                     }
@@ -80,10 +80,10 @@
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
                         <td style="width: 10%;">
-                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]">
+                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]" autocomplete="off">
                         </td>
                         <td style="width: 15%;">
-                            <select class="form-select project-select"
+                            <select class="form-select project-select" autocomplete="off"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
                                 @foreach ($projects as $project)
@@ -92,7 +92,7 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-select activities-select" name="deliverables[${idx}][activity_id]" required>
+                            <select class="form-select activities-select" autocomplete="off" name="deliverables[${idx}][activity_id]" required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
@@ -100,6 +100,7 @@
                             <input type="text"
                                    class="form-control"
                                    name="deliverables[${idx}][task]"
+                                   autocomplete="off"
                                    required>
                         </td>
                         <td>
@@ -119,16 +120,18 @@
             }
 
             // Populate activities select based on selected project
-            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId = null) {
-                const activitiesData = $projectSelect.find('option:selected').data('activities');
+            function populateActivities($projectSelect, $activitiesSelect, selectedActivityId) {
+                selectedActivityId = selectedActivityId || null;
+                var activitiesData = $projectSelect.find('option:selected').data('activities');
                 $activitiesSelect.empty();
                 $activitiesSelect.append('<option value="">Select Activity</option>');
                 if (activitiesData && Array.isArray(activitiesData)) {
                     activitiesData.forEach(function(activity) {
-                        const selected = selectedActivityId && String(activity.id) === String(
+                        var selected = selectedActivityId && String(activity.id) === String(
                             selectedActivityId) ? 'selected' : '';
                         $activitiesSelect.append(
-                            `<option value="${activity.id}" ${selected}>${activity.name || activity.title || activity.activity_name}</option>`
+                            '<option value="' + activity.id + '" ' + selected + '>' + (activity.name ||
+                                activity.title || activity.activity_name) + '</option>'
                         );
                     });
                 }
@@ -138,22 +141,22 @@
 
             // On project change, update activities select
             $(document).on('change', '.project-select', function() {
-                const $row = $(this).closest('tr');
-                const $activitiesSelect = $row.find('.activities-select');
+                var $row = $(this).closest('tr');
+                var $activitiesSelect = $row.find('.activities-select');
                 populateActivities($(this), $activitiesSelect);
             });
 
             // On page load, initialize activities selects for existing rows
             $('#deliverables-body .deliverable-row').each(function() {
-                const $row = $(this);
-                const $projectSelect = $row.find('.project-select');
-                const $activitiesSelect = $row.find('.activities-select');
+                var $row = $(this);
+                var $projectSelect = $row.find('.project-select');
+                var $activitiesSelect = $row.find('.activities-select');
                 // If old value exists, set it
-                const selectedActivityId = $activitiesSelect.data('selected');
+                var selectedActivityId = $activitiesSelect.data('selected');
                 populateActivities($projectSelect, $activitiesSelect, selectedActivityId);
 
                 // Initialize datepicker for existing date input
-                const $dateInput = $row.find('input.date');
+                var $dateInput = $row.find('input.date');
                 $dateInput.datepicker({
                     language: 'en-GB',
                     autoHide: true,
@@ -168,8 +171,11 @@
 
             $(document).on('click', '.add-row', function() {
                 rowIndex++;
-                const $newRow = $(buildDeliverableRow(rowIndex));
+                var $newRow = $(buildDeliverableRow(rowIndex));
                 $tbody.append($newRow);
+
+                // clear any autofilled values before plugin init
+                $newRow.find('.project-select, .activities-select').val('').trigger('change');
 
                 // Initialize select2 on new row
                 $newRow.find('.project-select, .activities-select').select2({
@@ -202,8 +208,8 @@
                 }
             });
 
-            if (form) {
-                window.fv = FormValidation.formValidation(form, {
+            if ($form.length) {
+                window.fv = FormValidation.formValidation($form[0], {
                     fields: {
                         type: {
                             validators: {
@@ -245,24 +251,24 @@
                                 callback: {
                                     message: 'Project, activity and task are required for each deliverable',
                                     callback: function() {
-                                        const projectSelects = $(
+                                        var projectSelects = $(
                                             '#deliverables-body select[name*="[project_id]"]');
-                                        const activitySelects = $(
+                                        var activitySelects = $(
                                             '#deliverables-body select[name*="[activity_id]"]');
-                                        const taskInputs = $(
+                                        var taskInputs = $(
                                             '#deliverables-body input[name*="[task]"]');
 
-                                        const allProjectsFilled = projectSelects.length > 0 &&
+                                        var allProjectsFilled = projectSelects.length > 0 &&
                                             projectSelects.filter(function() {
                                                 return $(this).val() && $(this).val() !== '';
                                             }).length === projectSelects.length;
 
-                                        const allActivitiesFilled = activitySelects.length > 0 &&
+                                        var allActivitiesFilled = activitySelects.length > 0 &&
                                             activitySelects.filter(function() {
                                                 return $(this).val() && $(this).val() !== '';
                                             }).length === activitySelects.length;
 
-                                        const allTasksFilled = taskInputs.length > 0 &&
+                                        var allTasksFilled = taskInputs.length > 0 &&
                                             taskInputs.filter(function() {
                                                 return $(this).val().trim() !== '';
                                             }).length === taskInputs.length;

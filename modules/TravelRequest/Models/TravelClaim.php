@@ -95,6 +95,14 @@ class TravelClaim extends Model
     }
 
     /**
+     * Get the travel dsa claims of the travel claim
+     */
+    public function dsaClaims()
+    {
+        return $this->hasMany(TravelDsaClaim::class, 'travel_claim_id');
+    }
+
+    /**
      * Get the itineraries of the travel claim
      */
     public function dsaClaim()

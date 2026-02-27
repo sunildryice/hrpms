@@ -177,7 +177,7 @@
                     });
                     location.href = response.redirectUrl;
                 }
-                ajaxSweetAlert($url, 'POST', {}, 'Create Settlement', successCallback);
+                ajaxSweetAlert($url, 'POST', {}, 'Create Travel Claim', successCallback);
             });
         });
     </script>

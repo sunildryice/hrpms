@@ -88,12 +88,12 @@ class TravelDsaClaim extends Model
 
     public function getArrivalDate()
     {
-        return $this->arrival_date?->format('d M Y, h:i A');
+        return $this->arrival_date?->format('d M Y');
     }
 
     public function getDepartureDate()
     {
-        return $this->departure_date?->format('d M Y, h:i A');
+        return $this->departure_date?->format('d M Y');
     }
 
     public function getTravelModes()

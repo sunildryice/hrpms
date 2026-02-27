@@ -32,37 +32,14 @@
             </div>
         </div>
 
-        <div class="mb-2 row">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="room_number" class="form-label required-label">Room No.</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <input type="text" class="form-control" name="room_number" value="{{ $asset->room_number }}">
-            </div>
-        </div>
-
-        <div class="mb-2 row">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="employee_id" class="form-label required-label">Approver</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select name="approver_id" id="approver_id" class="form-control select2">
-                    <option value="">Select Approver</option>
-                    @foreach ($approvers as $approver)
-                        <option value="{{ $approver->id }}">{{ $approver->getFullName() }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
+    
 
 
     </div>
     <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="submit" name="submit_action" value="save" class="btn btn-outline-primary">Save</button>
+
+        <button type="submit" name="submit_action" value="assign" class="btn btn-primary">Assign</button>
     </div>
     {!! csrf_field() !!}
 </form>

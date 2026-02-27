@@ -17,6 +17,8 @@ use Modules\Grn\Policies\GrnItemPolicy;
 use Modules\Privilege\Models\Permission;
 use Modules\Employee\Policies\AddressPolicy;
 use Modules\Project\Policies\WorkPlanPolicy;
+use Modules\Inventory\Models\Asset;
+use Modules\Inventory\Policies\AssetPolicy;
 use Modules\AdvanceRequest\Models\Settlement;
 use Modules\Employee\Policies\EmployeePolicy;
 use Modules\LeaveRequest\Models\LeaveRequest;
@@ -92,6 +94,7 @@ class AuthServiceProvider extends ServiceProvider
         WorkPlan::class => WorkPlanPolicy::class,
         TimeSheet::class => MonthlyTimesheetPolicy::class,
         LieuLeaveRequest::class => LieuLeavePolicy::class,
+        Asset::class => AssetPolicy::class,
     ];
 
     /**

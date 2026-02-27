@@ -13,8 +13,9 @@ class TravelRequestRepository extends Repository
 
     public function __construct(
         FiscalYearRepository $fiscalYears,
-        TravelRequest $travelRequest
-    ) {
+        TravelRequest        $travelRequest
+    )
+    {
         $this->fiscalYears = $fiscalYears;
         $this->model = $travelRequest;
     }
@@ -44,18 +45,13 @@ class TravelRequestRepository extends Repository
             ->whereIn('office_id', $accessibleOfficeIds)
             ->orderBy('departure_date', 'desc')
             ->get();
-
-        // return $this->model->with(['requester','status'])->select(['*'])
-        //         ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')])
-        //         ->orderBy('departure_date', 'desc')
-        //         ->get();
     }
 
     public function getTravelNumber($fiscalYearId)
     {
         $max = $this->model->select(['fiscal_year_id', 'travel_number'])
-            ->where('fiscal_year_id', $fiscalYearId)
-            ->max('travel_number') + 1;
+                ->where('fiscal_year_id', $fiscalYearId)
+                ->max('travel_number') + 1;
 
         return $max;
     }
@@ -93,7 +89,7 @@ class TravelRequestRepository extends Repository
             $clone->modification_travel_request_id = $travelRequest->id;
             $parentTravelRequestId = $travelRequest->modification_travel_request_id ?: $travelRequest->id;
             $clone->modification_number = $this->model->where('modification_travel_request_id', $parentTravelRequestId)
-                ->max('modification_number') + 1;
+                    ->max('modification_number') + 1;
             $clone->save();
 
             foreach ($travelRequest->travelRequestItineraries as $itinerary) {

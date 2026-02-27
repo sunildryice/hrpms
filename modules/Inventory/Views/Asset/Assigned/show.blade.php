@@ -17,16 +17,24 @@
                 bFilter: false,
                 bPaginate: false,
                 bInfo: false,
-                columns: [
-                    { data: 'asset_condition', name: 'asset_condition' },
-                    { data: 'description', name: 'description' },
-                    { data: 'created_by', name: 'created_by' },
+                columns: [{
+                        data: 'asset_condition',
+                        name: 'asset_condition'
+                    },
+                    {
+                        data: 'description',
+                        name: 'description'
+                    },
+                    {
+                        data: 'created_by',
+                        name: 'created_by'
+                    },
                     {
                         data: 'action',
                         name: 'action',
                         orderable: false,
                         searchable: false,
-                        className:'sticky-col'
+                        className: 'sticky-col'
                     },
                 ]
             });
@@ -53,14 +61,34 @@
                 bFilter: false,
                 bPaginate: false,
                 bInfo: false,
-                columns: [
-                    { data: 'assigned_user', name: 'assigned_user' },
-                    { data: 'assigned_office', name: 'assigned_office' },
-                    { data: 'assigned_department', name: 'assigned_department' },
-                    { data: 'assigned_district', name: 'assigned_district' },
-                    { data: 'assigned_date', name: 'assigned_date' },
-                    { data: 'condition', name: 'condition' },
-                    { data: 'remarks', name: 'remarks' },
+                columns: [{
+                        data: 'assigned_user',
+                        name: 'assigned_user'
+                    },
+                    {
+                        data: 'assigned_office',
+                        name: 'assigned_office'
+                    },
+                    {
+                        data: 'assigned_department',
+                        name: 'assigned_department'
+                    },
+                    {
+                        data: 'assigned_district',
+                        name: 'assigned_district'
+                    },
+                    {
+                        data: 'assigned_date',
+                        name: 'assigned_date'
+                    },
+                    {
+                        data: 'condition',
+                        name: 'condition'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
+                    },
                 ]
             });
 
@@ -68,7 +96,7 @@
             $(document).on('click', '.open-asset-condition-log-modal-form', function(e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function (){
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const assetConditionLogForm = document.getElementById('assetConditionLogForm');
                     const fv = FormValidation.formValidation(assetConditionLogForm, {
                         fields: {
@@ -106,7 +134,7 @@
                         },
                     }).on('core.form.valid', function(event) {
                         let data = new FormData(assetConditionLogForm);
-                        let url  = assetConditionLogForm.getAttribute('action');
+                        let url = assetConditionLogForm.getAttribute('action');
                         var successCallback = function(response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message, 'Success', {
@@ -122,16 +150,16 @@
             $(document).on('click', '.open-asset-assign-modal-form', function(e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function (){
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('assetassignform');
                     $(form).find(".select2").each(function() {
-                    $(this)
-                        .wrap("<div class=\"position-relative\"></div>")
-                        .select2({
-                            dropdownParent: $(this).parent(),
-                            width: '100%',
-                            dropdownAutoWidth: true
-                        });
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
                     });
                     const fv = FormValidation.formValidation(form, {
                         fields: {
@@ -224,10 +252,11 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <span class="fw-bold">
-                                Inventory Details
+                                    Inventory Details
                                 </span>
                                 <span>
-                                    <a href="{{route('inventories.show', $inventory->id)}}" class="fs-7" title="View Inventory"><i class="bi bi-box-arrow-up-right
+                                    <a href="{{ route('inventories.show', $inventory->id) }}" class="fs-7"
+                                        title="View Inventory"><i class="bi bi-box-arrow-up-right
 "></i></a>
                                 </span>
                             </div>
@@ -238,8 +267,7 @@
                                                 class="card-subtitle text-uppercase text-primary">About</span></li>
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-truck dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><i class="bi-truck dropdown-item-icon"></i></div>
                                                 <div class="d-content-section"> {!! $inventory->getSupplierName() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Supplier"></span>
@@ -263,8 +291,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getUnitPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Unit Price"></span>
@@ -272,8 +299,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Price"></span>
@@ -281,8 +307,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getVatAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="VAT Amount"></span>
@@ -290,8 +315,7 @@
 
                                         <li class="position-relative">
                                             <div class="d-flex gap-2 align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>
@@ -346,8 +370,9 @@
                                         @can('directAssign', $asset)
                                             <div id="asset-assign">
                                                 <li class="pt-4 pb-2 d-flex flex-row justify-content-start">
-                                                    <button data-toggle="modal" class="btn btn-sm btn-outline-primary open-asset-assign-modal-form"
-                                                    href="{{route('good.requests.direct.assign.create', $asset->id)}}">
+                                                    <button data-toggle="modal"
+                                                        class="btn btn-sm btn-outline-primary open-asset-assign-modal-form"
+                                                        href="{{ route('good.requests.direct.assign.create', $asset->id) }}">
                                                         Asset Assign <i class="bi bi-arrow-up-right-circle"></i>
                                                     </button>
                                                 </li>
@@ -357,7 +382,7 @@
                                 </div>
                             </div>
                         </div>
-                        @if($asset->isDisposed())
+                        @if ($asset->isDisposed())
                             <div class="card">
                                 <div class="card-header fw-bold">
                                     Disposition Details
@@ -367,49 +392,59 @@
                                         <ul class="list-unstyled list-py-2 text-dark mb-0">
                                             <li class="pb-2"><span
                                                     class="card-subtitle text-uppercase text-primary">About</span></li>
-                                                    <li class="position-relative">
-                                                        <div class="d-flex gap-2 align-items-center">
-                                                            <div class="icon-section"><i class="bi-person-bounding-box dropdown-item-icon"></i></div>
-                                                            <div class="d-content-section">{{ $disposition->getRequesterName() }}</div>
+                                            <li class="position-relative">
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <div class="icon-section"><i
+                                                            class="bi-person-bounding-box dropdown-item-icon"></i></div>
+                                                    <div class="d-content-section">{{ $disposition->getRequesterName() }}
+                                                    </div>
+                                                </div>
+                                                <span class="stretched-link" rel="tooltip" title="Requester"></span>
+                                            </li>
+                                            @if ($disposition->approver->id)
+                                                <li class="position-relative">
+                                                    <div class="d-flex gap-2 align-items-center">
+                                                        <div class="icon-section"><i
+                                                                class="bi-person-badge dropdown-item-icon"></i></div>
+                                                        <div class="d-content-section"> {!! $disposition->getApproverName() !!} </div>
+                                                    </div>
+                                                    <span class="stretched-link" rel="tooltip" title="Approver"></span>
+                                                </li>
+                                            @endif
+                                            <li class="position-relative">
+                                                <div class="d-flex gap-2 align-items-start">
+                                                    <div class="icon-section"><i
+                                                            class="bi-geo-fill dropdown-item-icon"></i></div>
+                                                    <div class="d-content-section"> {!! $disposition->getDispositionType() !!}</div>
+                                                </div>
+                                                <span class="stretched-link" rel="tooltip"
+                                                    title="Disposition Type"></span>
+                                            </li>
+                                            <li class="position-relative">
+                                                <div class="d-flex gap-2 align-items-center">
+                                                    <div class="icon-section"><i
+                                                            class="bi-calendar-date dropdown-item-icon"></i></div>
+                                                    <div class="d-content-section"> {!! $disposition->getDispositionDate() !!} </div>
+                                                </div>
+                                                <span class="stretched-link" rel="tooltip"
+                                                    title="Disposition Date"></span>
+                                            </li>
+                                            <li class="pt-4 pb-2"><span
+                                                    class="card-subtitle text-uppercase text-primary">Reason</span>
+                                            </li>
+                                            <li class="position-relative">
+                                                <div class="d-flex gap-2 align-items-start">
+                                                    <div class="icon-section"><i
+                                                            class="bi-chat-dots dropdown-item-icon"></i></div>
+                                                    <div class="d-content-section">
+                                                        <div id="initial-reason">
+                                                            {!! $asset->disposition->disposition_reason !!}
                                                         </div>
-                                                        <span class="stretched-link" rel="tooltip" title="Requester"></span>
-                                                    </li>
-                                                    @if ($disposition->approver->id)
-                                                        <li class="position-relative">
-                                                            <div class="d-flex gap-2 align-items-center">
-                                                                <div class="icon-section"><i class="bi-person-badge dropdown-item-icon"></i></div>
-                                                                <div class="d-content-section"> {!! $disposition->getApproverName() !!} </div>
-                                                            </div>
-                                                            <span class="stretched-link" rel="tooltip" title="Approver"></span>
-                                                        </li>
-                                                    @endif
-                                                    <li class="position-relative">
-                                                        <div class="d-flex gap-2 align-items-start">
-                                                            <div class="icon-section"><i class="bi-geo-fill dropdown-item-icon"></i></div>
-                                                            <div class="d-content-section"> {!! $disposition->getDispositionType() !!}</div>
-                                                        </div>
-                                                        <span class="stretched-link" rel="tooltip" title="Disposition Type"></span>
-                                                    </li>
-                                                    <li class="position-relative">
-                                                        <div class="d-flex gap-2 align-items-center">
-                                                            <div class="icon-section"><i class="bi-calendar-date dropdown-item-icon"></i></div>
-                                                            <div class="d-content-section"> {!! $disposition->getDispositionDate() !!} </div>
-                                                        </div>
-                                                        <span class="stretched-link" rel="tooltip" title="Disposition Date"></span>
-                                                    </li>
-                                                    <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason</span>
-                                                    </li>
-                                                    <li class="position-relative">
-                                                        <div class="d-flex gap-2 align-items-start">
-                                                            <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i></div>
-                                                            <div class="d-content-section">
-                                                                <div id="initial-reason">
-                                                                    {!!  $asset->disposition->disposition_reason !!}
-                                                                </div>
 
-                                                            </div>
-                                                        </div>
-                                        </ul>       </li>
+                                                    </div>
+                                                </div>
+                                        </ul>
+                                        </li>
                                     </div>
                                 </div>
                             </div>
@@ -432,19 +467,23 @@
                                                         <thead class="thead-light">
                                                             <tr>
                                                                 <th scope="col">{{ __('label.asset-number') }}</th>
-                                                                <th scope="col">{{ __('label.purchase-date') }}</th>
+                                                                {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                                 <th scope="col">{{ __('label.serial-number') }}</th>
                                                                 <th scope="col">{{ __('label.item') }}</th>
-                                                                <th scope="col">{{ __('label.remarks') }}</th>
+                                                                <th scope="col">{{ __('label.model-number') }}</th>
+                                                                <th scope="col">{{ __('label.brand') }}</th>
+                                                                <th scope="col">{{ __('label.specification') }}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
-                                                                <td>{{$asset->getAssetNumber()}}</td>
-                                                                <td>{{$asset->getPurchaseDate()}}</td>
-                                                                <td>{{$asset->getSerialNumber()}}</td>
-                                                                <td>{{$asset->getItemName()}}</td>
-                                                                <td>{{$asset->remarks}}</td>
+                                                                <td>{{ $asset->getAssetNumber() }}</td>
+                                                                {{-- <td>{{ $asset->getPurchaseDate() }}</td> --}}
+                                                                <td>{{ $asset->getSerialNumber() }}</td>
+                                                                <td>{{ $asset->getItemName() }}</td>
+                                                                <td>{{ $asset->model_number }}</td>
+                                                                <td>{{ $asset->getBrandName() }}</td>
+                                                                <td>{{ $asset->remarks }}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -459,8 +498,10 @@
                                 <div class="card">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         Asset Condition Log
-                                        <a data-toggle="modal" class="btn btn-primary btn-sm open-asset-condition-log-modal-form"
-                                        href="{{route('asset.condition.logs.create', $asset->id) }}" rel="tooltip" title="Add Asset Condition">Add Condition</a>
+                                        <a data-toggle="modal"
+                                            class="btn btn-primary btn-sm open-asset-condition-log-modal-form"
+                                            href="{{ route('asset.condition.logs.create', $asset->id) }}" rel="tooltip"
+                                            title="Add Asset Condition">Add Condition</a>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">

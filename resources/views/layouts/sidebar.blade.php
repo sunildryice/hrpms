@@ -669,6 +669,9 @@
                                     <a class="nav-link" href="{{ route('approved.travel.requests.index') }}"
                                        id="approved-travel-request-menu">Approved
                                         Travel Requests </a>
+                                    <a class="nav-link" href="{{ route('approved.travel.ticket.requests.index') }}"
+                                       id="approved-travel-ticket-request-menu">
+                                        Travel Ticket Requests </a>
                                     <a class="nav-link" href="{{ route('approved.travel.reports.index') }}"
                                        id="approved-travel-report-menu">Approved
                                         Travel Reports</a>
@@ -977,7 +980,10 @@
                                        id="activity-update-periods-index">Activity Update Periods</a>
                                 @endif
 
-
+                                @if ($authUser->can('manage-brands'))
+                                    <a class="nav-link" href="{{ route('master.brands.index') }}"
+                                       id="brands-menu">Brands</a>
+                                @endif
 
                                 @if ($authUser->can('manage-activities'))
                                     <a class="nav-link" href="{{ route('master.activity.codes.index') }}"

@@ -39,8 +39,8 @@
                         name: 'travel_number'
                     },
                     {
-                        data: 'requester',
-                        name: 'requester'
+                        data: 'requester_name',
+                        name: 'requester_name'
                     },
                     {
                         data: 'status',

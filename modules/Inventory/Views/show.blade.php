@@ -2,6 +2,17 @@
 
 @section('title', 'Inventory Details')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 150px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -26,12 +37,12 @@
                         orderable: false,
                         searchable: false
                     },
-                    {
-                        data: 'purchase_date',
-                        name: 'purchase_date',
-                        orderable: false,
-                        searchable: false
-                    },
+                    // {
+                    //     data: 'purchase_date',
+                    //     name: 'purchase_date',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
                     {
                         data: 'serial_number',
                         name: 'serial_number',
@@ -42,7 +53,16 @@
                     },
                     {
                         data: 'item_name',
-                        name: 'item_name'
+                        name: 'item_name',
+                        className: 'wrap-text'
+                    },
+                    {
+                        data: 'model_number',
+                        name: 'model_number',
+                    },
+                    {
+                        data: 'brand_name',
+                        name: 'brand_name',
                     },
                     {
                         data: 'remarks',
@@ -78,6 +98,15 @@
                 $('#openModal').find('.modal-content').html('');
                 $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('assetEditForm');
+                    $(form).find(".select2").each(function() {
+                        $(this)
+                            .wrap("<div class=\"position-relative\"></div>")
+                            .select2({
+                                dropdownParent: $(this).parent(),
+                                width: '100%',
+                                dropdownAutoWidth: true
+                            });
+                    });
                     const fv = FormValidation.formValidation(form, {
                         fields: {
                             // title: {
@@ -200,7 +229,8 @@
                             var successCallback = function(response) {
                                 response.users.forEach(function(user) {
                                     htmlToReplace += '<option value="' +
-                                        user.id + '">' + user.full_name + '</option>';
+                                        user.id + '">' + user.full_name +
+                                        '</option>';
                                 });
                                 $($element).closest('form').find(
                                         '[name="receiver_id"]').html(htmlToReplace)
@@ -267,13 +297,13 @@
                                     <span>
                                         Inventory Details
                                     </span>
-                                    @can('manage-inventory')
+                                    {{-- @can('manage-inventory')
                                         <span>
                                             <a class="btn btn-outline-primary btn-sm open-asset-edit-modal-form"
                                                 href="{{ route('inventories.edit', $inventory->id) }}" rel="tooltip"
                                                 title="Edit Inventory Details"><i class="bi bi-pencil-square"></i></a>
                                         </span>
-                                    @endcan
+                                    @endcan --}}
                                 </div>
                             </div>
                             <div class="card-body">
@@ -307,8 +337,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getUnitPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Unit Price"></span>
@@ -316,8 +345,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalPrice() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Price"></span>
@@ -325,8 +353,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getVatAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="VAT Amount"></span>
@@ -334,8 +361,7 @@
 
                                         <li class="position-relative">
                                             <div class="gap-2 d-flex align-items-center">
-                                                <div class="icon-section"><i
-                                                        class="bi-currency-dollar dropdown-item-icon"></i></div>
+                                                <div class="icon-section"><small class="text-muted">NPR</small></div>
                                                 <div class="d-content-section"> {!! $inventory->getTotalAmount() !!} </div>
                                             </div>
                                             <span class="stretched-link" rel="tooltip" title="Total Amount"></span>
@@ -454,11 +480,13 @@
                                                     <tr>
                                                         <th>{{ __('label.sn') }}</th>
                                                         <th scope="col">{{ __('label.asset-number') }}</th>
-                                                        <th scope="col">{{ __('label.purchase-date') }}</th>
+                                                        {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
                                                         <th scope="col">{{ __('label.room-no') }}</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
-                                                        <th scope="col">{{ __('label.remarks') }}</th>
+                                                        <th scope="col">{{ __('label.model-number') }}</th>
+                                                        <th scope="col">{{ __('label.brand') }}</th>
+                                                        <th scope="col">{{ __('label.specification') }}</th>
                                                         <th>{{ __('label.action') }}</th>
                                                     </tr>
                                                 </thead>

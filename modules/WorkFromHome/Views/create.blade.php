@@ -91,10 +91,10 @@
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
                         <td style="width: 10%;">
-                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]">
+                            <input type="text" class="form-control date" readonly name="deliverables[${idx}][date]" autocomplete="off">
                         </td>
                         <td style="width: 15%;">
-                            <select class="form-select project-select"
+                            <select class="form-select project-select" autocomplete="off"
                                     name="deliverables[${idx}][project_id]" required>
                                 <option value="" disabled selected>Select Project</option>
                                 @foreach ($projects as $project)
@@ -103,7 +103,7 @@
                             </select>
                         </td>
                         <td>
-                            <select class="form-select activities-select" name="deliverables[${idx}][activity_id]" required>
+                            <select class="form-select activities-select" autocomplete="off" name="deliverables[${idx}][activity_id]" required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
@@ -111,6 +111,7 @@
                             <textarea rows="4"
                                    class="form-control"
                                    name="deliverables[${idx}][task]"
+                                   autocomplete="off"
                                    required></textarea>
                         </td>
                         <td>
@@ -221,6 +222,9 @@
                 rowIndex++;
                 var $newRow = $(buildDeliverableRow(rowIndex));
                 $tbody.append($newRow);
+
+                // clear any autofilled values before initializing plugins
+                $newRow.find('.project-select, .activities-select').val('').trigger('change');
 
                 // Initialize select2 on new row
                 $newRow.find('.project-select, .activities-select').select2({

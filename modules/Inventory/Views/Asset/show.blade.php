@@ -223,12 +223,20 @@
                         $form = fv.form;
                         data = $($form).serialize();
                         var successCallback = function(response) {
+
                             $('#openModal').modal('hide');
+
+                            if (response.asset.status !=
+                                {{ config('constant.CREATED_STATUS') }}) {
+                                $('#asset-assign').remove();
+                            }
                             toastr.success(response.message, 'Success', {
                                 timeOut: 5000
                             });
-                            $('#asset-assign').hide();
-                            // oTable.ajax.reload();
+
+                            assetConditionLogTable.ajax.reload();
+                            assetAssignmentLogTable.ajax.reload();
+
                         }
                         ajaxSubmit($url, 'POST', data, successCallback);
                     });

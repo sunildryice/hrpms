@@ -9,8 +9,8 @@ use App\Http\Controllers\Controller;
 // use Modules\Configuration\Repositories\DepartmentRepository;
 use Modules\Employee\Repositories\EducationRepository;
 use Modules\Employee\Repositories\EmployeeRepository;
-use Modules\Employee\Requests\Education\StoreRequest;
-use Modules\Employee\Requests\Education\UpdateRequest;
+use Modules\Profile\Requests\Education\StoreRequest;
+use Modules\Profile\Requests\Education\UpdateRequest;
 
 class EducationController extends Controller
 {
@@ -24,8 +24,7 @@ class EducationController extends Controller
     public function __construct(
         EducationRepository $education,
         EmployeeRepository $employees
-    )
-    {
+    ) {
         $this->education = $education;
         $this->employees = $employees;
         $this->destinationPath = 'employees';
@@ -46,18 +45,18 @@ class EducationController extends Controller
         $inputs['employee_id'] = $employee->id;
         $inputs['created_by'] = auth()->id();
         $emp_education = $this->education->create($inputs);
-        if($emp_education){
+        if ($emp_education) {
             if ($request->file('attachment')) {
                 $filename = $request->file('attachment')
-                    ->storeAs($this->destinationPath .'/'.$employee->id, time().'_education.'. $request->file('attachment')->getClientOriginalExtension());
+                    ->storeAs($this->destinationPath . '/' . $employee->id, time() . '_education.' . $request->file('attachment')->getClientOriginalExtension());
                 $inputs['attachment'] = $filename;
             }
 
             $this->education->update($emp_education->id, $inputs);
-            return redirect()->route('profile.edit', ['tab'=>'education-details'])
+            return redirect()->route('profile.edit', ['tab' => 'education-details'])
                 ->withSuccessMessage('Education details successfully added.');
         }
-        return redirect()->route('profile.edit', ['tab'=>'education-details'])->withInput()
+        return redirect()->route('profile.edit', ['tab' => 'education-details'])->withInput()
             ->withWarningMessage('Education details can not be added.');
     }
 
@@ -72,14 +71,14 @@ class EducationController extends Controller
     {
         $education = $this->education->with(['employee'])->find($id);
         $attachment  = '';
-        if($education->attachment != NULL){
-            $attachment = asset('storage/'.$education->attachment);
+        if ($education->attachment != NULL) {
+            $attachment = asset('storage/' . $education->attachment);
         }
-        if($request->wantsJson()){
+        if ($request->wantsJson()) {
             return response()->json([
-                'education'=>$education,
-                'attachment'=>$attachment,
-                'updateAction'=>route('profile.education.update', [$education->id]),
+                'education' => $education,
+                'attachment' => $attachment,
+                'updateAction' => route('profile.education.update', [$education->id]),
             ]);
         }
 
@@ -101,16 +100,16 @@ class EducationController extends Controller
         $inputs['updated_by'] = auth()->id();
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
-                ->storeAs($this->destinationPath .'/'.$education->employee_id, time().'_education.'. $request->file('attachment')->getClientOriginalExtension());
+                ->storeAs($this->destinationPath . '/' . $education->employee_id, time() . '_education.' . $request->file('attachment')->getClientOriginalExtension());
             $inputs['attachment'] = $filename;
         }
         $education = $this->education->update($id, $inputs);
 
-        if($education){
-            return redirect()->route('profile.edit', ['tab'=>'education-details'])
+        if ($education) {
+            return redirect()->route('profile.edit', ['tab' => 'education-details'])
                 ->withSuccessMessage('Educational detail is successfully updated.');
         }
-        return redirect()->route('profile.edit', ['tab'=>'education-details'])
+        return redirect()->route('profile.edit', ['tab' => 'education-details'])
             ->withInput()
             ->withWarningMessage('Educational details can not be updated.');
     }

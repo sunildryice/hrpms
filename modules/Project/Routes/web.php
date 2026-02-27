@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Project\Controllers\ActivityController;
 use Modules\Project\Controllers\ProjectController;
 use Modules\Project\Controllers\WorkPlanController;
 use Modules\Project\Controllers\TimeSheetController;
@@ -32,6 +33,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('/projects/{id}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
 
+    Route::get('assigned/activities', [ActivityController::class, 'index'])->name('assigned.activities.index');
 
     Route::get('/activity-stages', [ActivityStageController::class, 'index'])->name('activity-stages.index');
     Route::get('/activity-stages/create', [ActivityStageController::class, 'create'])->name('activity-stage.create');
@@ -40,8 +42,6 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('/activity-stages/{id}/update', [ActivityStageController::class, 'update'])->name('activity-stage.update');
     Route::get('/activity-stages/{id}/show', [ActivityStageController::class, 'show'])->name('activity-stage.show');
     Route::delete('/activity-stages/{id}/delete', [ActivityStageController::class, 'destroy'])->name('activity-stages.destroy');
-
-
 
     Route::get('/activity-update-periods', [ActivityUpdatePeriodController::class, 'index'])->name('activity-update-periods.index');
     Route::get('/activity-update-periods/create', [ActivityUpdatePeriodController::class, 'create'])->name('activity-update-periods.create');

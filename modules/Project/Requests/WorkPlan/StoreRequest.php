@@ -37,7 +37,7 @@ class StoreRequest extends FormRequest
                 'entries.*.project_id' => 'required|exists:projects,id',
                 'entries.*.activity_id' => 'required|exists:project_activities,id',
                 'entries.*.planned_task' => 'required|string|max:500',
-                'entries.*.members' => 'required|array|min:1',
+                'entries.*.members' => 'nullable|array|min:1',
                 'entries.*.members.*' => 'exists:users,id',
                 'reason' => 'nullable|string',
             ];
@@ -70,7 +70,6 @@ class StoreRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        dd($validator->errors());
         return parent::failedValidation($validator);
     }
 }

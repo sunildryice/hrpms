@@ -16,6 +16,23 @@ class ProjectRepository extends Repository
 
     public function getAssignedProjects($authUser)
     {
+        return $this->model->with([
+            'members',
+            'focalPerson',
+            'teamLead'
+        ])->where(function ($q) use ($authUser) {
+            $q->where('focal_person_id', $authUser->id)
+                ->orWhere('team_lead_id', $authUser->id)
+                ->orWhereHas('members', function ($sq) use ($authUser) {
+                    $sq->where('user_id', $authUser->id);
+                });
+        })->whereNotNull('activated_at')
+//            ->latest()
+            ->get();
+    }
+
+    public function getAssignedProjectsWithActivities($authUser)
+    {
         return $this->model
             ->with([
                 'members',

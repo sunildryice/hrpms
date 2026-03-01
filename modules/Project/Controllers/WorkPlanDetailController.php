@@ -27,11 +27,12 @@ class WorkPlanDetailController extends Controller
 
     public function index(Request $request, WorkPlan $workPlan)
     {
-        $isEditable = auth()->user()->can('update', $workPlan);
-        $isStatusUpdatable = auth()->user()->can('updateStatus', $workPlan);
+        $authUser = auth()->user();
+        $isEditable = $authUser->can('update', $workPlan);
+        $isStatusUpdatable = $authUser->can('updateStatus', $workPlan);
 
         if ($request->ajax()) {
-            $user = auth()->user();
+            $user = $authUser;
             if (!$user->employee) {
                 return DataTables::of(collect([]))->make(true);
             }
@@ -112,7 +113,7 @@ class WorkPlanDetailController extends Controller
     public function getActivities(Request $request)
     {
         $projectId = $request->project_id;
-        $activities = $this->projectActivities->model
+        $activities = $this->projectActivities->select(['*'])
             ->where('project_id', $projectId)
             ->whereIn('activity_level', ['activity', 'sub_activity'])
             ->get(['id', 'title']);
@@ -126,12 +127,12 @@ class WorkPlanDetailController extends Controller
             'start_date' => $workPlan->from_date,
             'end_date' => $workPlan->to_date,
         ];
-
         $projects = $this->projects->getAssignedProjects(auth()->user());
 
-
-
-        return view('Project::WorkPlan.Detail.create', compact('week', 'projects', 'workPlan'));
+        return view('Project::WorkPlan.Detail.create')
+            ->withProjects($projects)
+            ->withWeek($week)
+            ->withWorkPlan($workPlan);
     }
 
     public function store(WorkPlanStoreRequest $request)

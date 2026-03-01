@@ -137,7 +137,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('#navbarVerticalMenu').find('#work-plan-index').addClass('active');
 
             // Global Select2 initialization
@@ -159,8 +159,7 @@
                     if (fv && typeof fv.revalidateField === 'function') {
                         try {
                             fv.revalidateField('entries');
-                        } catch (e) {
-                        }
+                        } catch (e) {}
                     }
                 }
 
@@ -204,7 +203,7 @@
                     const idx = $row.data('row-index');
 
                     // Destroy any existing Select2 instances first
-                    $row.find('.select2').each(function () {
+                    $row.find('.select2').each(function() {
                         if ($(this).hasClass('select2-hidden-accessible')) {
                             $(this).select2('destroy');
                         }
@@ -227,51 +226,69 @@
                     // make sure project select starts empty to thwart Chrome autofill
                     $projectSelect.val(null).trigger('change').trigger('change.select2');
                     // if Chrome still tries to inject a value on focus, clear it again
-                    $projectSelect.on('focus', function () {
+                    $projectSelect.on('focus', function() {
                         $(this).val(null).trigger('change').trigger('change.select2');
                     });
 
-                    function populateActivities($obj) {
-                        var projectId = $($obj).val();
-                        var url = "{{ route('api.projects.show', ['projectId']) }}".replace('projectId', projectId);
-                        var htmlToReplaceActivity = '<option value="">Select Activity</option>';
-                        var htmlToReplaceMembers = '<option value="">Select Members</option>';
-                        $activitySelect.empty().append('<option value="">Select Activity</option>');
-                        $membersSelect.empty().append('<option value="">Select Members</option>');
+                    function populateMembers() {
+                        let membersData = $projectSelect.find(':selected').attr('data-members');
+                        let members = [];
 
-                        var successCallback = function (response) {
-                            response.assignedActivities.forEach(function (activity) {
-                                htmlToReplaceActivity += '<option value="' + activity.id +
-                                    '">' + activity.title + '</option>';
-                            });
-                            $($obj).closest('tr').find('.activity-select').html(htmlToReplaceActivity);
+                        try {
+                            if (membersData) {
+                                members = JSON.parse(membersData.replace(/&quot;/g, '"'));
+                            }
+                        } catch (e) {
+                            console.warn('Invalid members data:', membersData);
+                            members = [];
+                        }
 
-                            response.members.forEach(function (member) {
-                                htmlToReplaceMembers += '<option value="' + member.id +
-                                    '">' + member.full_name + '</option>';
-                            });
-                            $($obj).closest('tr').find('.members-select').html(htmlToReplaceMembers);
-
-                            $activitySelect.select2('destroy');
-                            $activitySelect.select2({
-                                placeholder: 'Select Activity',
-                                width: '100%',
-                                dropdownParent: $(document.body)
-                            });
-
+                        // Destroy and clear before repopulating
+                        if ($membersSelect.hasClass('select2-hidden-accessible')) {
                             $membersSelect.select2('destroy');
-                            $membersSelect.select2({
-                                placeholder: 'Select members...',
-                                width: '100%',
-                                dropdownParent: $(document.body),
-                                multiple: true,
-                                allowClear: true
+                        }
+
+                        $membersSelect.empty().prop('disabled', true);
+
+                        if (Array.isArray(members) && members.length > 0) {
+                            members.forEach(function(member) {
+                                $membersSelect.append($('<option>', {
+                                    value: member.id,
+                                    text: member.name || member.full_name || 'Unknown'
+                                }));
                             });
+                            $membersSelect.prop('disabled', false);
                         }
-                        var errorCallback = function (error) {
-                            console.log(error);
+
+                        // Reinitialize members Select2
+                        $membersSelect.select2({
+                            placeholder: 'Select members...',
+                            width: '100%',
+                            dropdownParent: $(document.body),
+                            multiple: true,
+                            allowClear: true
+                        });
+                    }
+
+                    function populateActivities() {
+                        const raw = $projectSelect.find(':selected').data('activities');
+                        const acts = parseJsonPayload(raw);
+                        $activitySelect.empty().append('<option value="">Select Activity</option>');
+                        debugger;
+
+                        acts.forEach(a => {
+                            $activitySelect.append(`<option value="${a.id}">${a.title}</option>`);
+                        });
+
+                        // Reinit activity select2
+                        if ($activitySelect.hasClass('select2-hidden-accessible')) {
+                            $activitySelect.select2('destroy');
                         }
-                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                        $activitySelect.select2({
+                            placeholder: 'Select Activity',
+                            width: '100%',
+                            dropdownParent: $(document.body)
+                        });
                     }
 
                     // initialize datepicker on the row's date input
@@ -282,20 +299,22 @@
                         autoHide: true,
                         format: 'yyyy-mm-dd',
                         zIndex: 1200
-                    }).on('show', function () {
+                    }).on('show', function() {
                         $(this).attr('readonly', true);
                     });
 
                     // Project change handler
-                    $projectSelect.off('change.projectHandler').on('change.projectHandler', function () {
-                        populateActivities($(this));
+                    $projectSelect.off('change.projectHandler').on('change.projectHandler', function() {
+                        populateActivities();
+                        populateMembers();
                         safeRevalidate();
                     });
 
                     // Initial population
                     if ($projectSelect.val()) {
                         setTimeout(() => {
-                            populateActivities($(this));
+                            populateActivities();
+                            populateMembers();
                         }, 100);
                     }
 
@@ -334,12 +353,19 @@
                                     }
                                 }
                             });
+                            fv.addField(`entries[${idx}][members][]`, {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'At least one member is required'
+                                    }
+                                }
+                            });
                         }
                     }, 300);
 
                     // Revalidate on any change (includes inputs such as date picker)
                     $row.off('changeinput.rowHandler').on('changeinput.rowHandler', 'select, textarea, input',
-                        function () {
+                        function() {
                             if (fv) {
                                 const name = $(this).attr('name');
                                 if (name) {
@@ -357,7 +383,7 @@
                 refreshActions();
 
                 // Remove entry handler
-                $(document).off('click.removeEntry').on('click.removeEntry', '.remove-entry', function () {
+                $(document).off('click.removeEntry').on('click.removeEntry', '.remove-entry', function() {
                     const $row = $(this).closest('tr');
                     if ($('#entries-body .entry-row').length > 1) {
                         const idx = $row.data('row-index');
@@ -374,7 +400,7 @@
                 });
 
                 // Add entry handler
-                $('#entries-body').off('click.addEntry').on('click.addEntry', '.add-entry', function () {
+                $('#entries-body').off('click.addEntry').on('click.addEntry', '.add-entry', function() {
                     rowIndex++;
                     const $newRow = buildEntryRow(rowIndex);
                     $('#entries-body').append($newRow);
@@ -417,7 +443,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
-                                                       class="text-decoration-none text-dark">Home</a></li>
+                                class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a
                                 href="{{ isset($workPlan) ? route('work-plan.details', $workPlan) : route('work-plan.index') }}"
                                 class="text-decoration-none text-dark">Work Plan</a></li>
@@ -440,14 +466,14 @@
                     <label class="form-label required-label">Entries</label>
                     <table class="table table-bordered" id="entries-table">
                         <thead>
-                        <tr>
-                            <th class="col-date"><label class="required-label">Date</label></th>
-                            <th class="col-project"><label class="required-label">Project</label></th>
-                            <th class="col-activity"><label class="required-label">Activity</label></th>
-                            <th class="col-task"><label class="required-label">Task</label></th>
-                            <th class="col-members"><label class="required-label">Involved Members</label></th>
-                            <th class="col-action" style="text-align:center">Action</th>
-                        </tr>
+                            <tr>
+                                <th class="col-date"><label class="required-label">Date</label></th>
+                                <th class="col-project"><label class="required-label">Project</label></th>
+                                <th class="col-activity"><label class="required-label">Activity</label></th>
+                                <th class="col-task"><label class="required-label">Task</label></th>
+                                <th class="col-members"><label class="required-label">Involved Members</label></th>
+                                <th class="col-action" style="text-align:center">Action</th>
+                            </tr>
                         </thead>
                         <tbody id="entries-body">
                         </tbody>
@@ -458,14 +484,15 @@
                     <tr class="entry-row" data-row-index="__IDX__">
                         <td class="col-date">
                             <input type="text" name="entries[__IDX__][work_plan_date]" class="form-control wp-date"
-                                   placeholder="yyyy-mm-dd" readonly required/>
+                                placeholder="yyyy-mm-dd" readonly required />
                         </td>
                         <td class="col-project">
                             <select name="entries[__IDX__][project_id]" class="form-control select2 project-select"
-                                    required>
+                                required>
                                 <option value="">Select Project</option>
                                 @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}">
+                                    <option value="{{ $project->id }}" data-activities='@json($project->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'
+                                        data-members='@json($project->allMembers()->map(fn($m) => ['id' => $m->id, 'name' => $m->full_name]))'>
                                         {{ $project->short_name ?: $project->title }}
                                     </option>
                                 @endforeach
@@ -473,18 +500,16 @@
                         </td>
                         <td class="col-activity">
                             <select name="entries[__IDX__][activity_id]" class="form-control select2 activity-select"
-                                    required>
+                                required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
                         <td class="col-task">
-                            <textarea name="entries[__IDX__][planned_task]" class="form-control" rows="4"
-                                      maxlength="500" required></textarea>
+                            <textarea name="entries[__IDX__][planned_task]" class="form-control" rows="4" maxlength="500" required></textarea>
                         </td>
                         <td class="col-members">
-                            <select name="entries[__IDX__][members][]" class="form-control select2 members-select"
-                                    multiple
-                                    required>
+                            <select name="entries[__IDX__][members][]" class="form-control select2 members-select" multiple
+                                required>
                                 <!-- Options populated dynamically -->
                             </select>
                         </td>

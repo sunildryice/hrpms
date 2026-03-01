@@ -31,6 +31,9 @@ class MonthlyTimeSheetApprovedController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('requester_name', function ($row) {
+                    return $row->requester_name;
+                })
                 ->addColumn('month_name', function ($row) {
                     return $row->month_name;
                 })

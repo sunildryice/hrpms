@@ -54,7 +54,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             // highlight menu item if exists
             $('#navbarVerticalMenu').find('#timesheets-index').addClass('active');
 
@@ -125,9 +125,10 @@
                     // make sure the project dropdown starts blank (avoids Chrome autofill)
                     $row.find('.project-select').val('').trigger('change').trigger('change.select2');
                     // in case Chrome still tries to autofill on focus, clear again
-                    $row.find('.project-select').on('focus', function() {
+                    $row.find('.project-select').on('focus', function () {
                         $(this).val('').trigger('change').trigger('change.select2');
                     });
+                    const $activitySelect = $row.find('.activity-select');
 
                     $row.find('.select2').select2({
                         placeholder: 'Select...',
@@ -178,15 +179,33 @@
                     }
 
                     // cascade project -> activity for this row
-                    $row.find('.project-select').on('change', function() {
-                        const raw = $(this).find(':selected').data('activities');
-                        const acts = parseJsonPayload(raw);
-                        const $act = $row.find('.activity-select');
-                        $act.empty().append('<option value="">Select Activity</option>');
-                        acts.forEach(a => {
-                            $act.append(`<option value="${a.id}">${a.title}</option>`);
-                        });
-                        // revalidate the project and activity fields for this row
+                    $row.find('.project-select').on('change', function () {
+                        $obj = $(this);
+                        var projectId = $($obj).val();
+                        $activitySelect.empty().append('<option value="">Select Activity</option>');
+                        if (projectId) {
+                            var url = "{{ route('api.projects.show', ['projectId']) }}".replace('projectId', projectId);
+                            var htmlToReplaceActivity = '<option value="">Select Activity</option>';
+
+                            var successCallback = function (response) {
+                                response.assignedActivities.forEach(function (activity) {
+                                    htmlToReplaceActivity += '<option value="' + activity.id +
+                                        '">' + activity.title + '</option>';
+                                });
+                                $($obj).closest('tr').find('.activity-select').html(htmlToReplaceActivity);
+
+                                $activitySelect.select2('destroy');
+                                $activitySelect.select2({
+                                    placeholder: 'Select Activity',
+                                    width: '100%',
+                                    dropdownParent: $(document.body)
+                                });
+                            }
+                            var errorCallback = function (error) {
+                                console.log(error);
+                            }
+                            ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
+                        }
                         const idx = $row.data('row-index');
                         safeRevalidateField(`entries[${idx}][project_id]`);
                         safeRevalidateField(`entries[${idx}][activity_id]`);
@@ -203,7 +222,7 @@
 
                 // global add button removed; adding handled via inline add buttons
 
-                $(document).on('click', '.remove-entry', function() {
+                $(document).on('click', '.remove-entry', function () {
                     const $row = $(this).closest('tr');
                     if ($('#entries-body .entry-row').length > 1) {
                         // unregister validation for this row
@@ -221,12 +240,12 @@
                 });
 
                 // individual inputs are validated in their own change handlers above; nothing else required here
-                $('#entries-body').on('change', 'select, input', function() {
+                $('#entries-body').on('change', 'select, input', function () {
                     // noop
                 });
 
                 // delegate add-entry button in rows
-                $('#entries-body').on('click', '.add-entry', function() {
+                $('#entries-body').on('click', '.add-entry', function () {
                     rowIndex++;
                     const $new = buildEntryRow(rowIndex);
                     $('#entries-body').append($new);
@@ -280,7 +299,7 @@
                 });
 
                 // once fv exists, register any pre‑existing rows (first row)
-                $('#entries-body .entry-row').each(function() {
+                $('#entries-body .entry-row').each(function () {
                     initRow($(this));
                 });
 
@@ -293,7 +312,7 @@
                     endDate: new Date(),
                     todayHighlight: true,
                     todayBtn: 'true'
-                }).on('change', function() {
+                }).on('change', function () {
                     fv.revalidateField('timesheet_date');
                 });
 
@@ -315,9 +334,9 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
-                                class="text-decoration-none text-dark">Home</a></li>
+                                                       class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('timesheet.index') }}"
-                                class="text-decoration-none text-dark">Timesheet</a></li>
+                                                       class="text-decoration-none text-dark">Timesheet</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Create</li>
                     </ol>
                 </nav>
@@ -329,7 +348,7 @@
     <div class="card shadow-sm border rounded">
         <div class="card-body">
             <form action="{{ route('timesheet.store') }}" method="post" enctype="multipart/form-data" id="TimeSheetForm"
-                autocomplete="off">
+                  autocomplete="off">
                 @csrf
 
                 <div class="row mb-2">
@@ -337,7 +356,7 @@
                         <div class=" h-100">
                             <label class="form-label required-label m-0">Date</label>
                             <input type="text" name="timesheet_date" class="form-control" placeholder="yyyy-mm-dd"
-                                readonly onfocus="this.blur()" autocomplete="off" />
+                                   readonly onfocus="this.blur()" autocomplete="off"/>
                         </div>
                     </div>
                 </div>
@@ -347,23 +366,23 @@
                     <label class="form-label required-label">Entries</label>
                     <table class="table table-bordered" id="entries-table">
                         <thead>
-                            <tr>
-                                <th class="reqired-label col-project">
-                                    <label class="required-label" for="">Project</label>
-                                </th>
-                                <th class="col-activity">
-                                    <label class="required-label" for="">Activity</label>
-                                </th>
-                                <th>
-                                    <label class="">Task / Description</label>
-                                </th>
-                                <th class="col-hours"><label class="required-label" for="">Hours</label></th>
-                                <th class="col-attachment">Attachment</th>
-                                <th class="col-action">Action</th>
-                            </tr>
+                        <tr>
+                            <th class="reqired-label col-project">
+                                <label class="required-label" for="">Project</label>
+                            </th>
+                            <th class="col-activity">
+                                <label class="required-label" for="">Activity</label>
+                            </th>
+                            <th>
+                                <label class="">Task / Description</label>
+                            </th>
+                            <th class="col-hours"><label class="required-label" for="">Hours</label></th>
+                            <th class="col-attachment">Attachment</th>
+                            <th class="col-action">Action</th>
+                        </tr>
                         </thead>
                         <tbody id="entries-body">
-                            <!-- initial row will be added by JS -->
+                        <!-- initial row will be added by JS -->
                         </tbody>
                     </table>
                 </div>
@@ -372,10 +391,11 @@
                     <tr class="entry-row" data-row-index="__IDX__">
                         <td class="col-project">
                             <select name="entries[__IDX__][project_id]" autocomplete="off"
-                                class="form-control select2 project-select" required>
+                                    class="form-control select2 project-select" required>
                                 <option value="">Select Project</option>
                                 @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}" data-activities='@json($project->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
+                                    <option value="{{ $project->id }}"
+                                            data-activities='@json($project->activities->map(fn($a) => ['id' => $a->id, 'title' => $a->title]))'>
                                         {{ $project->short_name ?: $project->title }}
                                     </option>
                                 @endforeach
@@ -383,19 +403,20 @@
                         </td>
                         <td class="col-activity">
                             <select name="entries[__IDX__][activity_id]" class="form-control select2 activity-select"
-                                required>
+                                    required>
                                 <option value="">Select Activity</option>
                             </select>
                         </td>
                         <td>
-                            <textarea name="entries[__IDX__][description]" class="form-control" rows="4" required></textarea>
+                            <textarea name="entries[__IDX__][description]" class="form-control" rows="4"
+                                      required></textarea>
                         </td>
                         <td>
                             <input type="number" step="0.01" min="0.01" max="24"
-                                name="entries[__IDX__][hours_spent]" class="form-control text-end" required />
+                                   name="entries[__IDX__][hours_spent]" class="form-control text-end" required/>
                         </td>
                         <td class="col-attachment">
-                            <input type="file" name="entries[__IDX__][attachment]" class="form-control" />
+                            <input type="file" name="entries[__IDX__][attachment]" class="form-control"/>
                         </td>
                         <td class="text-center action-col">
                             <button type="button" class="btn btn-sm btn-outline-success add-entry"><i

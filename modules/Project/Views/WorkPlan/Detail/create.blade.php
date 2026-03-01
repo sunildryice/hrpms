@@ -233,45 +233,47 @@
 
                     function populateActivities($obj) {
                         var projectId = $($obj).val();
-                        var url = "{{ route('api.projects.show', ['projectId']) }}".replace('projectId', projectId);
-                        var htmlToReplaceActivity = '<option value="">Select Activity</option>';
-                        var htmlToReplaceMembers = '<option value="">Select Members</option>';
                         $activitySelect.empty().append('<option value="">Select Activity</option>');
                         $membersSelect.empty().append('<option value="">Select Members</option>');
+                        if(projectId) {
+                            var url = "{{ route('api.projects.show', ['projectId']) }}".replace('projectId', projectId);
+                            var htmlToReplaceActivity = '<option value="">Select Activity</option>';
+                            var htmlToReplaceMembers = '<option value="">Select Members</option>';
 
-                        var successCallback = function (response) {
-                            response.assignedActivities.forEach(function (activity) {
-                                htmlToReplaceActivity += '<option value="' + activity.id +
-                                    '">' + activity.title + '</option>';
-                            });
-                            $($obj).closest('tr').find('.activity-select').html(htmlToReplaceActivity);
+                            var successCallback = function (response) {
+                                response.assignedActivities.forEach(function (activity) {
+                                    htmlToReplaceActivity += '<option value="' + activity.id +
+                                        '">' + activity.title + '</option>';
+                                });
+                                $($obj).closest('tr').find('.activity-select').html(htmlToReplaceActivity);
 
-                            response.members.forEach(function (member) {
-                                htmlToReplaceMembers += '<option value="' + member.id +
-                                    '">' + member.full_name + '</option>';
-                            });
-                            $($obj).closest('tr').find('.members-select').html(htmlToReplaceMembers);
+                                response.members.forEach(function (member) {
+                                    htmlToReplaceMembers += '<option value="' + member.id +
+                                        '">' + member.full_name + '</option>';
+                                });
+                                $($obj).closest('tr').find('.members-select').html(htmlToReplaceMembers);
 
-                            $activitySelect.select2('destroy');
-                            $activitySelect.select2({
-                                placeholder: 'Select Activity',
-                                width: '100%',
-                                dropdownParent: $(document.body)
-                            });
+                                $activitySelect.select2('destroy');
+                                $activitySelect.select2({
+                                    placeholder: 'Select Activity',
+                                    width: '100%',
+                                    dropdownParent: $(document.body)
+                                });
 
-                            $membersSelect.select2('destroy');
-                            $membersSelect.select2({
-                                placeholder: 'Select members...',
-                                width: '100%',
-                                dropdownParent: $(document.body),
-                                multiple: true,
-                                allowClear: true
-                            });
+                                $membersSelect.select2('destroy');
+                                $membersSelect.select2({
+                                    placeholder: 'Select members...',
+                                    width: '100%',
+                                    dropdownParent: $(document.body),
+                                    multiple: true,
+                                    allowClear: true
+                                });
+                            }
+                            var errorCallback = function (error) {
+                                console.log(error);
+                            }
+                            ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
                         }
-                        var errorCallback = function (error) {
-                            console.log(error);
-                        }
-                        ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
                     }
 
                     // initialize datepicker on the row's date input

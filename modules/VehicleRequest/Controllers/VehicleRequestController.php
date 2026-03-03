@@ -2,30 +2,31 @@
 
 namespace Modules\VehicleRequest\Controllers;
 
-use DB;
+use App\Http\Controllers\Controller;
 use DataTables;
 
-use Illuminate\Http\Request;
+use DB;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Modules\Master\Repositories\OfficeRepository;
-use Modules\VehicleRequest\Requests\StoreRequest;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\VehicleRequest\Requests\UpdateRequest;
+use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Master\Repositories\AccountCodeRepository;
+use Modules\Master\Repositories\ActivityCodeRepository;
 use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\DonorCodeRepository;
-use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\AccountCodeRepository;
-
+use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
-use Modules\Master\Repositories\VehicleTypeRepository;
-
-use Modules\Master\Repositories\ActivityCodeRepository;
 use Modules\Master\Repositories\VehicleRequestTypeRepository;
+
+use Modules\Master\Repositories\VehicleTypeRepository;
+use Modules\Privilege\Repositories\UserRepository;
+
+use Modules\Project\Repositories\ProjectRepository;
 use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
+use Modules\VehicleRequest\Requests\StoreRequest;
+use Modules\VehicleRequest\Requests\UpdateRequest;
 
 class VehicleRequestController extends Controller
 {
@@ -58,6 +59,7 @@ class VehicleRequestController extends Controller
         VehicleTypeRepository $vehicleTypes,
         UserRepository $users,
         ProjectCodeRepository $projectCodes,
+        ProjectRepository $projects,
     ) {
         $this->activityCodes = $activityCodes;
         $this->accountCodes = $accountCodes;
@@ -71,6 +73,7 @@ class VehicleRequestController extends Controller
         $this->vehicleTypes = $vehicleTypes;
         $this->users = $users;
         $this->projectCodes = $projectCodes;
+        $this->projects = $projects;
         $this->destinationPath = 'vehicleRequest';
     }
 
@@ -163,11 +166,12 @@ class VehicleRequestController extends Controller
 
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
-        $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        $projects = $this->projects->getAssignedProjects($authUser);
 
         return view('VehicleRequest::create')
             ->withActivityCodes($activityCodes)
-            ->withProjects($projectCodes)
+            ->withProjects($projects)
             ->withApprovers($approvers)
             ->withDistricts($districts)
             ->withDonorCodes($donorCodes)
@@ -248,12 +252,13 @@ class VehicleRequestController extends Controller
         });
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
-        $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
+        $projects = $this->projects->getAssignedProjects($authUser);
 
         $view = $vehicleRequest->vehicle_request_type_id == 1 ? view('VehicleRequest::editoffice') : view('VehicleRequest::edithire');
         return $view->withActivityCodes($activityCodes)
             ->withAccountCodes($accountCodes)
-            ->withProjects($projectCodes)
+            ->withProjects($projects)
             ->withApprovers($approvers)
             ->withDistricts($districts)
             ->withDonorCodes($donorCodes)

@@ -174,7 +174,7 @@
                                aria-controls="navbarWorkFromHome" data-bs-toggle="tooltip" data-bs-placement="right"
                                title="Work From Home">
                                 <i class="bi bi-person-workspace nav-icon"></i>
-                                <span class="nav-link-title">Work From Home</span> </a>
+                                <span class="nav-link-title">WFH / Field Work</span> </a>
 
                             <div id="navbarWorkFromHome" class="collapse">
 

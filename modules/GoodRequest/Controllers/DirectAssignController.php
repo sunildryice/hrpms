@@ -45,7 +45,7 @@ class DirectAssignController extends Controller
     public function create($id)
     {
         $asset = $this->assets->find($id);
-        $employees = $this->employees->getActiveEmployees();
+        $employees = $this->employees->activeEmployees();
         $approvers = $this->users->permissionBasedUsers('approve-direct-dispatch-good-request')
             ->where('employee_id', '!=', null);
 

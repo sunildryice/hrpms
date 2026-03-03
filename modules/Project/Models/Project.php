@@ -57,6 +57,22 @@ class Project extends Model
         return $this->team_lead_id == $userId;
     }
 
+    public function isActivityMember($userId): bool
+    {
+        return $this->activities()
+            ->whereHas('members', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->exists();
+    }
+
+    public function isProjectMember($userId): bool
+    {
+        return $this->members()
+            ->where('user_id', $userId)
+            ->exists();
+    }
+
     public function allMembers()
     {
         return collect()

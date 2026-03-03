@@ -288,7 +288,7 @@
                                         @foreach ($projects as $project)
                                             <option value="{{ $project->id }}"
                                                 {{ $project->id == old('project_code_id') ? 'selected' : '' }}>
-                                                {{ $project->getProjectCodeWithDescription() }}
+                                                {{ $project->title }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -584,7 +584,7 @@
                                         @foreach ($projects as $project)
                                             <option value="{{ $project->id }}"
                                                 {{ $project->id == old('project_code_id') ? 'selected' : '' }}>
-                                                {{ $project->getProjectCodeWithDescription() }}
+                                                {{ $project->title }}
                                             </option>
                                         @endforeach
                                     </select>

@@ -25,7 +25,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_code_id'=>'required|exists:lkup_project_codes,id',
+            'project_code_id'=>'required|exists:projects,id',
             'office_start_datetime'=>'required_if:vehicle_request_type_id,1|date_format:Y-m-d H:i',
             'office_end_datetime'=>'required_if:vehicle_request_type_id,1|date_format:Y-m-d H:i|after:office_start_datetime',
             'start_datetime'=>'required_if:vehicle_request_type_id,2|date',

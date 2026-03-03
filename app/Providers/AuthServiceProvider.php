@@ -141,6 +141,11 @@ class AuthServiceProvider extends ServiceProvider
             return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id) || $user->employee?->employee_code == 62) && $checkCurrentActivePeriod;
         });
 
+        Gate::define('manage-project-activity-other-detail', function (User $user, ?Project $project = null) {
+
+            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id) || $project->isActivityMember($user->id) || $user->employee?->employee_code == 62);
+        });
+
         Gate::define('project-is-active', function (User $user, ?Project $project = null) {
             if (!$project) {
                 return false;

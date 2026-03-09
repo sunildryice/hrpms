@@ -1119,6 +1119,11 @@
                                        id="off-day-work-report-menu">Off Day Work</a>
                                 @endif
 
+                                @if ($authUser->can('assigned-activity-report'))
+                                    <a class="nav-link" href="{{ route('report.assigned.activity.index') }}"
+                                       id="assigned-activity-report-menu">Assigned Activity</a>
+                                @endif
+
                                 @if ($authUser->can('maintenance-request-report'))
                                     <a class="nav-link" href="{{ route('report.maintenance.request.index') }}"
                                        id="maintenance-request-report-menu">Maintenance Request</a>

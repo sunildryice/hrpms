@@ -337,7 +337,7 @@
                                     <select class="form-control select2 @if ($errors->has('vehicle_type_id')) is-invalid @endif"
                                         name="vehicle_type_id">
                                         <option value="">Select Vehicle Type</option>
-                                        @foreach ($vehicleTypes as $vehicleType)
+                                        @foreach ($selectiveVehicleTypes as $vehicleType)
                                             <option value="{{ $vehicleType->id }}"
                                                 @if (old('vehicle_type_id') == $vehicleType->id) selected @endif>{{ $vehicleType->title }}
                                             </option>

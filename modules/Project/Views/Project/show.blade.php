@@ -719,15 +719,22 @@
                 });
             });
 
-            // Handle opening Other Details modal
-            let activityOtherDetailsModal = new bootstrap.Modal(document.getElementById(
-                'activityOtherDetailsModal'));
-            let activityOtherDetailsModalContent = document.getElementById('activityOtherDetailsModalContent');
+            // Handle opening Other Details modal only when modal markup is present in DOM
+            const activityOtherDetailsModalElement = document.getElementById('activityOtherDetailsModal');
+            const activityOtherDetailsModalContent = document.getElementById(
+                'activityOtherDetailsModalContent');
+            const activityOtherDetailsModal = activityOtherDetailsModalElement ?
+                new bootstrap.Modal(activityOtherDetailsModalElement) : null;
 
             $(document).on('click', '.open-other-details-modal', function(e) {
                 e.preventDefault();
+
+                if (!activityOtherDetailsModal || !activityOtherDetailsModalContent) {
+                    toastr.error('Details modal is not available on this page.', 'Error');
+                    return;
+                }
+
                 let url = $(this).data('url');
-                // Optionally, you can show a loader here
                 $.get(url, function(data) {
                     $(activityOtherDetailsModalContent).find('.modal-body').html(data);
                     activityOtherDetailsModal.show();

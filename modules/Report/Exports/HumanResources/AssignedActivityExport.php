@@ -27,17 +27,7 @@ class AssignedActivityExport implements FromView, ShouldAutoSize, WithStyles, Wi
 
     public function view(): View
     {
-        $query = $this->activities->query()
-            ->select([
-                'project_activities.*',
-                'projects.title as project_title',
-                'parent.title as parent_title',
-                'lkup_activity_stages.title as stage_title',
-            ])
-            ->join('projects', 'project_activities.project_id', '=', 'projects.id')
-            ->leftJoin('project_activities as parent', 'project_activities.parent_id', '=', 'parent.id')
-            ->leftJoin('lkup_activity_stages', 'project_activities.activity_stage_id', '=', 'lkup_activity_stages.id')
-            ->whereIn('project_activities.activity_level', ['activity', 'sub_activity']);
+        $query = $this->activities->getActivitiesDetail();
 
         if ($this->employee) {
             $query->whereHas('members', fn($q) => $q->where('user_id', $this->employee));
@@ -47,12 +37,7 @@ class AssignedActivityExport implements FromView, ShouldAutoSize, WithStyles, Wi
             $query->where('project_activities.project_id', $this->project);
         }
 
-        $activities = $query
-            ->orderBy('projects.title')
-            ->orderBy('project_activities.parent_id')
-            ->orderBy('project_activities.activity_level')
-            ->orderBy('project_activities.title')
-            ->get();
+        $activities = $query->get();
 
         return view('Report::HumanResources.AssignedActivity.export', [
             'activities' => $activities,

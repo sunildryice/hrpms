@@ -22,7 +22,7 @@ class AssignedActivityController extends Controller
     public function index(Request $request)
     {
         $employees = $this->employees->activeEmployees();
-        $projects = $this->projects->getActiveProjects(null);
+        $projects = $this->projects->getActiveProjects();
 
         if (!$request->filled('employee')) {
             return view('Report::HumanResources.AssignedActivity.index', [
@@ -33,19 +33,7 @@ class AssignedActivityController extends Controller
             ]);
         }
 
-        $query = $this->activities->query()
-            ->select([
-                'project_activities.*',
-                'projects.title as project_title',
-                'parent.title as parent_title',
-                'lkup_activity_stages.title as stage_title',
-            ])
-            ->join('projects', 'project_activities.project_id', '=', 'projects.id')
-            ->leftJoin('project_activities as parent', 'project_activities.parent_id', '=', 'parent.id')
-            ->leftJoin('lkup_activity_stages', 'project_activities.activity_stage_id', '=', 'lkup_activity_stages.id')
-            ->whereIn('project_activities.activity_level', ['activity', 'sub_activity'])
-            ->whereHas('members')
-            ->with('members:id,full_name');
+        $query = $this->activities->getActivitiesDetail();
 
         // Filters
         if ($request->employee) {
@@ -56,12 +44,7 @@ class AssignedActivityController extends Controller
             $query->where('project_activities.project_id', $request->project);
         }
 
-        $activities = $query
-            ->orderBy('projects.title')
-            ->orderBy('project_activities.parent_id')
-            ->orderBy('project_activities.activity_level')
-            ->orderBy('project_activities.title')
-            ->paginate(50);
+        $activities = $query->paginate(50);
 
         return view('Report::HumanResources.AssignedActivity.index', [
             'employees' => $employees,
@@ -77,9 +60,7 @@ class AssignedActivityController extends Controller
         $project = $request->filled('project') ? (int) $request->project : null;
 
         return Excel::download(
-            new AssignedActivityExport($employee, $project),
-            'assigned-activities-report.xlsx',
-            \Maatwebsite\Excel\Excel::XLSX
+            new AssignedActivityExport($employee, $project), 'assigned-activities-report.xlsx', \Maatwebsite\Excel\Excel::XLSX
         );
     }
 }

@@ -152,6 +152,7 @@ class VehicleRequestController extends Controller
             ->first();
         $vehicleRequestTypes = $this->vehicleRequestTypes->get();
         $vehicleTypes = $this->vehicleTypes->get();
+        $selectiveVehicleTypes = $this->vehicleTypes->getEnableVehicleTypes();
         $activeStaffs = $this->employees->getActiveEmployees();
         $employees = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -180,7 +181,8 @@ class VehicleRequestController extends Controller
             ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
             ->withVehicleRequestTypes($vehicleRequestTypes)
             ->withOfficers($officers)
-            ->withVehicleTypes($vehicleTypes);
+            ->withVehicleTypes($vehicleTypes)
+            ->withSelectiveVehicleTypes($selectiveVehicleTypes);
     }
 
     /**
@@ -237,6 +239,7 @@ class VehicleRequestController extends Controller
         $vehicleRequest = $this->vehicleRequests->find($id);
         $this->authorize('update', $vehicleRequest);
         $vehicleTypes = $this->vehicleTypes->get();
+        $selectiveVehicleTypes = $this->vehicleTypes->getEnableVehicleTypes();
         $activeStaffs = $this->employees->getActiveEmployees();
         $employees = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
@@ -267,7 +270,8 @@ class VehicleRequestController extends Controller
             ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
             ->withVehicleRequest($vehicleRequest)
             ->withOfficers($officers)
-            ->withVehicleTypes($vehicleTypes);
+            ->withVehicleTypes($vehicleTypes)
+            ->withSelectiveVehicleTypes($selectiveVehicleTypes);
     }
 
     /**

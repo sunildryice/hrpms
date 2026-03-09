@@ -57,7 +57,6 @@ class TravelClaimRepository extends Repository
 
     public function createClaim($travelRequestId, $authId)
     {
-
         DB::beginTransaction();
         try {
             $travelRequest = $this->travelRequest->find($travelRequestId);
@@ -91,6 +90,7 @@ class TravelClaimRepository extends Repository
             return $travelClaim;
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollback();
+            logger()->channel('database')->error($e->getMessage());
             return false;
         }
     }

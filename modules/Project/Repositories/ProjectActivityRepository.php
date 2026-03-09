@@ -6,12 +6,17 @@ use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use Modules\Project\Models\Enums\ActivityStatus;
+use Modules\Project\Models\Project;
 use Modules\Project\Models\ProjectActivity;
 
 class ProjectActivityRepository extends Repository
 {
-    public function __construct(protected ProjectActivity $projectActivity)
+    public function __construct(
+        protected Project         $project,
+        protected ProjectActivity $projectActivity
+    )
     {
+        $this->project = $project;
         $this->model = $projectActivity;
     }
 
@@ -33,14 +38,24 @@ class ProjectActivityRepository extends Repository
 
     public function getActivitiesByProjectId($authUser, $projectId)
     {
-        return $this->model->with('members')
-            ->whereIn('activity_level', ['activity', 'sub_activity'])
-            ->whereHas('members', function ($q) use ($authUser) {
-                $q->where('user_id', $authUser->id);
-            })->where('project_id', $projectId)
-            ->orderBy('parent_id')
-            ->orderBy('title')
-            ->get();
+        $project = $this->project->find($projectId);
+        if ($project->focal_person_id == $authUser->id || $project->team_lead_id == $authUser->id) {
+            return $this->model->with('members')
+                ->whereIn('activity_level', ['activity', 'sub_activity'])
+                ->where('project_id', $projectId)
+                ->orderBy('parent_id')
+                ->orderBy('title')
+                ->get();
+        } else {
+            return $this->model->with('members')
+                ->whereIn('activity_level', ['activity', 'sub_activity'])
+                ->whereHas('members', function ($q) use ($authUser) {
+                    $q->where('user_id', $authUser->id);
+                })->where('project_id', $projectId)
+                ->orderBy('parent_id')
+                ->orderBy('title')
+                ->get();
+        }
     }
 
     public function create($inputs)

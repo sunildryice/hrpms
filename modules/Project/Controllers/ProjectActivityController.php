@@ -33,7 +33,7 @@ class ProjectActivityController extends Controller
         $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
-            ->with('parent')
+            ->with(['parent', 'stage'])
             ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id) || $authUser->employee?->employee_code == 62, function ($query) {
                 // Focal Person or Team Lead can see all activities
                 return $query;
@@ -42,6 +42,8 @@ class ProjectActivityController extends Controller
                 return $query->whereHas('members', function ($q) use ($authUser) {
                     $q->where('user_id', $authUser->id);
                 });
+            })->when($request->filled('from_date') && $request->filled('to_date'), function ($q) use ($request) {
+                $q->whereBetween('completion_date', [$request->from_date, $request->to_date]);
             });
 
         $activities = $data->get()->sortBy(function ($item) {

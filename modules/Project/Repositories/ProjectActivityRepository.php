@@ -58,6 +58,29 @@ class ProjectActivityRepository extends Repository
         }
     }
 
+    public function getActivitiesDetail()
+    {
+        $query = $this->model
+            ->select([
+                'project_activities.*',
+                'projects.title as project_title',
+                'parent.title as parent_title',
+                'lkup_activity_stages.title as stage_title',
+            ])
+            ->join('projects', 'project_activities.project_id', '=', 'projects.id')
+            ->leftJoin('project_activities as parent', 'project_activities.parent_id', '=', 'parent.id')
+            ->leftJoin('lkup_activity_stages', 'project_activities.activity_stage_id', '=', 'lkup_activity_stages.id')
+            ->whereIn('project_activities.activity_level', ['activity', 'sub_activity'])
+            ->whereHas('members')
+            ->with('members:id,full_name')
+            ->orderBy('projects.title')
+            ->orderBy('project_activities.parent_id')
+            ->orderBy('project_activities.activity_level')
+            ->orderBy('project_activities.title');
+
+        return $query;
+    }
+
     public function create($inputs)
     {
         DB::beginTransaction();

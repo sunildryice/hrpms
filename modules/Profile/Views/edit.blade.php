@@ -263,12 +263,6 @@
                 $('#editFamilyMemberBlock').find('[name="contact_number"]').val(response.familyMember.contact_number);
                 $('#editFamilyMemberBlock').find('form').attr('action', response.updateAction);
 
-                $('#editFamilyMemberBlock').find('[name="nominee"]').attr('checked', false);
-                if (response.familyMember.nominee_at) {
-                    $('#editFamilyMemberBlock').find('[name="nominee"]').attr('checked', true);
-                } else {
-                    $('#editFamilyMemberBlock').find('[name="nominee"]').attr('checked', false);
-                }
                 if (response.familyMember.emergency_contact_at) {
                     $('#editFamilyMemberBlock').find('[name="emergency_contact"]').attr('checked', true).trigger(
                         'change');

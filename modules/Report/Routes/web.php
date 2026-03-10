@@ -10,6 +10,7 @@ use Modules\Report\Controllers\Finance\ConsolidatedFundRequestController;
 use Modules\Report\Controllers\Finance\FundRequestController;
 use Modules\Report\Controllers\Finance\MonthlyFundRequestController;
 use Modules\Report\Controllers\Finance\PaymentSheetController;
+use Modules\Report\Controllers\HumanResources\AssignedActivityController;
 use Modules\Report\Controllers\HumanResources\ConsultantProfileController;
 use Modules\Report\Controllers\HumanResources\EmployeeExitClearanceController;
 use Modules\Report\Controllers\HumanResources\EmployeeExitInterviewController;
@@ -109,6 +110,10 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     // Off Day Work report
     Route::any('off/day/work',   [OffDayWorkReportController::class, 'index'])->name('off.day.work.index');
     Route::any('off/day/work/export', [OffDayWorkReportController::class, 'export'])->name('off.day.work.export');
+
+    // Assigned Activity Report
+    Route::get('assigned/activity',        [AssignedActivityController::class, 'index'])->name('assigned.activity.index');
+    Route::get('assigned/activity/export', [AssignedActivityController::class, 'export'])->name('assigned.activity.export');
 
     // Leave Summary report
     Route::any('leave/summary/index', [LeaveSummaryController::class, 'index'])->name('leave.summary.index');

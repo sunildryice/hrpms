@@ -14,6 +14,11 @@ class ProjectRepository extends Repository
         $this->model = $model;
     }
 
+    public function getActiveProjects()
+    {
+        return $this->model->whereNotNull('activated_at')
+            ->get();
+    }
     public function getAssignedProjects($authUser)
     {
         return $this->model->with([
@@ -27,7 +32,7 @@ class ProjectRepository extends Repository
                     $sq->where('user_id', $authUser->id);
                 });
         })->whereNotNull('activated_at')
-//            ->latest()
+            //            ->latest()
             ->get();
     }
 

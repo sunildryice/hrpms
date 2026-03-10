@@ -50,11 +50,11 @@
                         name: 'project.short_name',
                         defaultContent: ''
                     },
-                    {
-                        data: 'activity.title',
-                        name: 'activity.title',
-                        defaultContent: ''
-                    },
+                    // {
+                    //     data: 'activity.title',
+                    //     name: 'activity.title',
+                    //     defaultContent: ''
+                    // },
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
@@ -205,7 +205,7 @@
                         <tr>
                             <th>SN</th>
                             <th>Project</th>
-                            <th>Activity</th>
+                            {{-- <th>Activity</th> --}}
                             <th>Planned Tasks</th>
                             <th>Status</th>
                             <th>Created By</th>
@@ -242,12 +242,12 @@
                             <p class="detail-value mb-0" id="detailProject">-</p>
                         </div>
                     </div>
-                    <div class="detail-row row">
+                    {{-- <div class="detail-row row">
                         <div class="col-md-4 col-lg-3"><span class="detail-label">Activity</span></div>
                         <div class="col-md-8 col-lg-9">
                             <p class="detail-value mb-0" id="detailActivity">-</p>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="detail-row row">
                         <div class="col-md-4 col-lg-3"><span class="detail-label">Planned Tasks</span></div>
                         <div class="col-md-8 col-lg-9">

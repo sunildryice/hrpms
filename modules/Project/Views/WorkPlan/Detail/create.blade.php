@@ -164,6 +164,17 @@
                     }
                 }
 
+                function removeFieldIfExists(fieldName) {
+                    if (!fv || typeof fv.removeField !== 'function') {
+                        return;
+                    }
+
+                    const fields = (typeof fv.getFields === 'function') ? fv.getFields() : {};
+                    if (fields && Object.prototype.hasOwnProperty.call(fields, fieldName)) {
+                        fv.removeField(fieldName);
+                    }
+                }
+
                 // helper to coerce various data-* forms into an array
                 function parseJsonPayload(payload) {
                     if (!payload) return [];
@@ -304,17 +315,17 @@
                     // FormValidation fields (delayed to avoid conflicts)
                     setTimeout(() => {
                         if (fv) {
-                            fv.addField(`entries[${idx}][work_plan_date]`, {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Date is required'
-                                    },
-                                    date: {
-                                        format: 'YYYY-MM-DD',
-                                        message: 'Invalid date'
-                                    }
-                                }
-                            });
+                            // fv.addField(`entries[${idx}][work_plan_date]`, {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'Date is required'
+                            //         },
+                            //         date: {
+                            //             format: 'YYYY-MM-DD',
+                            //             message: 'Invalid date'
+                            //         }
+                            //     }
+                            // });
                             fv.addField(`entries[${idx}][project_id]`, {
                                 validators: {
                                     notEmpty: {
@@ -322,17 +333,24 @@
                                     }
                                 }
                             });
-                            fv.addField(`entries[${idx}][activity_id]`, {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Activity is required'
-                                    }
-                                }
-                            });
+                            // fv.addField(`entries[${idx}][activity_id]`, {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'Activity is required'
+                            //         }
+                            //     }
+                            // });
                             fv.addField(`entries[${idx}][planned_task]`, {
                                 validators: {
                                     notEmpty: {
                                         message: 'Task is required'
+                                    }
+                                }
+                            });
+                            fv.addField(`entries[${idx}][members][]`, {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'At least one member is required'
                                     }
                                 }
                             });
@@ -364,10 +382,10 @@
                     if ($('#entries-body .entry-row').length > 1) {
                         const idx = $row.data('row-index');
                         if (fv) {
-                            fv.removeField(`entries[${idx}][project_id]`);
-                            fv.removeField(`entries[${idx}][activity_id]`);
-                            fv.removeField(`entries[${idx}][planned_task]`);
-                            fv.removeField(`entries[${idx}][members][]`);
+                            removeFieldIfExists(`entries[${idx}][project_id]`);
+                            // removeFieldIfExists(`entries[${idx}][activity_id]`);
+                            removeFieldIfExists(`entries[${idx}][planned_task]`);
+                            removeFieldIfExists(`entries[${idx}][members][]`);
                         }
                         $row.remove();
                         refreshActions();
@@ -433,9 +451,10 @@
         </div>
     </div>
 
+
     <div class="card shadow-sm border rounded">
         <div class="card-body">
-            <form action="{{ route('work-plan.store') }}" method="post" id="WorkPlanForm" autocomplete="off">
+            <form action="{{ route('work-plan.store', $workPlan->id) }}" method="post" id="WorkPlanForm" autocomplete="off">
                 @csrf
 
                 <div class="mb-3">
@@ -443,9 +462,9 @@
                     <table class="table table-bordered" id="entries-table">
                         <thead>
                         <tr>
-                            <th class="col-date"><label class="required-label">Date</label></th>
+                            {{-- <th class="col-date"><label class="required-label">Date</label></th> --}}
                             <th class="col-project"><label class="required-label">Project</label></th>
-                            <th class="col-activity"><label class="required-label">Activity</label></th>
+                            {{-- <th class="col-activity"><label class="required-label">Activity</label></th> --}}
                             <th class="col-task"><label class="required-label">Task</label></th>
                             <th class="col-members"><label class="required-label">Involved Members</label></th>
                             <th class="col-action" style="text-align:center">Action</th>
@@ -458,10 +477,10 @@
 
                 <template id="entry-row-template">
                     <tr class="entry-row" data-row-index="__IDX__">
-                        <td class="col-date">
+                        {{-- <td class="col-date">
                             <input type="text" name="entries[__IDX__][work_plan_date]" class="form-control wp-date"
                                    placeholder="yyyy-mm-dd" readonly required/>
-                        </td>
+                        </td> --}}
                         <td class="col-project">
                             <select name="entries[__IDX__][project_id]" class="form-control select2 project-select"
                                     required>
@@ -473,12 +492,12 @@
                                 @endforeach
                             </select>
                         </td>
-                        <td class="col-activity">
+                        {{-- <td class="col-activity">
                             <select name="entries[__IDX__][activity_id]" class="form-control select2 activity-select"
                                     required>
                                 <option value="">Select Activity</option>
                             </select>
-                        </td>
+                        </td> --}}
                         <td class="col-task">
                             <textarea name="entries[__IDX__][planned_task]" class="form-control" rows="4"
                                       maxlength="500" required></textarea>

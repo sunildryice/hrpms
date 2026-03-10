@@ -22,6 +22,7 @@ class WorkPlanRepository extends Repository
 
     public function findByDateAndEmployee($date, $employeeId)
     {
+       
         return $this->model->where('employee_id', $employeeId)
             ->where('from_date', '<=', $date)
             ->where('to_date', '>=', $date)
@@ -47,9 +48,9 @@ class WorkPlanRepository extends Repository
     {
         $detail = WorkPlanDetail::create([
             'work_plan_id' => $workPlanId,
-            'work_plan_date' => $data['work_plan_date'] ?? null,
+            // 'work_plan_date' => $data['work_plan_date'] ?? null,
             'project_id' => $data['project_id'],
-            'project_activity_id' => $data['activity_id'],
+            // 'project_activity_id' => $data['activity_id'],
             'plan_tasks' => $data['planned_task'],
             'status' => $data['status'] ?? 'not_started',
         ]);

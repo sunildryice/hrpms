@@ -96,22 +96,23 @@
                  serverSide: true,
                  ajax: window.location.href,
                  scrollX: true,
-                 columns: [{
-                         data: 'work_plan_date',
-                         name: 'work_plan_date',
+                 columns: [
+                    // {
+                    //      data: 'work_plan_date',
+                    //      name: 'work_plan_date',
+                    //      defaultContent: ''
+                    //  },
+                     {
+                         data: 'project_name',
+                         name: 'project_name',
                          defaultContent: ''
                      },
-                     {
-                         data: 'project.short_name',
-                         name: 'project.short_name',
-                         defaultContent: ''
-                     },
-                     {
-                         data: 'activity.title',
-                         name: 'activity.title',
-                         defaultContent: '',
-                         className: 'col-activity' // ensure cell uses wrapping style
-                     },
+                    //  {
+                    //      data: 'activity.title',
+                    //      name: 'activity.title',
+                    //      defaultContent: '',
+                    //      className: 'col-activity' // ensure cell uses wrapping style
+                    //  },
                      {
                          data: 'plan_tasks',
                          name: 'plan_tasks',
@@ -485,9 +486,9 @@
                  <table class="table" id="WeeklyPlanTable">
                      <thead class="bg-light">
                          <tr>
-                             <th class="col-date">Date</th>
+                             {{-- <th class="col-date">Date</th> --}}
                              <th class="col-project">Project</th>
-                             <th class="col-activity">Activity</th>
+                             {{-- <th class="col-activity">Activity</th> --}}
                              <th class="col-task">Planned Tasks</th>
                              <th>Status</th>
                              <th>Remarks</th>

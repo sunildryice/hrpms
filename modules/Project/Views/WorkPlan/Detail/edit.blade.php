@@ -12,7 +12,7 @@
     <input type="hidden" name="from_date" value="{{ $week['start_date']->format('Y-m-d') }}">
     <input type="hidden" name="to_date" value="{{ $week['end_date']->format('Y-m-d') }}">
     <div class="modal-body">
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Date</label>
@@ -22,7 +22,7 @@
                 <input type="text" name="work_plan_date" class="form-control wp-date" placeholder="yyyy-mm-dd"
                     readonly value="{{ $workPlanDetail->work_plan_date }}" required />
             </div>
-        </div>
+        </div> --}}
 
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -61,7 +61,7 @@
                 </select>
             </div>
         </div>
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label class="form-label required-label m-0">Activity</label>
@@ -73,7 +73,7 @@
                     <option value="">Select Activity</option>
                 </select>
             </div>
-        </div>
+        </div> --}}
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">

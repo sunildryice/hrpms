@@ -31,11 +31,11 @@ class StoreRequest extends FormRequest
             return [
                 'entries' => 'required|array|min:1',
                 'entries.*.work_plan_date' => [
-                    'required',
+                    '   nullable',
                     'date',
                 ],
                 'entries.*.project_id' => 'required|exists:projects,id',
-                'entries.*.activity_id' => 'required|exists:project_activities,id',
+                'entries.*.activity_id' => 'nullable|exists:project_activities,id',
                 'entries.*.planned_task' => 'required|string|max:500',
                 'entries.*.members' => 'nullable|array|min:1',
                 'entries.*.members.*' => 'exists:users,id',
@@ -46,11 +46,11 @@ class StoreRequest extends FormRequest
         // single-detail update
         return [
             'work_plan_date' => [
-                'required',
+                'nullable',
                 'date',
             ],
             'project_id' => 'required|exists:projects,id',
-            'activity_id' => 'required|exists:project_activities,id',
+            'activity_id' => 'nullable|exists:project_activities,id',
             'planned_task' => 'required|string|max:500',
             'members' => 'required|array|min:1',
             'members.*' => 'exists:users,id',
@@ -62,14 +62,15 @@ class StoreRequest extends FormRequest
     {
         return [
             'entries.required' => 'Please add at least one work plan entry.',
-            'entries.*.work_plan_date.required' => 'Date is required for each entry.',
+            // 'entries.*.work_plan_date.required' => 'Date is required for each entry.',
             'entries.*.project_id.required' => 'Project is required for each entry.',
-            'entries.*.activity_id.required' => 'Activity is required for each entry.',
+            // 'entries.*.activity_id.required' => 'Activity is required for each entry.',
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
+
         return parent::failedValidation($validator);
     }
 }

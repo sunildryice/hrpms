@@ -24,6 +24,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('timesheet.index') }}",
+                order: [[0, 'desc']],
                 columns: [{
                         data: 'timesheet_date_display',
                         name: 'timesheet_date_display',

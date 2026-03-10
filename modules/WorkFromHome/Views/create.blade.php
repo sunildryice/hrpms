@@ -87,6 +87,114 @@
                 };
             }
 
+            function toDateOnly(dateStr) {
+                return new Date(dateStr + 'T00:00:00');
+            }
+
+            function formatDate(dateObj) {
+                var y = dateObj.getFullYear();
+                var m = String(dateObj.getMonth() + 1).padStart(2, '0');
+                var d = String(dateObj.getDate()).padStart(2, '0');
+                return y + '-' + m + '-' + d;
+            }
+
+            function getDateListFromRange(start, end) {
+                var dates = [];
+                if (!start) {
+                    return dates;
+                }
+
+                var startDate = toDateOnly(start);
+                var endDate = end ? toDateOnly(end) : toDateOnly(start);
+
+                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+                    return dates;
+                }
+
+                if (startDate > endDate) {
+                    return dates;
+                }
+
+                var cursor = new Date(startDate);
+                while (cursor <= endDate) {
+                    dates.push(formatDate(cursor));
+                    cursor.setDate(cursor.getDate() + 1);
+                }
+
+                return dates;
+            }
+
+            function getDayName(dateStr) {
+                var dateObj = toDateOnly(dateStr);
+                if (isNaN(dateObj.getTime())) {
+                    return '-';
+                }
+                return dateObj.toLocaleDateString('en-US', {
+                    weekday: 'long'
+                });
+            }
+
+            function collectExistingTypeRowValues() {
+                var values = {};
+                $('#type-table-body tr.type-row').each(function() {
+                    var $tr = $(this);
+                    var dateVal = $tr.data('date');
+                    if (!dateVal) {
+                        return;
+                    }
+                    values[dateVal] = $tr.find('.day-type-select').val() || '';
+                });
+                return values;
+            }
+
+            var dateTypeOptions = @json($dateTypeOptions ?? []);
+
+            function buildDateTypeOptionsHtml(selectedType) {
+                var optionsHtml = '';
+
+                Object.keys(dateTypeOptions).forEach(function(value) {
+                    var label = dateTypeOptions[value];
+                    var selected = value === selectedType ? ' selected' : '';
+                    optionsHtml += '<option value="' + value + '"' + selected + '>' + label + '</option>';
+                });
+
+                return optionsHtml;
+            }
+
+            function renderTypeTableRows() {
+                var range = getWFHDateRange();
+                var dates = getDateListFromRange(range.start, range.end);
+                var existing = collectExistingTypeRowValues();
+                var $typeBody = $('#type-table-body');
+
+                if (!range.start) {
+                    $typeBody.html('<tr><td colspan="3" class="text-muted text-center">Select start date first.</td></tr>');
+                    return;
+                }
+
+                if (!dates.length) {
+                    $typeBody.html('<tr><td colspan="3" class="text-muted text-center">End date must be same or after start date.</td></tr>');
+                    return;
+                }
+
+                var html = '';
+                dates.forEach(function(dateValue, idx) {
+                    var selectedType = existing[dateValue] || '';
+                    var day = getDayName(dateValue);
+
+                    html += '<tr class="type-row" data-date="' + dateValue + '">' +
+                        '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx + '][date]" value="' + dateValue + '"></td>' +
+                        '<td>' +
+                        '<select class="form-select day-type-select" name="date_types[' + idx + '][type]">' +
+                        buildDateTypeOptionsHtml(selectedType) +
+                        '</select>' +
+                        '</td>' +
+                        '</tr>';
+                });
+
+                $typeBody.html(html);
+            }
+
             // detect last existing row index from server-rendered rows
             var rowIndex = (function() {
                 var maxIndex = 0;
@@ -298,7 +406,12 @@
                     $(this).datepicker('destroy');
                     initDeliverableDatepicker($(this));
                 });
+
+                renderTypeTableRows();
             });
+
+            // Initial type table rendering (supports old input values)
+            renderTypeTableRows();
 
             if ($form.length) {
                 window.fv = FormValidation.formValidation($form[0], {
@@ -597,6 +710,23 @@
                     @error('send_to')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+
+                <div class="mb-3">
+                    <table class="table" id="typeTable">
+                        <thead>
+                            <tr>
+                                <th class="col-project align-middle">Date</th>
+                                <th class="col-activities align-middle">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="type-table-body">
+                            <tr>
+                                <td colspan="3" class="text-muted text-center">Select start date first.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="gap-2 border-0 card-footer justify-content-end d-flex wfh-form-actions">

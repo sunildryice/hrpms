@@ -108,6 +108,12 @@ class WorkFromHome extends Model
             ->all();
     }
 
+    public function dateTypes()
+    {
+        return $this->hasMany(DateType::class, 'work_from_home_id', 'id');
+    }
+    
+
 
     public function status()
     {

@@ -3,6 +3,7 @@
 namespace Modules\WorkFromHome\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Modules\WorkFromHome\Enums\DateTypes;
 use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 
 class UpdateRequest extends FormRequest
@@ -15,6 +16,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         $typeOptions = implode(',', array_keys(WorkFromHomeTypes::options()));
+        $dateTypeOptions = implode(',', array_keys(DateTypes::options()));
 
         return [
             'type'       => ['required', 'string', "in:{$typeOptions}"],
@@ -28,6 +30,10 @@ class UpdateRequest extends FormRequest
             'deliverables.*.activity_id'           => ['required', 'string'],
             'deliverables.*.task'           => ['required', 'string'],
             'deliverables.*.date'           => ['required', 'date', 'after_or_equal:start_date', 'before_or_equal:end_date'],
+
+            'date_types'                  => ['required', 'array'],
+            'date_types.*.date'           => ['required', 'date', 'after_or_equal:start_date', 'before_or_equal:end_date'],
+            'date_types.*.type'           => ['required', 'string', "in:{$dateTypeOptions}"],
 
             'btn' => ['nullable', 'string', 'in:save,submit'],
         ];

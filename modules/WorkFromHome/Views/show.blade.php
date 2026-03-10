@@ -63,6 +63,36 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card mb-3">
+                    <div class="card-header fw-bold text-primary text-uppercase">
+                        Dates
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 15%;">SN</th>
+                                        <th style="width: 25%;">Date</th>
+                                        <th style="width: 25%;">Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($wfhRequest->dateTypes as $index => $dateType)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>{{ $dateType->formatted_date }}</td>
+                                            <td>{{ $dateType->type }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="card">
                     <div class="card-header fw-bold">Process Logs</div>
                     <div class="card-body">
@@ -94,7 +124,8 @@
                                             </div>
 
                                             <div class="d-flex align-items-center justify-content-between">
-                                                <p class="text-justify comment-text mb-0 mt-1">{{ $log->log_remarks ?? '' }}
+                                                <p class="text-justify comment-text mb-0 mt-1">
+                                                    {{ $log->log_remarks ?? '' }}
                                                 </p>
                                             </div>
                                         </div>

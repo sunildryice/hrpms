@@ -12,6 +12,7 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Repositories\ProjectRepository;
+use Modules\WorkFromHome\Enums\DateTypes;
 use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestSubmitted;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
@@ -99,11 +100,13 @@ class RequestController extends Controller
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
         $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
+        $dateTypeOptions = DateTypes::options();
 
         return view('WorkFromHome::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
             'typeOptions' => $typeOptions,
+            'dateTypeOptions' => $dateTypeOptions,
         ]);
     }
 
@@ -131,6 +134,7 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $workFromHome = $this->workFromHomes->create($inputs);
+             
 
 
                 $logInputs = [
@@ -157,6 +161,8 @@ class RequestController extends Controller
 
                 $workFromHome = $this->workFromHomes->create($inputs);
             }
+
+               $workFromHome->dateTypes()->createMany($inputs['date_types'] ?? []);
 
             DB::commit();
 
@@ -192,12 +198,14 @@ class RequestController extends Controller
         $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
         $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
+        $dateTypeOptions = DateTypes::options();
 
         return view('WorkFromHome::edit', compact(
             'workFromHome',
             'projects',
             'supervisors',
             'typeOptions',
+            'dateTypeOptions',
         ));
     }
 
@@ -237,6 +245,9 @@ class RequestController extends Controller
                 $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
                 $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
                 $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
+
+              
+
                 $workFromHome->save();
 
                 $workFromHome->approver->notify(
@@ -247,7 +258,11 @@ class RequestController extends Controller
 
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
             }
-
+            
+            $workFromHome->dateTypes()->delete();
+            $workFromHome->dateTypes()->createMany($inputs['date_types'] ?? []);
+              
+                
             DB::commit();
 
             return redirect()

@@ -42,16 +42,17 @@
                     value="{{ old('date_of_birth') }}" readonly>
             </div>
         </div>
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="Fdname" class="m-0">Remarks </label>
+                   <div class="row mb-2">
+                <div class="col-lg-3">
+                    <div class="d-flex align-items-start h-100">
+                        <label for="validationTole" class="m-0">Contact Number </label>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <input type="text" class="form-control" name="contact_number" value="{{ old('contact_number') }}"
+                        placeholder="Contact Number">
                 </div>
             </div>
-            <div class="col-lg-9">
-                <textarea name="remarks" class="form-control" placeholder="Remarks">{!! old('remarks') !!}</textarea>
-            </div>
-        </div>
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -66,7 +67,7 @@
                 </div>
             </div>
         </div>
-        <div style="display: none" id="emergencyContactBlock">
+        {{-- <div style="display: none" id="emergencyContactBlock">
             <div class="row mb-2">
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
@@ -149,21 +150,8 @@
                         placeholder="Contact Number">
                 </div>
             </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="Fdname" class="m-0">Is Nominee </label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <div class=" form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="nomineeSwitchCheckChecked"
-                        name="nominee" />
-                    <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
-                </div>
-            </div>
-        </div>
+        </div> --}}
+      
 
     </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">
@@ -308,29 +296,7 @@
             }).on('change', function (e) {
                 fv.revalidateField('date_of_birth');
             });
-            @if($employee->nominee->nominee_at)
-
-                $('#familyDetailForm').on('change', '[name="nominee"]', function (e) {
-                    $object = $(this);
-                    if (this.checked) {
-                        Swal.fire({
-                            title: 'Do want to change a nominee?',
-                            text: "You have already selected a nominee. ",
-                            type: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Yes, change it!'
-                        }).then((result) => {
-                            console.log(result);
-                            if (!result.value) {
-                                console.log($object);
-                                $($object).closest('form').find('[name="nominee"]').prop('checked', false);
-                            }
-                        });
-                    }
-                })
-            @endif
+   
 
             $('#familyDetailForm').on('change', '[name="emergency_contact"]', function (e) {
                 $('#emergencyContactBlock').hide();

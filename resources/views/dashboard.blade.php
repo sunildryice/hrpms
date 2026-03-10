@@ -565,7 +565,7 @@
                                         </div>
                                         <div class="text-muted">
                                             <div class="mb-1">
-                                                {{ $emp->upcoming_date?->format('M d, Y') }}
+                                                {{ $emp->upcoming_date?->format('M d') }}
                                             </div>
                                             {{-- @if ($emp->designation)
                                                 <small>{{ $emp->designation->title }}</small>

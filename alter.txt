@@ -1,1 +1,3 @@
 ALTER TABLE `assets` ADD `fiscal_year` VARCHAR(7) NULL DEFAULT NULL AFTER `year`;
+
+ALTER TABLE `travel_dsa_claim` DROP FOREIGN KEY `travel_dsa_claim_activity_code_id_foreign`; ALTER TABLE `travel_dsa_claim` ADD CONSTRAINT `travel_dsa_claim_activity_code_id_foreign` FOREIGN KEY (`activity_code_id`) REFERENCES `project_activities`(`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;

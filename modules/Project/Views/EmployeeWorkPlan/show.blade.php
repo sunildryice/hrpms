@@ -30,11 +30,11 @@
                         name: 'project.short_name',
                         defaultContent: ''
                     },
-                    {
-                        data: 'activity.title',
-                        name: 'activity.title',
-                        defaultContent: ''
-                    },
+                    // {
+                    //     data: 'activity.title',
+                    //     name: 'activity.title',
+                    //     defaultContent: ''
+                    // },
                     {
                         data: 'plan_tasks',
                         name: 'plan_tasks',
@@ -84,7 +84,7 @@
                         <tr>
                             <th>SN</th>
                             <th>Project</th>
-                            <th>Activity</th>
+                            {{-- <th>Activity</th> --}}
                             <th class="wrap-text">Planned Tasks</th>
                             <th>Status</th>
                             <th>Remarks</th>

@@ -39,19 +39,20 @@ class WorkPlanDetailController extends Controller
 
             // ensure we can access the parent plan for the date
             $query = $this->workPlans->getWorkPlanDetails($workPlan->id)
-                ->with('workPlan');
+                ->with('workPlan')
+                ->select('work_plan_details.*');
 
            
 
             return DataTables::of($query)
                 ->addIndexColumn()
+                ->addColumn('project_name', function ($row) {
+                    return $row->project?->short_name ?: ($row->project?->title ?? '-');
+                })
                 ->addColumn('work_plan_date', function ($row) {
 
                     $formattedDate = $row->work_plan_date ? Carbon::parse($row->work_plan_date)->format('M d, Y') : '-';
                     return $formattedDate;
-                })
-                ->editColumn('status', function ($row) {
-                    return $row->status ? ucfirst(str_replace('_', ' ', $row->status)) : 'Not Started';
                 })
                 ->addColumn('reason', function ($row) {
                     return $row->reason ?? '';
@@ -83,15 +84,13 @@ class WorkPlanDetailController extends Controller
                     }
                     return $badges;
                 })
-                ->addColumn('action', function ($row) use ($isEditable) {
+                ->addColumn('action', function ($detailRow) use ($isEditable) {
                     if (!$isEditable) return '';
-
-                    dd($row);
                     $btn = '';
 
-                    $btn .= '<a href="' . route('work-plan.edit', $row->id) . '" class="btn btn-sm btn-outline-primary edit-work-plan" data-id="' . $row->id . '">
+                    $btn .= '<a href="' . route('work-plan.edit', $detailRow->id) . '" class="btn btn-sm btn-outline-primary edit-work-plan" data-id="' . $detailRow->id . '">
                     <i class="bi bi-pencil-square"></i></a>';
-                    $btn .= ' <button class="btn btn-sm btn-outline-danger delete-work-plan" data-href="' . route('work-plan.destroy', $row->id) . '">
+                    $btn .= ' <button class="btn btn-sm btn-outline-danger delete-work-plan" data-href="' . route('work-plan.destroy', $detailRow->id) . '">
                     <i class="bi bi-trash "></i></button>';
 
                     return $btn;

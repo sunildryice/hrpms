@@ -103,8 +103,8 @@
                     //      defaultContent: ''
                     //  },
                      {
-                         data: 'project.short_name',
-                         name: 'project.short_name',
+                         data: 'project_name',
+                         name: 'project_name',
                          defaultContent: ''
                      },
                     //  {

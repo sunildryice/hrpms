@@ -61,7 +61,13 @@
             var oTable = $('#projectActivityTable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('project-activity.index', $project->id) }}",
+                ajax: {
+                    url: "{{ route('project-activity.index', $project->id) }}",
+                    data: function(d) {
+                        d.from_date = "{{ request('from_date') }}";
+                        d.to_date = "{{ request('to_date') }}";
+                    }
+                },
                 bFilter: true,
                 pageLength: 25,
                 bPaginate: true,

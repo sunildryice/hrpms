@@ -6,10 +6,8 @@
         Dashboard
     </a>
 
-    <a href="{{ route('project.show', $project->id) }}"
-        class="btn 
-              {{ request()->routeIs('project.show') ? 'btn-primary' : 'btn-outline-primary' }}
-              btn-sm">
+    <a href="{{ route('project.show', [$project->id, 'from_date' => request('from_date'), 'to_date' => request('to_date')]) }}"
+        class="btn {{ request()->routeIs('project.show') ? 'btn-primary' : 'btn-outline-primary' }} btn-sm">
         Activities
     </a>
 

@@ -188,9 +188,9 @@ class TravelReportController extends Controller
                 'status' => $inputs['itinerary']['status'][$index] ?? null,
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
-            if (trim($itineraryData['remarks']) !== '') {
+            // if (trim($itineraryData['remarks']) !== '') {
                 $inputs['itinerary_updates'][$index] = $itineraryData;
-            }
+            // }
         }
         $travelRequest = $this->travelRequest->find($travelRequestId);
         $inputs['travel_request_id'] = $travelRequest->id;
@@ -259,9 +259,9 @@ class TravelReportController extends Controller
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
 
-            if (trim($itineraryData['remarks']) !== '') {
+            // if (trim($itineraryData['remarks']) !== '') {
                 $inputs['itinerary_updates'][$index] = $itineraryData;
-            }
+            // }
         }
 
         $inputs['updated_by'] = $authUser->id;

@@ -116,6 +116,7 @@ class TravelReportRepository extends Repository
                 ->update([
                     'completed_tasks' => null,
                     'remarks' => null,
+                    'status' => null,
                     'updated_at' => now(),
                 ]);
             $travelReport->logs()->delete();

@@ -41,6 +41,8 @@ class WorkPlanDetailController extends Controller
             $query = $this->workPlans->getWorkPlanDetails($workPlan->id)
                 ->with('workPlan');
 
+           
+
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('work_plan_date', function ($row) {
@@ -84,6 +86,7 @@ class WorkPlanDetailController extends Controller
                 ->addColumn('action', function ($row) use ($isEditable) {
                     if (!$isEditable) return '';
 
+                    dd($row);
                     $btn = '';
 
                     $btn .= '<a href="' . route('work-plan.edit', $row->id) . '" class="btn btn-sm btn-outline-primary edit-work-plan" data-id="' . $row->id . '">
@@ -135,7 +138,7 @@ class WorkPlanDetailController extends Controller
             ->withWorkPlan($workPlan);
     }
 
-    public function store(WorkPlanStoreRequest $request)
+    public function store(WorkPlanStoreRequest $request, WorkPlan $workPlan)
     {
         $data = $request->validated();
         $user = auth()->user();
@@ -144,18 +147,22 @@ class WorkPlanDetailController extends Controller
             return response()->json(['message' => 'No entries provided.'], 422);
         }
 
+
         // determine overall plan range from the entry dates (week bounds already validated)
         $dates = collect($data['entries'])
             ->pluck('work_plan_date')
             ->filter()
             ->sort();
 
-        if ($dates->isEmpty()) {
-            return response()->json(['message' => 'Entry dates are required.'], 422);
-        }
+        // if ($dates->isEmpty()) {
+        //     return response()->json(['message' => 'Entry dates are required.'], 422);
+        // }
 
-        $data['from_date'] = $dates->first();
-        $data['to_date'] = $dates->last();
+     
+        $data['from_date'] = $workPlan->from_date;
+        $data['to_date'] = $workPlan->to_date;
+
+  
 
         // Create a temporary instance to check policy against the date
         $checkPlan = new WorkPlan(['from_date' => $data['from_date']]);
@@ -165,24 +172,28 @@ class WorkPlanDetailController extends Controller
         if (!$user->employee) {
             return response()->json(['message' => 'Employee record not found for user.'], 403);
         }
-
+       
         $workPlan = $this->workPlans->findOrCreateWorkPlan(
             $user->employee->id,
             $data['from_date'],
             $data['to_date']
         );
 
+         
+
         // Save each entry with its members and date
         foreach ($data['entries'] as $entry) {
             $entryData = [
-                'work_plan_date' => $entry['work_plan_date'] ?? null,
+                // 'work_plan_date' => $entry['work_plan_date'] ?? null,
                 'project_id' => $entry['project_id'] ?? null,
-                'activity_id' => $entry['activity_id'] ?? null,
+                // 'activity_id' => $entry['activity_id'] ?? null,
                 'planned_task' => $entry['planned_task'] ?? null,
                 'members' => $entry['members'] ?? [],
             ];
             $this->workPlans->createWorkPlanDetail($workPlan->id, $entryData);
         }
+
+
 
         return redirect()->route('work-plan.details', $workPlan->id)
             ->with('success', 'Work plan added successfully.');
@@ -190,6 +201,7 @@ class WorkPlanDetailController extends Controller
 
     public function edit($id)
     {
+        // dd($id);
         $workPlanDetail = $this->workPlans->findDetailById($id);
         $week = [
             'start_date' => Carbon::parse($workPlanDetail->workPlan->from_date),
@@ -212,17 +224,18 @@ class WorkPlanDetailController extends Controller
     {
         $data = $request->validated();
         $data['members'] = $request->input('members', []);
-        $data['work_plan_date'] = $request->input('work_plan_date');
+        // $data['work_plan_date'] = $request->input('work_plan_date');
         $detail = $this->workPlans->findDetailById($id);
 
-        if (auth()->user()->cannot('update', $detail->workPlan)) {
-            return response()->json(['message' => 'This work plan cannot be edited.'], 403);
-        }
+      
+        // if (auth()->user()->cannot('update', $detail->workPlan)) {
+        //     return response()->json(['message' => 'This work plan cannot be edited.'], 403);
+        // }
 
         $this->workPlans->updateDetail($id, [
-            'work_plan_date' => $data['work_plan_date'],
+            // 'work_plan_date' => $data['work_plan_date'],
             'project_id' => $data['project_id'],
-            'activity_id' => $data['activity_id'],
+            // 'activity_id' => $data['activity_id'],
             'planned_task' => $data['planned_task'],
             'members' => $data['members'],
         ]);

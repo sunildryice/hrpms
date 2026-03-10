@@ -44,16 +44,16 @@
                     readonly>
             </div>
         </div>
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
-                    <label for="Fdname" class="m-0">Remarks </label>
+       <div class="row mb-2">
+                <div class="col-lg-3">
+                    <div class="d-flex align-items-start h-100">
+                        <label for="validationTole" class="m-0">Contact Number</label>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <input type="text" class="form-control" name="contact_number" value="" placeholder="Contact Number">
                 </div>
             </div>
-            <div class="col-lg-9">
-                <textarea name="remarks" class="form-control" placeholder="Remarks"></textarea>
-            </div>
-        </div>
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
@@ -68,7 +68,7 @@
                 </div>
             </div>
         </div>
-        <div style="display: none" id="emergencyContactBlock">
+        {{-- <div style="display: none" id="emergencyContactBlock">
             <div class="row mb-2">
                 <div class="col-lg-3">
                     <div class="d-flex align-items-start h-100">
@@ -152,8 +152,8 @@
                     <input type="text" class="form-control" name="contact_number" value="" placeholder="Contact Number">
                 </div>
             </div>
-        </div>
-        <div class="row mb-2">
+        </div> --}}
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="m-0">Is Nominee</label>
@@ -166,7 +166,7 @@
                     <label class="form-check-label" for="nomineeSwitchCheckChecked"></label>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
     </div>
     <div class="card-footer border-0 justify-content-end d-flex gap-2">

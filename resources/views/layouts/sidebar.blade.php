@@ -32,6 +32,48 @@
                         </a>
                     </div>
 
+                                        <div class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#navbarEmployeeAttendance" role="button"
+                           data-bs-toggle="collapse" data-bs-target="#navbarEmployeeAttendance"
+                           aria-expanded="false" aria-controls="navbarEmployeeAttendance"
+                           data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
+                            <i class="bi bi-fingerprint nav-icon"></i>
+                            <span class="nav-link-title">Attendance</span> </a>
+
+                        <div id="navbarEmployeeAttendance" class="collapse">
+                            @if($authUser->employee_id)
+                                <a class="nav-link" id="self-attendance"
+                                   href="{{ route('attendance.show', [$authUser->employee_id]) }}">Attendance</a>
+                            @endif
+                            @if ($authUser->can('employee-attendance'))
+                                <a class="nav-link" id="attendance-index"
+                                   href="{{ route('attendance.index') }}">Employees Attendance</a>
+                                <a class="nav-link" id="daily-attendance-index"
+                                   href="{{ route('daily.attendance.index') }}">Daily Attendance</a>
+                            @endif
+
+                            @if ($authUser->can('review-employee-attendance'))
+                                <a class="nav-link" id="attendance-review-index"
+                                   href="{{ route('attendance.review.index') }}">Review Attendance
+                                    ({{ $verifyAttendanceCount }})</a>
+                            @endif
+
+                            @if ($authUser->can('approve-employee-attendance'))
+                                <a class="nav-link" id="attendance-approve-index"
+                                   href="{{ route('attendance.approve.index') }}">Approve Attendance
+                                    ({{ $approveAttendanceCount }})</a>
+                            @endif
+                            @if ($authUser->can('view-approved-attendance'))
+                                <a class="nav-link" id="approved-attendance-menu"
+                                   href="{{ route('attendance.approved.index') }}">Approved Attendance</a>
+                            @endif
+                            @if ($authUser->can('employee-attendance'))
+                                <a class="nav-link" id="pending-attendance-menu"
+                                   href="{{ route('attendance.pending.index') }}">Pending Attendance</a>
+                            @endif
+                        </div>
+                    </div>
+
                     @if (
                         $authUser->can('leave-request') ||
                             $authUser->can('review-leave-request') ||
@@ -120,48 +162,6 @@
                             </div>
                         </div>
                     @endif
-
-                    <div class="nav-item">
-                        <a class="nav-link dropdown-toggle" href="#navbarEmployeeAttendance" role="button"
-                           data-bs-toggle="collapse" data-bs-target="#navbarEmployeeAttendance"
-                           aria-expanded="false" aria-controls="navbarEmployeeAttendance"
-                           data-bs-toggle="tooltip" data-bs-placement="right" title="Attendance">
-                            <i class="bi bi-fingerprint nav-icon"></i>
-                            <span class="nav-link-title">Attendance</span> </a>
-
-                        <div id="navbarEmployeeAttendance" class="collapse">
-                            @if($authUser->employee_id)
-                                <a class="nav-link" id="self-attendance"
-                                   href="{{ route('attendance.show', [$authUser->employee_id]) }}">Attendance</a>
-                            @endif
-                            @if ($authUser->can('employee-attendance'))
-                                <a class="nav-link" id="attendance-index"
-                                   href="{{ route('attendance.index') }}">Employees Attendance</a>
-                                <a class="nav-link" id="daily-attendance-index"
-                                   href="{{ route('daily.attendance.index') }}">Daily Attendance</a>
-                            @endif
-
-                            @if ($authUser->can('review-employee-attendance'))
-                                <a class="nav-link" id="attendance-review-index"
-                                   href="{{ route('attendance.review.index') }}">Review Attendance
-                                    ({{ $verifyAttendanceCount }})</a>
-                            @endif
-
-                            @if ($authUser->can('approve-employee-attendance'))
-                                <a class="nav-link" id="attendance-approve-index"
-                                   href="{{ route('attendance.approve.index') }}">Approve Attendance
-                                    ({{ $approveAttendanceCount }})</a>
-                            @endif
-                            @if ($authUser->can('view-approved-attendance'))
-                                <a class="nav-link" id="approved-attendance-menu"
-                                   href="{{ route('attendance.approved.index') }}">Approved Attendance</a>
-                            @endif
-                            @if ($authUser->can('employee-attendance'))
-                                <a class="nav-link" id="pending-attendance-menu"
-                                   href="{{ route('attendance.pending.index') }}">Pending Attendance</a>
-                            @endif
-                        </div>
-                    </div>
 
 
                     @if (
@@ -1117,6 +1117,11 @@
                                 @if ($authUser->can('off-day-work-report'))
                                     <a class="nav-link" href="{{ route('report.off.day.work.index') }}"
                                        id="off-day-work-report-menu">Off Day Work</a>
+                                @endif
+
+                                @if ($authUser->can('assigned-activity-report'))
+                                    <a class="nav-link" href="{{ route('report.assigned.activity.index') }}"
+                                       id="assigned-activity-report-menu">Assigned Activity</a>
                                 @endif
 
                                 @if ($authUser->can('maintenance-request-report'))

@@ -22,6 +22,16 @@ class TimeSheetRepository extends Repository
             ->first();
     }
 
+    public function getLatestApprovedTimesheet($authUserId)
+    {
+        return $this->model->select(['*'])
+            ->where('requester_id', $authUserId)
+            ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.SUBMITTED_STATUS'),])
+            ->orderByDesc('year')
+            ->orderByDesc('month')
+            ->first();
+    }
+
     /**
      * Get summary counts per year + month
      */
@@ -65,10 +75,10 @@ class TimeSheetRepository extends Repository
             ])
             ->whereHas('requester.employee', function ($q) {
                 $q->whereNotNull('activated_at');
-                    // ->where(function ($sub) {
-                    //     $sub->where('employee_type_id', config('constant.FULL_TIME_EMPLOYEE'))
-                    //         ->orWhereNull('employee_type_id');
-                    // });
+                // ->where(function ($sub) {
+                //     $sub->where('employee_type_id', config('constant.FULL_TIME_EMPLOYEE'))
+                //         ->orWhereNull('employee_type_id');
+                // });
             })
             ->where('year', $year)
             ->where('month', $month)

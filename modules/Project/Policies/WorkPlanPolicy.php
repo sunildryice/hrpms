@@ -28,7 +28,7 @@ class WorkPlanPolicy
 
     public function update(User $user, WorkPlan $workPlan)
     {
-        $workPlanMonday = Carbon::parse($workPlan->from_date)->next(Carbon::MONDAY)->endOfDay();
+        $workPlanMonday = Carbon::parse($workPlan->from_date)->next(Carbon::FRIDAY)->endOfDay();
         return Carbon::now() < $workPlanMonday;
 
         $now = Carbon::now();

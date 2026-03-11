@@ -2,6 +2,17 @@
 
 @section('title', 'Report : Assigned Activity')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 350px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script>
         $(document).ready(function() {
@@ -126,9 +137,9 @@
                                 <tr>
                                     <td>{{ $activities instanceof \Illuminate\Pagination\LengthAwarePaginator ? $activities->firstItem() + $index : $index + 1 }}
                                     </td>
-                                    <td>{{ $act->project_title }}</td>
-                                    <td>{{ $act->parent_title ?: '-' }}</td>
-                                    <td>{{ $act->title }}</td>
+                                    <td>{{ $act->project_short_name }}</td>
+                                    <td class="wrap-text">{{ $act->parent_title ?: '-' }}</td>
+                                    <td class="wrap-text">{{ $act->title }}</td>
                                     <td>{{ $act->stage_title ?: '-' }}</td>
                                     <td>
                                         @if ($act->activity_level === 'activity')

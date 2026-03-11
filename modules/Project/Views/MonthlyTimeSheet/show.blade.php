@@ -508,7 +508,7 @@
                                                     data-activity-id="{{ $item->activity_id ?? '' }}">
                                                     @if (!$datePrinted)
                                                         <td rowspan="{{ $items->count() }}"
-                                                            class="align-middle text-center">
+                                                            class="align-middle">
                                                             {{ $carbon->format('d, M Y') }}
                                                         </td>
                                                         @php $datePrinted = true; @endphp

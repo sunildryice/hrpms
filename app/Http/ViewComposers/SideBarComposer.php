@@ -286,6 +286,8 @@ class SideBarComposer
                     $q->where('status_id', config('constant.RECOMMENDED_STATUS'));
                 });
             })->count();
+        
+      
 
         $approveWayBillCount = $this->transportationBills->select(['id'])
             ->where(function ($q) use ($authUser) {

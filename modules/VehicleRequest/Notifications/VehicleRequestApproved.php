@@ -19,7 +19,7 @@ class VehicleRequestApproved extends Notification
      * @return void
      */
     public function __construct(
-        VehicleRequest $vehicleRequest
+       protected VehicleRequest $vehicleRequest
     ) {
         $this->vehicleRequest = $vehicleRequest;
     }
@@ -32,7 +32,7 @@ class VehicleRequestApproved extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database','mail'];
     }
 
     /**

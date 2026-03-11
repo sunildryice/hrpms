@@ -19,7 +19,7 @@ class VehicleRequestSubmitted extends Notification
      * @return void
      */
     public function __construct(
-        VehicleRequest $vehicleRequest
+       protected VehicleRequest $vehicleRequest
     ) {
         $this->vehicleRequest = $vehicleRequest;
     }
@@ -32,7 +32,7 @@ class VehicleRequestSubmitted extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -52,8 +52,12 @@ class VehicleRequestSubmitted extends Notification
         }
 
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been submitted.')
+            ->greeting('Hey ' . $this->vehicleRequest->getApproverName() . ',')
+            ->line('You have a new vehicle request awaiting your approval.')
+            ->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
+            ->line('Requester : ' . $this->vehicleRequest->getRequesterName())
+            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y h:i A') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y h:i A') ?? '-'))
+            ->line('Purpose : ' . ($this->vehicleRequest->purpose_of_travel ?? '-'))
             ->action('View Request', $url);
     }
 
@@ -90,7 +94,7 @@ class VehicleRequestSubmitted extends Notification
         return [
             'vehicle_request_id'    => $this->vehicleRequest->id,
             'link'                  => $url,
-            'subject'               => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been submitted.'
+            'subject'               => 'Vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . ' has been submitted for your approval. Requester : ' . $this->vehicleRequest->getRequesterName(),
         ];
     }
 }

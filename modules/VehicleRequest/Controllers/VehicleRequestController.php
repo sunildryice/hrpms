@@ -9,6 +9,7 @@ use DB;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Modules\Employee\Models\Employee;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\AccountCodeRepository;
 use Modules\Master\Repositories\ActivityCodeRepository;
@@ -23,6 +24,7 @@ use Modules\Master\Repositories\VehicleTypeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 
 use Modules\Project\Repositories\ProjectRepository;
+use Modules\VehicleRequest\Notifications\VechileRequestAcompanyed;
 use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
 use Modules\VehicleRequest\Requests\StoreRequest;
@@ -218,6 +220,7 @@ class VehicleRequestController extends Controller
             if ($vehicleRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Vehicle request is successfully submitted.';
                 $vehicleRequest->approver->notify(new VehicleRequestSubmitted($vehicleRequest));
+                $this->notifyAccompanyingStaff($vehicleRequest);
             }
             return redirect()->route('vehicle.requests.index')
                 ->withSuccessMessage($message);
@@ -306,6 +309,7 @@ class VehicleRequestController extends Controller
             if ($vehicleRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Vehicle request is successfully submitted.';
                 $vehicleRequest->approver->notify(new VehicleRequestSubmitted($vehicleRequest));
+                $this->notifyAccompanyingStaff($vehicleRequest);
             }
             return redirect()->route('vehicle.requests.index')
                 ->withSuccessMessage($message);
@@ -404,5 +408,27 @@ class VehicleRequestController extends Controller
 
         return view('VehicleRequest::print')
             ->withVehicleRequest($vehicleRequest);
+    }
+
+    /**
+     * Send notification to accompanying staff selected in request.
+     */
+    private function notifyAccompanyingStaff($vehicleRequest): void
+    {
+        $employeeIds = json_decode($vehicleRequest->employee_ids ?? '[]', true);
+
+        if (empty($employeeIds) || !is_array($employeeIds)) {
+            return;
+        }
+
+        $employees = Employee::with('user')
+            ->whereIn('id', $employeeIds)
+            ->get();
+
+        foreach ($employees as $employee) {
+            if ($employee->user) {
+                $employee->user->notify(new VechileRequestAcompanyed($vehicleRequest));
+            }
+        }
     }
 }

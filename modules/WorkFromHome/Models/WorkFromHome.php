@@ -108,9 +108,9 @@ class WorkFromHome extends Model
             ->all();
     }
 
-    public function dateTypes()
+    public function WorkFromHomeDays()
     {
-        return $this->hasMany(DateType::class, 'work_from_home_id', 'id');
+        return $this->hasMany(WorkFromHomeDay::class, 'work_from_home_id', 'id');
     }
     
 

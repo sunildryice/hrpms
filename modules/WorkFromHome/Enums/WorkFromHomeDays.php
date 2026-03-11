@@ -3,7 +3,7 @@
 namespace Modules\WorkFromHome\Enums;
 
 
-enum DateTypes
+enum WorkFromHomeDays
 {
     const FULL_DAY = 'Full Day';
     const FIRST_HALF = 'First Half';

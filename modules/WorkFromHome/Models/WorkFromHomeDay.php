@@ -6,11 +6,11 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DateType extends Model
+class WorkFromHomeDay extends Model
 {
     use HasFactory;
 
-    protected $table = 'date_types';
+    protected $table = 'work_from_home_days';
 
     protected $fillable = [
         'work_from_home_id',

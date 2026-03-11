@@ -147,7 +147,7 @@
                 return values;
             }
 
-            var dateTypeOptions = @json($dateTypeOptions ?? []);
+            var dateTypeOptions = @json($WorkFromHomeDayOptions ?? []);
 
             function buildDateTypeOptionsHtml(selectedType) {
                 var optionsHtml = '';
@@ -181,6 +181,7 @@
                 dates.forEach(function(dateValue, idx) {
                     var selectedType = existing[dateValue] || '';
                     var day = getDayName(dateValue);
+
 
                     html += '<tr class="type-row" data-date="' + dateValue + '">' +
                         '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx + '][date]" value="' + dateValue + '"></td>' +

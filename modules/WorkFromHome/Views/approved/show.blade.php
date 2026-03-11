@@ -78,7 +78,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($wfhRequest->dateTypes as $index => $dateType)
+                                    @foreach ($wfhRequest->WorkFromHomeDays as $index => $dateType)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dateType->formatted_date }}</td>

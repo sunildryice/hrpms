@@ -10,6 +10,7 @@ use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Employee\Repositories\LeaveRepository;
 use Modules\LeaveRequest\Notifications\LeaveRequestSubmitted;
 use Modules\LeaveRequest\Notifications\LeaveRequestSubmittedReview;
+use Modules\LeaveRequest\Notifications\LeaveRequestSubstitute;
 use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
 use Modules\LeaveRequest\Requests\StoreRequest;
 use Modules\LeaveRequest\Requests\UpdateRequest;
@@ -223,11 +224,17 @@ class LeaveRequestController extends Controller
             if ($leaveRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmittedReview($leaveRequest));
+                if($leaveRequest->leaveDays->count() > 1)
+                    {
+                $this->notifySubstitutes($leaveRequest);
+                    }
+                      
             }
 
             if ($leaveRequest->status_id == config('constant.VERIFIED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmitted($leaveRequest));
+                $this->notifySubstitutes($leaveRequest);
             }
 
 
@@ -348,16 +355,28 @@ class LeaveRequestController extends Controller
             $inputs['attachment'] = $filename;
         }
         $leaveRequest = $this->leaveRequests->update($id, $inputs);
+        
+          
 
         if ($leaveRequest) {
             $message = 'Leave request is successfully updated.';
             if ($leaveRequest->status_id == config('constant.SUBMITTED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmittedReview($leaveRequest));
+
+                 if($leaveRequest->leaveDays->count() > 1)
+                    {
+                $this->notifySubstitutes($leaveRequest);
+                    }
             }
             if ($leaveRequest->status_id == config('constant.VERIFIED_STATUS')) {
                 $message = 'Leave request is successfully submitted.';
                 $leaveRequest->approver->notify(new LeaveRequestSubmitted($leaveRequest));
+
+                if($leaveRequest->leaveDays->count() > 1)
+                    {
+                $this->notifySubstitutes($leaveRequest);
+                    }
             }
 
             return redirect()->route('leave.requests.index')
@@ -449,5 +468,24 @@ class LeaveRequestController extends Controller
             'type' => 'error',
             'message' => 'Leave request can not amended.',
         ], 422);
+    }
+
+    /**
+     * Send leave request notification to selected substitutes.
+     */
+    private function notifySubstitutes($leaveRequest): void
+    {
+        $leaveRequest->load('substitutes.user');
+
+        $substituteUsers = $leaveRequest->substitutes
+            ->map(function ($employee) {
+                return $employee->user;
+            })
+            ->filter()
+            ->unique('id');
+
+        foreach ($substituteUsers as $substituteUser) {
+            $substituteUser->notify(new LeaveRequestSubstitute($leaveRequest));
+        }
     }
 }

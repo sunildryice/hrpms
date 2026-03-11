@@ -7,6 +7,7 @@ use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Models\Office;
 
 class AttendanceDetail extends Model
 {
@@ -18,6 +19,8 @@ class AttendanceDetail extends Model
     // Attributes that are mass assignable.
     protected $fillable = [
         'attendance_master_id',
+        'office_id',
+        'weekend_type_id',
         'attendance_date',
         'checkin',
         'checkout',
@@ -32,13 +35,18 @@ class AttendanceDetail extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    protected $dates = ['attendance_date','created_at', 'updated_at'];
+    protected $dates = ['attendance_date', 'created_at', 'updated_at'];
 
     // Casting/Converting the columns into given data type
     protected $casts = [
-        'checkin'   => 'datetime',
-        'checkout'  => 'datetime'
+        'checkin' => 'datetime',
+        'checkout' => 'datetime'
     ];
+
+    public function office()
+    {
+        return $this->belongsTo(Office::class, 'office_id');
+    }
 
     public function attendance()
     {
@@ -101,19 +109,19 @@ class AttendanceDetail extends Model
         $totalCharge = $this->getTotalChargedHours();
 
         $charges = DB::table('attendance_detail_donors')
-                    ->join('attendance_details', 'attendance_detail_donors.attendance_detail_id', '=', 'attendance_details.id')
-                    ->where('attendance_details.attendance_master_id', $this->attendance_master_id)
-                    ->select('attendance_detail_donors.*')
-                    ->select(DB::raw('donor_id as donor'), DB::raw('sum(attendance_detail_donors.worked_hours) as charged_hours'))
-                    ->groupBy('donor_id')
-                    ->get()
-                    ->map(function ($item) use($totalCharge) {
-                        return [
-                            'donor_id'              => $item->donor,
-                            'charged_hours'         => $item->charged_hours,
-                            'charged_percentage'    => round(($item->charged_hours / $totalCharge) * 100, 2)
-                        ];
-                    });
+            ->join('attendance_details', 'attendance_detail_donors.attendance_detail_id', '=', 'attendance_details.id')
+            ->where('attendance_details.attendance_master_id', $this->attendance_master_id)
+            ->select('attendance_detail_donors.*')
+            ->select(DB::raw('donor_id as donor'), DB::raw('sum(attendance_detail_donors.worked_hours) as charged_hours'))
+            ->groupBy('donor_id')
+            ->get()
+            ->map(function ($item) use ($totalCharge) {
+                return [
+                    'donor_id' => $item->donor,
+                    'charged_hours' => $item->charged_hours,
+                    'charged_percentage' => round(($item->charged_hours / $totalCharge) * 100, 2)
+                ];
+            });
 
         return $charges;
     }
@@ -122,7 +130,7 @@ class AttendanceDetail extends Model
     {
         $totalCharge = $this->getTotalChargedHours();
         $totalUnrestrictedHours = DB::table('attendance_details')->where('attendance_master_id', $this->attendance_master_id)->sum('unrestricted_hours');
-        return round(($totalCharge == 0 ? 0 : $totalUnrestrictedHours/$totalCharge) * 100, 2);
+        return round(($totalCharge == 0 ? 0 : $totalUnrestrictedHours / $totalCharge) * 100, 2);
     }
 
     public function getTotalChargedPercentage()
@@ -139,7 +147,7 @@ class AttendanceDetail extends Model
 
         $hours_total += $total_unrestricted_hours;
 
-        return round(($totalCharge == 0 ? 0 : $hours_total/$totalCharge) * 100, 2);
+        return round(($totalCharge == 0 ? 0 : $hours_total / $totalCharge) * 100, 2);
     }
 
 }

@@ -18,13 +18,12 @@ use Modules\Master\Repositories\OfficeRepository;
 class AttendanceDetailRepository extends Repository
 {
     public function __construct(
-        AttendanceDetail              $attendanceDetail,
-        protected OfficeRepository    $office,
+        AttendanceDetail $attendanceDetail,
+        protected OfficeRepository $office,
         protected DonorCodeRepository $donor,
-        protected HolidayRepository   $holidays,
-        protected Helper              $helper
-    )
-    {
+        protected HolidayRepository $holidays,
+        protected Helper $helper
+    ) {
         $this->model = $attendanceDetail;
     }
 
@@ -303,6 +302,8 @@ class AttendanceDetailRepository extends Repository
                 }
             }
 
+            $attendanceDetail = $this->getDetail($attendanceId, $date);
+
             array_push($dates_month_with_holidays, collect([
                 'date' => $date,
                 'holiday' => in_array($date, $holidays) ? true : false,
@@ -318,6 +319,7 @@ class AttendanceDetailRepository extends Repository
                 'worked_hours' => $this->getWorkedHours($attendanceId, $date),
                 'hours_charged' => $this->getChargedHours($attendanceId, $date),
                 'attendance_detail_id' => $this->getId($attendanceId, $date),
+                'weekend_type_id' => $attendanceDetail?->weekend_type_id ?? $attendance->office->weekend_type_id,
                 'donor_list' => $donor_list,
                 'unrestricted_hours' => $this->getUnrestrictedHours($attendanceId, $date),
                 'disabled' => Helper::isGreaterThanCurrentDate($date),

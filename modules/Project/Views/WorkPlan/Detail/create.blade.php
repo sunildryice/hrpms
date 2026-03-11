@@ -347,13 +347,13 @@
                                     }
                                 }
                             });
-                            fv.addField(`entries[${idx}][members][]`, {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'At least one member is required'
-                                    }
-                                }
-                            });
+                            // fv.addField(`entries[${idx}][members][]`, {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'At least one member is required'
+                            //         }
+                            //     }
+                            // });
                         }
                     }, 300);
 
@@ -466,7 +466,7 @@
                             <th class="col-project"><label class="required-label">Project</label></th>
                             {{-- <th class="col-activity"><label class="required-label">Activity</label></th> --}}
                             <th class="col-task"><label class="required-label">Task</label></th>
-                            <th class="col-members"><label class="required-label">Involved Members</label></th>
+                            <th class="col-members"><label>Involved Members</label></th>
                             <th class="col-action" style="text-align:center">Action</th>
                         </tr>
                         </thead>

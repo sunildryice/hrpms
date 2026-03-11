@@ -199,7 +199,7 @@
             </div>
         </div>
         <div class="col-lg-9">
-            <div class="card">
+            {{-- <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity TimeSheets</span>
@@ -228,7 +228,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="card mt-3">
                 <div class="card-header">

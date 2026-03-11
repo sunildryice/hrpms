@@ -81,6 +81,7 @@ class LeaveRequestSubstitute extends Notification
 	 */
 	public function toDatabase($notifiable)
 	{
+         event(new NotificationPushed());
 		return [
 			'leave_request_id' => $this->leaveRequest->id,
 			'link' => route('leave.requests.detail', $this->leaveRequest->id),

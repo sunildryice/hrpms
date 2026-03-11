@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('date_types', function (Blueprint $table) {
+        Schema::create('work_from_home_days', function (Blueprint $table) {
             $table->id();
             $table->foreignId('work_from_home_id')
                 ->constrained('work_from_homes')
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('date_types');
+        Schema::dropIfExists('work_from_home_days');
     }
 };

@@ -154,7 +154,7 @@
                 return values;
             }
 
-            var dateTypeOptions = @json($dateTypeOptions ?? []);
+            var dateTypeOptions = @json($WorkFromHomeDayOptions ?? []);
 
             function buildDateTypeOptionsHtml(selectedType) {
                 var optionsHtml = '';
@@ -169,7 +169,7 @@
             }
 
             var oldDateTypes = @json(collect(old('date_types', []))->pluck('type', 'date'));
-            var savedDateTypes = @json(collect($workFromHome->dateTypes ?? [])->pluck('type', 'date'));
+            var savedDateTypes = @json(collect($workFromHome->WorkFromHomeDays ?? [])->pluck('type', 'date'));
             var initialDateTypes = Object.keys(oldDateTypes).length ? oldDateTypes : savedDateTypes;
 
             function renderTypeTableRows() {

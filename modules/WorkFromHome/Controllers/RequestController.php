@@ -12,7 +12,7 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Repositories\ProjectRepository;
-use Modules\WorkFromHome\Enums\DateTypes;
+use Modules\WorkFromHome\Enums\WorkFromHomeDays;
 use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Notifications\WorkFromHomeRequestSubmitted;
 use Modules\WorkFromHome\Repositories\WorkFromHomeLogRepository;
@@ -99,14 +99,16 @@ class RequestController extends Controller
 
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
 
-        $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
-        $dateTypeOptions = DateTypes::options();
+        $typeOptions = WorkFromHomeTypes::options();
+        $WorkFromHomeDayOptions = WorkFromHomeDays::options();
+
+ 
 
         return view('WorkFromHome::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
             'typeOptions' => $typeOptions,
-            'dateTypeOptions' => $dateTypeOptions,
+            'WorkFromHomeDayOptions' => $WorkFromHomeDayOptions,
         ]);
     }
 
@@ -162,7 +164,7 @@ class RequestController extends Controller
                 $workFromHome = $this->workFromHomes->create($inputs);
             }
 
-               $workFromHome->dateTypes()->createMany($inputs['date_types'] ?? []);
+               $workFromHome->WorkFromHomeDays()->createMany($inputs['date_types'] ?? []);
 
             DB::commit();
 
@@ -198,14 +200,14 @@ class RequestController extends Controller
         $projects = $this->projects->getAssignedProjects($authUser);
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
         $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
-        $dateTypeOptions = DateTypes::options();
+        $WorkFromHomeDayOptions = WorkFromHomeDays::options();
 
         return view('WorkFromHome::edit', compact(
             'workFromHome',
             'projects',
             'supervisors',
             'typeOptions',
-            'dateTypeOptions',
+            'WorkFromHomeDayOptions',
         ));
     }
 
@@ -259,8 +261,8 @@ class RequestController extends Controller
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
             }
             
-            $workFromHome->dateTypes()->delete();
-            $workFromHome->dateTypes()->createMany($inputs['date_types'] ?? []);
+            $workFromHome->WorkFromHomeDays()->delete();
+            $workFromHome->WorkFromHomeDays()->createMany($inputs['date_types'] ?? []);
               
                 
             DB::commit();

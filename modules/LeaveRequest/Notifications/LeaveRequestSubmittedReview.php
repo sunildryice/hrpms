@@ -82,12 +82,12 @@ class LeaveRequestSubmittedReview extends Notification
      */
     public function toDatabase($notifiable)
     {
+         event(new NotificationPushed());
         return [
             'leave_request_id' => $this->leaveRequest->id,
             'link' => route('review.leave.requests.create', $this->leaveRequest->id),
             'alternate_link' => route('leave.requests.detail', $this->leaveRequest->id),
             'subject' => 'Leave request ' . $this->leaveRequest->getLeaveNumber() . ' has been submitted for you reviewal. Requester : ' . $this->leaveRequest->getRequesterName(),
-
         ];
     }
 }

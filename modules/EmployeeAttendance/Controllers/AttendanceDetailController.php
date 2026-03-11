@@ -313,16 +313,21 @@ class AttendanceDetailController extends Controller
 
     protected function getAttendanceDatesWithLateEarlyFlags($attendance, $attendanceId)
     {
-        $officeCheckin = config('constant.OFFICE_CHECKIN_TIME', '09:00:59');
-        $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME', '17:30:00');
-
         $baseDate = "{$attendance->year}-" . str_pad($attendance->month, 2, '0', STR_PAD_LEFT) . "-01";
 
-        $officialCheckin = Carbon::parse("{$baseDate} {$officeCheckin}");
-        $officialCheckout = Carbon::parse("{$baseDate} {$officeCheckout}");
-
         return $this->attendanceDetail->getAttendanceDetail($attendanceId)
-            ->map(function ($detail) use ($officialCheckin, $officialCheckout) {
+            ->map(function ($detail) use ($baseDate) {
+
+                if ($detail['weekend_type_id'] == config('constant.Saturday')) {
+                    $officeCheckin = config('constant.OFFICE_FIELD_CHECKIN_TIME');
+                    $officeCheckout = config('constant.OFFICE_FIELD_CHECKOUT_TIME');
+                } else {
+                    $officeCheckin = config('constant.OFFICE_CHECKIN_TIME');
+                    $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME');
+                }
+
+                $officialCheckin = Carbon::parse("{$baseDate} {$officeCheckin}");
+                $officialCheckout = Carbon::parse("{$baseDate} {$officeCheckout}");
 
                 $checkinRaw = $detail['checkin'] ?? $detail['check_in_time'] ?? null;
                 $checkoutRaw = $detail['checkout'] ?? $detail['check_out_time'] ?? null;

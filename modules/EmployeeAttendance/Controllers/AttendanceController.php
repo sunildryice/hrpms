@@ -146,11 +146,11 @@ class AttendanceController extends Controller
                     // $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
                     // $btn .= 'href = "' . route('attendance.detail.worklogs', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="View Worklogs">';
                     // $btn .= '<i class="bi bi-file-ruled" ></i></a>';
-
+    
                     // $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary"';
                     // $btn .= 'href = "' . route('attendance.detail.worklogs.print', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Print all Worklogs">';
                     // $btn .= '<i class="bi bi-printer-fill" ></i></a>';
-
+    
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -202,7 +202,7 @@ class AttendanceController extends Controller
                     //     $btn .= 'data-href="' . route('attendance.delete', $row->id) . '">';
                     //     $btn .= '<i class="bi-trash"></i></a>';
                     // }
-
+    
                     return $btn;
                 })
                 ->rawColumns(['action', 'status'])
@@ -333,6 +333,9 @@ class AttendanceController extends Controller
         $date = $request->date ?? now()->format('Y-m-d');
         $now = now();
         $employeeId = auth()->user()->employee->id;
+        $employee = auth()->user()->employee;
+        $officeId = $employee->latestTenure->office_id;
+        $weekendTypeId = $employee->latestTenure->office->weekend_type;
 
         $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
         if (!$attendance) {
@@ -362,17 +365,19 @@ class AttendanceController extends Controller
         if (!$detail) {
             $this->attendanceDetail->create([
                 'attendance_master_id' => $attendance->id,
+                'office_id' => $officeId,
+                'weekend_type_id' => $weekendTypeId,
                 'attendance_date' => $date,
                 'checkin' => $now,
                 'created_by' => auth()->id(),
                 'updated_by' => auth()->id(),
-                'checkin_from'=>'Manual',
+                'checkin_from' => 'Manual',
                 'worked_hours' => 0,
             ]);
         } else {
             $this->attendanceDetail->update($detail->id, [
                 'checkin' => $now,
-                'checkin_from'=>'Manual',
+                'checkin_from' => 'Manual',
                 'updated_by' => auth()->id(),
             ]);
         }
@@ -388,6 +393,9 @@ class AttendanceController extends Controller
         $date = $request->date ?? now()->format('Y-m-d');
         $now = now();
         $employeeId = auth()->user()->employee->id;
+        $employee = auth()->user()->employee;
+        $officeId = $employee->latestTenure->office_id;
+        $weekendTypeId = $employee->latestTenure->office->weekend_type;
 
         $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
 
@@ -407,6 +415,8 @@ class AttendanceController extends Controller
 
         $this->attendanceDetail->update($detail->id, [
             'checkout' => $now,
+            'office_id' => $officeId,
+            'weekend_type_id' => $weekendTypeId,
             'updated_by' => auth()->id(),
         ]);
 

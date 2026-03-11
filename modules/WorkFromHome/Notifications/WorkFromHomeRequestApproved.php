@@ -48,7 +48,7 @@ class WorkFromHomeRequestApproved extends Notification
         $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return (new MailMessage)
             ->subject("{$typeLabel} request approved: " . $this->workFromHomeRequest->getRequestId())
-            ->greeting('Hey ' . $this->workFromHomeRequest->getRequesterName() . ',')
+            ->greeting('Dear ' . $this->workFromHomeRequest->getRequesterName() . ',')
             ->line('Your work from home request has been approved. Please find the details below:')
             ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
             ->line('Type: ' . $typeLabel)

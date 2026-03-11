@@ -50,7 +50,7 @@ class WorkFromHomeRequestSubmitted extends Notification
         $typeLabel = WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return (new MailMessage)
             ->subject("New {$typeLabel} request: " . $this->workFromHomeRequest->getRequestId())
-            ->greeting('Hey ' . $this->workFromHomeRequest->approver?->employee?->getFullName() . ',')
+            ->greeting('Dear ' . $this->workFromHomeRequest->approver?->employee?->getFullName() . ',')
             ->line("You have a new {$typeLabel} request awaiting your approval. Please find the details below:")
             ->line('Request ID: ' . $this->workFromHomeRequest->getRequestId())
             ->line('Type: ' . $typeLabel)

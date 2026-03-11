@@ -42,7 +42,7 @@ class OffDayWorkRejected extends Notification
         $url = route('off.day.work.show', $this->offDayWork->id);
         $url = route('off.day.work.show', $this->offDayWork->id);
         return (new MailMessage)
-            ->greeting('Hey ' . ($this->offDayWork->requester->getFullName() ?? '-') . ',')
+            ->greeting('Dear ' . ($this->offDayWork->requester->getFullName() ?? '-') . ',')
             ->line('Your off day work request has been rejected.')
             ->line('Request Number: ' . ($this->offDayWork->getRequestId() ?? $this->offDayWork->id))
             ->line('Work Date: ' . ($this->offDayWork->getOffDayWorkDate() ?? '-'))

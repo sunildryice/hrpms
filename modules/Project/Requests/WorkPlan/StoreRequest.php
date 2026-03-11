@@ -52,7 +52,7 @@ class StoreRequest extends FormRequest
             'project_id' => 'required|exists:projects,id',
             'activity_id' => 'nullable|exists:project_activities,id',
             'planned_task' => 'required|string|max:500',
-            'members' => 'required|array|min:1',
+            'members' => 'nullable|array|min:1',
             'members.*' => 'exists:users,id',
             'reason' => 'nullable|string',
         ];

@@ -45,7 +45,7 @@ class VechileRequestAcompanyed extends Notification
 		$url = route('vehicle.requests.show', $this->vehicleRequest->id);
 
 		return (new MailMessage)
-			->greeting('Hey ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
+			->greeting('Dear ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
 			->line('You have been added as accompanying staff for a vehicle request.')
 			->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
 			->line('Requester : ' . $this->vehicleRequest->getRequesterName())

@@ -1094,6 +1094,11 @@
                                        id="asset-dispose-report-menu">Asset Disposition</a>
                                 @endif
 
+                                @if ($authUser->can('assigned-activity-report'))
+                                    <a class="nav-link" href="{{ route('report.assigned.activity.index') }}"
+                                       id="assigned-activity-report-menu">Assigned Activity</a>
+                                @endif
+
                                 @if ($authUser->can('employee-profile-report'))
                                     <a class="nav-link" href="{{ route('report.employee.profile.index') }}"
                                        id="employee-profile-report-menu">Employee Profile</a>
@@ -1109,24 +1114,14 @@
                                        id="leave-request-report-menu">Leave Requests</a>
                                 @endif
 
-                                @if ($authUser->can('work-from-home-report'))
-                                    <a class="nav-link" href="{{ route('report.work.from.home.index') }}"
-                                       id="work-from-home-report-menu">Work From Home</a>
+                                @if ($authUser->can('maintenance-request-report'))
+                                    <a class="nav-link" href="{{ route('report.maintenance.request.index') }}"
+                                       id="maintenance-request-report-menu">Maintenance Request</a>
                                 @endif
 
                                 @if ($authUser->can('off-day-work-report'))
                                     <a class="nav-link" href="{{ route('report.off.day.work.index') }}"
                                        id="off-day-work-report-menu">Off Day Work</a>
-                                @endif
-
-                                @if ($authUser->can('assigned-activity-report'))
-                                    <a class="nav-link" href="{{ route('report.assigned.activity.index') }}"
-                                       id="assigned-activity-report-menu">Assigned Activity</a>
-                                @endif
-
-                                @if ($authUser->can('maintenance-request-report'))
-                                    <a class="nav-link" href="{{ route('report.maintenance.request.index') }}"
-                                       id="maintenance-request-report-menu">Maintenance Request</a>
                                 @endif
 
                                 @if ($authUser->can('stock-book-report'))
@@ -1145,6 +1140,11 @@
                                 @if ($authUser->can('vehicle-movement-report'))
                                     <a class="nav-link" href="{{ route('report.vehicle.movement.index') }}"
                                        id="vehicle-movement-report-menu">Vehicle Movement</a>
+                                @endif
+
+                                @if ($authUser->can('work-from-home-report'))
+                                    <a class="nav-link" href="{{ route('report.work.from.home.index') }}"
+                                       id="work-from-home-report-menu">Work From Home</a>
                                 @endif
                             </div>
                         </div>

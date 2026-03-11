@@ -1,5 +1,5 @@
 <div>
-    <a href="{{ route('project.dashboard', $project->id) }}"
+    <a href="{{ route('project.dashboard', [$project->id, 'from_date' => request('from_date'), 'to_date' => request('to_date')]) }}"
         class="btn 
               {{ request()->routeIs('project.dashboard') ? 'btn-primary' : 'btn-outline-primary' }}
               btn-sm">

@@ -66,6 +66,7 @@ class ProjectActivityRepository extends Repository
             ->select([
                 'project_activities.*',
                 'projects.title as project_title',
+                'projects.short_name as project_short_name',
                 'parent.title as parent_title',
                 'lkup_activity_stages.title as stage_title',
             ])

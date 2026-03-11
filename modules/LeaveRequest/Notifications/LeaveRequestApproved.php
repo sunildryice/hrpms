@@ -45,7 +45,7 @@ class LeaveRequestApproved extends Notification
     {
         $url = route('leave.requests.detail', $this->leaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hey ' . $this->leaveRequest->getRequesterName() . ',')
+            ->greeting('Dear ' . $this->leaveRequest->getRequesterName() . ',')
             ->line('Your leave request (' . $this->leaveRequest->getLeaveType() . ') has been approved.')
             ->line('Leave Number: ' . $this->leaveRequest->getLeaveNumber())
             ->line('Leave dates: ' . ($this->leaveRequest->start_date ? $this->leaveRequest->start_date->format('d M Y') : '') . ' to ' . ($this->leaveRequest->end_date ? $this->leaveRequest->end_date->format('d M Y') : ''))

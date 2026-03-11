@@ -48,7 +48,7 @@ class MaintenanceRequestSubmitted extends Notification
         $url = route('review.maintenance.requests.create', $this->maintenanceRequest->id);
 
         return (new MailMessage)
-            ->greeting('Hey ' . $this->maintenanceRequest->getApproverName() . ',')
+            ->greeting('Dear ' . $this->maintenanceRequest->getApproverName() . ',')
             ->line('You have a new maintenance request awaiting your review.')
             ->line('Request Number: ' . $this->maintenanceRequest->getMaintenanceRequestNumber())
             ->line('Requester: ' . $this->maintenanceRequest->getRequesterName())

@@ -47,7 +47,7 @@ class LocalTravelSubmitted extends Notification
     {
         $url = route('approve.local.travel.reimbursements.create', $this->localTravel->id);
         return (new MailMessage)
-            ->greeting('Hey ' . ($this->localTravel->getApproverName() ?? '-') . ',')
+            ->greeting('Dear ' . ($this->localTravel->getApproverName() ?? '-') . ',')
             ->line('You have a new local travel reimbursement request awaiting your approval.')
             ->line('Employee: ' . ($this->localTravel->getRequesterName() ?? '-'))
             ->line('Reimbursement Number: ' . ($this->localTravel->getLocalTravelNumber() ?? '-'))

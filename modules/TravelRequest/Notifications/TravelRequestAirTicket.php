@@ -7,13 +7,15 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Modules\Privilege\Models\User;
 use Modules\TravelRequest\Models\TravelRequest;
 
-class TravelRequestSubmitted extends Notification
+class TravelRequestAirTicket extends Notification
 {
     use Queueable;
 
     private $travelRequest;
+    private $user;
 
     /**
      * Create a new notification instance.
@@ -21,9 +23,11 @@ class TravelRequestSubmitted extends Notification
      * @return void
      */
     public function __construct(
-        TravelRequest $travelRequest
+        TravelRequest $travelRequest,
+        User $user
     ) {
         $this->travelRequest = $travelRequest;
+        $this->user = $user;
     }
 
     /**
@@ -45,14 +49,15 @@ class TravelRequestSubmitted extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('approve.travel.requests.create', $this->travelRequest->id);
+        $url = route('travel.requests.view', $this->travelRequest->id);
         return (new MailMessage)
-            ->greeting('Dear ' . $this->travelRequest->getApproverName() . ',')
-            ->line('You have a new travel request (' . $this->travelRequest->getTravelRequestNumber() . ') awaiting your approval.')
-            ->line('Employee : ' . $this->travelRequest->getRequesterName())
-            ->line('Travel dates : ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())
-            ->line('Purpose : ' . $this->travelRequest->purpose_of_travel)
-            ->action('View travel request ', $url);
+            ->greeting('Dear ' . $this->user->full_name . ',')
+            ->line('Travel request (' . $this->travelRequest->getTravelRequestNumber() . ') has been approved.')
+            ->line('Travel Number: ' . $this->travelRequest->getTravelRequestNumber())
+            ->line('Travel dates: ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())
+            ->line('Approved by: ' . (auth()->user()->full_name ?? ''))
+            ->line('Requested by: ' . $this->travelRequest->getRequesterName())
+            ->action('View travel request', $url);
     }
 
     /**
@@ -79,9 +84,9 @@ class TravelRequestSubmitted extends Notification
         event(new NotificationPushed());
         return [
             'travel_request_id' => $this->travelRequest->id,
-            'link' => route('approve.travel.requests.create', $this->travelRequest->id),
+            'link' => route('travel.requests.view', $this->travelRequest->id),
             'alternate_link' => route('travel.requests.view', $this->travelRequest->id),
-            'subject' => 'Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been submitted. Requester : ' . $this->travelRequest->getRequesterName() . '.',
+            'subject' => 'Travel request ' . $this->travelRequest->getTravelRequestNumber() . ' has been approved.'
         ];
     }
 }

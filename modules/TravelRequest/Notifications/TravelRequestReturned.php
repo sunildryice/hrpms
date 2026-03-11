@@ -47,7 +47,7 @@ class TravelRequestReturned extends Notification
     {
         $url = route('travel.requests.edit', $this->travelRequest->id);
         return (new MailMessage)
-            ->greeting('Hey ' . $this->travelRequest->getRequesterName() . ',')
+            ->greeting('Dear ' . $this->travelRequest->getRequesterName() . ',')
             ->line('Your travel request (' . $this->travelRequest->getTravelRequestNumber() . ') has been returned for correction.')
             ->line('Travel Number: ' . $this->travelRequest->getTravelRequestNumber())
             ->line('Travel dates: ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())

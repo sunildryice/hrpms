@@ -51,7 +51,7 @@ class LeaveRequestSubstitute extends Notification
 		$url = route('leave.requests.detail', $this->leaveRequest->id);
 
 		return (new MailMessage)
-			->greeting('Hey ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
+			->greeting('Dear ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
 			->line('You have been assigned as a substitute for a leave request (' . $this->leaveRequest->getLeaveType() . ').')
 			->line('Employee : ' . $this->leaveRequest->getRequesterName())
 			->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))

@@ -31,6 +31,7 @@ use Modules\Privilege\Repositories\UserRepository;
 use Modules\TravelRequest\Requests\TravelRequestReview\StoreRequest;
 use DB;
 use DataTables;
+use Modules\TravelRequest\Notifications\TravelRequestAirTicket;
 
 class TravelRequestApproveController extends Controller
 {
@@ -165,6 +166,8 @@ class TravelRequestApproveController extends Controller
         $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
         $travelRequest = $this->travelRequest->approve($travelRequest->id, $inputs);
 
+
+
         if ($travelRequest) {
             $message = '';
 
@@ -180,6 +183,21 @@ class TravelRequestApproveController extends Controller
             } else {
                 $message = 'Travel request is successfully approved.';
                  $travelRequest->requester->notify(new TravelRequestApproved($travelRequest));
+
+                ;
+                $airTicketItinerariesCount = $travelRequest->airTicketItineraries->count();
+                 $travelTicketViewers = $this->user->permissionBasedUsers('view-travel-ticket-requests');
+
+                 if($airTicketItinerariesCount > 0){
+                    foreach($travelTicketViewers as $viewer){
+                        $viewer->notify(new TravelRequestAirTicket($travelRequest, $viewer));
+                    }
+                 }
+
+
+                 
+
+
             }
 
             return redirect()->route('approve.travel.requests.index')

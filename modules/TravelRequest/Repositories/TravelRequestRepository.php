@@ -328,4 +328,6 @@ class TravelRequestRepository extends Repository
             ->whereDate('return_date', '>=', $date)
             ->exists();
     }
+
+   
 }

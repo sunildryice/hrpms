@@ -42,7 +42,7 @@ class LieuLeaveRequestSubmitted extends Notification
     {
         $url = route('approve.lieu.leave.requests.show', $this->lieuLeaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hey ' . $this->lieuLeaveRequest->getApproverName() . ',')
+            ->greeting('Dear ' . $this->lieuLeaveRequest->getApproverName() . ',')
             ->line('You have a new lieu leave request awaiting your approval.')
             ->line('Employee: ' . $this->lieuLeaveRequest->getRequesterName())
             ->line('Leave Number: ' . $this->lieuLeaveRequest->getLeaveNumber())

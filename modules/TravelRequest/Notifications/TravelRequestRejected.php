@@ -47,7 +47,7 @@ class TravelRequestRejected extends Notification
     {
         $url = route('travel.requests.view', $this->travelRequest->id);
         return (new MailMessage)
-            ->greeting('Hey ' . $this->travelRequest->getRequesterName() . ',')
+            ->greeting('Dear ' . $this->travelRequest->getRequesterName() . ',')
             ->line('Your travel request (' . $this->travelRequest->getTravelRequestNumber() . ') has been rejected.')
             ->line('Travel Number: ' . $this->travelRequest->getTravelRequestNumber())
             ->line('Travel dates: ' . $this->travelRequest->getDepartureDate() . ' to ' . $this->travelRequest->getReturnDate())

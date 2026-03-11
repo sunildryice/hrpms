@@ -42,7 +42,7 @@ class LieuLeaveRequestRejected extends Notification
     {
         $url = route('lieu.leave.requests.show', $this->lieuLeaveRequest->id);
         return (new MailMessage)
-            ->greeting('Hey ' . $this->lieuLeaveRequest->getRequesterName() . ',')
+            ->greeting('Dear ' . $this->lieuLeaveRequest->getRequesterName() . ',')
             ->line('Your lieu leave request has been rejected.')
             ->line('Leave Number: ' . $this->lieuLeaveRequest->getLeaveNumber())
             ->line('Leave dates: ' . ($this->lieuLeaveRequest->start_date ? $this->lieuLeaveRequest->getStartDate() : '') . ' to ' . ($this->lieuLeaveRequest->end_date ? $this->lieuLeaveRequest->getEndDate() : ''))

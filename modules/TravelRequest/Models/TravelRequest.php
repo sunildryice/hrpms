@@ -311,6 +311,11 @@ class TravelRequest extends Model
             ->orderBy('date', 'asc');
     }
 
+     public function airTicketItineraries()
+    {
+        return $this->travelRequestDayItineraries()->where('air_ticket', true);
+    }
+
     /**
      * Get the travel type of the travel request.
      */

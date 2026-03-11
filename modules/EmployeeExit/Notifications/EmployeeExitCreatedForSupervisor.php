@@ -50,7 +50,7 @@ class EmployeeExitCreatedForSupervisor extends Notification
             'dashboard.index'
         );
         return (new MailMessage)
-            ->greeting('Hey ' .  $exitHandOverNote->employee->supervisor->full_name . ',')
+            ->greeting('Dear ' .  $exitHandOverNote->employee->supervisor->full_name . ',')
             ->line('Employee exit has been created for employee ' . $this->exitHandOverNote->employee->getFullName() . '.')
             ->line('Please review the staff clearance.')
             ->action('View Employee Exit', $url);

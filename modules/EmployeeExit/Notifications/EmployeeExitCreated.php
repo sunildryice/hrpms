@@ -48,7 +48,7 @@ class EmployeeExitCreated extends Notification
         $url = route('exit.employee.handover.note.edit');
 
         return (new MailMessage)
-            ->greeting('Hey ' . $this->exitHandOverNote->employee?->getFullName() . ',')
+            ->greeting('Dear ' . $this->exitHandOverNote->employee?->getFullName() . ',')
             ->line('Employee exit has been created for you. Please do the further required actions.')
             ->action('View Employee Exit', $url);
     }

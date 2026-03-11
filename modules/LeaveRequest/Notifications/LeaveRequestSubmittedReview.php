@@ -52,7 +52,7 @@ class LeaveRequestSubmittedReview extends Notification
 
 
         return (new MailMessage)
-            ->greeting('Hey ' . $this->leaveRequest->getApproverName() . ',')
+            ->greeting('Dear ' . $this->leaveRequest->getApproverName() . ',')
             ->line('You have a new leave request (' . $this->leaveRequest->getLeaveType() . ') awaiting your approval.')
             ->line('Employee : ' . $this->leaveRequest->getRequesterName())
             ->line('Leave dates : ' . $this->leaveRequest->start_date->format('d M Y') . ' to ' . $this->leaveRequest->end_date->format('d M Y'))

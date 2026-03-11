@@ -47,7 +47,7 @@ class TimeSheetApproved extends Notification
     {
         $url = route('monthly-timesheet.show', $this->timeSheet->id);
         return (new MailMessage)
-            ->greeting('Hey ' . ($this->timeSheet->requester->getFullName() ?? '-') . ',')
+            ->greeting('Dear ' . ($this->timeSheet->requester->getFullName() ?? '-') . ',')
             ->line('Your timesheet has been approved.')
             ->line('Period: ' . ($this->timeSheet->month_name ?? $this->timeSheet->month) . ' ' . $this->timeSheet->year)
             ->line('Dates: ' . ($this->timeSheet->start_date ? $this->timeSheet->start_date->format('d M Y') : '-') . ' to ' . ($this->timeSheet->end_date ? $this->timeSheet->end_date->format('d M Y') : '-'))

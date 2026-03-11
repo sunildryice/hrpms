@@ -41,7 +41,7 @@ class OffDayWorkSubmitted extends Notification
     {
         $url = route('approve.off.day.work.show', $this->offDayWork->id);
         return (new MailMessage)
-            ->greeting('Hey ' . ($this->offDayWork->approver->full_name ?? '-') . ',')
+            ->greeting('Dear ' . ($this->offDayWork->approver->full_name ?? '-') . ',')
             ->line('You have a new off day work request awaiting your approval.')
             ->line('Employee: ' . ($this->offDayWork->requester->getFullName() ?? '-'))
             ->line('Request Number: ' . ($this->offDayWork->getRequestId() ?? $this->offDayWork->id))

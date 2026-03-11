@@ -52,7 +52,7 @@ class VehicleRequestSubmitted extends Notification
         }
 
         return (new MailMessage)
-            ->greeting('Hey ' . $this->vehicleRequest->getApproverName() . ',')
+            ->greeting('Dear ' . $this->vehicleRequest->getApproverName() . ',')
             ->line('You have a new vehicle request awaiting your approval.')
             ->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
             ->line('Requester : ' . $this->vehicleRequest->getRequesterName())

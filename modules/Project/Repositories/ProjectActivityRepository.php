@@ -12,10 +12,9 @@ use Modules\Project\Models\ProjectActivity;
 class ProjectActivityRepository extends Repository
 {
     public function __construct(
-        protected Project         $project,
+        protected Project $project,
         protected ProjectActivity $projectActivity
-    )
-    {
+    ) {
         $this->project = $project;
         $this->model = $projectActivity;
     }
@@ -25,6 +24,7 @@ class ProjectActivityRepository extends Repository
         return $this->model
             ->with('members')
             ->whereIn('activity_level', ['activity', 'sub_activity'])
+            ->whereIn('status', [ActivityStatus::NotStarted->value, ActivityStatus::UnderProgress->value])
             ->whereHas('members', function ($q) use ($authUser) {
                 $q->where('user_id', $authUser->id);
             })

@@ -326,7 +326,7 @@
                                     <div class="w-100">
                                         <div class="request-title d-flex justify-content-between align-items-start">
                                             <div class="fw-bold">
-                                                {{ $detail->activity?->title ?? '—' }}
+                                                {{ $detail->project?->short_name ?? '—' }}
                                             </div>
                                             <div>
                                                 <span
@@ -345,10 +345,7 @@
 
                                         <div class="text-muted">
                                             <div class="mb-1">
-                                                {{ $detail->project?->title ?? 'No Project' }}
-                                                @if ($detail->project?->short_name)
-                                                    <small class="text-muted">({{ $detail->project->short_name }})</small>
-                                                @endif
+                                                {{ $detail->plan_tasks ?? '—' }}
                                             </div>
                                         </div>
                                     </div>

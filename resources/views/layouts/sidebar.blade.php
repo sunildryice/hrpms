@@ -1144,7 +1144,7 @@
 
                                 @if ($authUser->can('work-from-home-report'))
                                     <a class="nav-link" href="{{ route('report.work.from.home.index') }}"
-                                       id="work-from-home-report-menu">Work From Home</a>
+                                       id="work-from-home-report-menu">WFH / Field Work</a>
                                 @endif
                             </div>
                         </div>

@@ -11,6 +11,7 @@ use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
 use Modules\Project\Models\ProjectActivity;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Models\WorkFromHomeLog;
 
 class WorkFromHome extends Model
@@ -204,5 +205,10 @@ class WorkFromHome extends Model
     public function getWorkFromHomeDuration()
     {
         return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
+    }
+
+    public function getTypeName()
+    {
+        return WorkFromHomeTypes::options()[$this->type] ?? ucfirst(str_replace('_', ' ', $this->type));
     }
 }

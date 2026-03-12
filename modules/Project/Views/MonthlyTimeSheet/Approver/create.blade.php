@@ -134,8 +134,9 @@
                         <thead class="bg-light">
                             <tr>
                                 <th>{{ __('label.sn') }}</th>
-                                <th>Date</th>
-                                <th>Project</th>
+                                <th style="width: 100px;">Date</th>
+                                <th style="width: 100px;">Day</th>
+                                <th style="width: 120px;">Project</th>
                                 <th>Activities</th>
                                 <th>Tasks</th>
                                 <th>Hours</th>
@@ -157,6 +158,9 @@
                                         <td>{{ $sn++ }}</td>
                                         <td>
                                             {{ $carbonDate->format('d, M Y') }}
+                                        </td>
+                                        <td>
+                                            {{ $carbonDate->format('l') }}
                                         </td>
                                         <td colspan="4" class="text-center fw-bold">
                                             {!! $dayData['reason'] !!}
@@ -205,6 +209,9 @@
                                                         <td rowspan="{{ $dateRowCount }}">{{ $sn++ }}</td>
                                                         <td rowspan="{{ $dateRowCount }}">
                                                             {{ $carbonDate->format('d, M Y') }}
+                                                        </td>
+                                                        <td rowspan="{{ $dateRowCount }}">
+                                                            {{ $carbonDate->format('l') }}
                                                         </td>
                                                         @php $datePrinted = true; @endphp
                                                     @endif

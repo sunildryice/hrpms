@@ -345,7 +345,7 @@
 
                                         <div class="text-muted">
                                             <div class="mb-1">
-                                                {{ $detail->plan_tasks ?? '—' }}
+                                                {{ $detail?->plan_tasks ?? '—' }}
                                             </div>
                                         </div>
                                     </div>

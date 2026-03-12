@@ -2,15 +2,16 @@
 
 namespace Modules\Project\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use Modules\Project\Repositories\ProjectRepository;
-use Modules\Project\Repositories\ProjectActivityRepository;
-use Modules\Project\Repositories\ActivityTimeSheetRepository;
-use Modules\Project\Repositories\WorkPlanRepository;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Modules\Project\Models\Enums\WorkPlanStatus;
+use Modules\Project\Repositories\ActivityTimeSheetRepository;
+use Modules\Project\Repositories\ProjectActivityRepository;
+use Modules\Project\Repositories\ProjectRepository;
+use Modules\Project\Repositories\WorkPlanDetailRepository;
+use Modules\Project\Repositories\WorkPlanRepository;
+use Yajra\DataTables\Facades\DataTables;
 
 class EmployeeWorkPlanController extends Controller
 {
@@ -19,6 +20,7 @@ class EmployeeWorkPlanController extends Controller
         protected ProjectRepository $projects,
         protected ProjectActivityRepository $projectActivities,
         protected WorkPlanRepository $workPlans,
+        protected WorkPlanDetailRepository $workPlanDetails,
     ) {}
 
     public function index(Request $request)
@@ -100,7 +102,7 @@ class EmployeeWorkPlanController extends Controller
                 return DataTables::of(collect([]))->make(true);
             }
 
-            $query = $this->workPlans->getWorkPlanDetails($id);
+            $query = $this->workPlanDetails->getWorkPlanDetails($id);
 
 
 

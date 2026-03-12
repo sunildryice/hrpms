@@ -15,7 +15,7 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\MeetingHallBooking\Repositories\MeetingHallBookingRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
-use Modules\Project\Repositories\WorkPlanRepository;
+use Modules\Project\Repositories\WorkPlanDetailRepository;
 use Modules\PurchaseOrder\Repositories\PurchaseOrderRepository;
 use Modules\PurchaseRequest\Models\PurchaseRequest;
 use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
@@ -44,24 +44,25 @@ class DashboardController extends Controller
      * @param LocalTravelRepository $localTravels
      */
     public function __construct(
-        protected Helper $helper,
-        protected OfficeRepository $offices,
-        protected NotificationRepository $notifications,
+        protected AnnouncementRepository $announcements,
+        protected EmployeeRepository $employees,
+        protected EventCompletionRepository $eventCompletion,
         protected FiscalYearRepository $fiscalYears,
+        protected Helper $helper,
+        protected LeaveRequestRepository $leaveRequests,
+        protected LieuLeaveRequestRepository $lieuLeaveRequests,
+        protected LocalTravelRepository $localTravels,
+        protected MeetingHallBookingRepository $meetingHallBookings,
+        protected NotificationRepository $notifications,
+        protected OfficeRepository $offices,
+        protected PerformanceReviewRepository $performanceReviews,
+        protected PurchaseOrderRepository $purchaseOrders,
+        protected PurchaseRequestRepository $purchaseRequests,
+        protected StaffClearanceRepository $staffClearances,
         protected TravelRequestRepository $travelRequests,
         protected VehicleRequestRepository $vehicleRequests,
-        protected LeaveRequestRepository $leaveRequests,
-        protected PurchaseOrderRepository $purchaseOrders,
-        protected MeetingHallBookingRepository $meetingHallBookings,
-        protected AnnouncementRepository $announcements,
-        protected PurchaseRequestRepository $purchaseRequests,
-        protected LocalTravelRepository $localTravels,
-        protected EventCompletionRepository $eventCompletion,
-        protected PerformanceReviewRepository $performanceReviews,
-        protected StaffClearanceRepository $staffClearances,
         protected WorkFromHomeRepository $workFromHomes,
-        protected LieuLeaveRequestRepository $lieuLeaveRequests,
-        protected EmployeeRepository $employees,
+        protected WorkPlanDetailRepository $workPlanDetails,
     ) {
     }
 
@@ -79,9 +80,7 @@ class DashboardController extends Controller
         $currentWeekWorkPlans = collect();
 
         if ($authUser->employee) {
-            $currentWeekWorkPlans = app(WorkPlanRepository::class)
-                ->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)
-                ->get();
+            $currentWeekWorkPlans = $this->workPlanDetails->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)->get();
         }
 
         $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));

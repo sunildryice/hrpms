@@ -2,15 +2,20 @@
 
 namespace Modules\Project\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Yajra\DataTables\Facades\DataTables;
-use Modules\Project\Repositories\WorkPlanRepository;
+use Illuminate\Http\Request;
 use Modules\Project\Models\Enums\WorkPlanStatus;
+use Modules\Project\Repositories\WorkPlanDetailRepository;
+use Modules\Project\Repositories\WorkPlanRepository;
+use Yajra\DataTables\Facades\DataTables;
 
 class InvolvedWorkPlanController extends Controller
 {
-    public function __construct(protected WorkPlanRepository $workPlans) {}
+    public function __construct(
+        protected WorkPlanRepository $workPlans,
+        protected WorkPlanDetailRepository $workPlanDetails,
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -27,7 +32,7 @@ class InvolvedWorkPlanController extends Controller
                 return DataTables::of(collect([]))->make(true);
             }
 
-            $detailsQuery = $this->workPlans->getUserWorkPlanDetailsByWeek(
+            $detailsQuery = $this->workPlanDetails->getUserWorkPlanDetailsByWeek(
                 $currentWeekStart->toDateString(),
                 $currentWeekEnd->toDateString(),
                 $userId

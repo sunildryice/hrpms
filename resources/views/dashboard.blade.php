@@ -305,6 +305,60 @@
                 </div>
             @endif
 
+            @if ($currentWeekWorkPlans->isNotEmpty())
+                <div class="mb-3 col-lg-4">
+                    <div class="mb-2 border-0 shadow-sm card">
+                        <div class="card-header fw-bold">
+                            Work Plan
+                            <small class="float-end text-muted fw-normal">
+                                {{ $currentWeekStart->format('M d') }} – {{ $currentWeekEnd->format('M d, Y') }}
+                            </small>
+                        </div>
+                        <div class="p-3 div-content-area">
+                            @foreach ($currentWeekWorkPlans as $detail)
+                                <div class="gap-3 mb-4 d-flex align-items-start">
+                                    <div>
+                                        <span
+                                            class="text-white rounded bg-primary avatar d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-journal-check"></i>
+                                        </span>
+                                    </div>
+                                    <div class="w-100">
+                                        <div class="request-title d-flex justify-content-between align-items-start">
+                                            <div class="fw-bold">
+                                                {{ $detail->activity?->title ?? '—' }}
+                                            </div>
+                                            <div>
+                                                <span
+                                                    class="badge rounded-pill 
+                                            {{ match ($detail->status ?? 'not_started') {
+                                                'completed' => 'bg-success',
+                                                'under_progress' => 'bg-warning text-dark',
+                                                'not_started' => 'bg-secondary',
+                                                'no_required' => 'bg-danger',
+                                                default => 'bg-info',
+                                            } }}">
+                                                    {{ ucfirst(str_replace('_', ' ', $detail->status ?? 'not started')) }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="text-muted">
+                                            <div class="mb-1">
+                                                {{ $detail->project?->title ?? 'No Project' }}
+                                                @if ($detail->project?->short_name)
+                                                    <small class="text-muted">({{ $detail->project->short_name }})</small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @if ($approvedLeaves->isNotEmpty() || $upcomingLeaves->isNotEmpty())
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
@@ -484,62 +538,6 @@
                                 </div>
                             @endforeach
 
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-
-
-            @if ($currentWeekWorkPlans->isNotEmpty())
-                <div class="mb-3 col-lg-4">
-                    <div class="mb-2 border-0 shadow-sm card">
-                        <div class="card-header fw-bold">
-                            Work Plan
-                            <small class="float-end text-muted fw-normal">
-                                {{ $currentWeekStart->format('M d') }} – {{ $currentWeekEnd->format('M d, Y') }}
-                            </small>
-                        </div>
-                        <div class="p-3 div-content-area">
-                            @foreach ($currentWeekWorkPlans as $detail)
-                                <div class="gap-3 mb-4 d-flex align-items-start">
-                                    <div>
-                                        <span
-                                            class="text-white rounded bg-primary avatar d-flex align-items-center justify-content-center">
-                                            <i class="bi bi-journal-check"></i>
-                                        </span>
-                                    </div>
-                                    <div class="w-100">
-                                        <div class="request-title d-flex justify-content-between align-items-start">
-                                            <div class="fw-bold">
-                                                {{ $detail->activity?->title ?? '—' }}
-                                            </div>
-                                            <div>
-                                                <span
-                                                    class="badge rounded-pill 
-                                            {{ match ($detail->status ?? 'not_started') {
-                                                'completed' => 'bg-success',
-                                                'under_progress' => 'bg-warning text-dark',
-                                                'not_started' => 'bg-secondary',
-                                                'no_required' => 'bg-danger',
-                                                default => 'bg-info',
-                                            } }}">
-                                                    {{ ucfirst(str_replace('_', ' ', $detail->status ?? 'not started')) }}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div class="text-muted">
-                                            <div class="mb-1">
-                                                {{ $detail->project?->title ?? 'No Project' }}
-                                                @if ($detail->project?->short_name)
-                                                    <small class="text-muted">({{ $detail->project->short_name }})</small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
                         </div>
                     </div>
                 </div>

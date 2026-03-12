@@ -28,8 +28,8 @@ class WorkPlanPolicy
 
     public function update(User $user, WorkPlan $workPlan)
     {
-        $workPlanMonday = Carbon::parse($workPlan->from_date)->next(Carbon::FRIDAY)->endOfDay();
-        return Carbon::now() < $workPlanMonday;
+        // $workPlanMonday = Carbon::parse($workPlan->from_date)->next(Carbon::FRIDAY)->endOfDay();
+        // return Carbon::now() < $workPlanMonday;
 
         $now = Carbon::now();
         $weekStart = Carbon::parse($workPlan->from_date)->startOfDay();
@@ -48,8 +48,8 @@ class WorkPlanPolicy
         }
 
         // 3. Current Week (Inside the range)
-        // Editable ONLY up to Monday.
-        return $now->dayOfWeekIso <= 1;
+        // Editable ONLY up to Monday and Tuesday.
+        return $now->dayOfWeekIso <= 2;
     }
 
     public function delete(User $user, WorkPlan $workPlan)
@@ -59,8 +59,8 @@ class WorkPlanPolicy
 
     public function updateStatus(User $user, WorkPlan $workPlan)
     {
-        $workPlanFriday = Carbon::parse($workPlan->from_date)->next(Carbon::FRIDAY)->startOfDay();
-        return Carbon::now() > $workPlanFriday;
+        // $workPlanFriday = Carbon::parse($workPlan->from_date)->next(Carbon::FRIDAY)->startOfDay();
+        // return Carbon::now() > $workPlanFriday;
 
         $now = Carbon::now()->startOfDay();
         $start = Carbon::parse($workPlan->from_date)->startOfDay();
@@ -73,9 +73,14 @@ class WorkPlanPolicy
             $end = $start->copy()->addDays($daysToSaturday)->endOfDay();
         }
 
+        // Future week → not allowed
+        if ($now->lt($start)) {
+            return false;
+        }
+
         // 1. Current Week: Now is within the plan duration
         if ($now->between($start, $end)) {
-            return $now->isFriday();
+            return $now->isWednesday() || $now->isThursday() || $now->isFriday();
         }
 
         // 2. Previous Week: Plan ended recently (within the last ~8 days)

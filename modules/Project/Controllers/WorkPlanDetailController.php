@@ -12,6 +12,7 @@ use Modules\Project\Models\WorkPlan;
 use Modules\Project\Models\WorkPlanDetail;
 use Modules\Project\Repositories\ProjectActivityRepository;
 use Modules\Project\Repositories\ProjectRepository;
+use Modules\Project\Repositories\WorkPlanDetailRepository;
 use Modules\Project\Repositories\WorkPlanRepository;
 use Modules\Project\Requests\WorkPlan\StoreRequest as WorkPlanStoreRequest;
 use Yajra\DataTables\Facades\DataTables;
@@ -20,10 +21,13 @@ class WorkPlanDetailController extends Controller
 {
 
     public function __construct(
-        protected ProjectRepository $projects,
+        protected ProjectRepository         $projects,
         protected ProjectActivityRepository $projectActivities,
-        protected WorkPlanRepository $workPlans,
-    ) {}
+        protected WorkPlanRepository        $workPlans,
+        protected WorkPlanDetailRepository  $workPlanDetails
+    )
+    {
+    }
 
     public function index(Request $request, WorkPlan $workPlan)
     {
@@ -32,17 +36,8 @@ class WorkPlanDetailController extends Controller
         $isStatusUpdatable = $authUser->can('updateStatus', $workPlan);
 
         if ($request->ajax()) {
-            $user = $authUser;
-            if (!$user->employee) {
-                return DataTables::of(collect([]))->make(true);
-            }
-
-            // ensure we can access the parent plan for the date
-            $query = $this->workPlans->getWorkPlanDetails($workPlan->id)
-                ->with('workPlan')
-                ->select('work_plan_details.*');
-
-           
+            $query = $this->workPlanDetails->with('members')
+                ->where('work_plan_id',$workPlan->id);
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -57,7 +52,6 @@ class WorkPlanDetailController extends Controller
                 ->addColumn('reason', function ($row) {
                     return $row->reason ?? '';
                 })
-
                 ->editColumn('status', function ($row) use ($isStatusUpdatable) {
                     $statusEnum = WorkPlanStatus::tryFrom($row->status) ?? WorkPlanStatus::NotStarted;
 
@@ -157,11 +151,10 @@ class WorkPlanDetailController extends Controller
         //     return response()->json(['message' => 'Entry dates are required.'], 422);
         // }
 
-     
+
         $data['from_date'] = $workPlan->from_date;
         $data['to_date'] = $workPlan->to_date;
 
-  
 
         // Create a temporary instance to check policy against the date
         $checkPlan = new WorkPlan(['from_date' => $data['from_date']]);
@@ -171,14 +164,13 @@ class WorkPlanDetailController extends Controller
         if (!$user->employee) {
             return response()->json(['message' => 'Employee record not found for user.'], 403);
         }
-       
+
         $workPlan = $this->workPlans->findOrCreateWorkPlan(
             $user->employee->id,
             $data['from_date'],
             $data['to_date']
         );
 
-         
 
         // Save each entry with its members and date
         foreach ($data['entries'] as $entry) {
@@ -191,7 +183,6 @@ class WorkPlanDetailController extends Controller
             ];
             $this->workPlans->createWorkPlanDetail($workPlan->id, $entryData);
         }
-
 
 
         return redirect()->route('work-plan.details', $workPlan->id)
@@ -226,7 +217,7 @@ class WorkPlanDetailController extends Controller
         // $data['work_plan_date'] = $request->input('work_plan_date');
         $detail = $this->workPlans->findDetailById($id);
 
-      
+
         // if (auth()->user()->cannot('update', $detail->workPlan)) {
         //     return response()->json(['message' => 'This work plan cannot be edited.'], 403);
         // }
@@ -250,7 +241,7 @@ class WorkPlanDetailController extends Controller
         ]);
 
         $statusEnum = WorkPlanStatus::tryFrom($data['status']) ?? WorkPlanStatus::NotStarted;
-        $reason = trim((string) ($data['reason'] ?? ''));
+        $reason = trim((string)($data['reason'] ?? ''));
 
         if (in_array($statusEnum, [WorkPlanStatus::Completed, WorkPlanStatus::NoRequired]) && blank($reason)) {
             return response()->json(['message' => 'Reason is required.'], 422);

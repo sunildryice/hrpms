@@ -22,7 +22,7 @@ class WorkPlanRepository extends Repository
 
     public function findByDateAndEmployee($date, $employeeId)
     {
-       
+
         return $this->model->where('employee_id', $employeeId)
             ->where('from_date', '<=', $date)
             ->where('to_date', '>=', $date)
@@ -64,13 +64,13 @@ class WorkPlanRepository extends Repository
 
     public function getWorkPlanDetails($workPlanId)
     {
-        return WorkPlanDetail::with(['project', 'activity', 'members',])
+        return $this->model->with(['project', 'members',])
             ->where('work_plan_id', $workPlanId);
     }
 
     public function getUserWorkPlanDetailsByWeek($fromDate, $toDate, $userId)
     {
-        return WorkPlanDetail::with(['project', 'activity', 'workPlan.employee', 'members',])
+        return $this->model->with(['project', 'workPlan.employee', 'members',])
             ->whereHas('workPlan', function ($query) use ($fromDate, $toDate) {
                 $query->whereDate('from_date', $fromDate)
                     ->whereDate('to_date', $toDate);
@@ -90,19 +90,8 @@ class WorkPlanRepository extends Repository
                 fn($q) =>
                 $q->whereDate('from_date', $fromDate)
                     ->whereDate('to_date', $toDate)
-            )->whereHas(
-                'workPlan',
-                fn($q) =>
-                $q->where('employee_id', $employeeId)
-            )->orWhere(function ($q) use ($fromDate, $toDate, $authUser) {
-                $q->whereHas(
-                    'workPlan',
-                    fn($sq) =>
-                    $sq->whereDate('from_date', $fromDate)
-                        ->whereDate('to_date', $toDate)
-                )->whereHas('members', fn($sq) =>
-                $sq->where('user_id', $authUser->id));
-            });
+                ->where('employee_id', $employeeId)
+            );
     }
 
     public function getWeekSelectionForUser(int $userId, ?string $requestedWeekStart = null): array

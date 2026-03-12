@@ -94,7 +94,7 @@ class DashboardController extends Controller
 
         $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
         $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
-        
+
         if ($canSeeTeamEvents) {
             $upcomingContractEndings = $this->employees->getUpcomingContractEndings($days);
             $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions($days);
@@ -140,8 +140,6 @@ class DashboardController extends Controller
             'upcomingContractEndings' => $upcomingContractEndings,
             'upcomingProbationCompletions' => $upcomingProbationCompletions,
         ];
-
-
         return view('dashboard', $array);
     }
 

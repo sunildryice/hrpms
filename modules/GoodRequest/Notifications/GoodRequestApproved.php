@@ -14,6 +14,7 @@ class GoodRequestApproved extends Notification
     use Queueable;
 
     private $goodRequest;
+    private $otherUser;
 
     /**
      * Create a new notification instance.
@@ -21,9 +22,11 @@ class GoodRequestApproved extends Notification
      * @return void
      */
     public function __construct(
-        GoodRequest $goodRequest
+        GoodRequest $goodRequest,
+        $otherUser = null
     ) {
         $this->goodRequest = $goodRequest;
+        $this->otherUser = $otherUser;
     }
 
     /**
@@ -46,11 +49,21 @@ class GoodRequestApproved extends Notification
     public function toMail($notifiable)
     {
         $url = route('assign.good.requests.create', $this->goodRequest->id);
+        // $otherName = $this->otherUser?->full_name;
+        // $greeting = 'Dear ' . $notifiable->full_name;
+        // if ($otherName) {
+        //     $greeting .= ' / ' . $otherName;
+        // }
+        $itemName = $this->goodRequest->latestGoodRequestItem?->item_name
+            ?? $this->goodRequest->goodRequestItems->first()?->item_name
+            ?? '';
+        $requesterName = $this->goodRequest->requester?->getFullName() ?? '';
+
         return (new MailMessage)
-            ->greeting('Hello!')
-            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your assignment.')
-            ->action('View Good Request', $url)
-        ;
+            // ->greeting($greeting)
+            ->greeting('Dear ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
+            ->line('A goods request for ' . $itemName . ' submitted by ' . $requesterName . ' has been approved and assigned to you for processing. Please review the request and take the necessary action.')
+            ->action('View Good Request', $url);
     }
 
     /**
@@ -75,10 +88,15 @@ class GoodRequestApproved extends Notification
     public function toDatabase($notifiable)
     {
         event(new NotificationPushed());
+        $itemName = $this->goodRequest->latestGoodRequestItem?->item_name
+            ?? $this->goodRequest->goodRequestItems->first()?->item_name
+            ?? '';
+        $requesterName = $this->goodRequest->requester?->getFullName() ?? '';
+
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => route('assign.good.requests.create', $this->goodRequest->id),
-            'subject' => 'Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your assignment.'
+            'subject' => 'A goods request for ' . $itemName . ' submitted by ' . $requesterName . ' has been approved and assigned to you for processing.'
         ];
     }
 }

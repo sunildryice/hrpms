@@ -433,8 +433,9 @@
                     <table class="table table-bordered align-middle" id="MonthlyTimeSheetTable">
                         <thead class="bg-light">
                             <tr>
-                                <th>Date</th>
-                                <th>Project</th>
+                                <th style="width: 100px;">Date</th>
+                                <th style="width: 100px;">Day</th>
+                                <th style="width: 120px;">Project</th>
                                 <th>Activities</th>
                                 <th>Tasks</th>
                                 <th>Hours</th>
@@ -478,6 +479,7 @@
                                     <tr class="date-group-start {{ $loop->first ? '' : 'border-top border-2' }}"
                                         data-date-group="{{ $dateYmd }}">
                                         <td class="align-middle">{{ $carbon->format('d, M Y') }}</td>
+                                        <td class="align-middle">{{ $carbon->format('l') }}</td>
                                         <td colspan="4" class="text-center text-muted fw-bold py-3">
                                             {!! $dayData['reason'] ?? 'No timesheet entries' !!}
                                         </td>
@@ -510,6 +512,10 @@
                                                         <td rowspan="{{ $items->count() }}"
                                                             class="align-middle">
                                                             {{ $carbon->format('d, M Y') }}
+                                                        </td>
+                                                        <td rowspan="{{ $items->count() }}"
+                                                            class="align-middle">
+                                                            {{ $carbon->format('l') }}
                                                         </td>
                                                         @php $datePrinted = true; @endphp
                                                     @endif

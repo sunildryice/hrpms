@@ -32,14 +32,13 @@ class ApproveController extends Controller
      * @param UserRepository $users
      */
     public function __construct(
-        protected EmployeeRepository      $employees,
-        protected FiscalYearRepository    $fiscalYears,
-        protected GoodRequestRepository   $goodRequests,
+        protected EmployeeRepository $employees,
+        protected FiscalYearRepository $fiscalYears,
+        protected GoodRequestRepository $goodRequests,
         protected InventoryItemRepository $inventoryItems,
-        protected ItemRepository          $items,
-        protected UserRepository          $users
-    )
-    {
+        protected ItemRepository $items,
+        protected UserRepository $users
+    ) {
     }
 
     /**
@@ -54,15 +53,15 @@ class ApproveController extends Controller
         if ($request->ajax()) {
             $data = $this->goodRequests->with(['status', 'requester'])
                 ->where(function ($q) use ($authUser) {
-                    $q->where(function ($q) use($authUser) {
+                    $q->where(function ($q) use ($authUser) {
                         $q->where('approver_id', $authUser->id)
-                        ->where('status_id', config('constant.VERIFIED_STATUS'))
-                        ->whereNotNull('reviewer_id');
+                            ->where('status_id', config('constant.VERIFIED_STATUS'))
+                            ->whereNotNull('reviewer_id');
                     });
-                    $q->orWhere(function($q) use($authUser) {
+                    $q->orWhere(function ($q) use ($authUser) {
                         $q->where('approver_id', $authUser->id)
-                        ->where('status_id', config('constant.SUBMITTED_STATUS'))
-                        ->whereNull('reviewer_id');
+                            ->where('status_id', config('constant.SUBMITTED_STATUS'))
+                            ->whereNull('reviewer_id');
                     });
                 });
 
@@ -130,6 +129,16 @@ class ApproveController extends Controller
             } else if ($goodRequest->status_id == config('constant.APPROVED_STATUS')) {
                 $message = 'Good request is successfully approved.';
                 $goodRequest->logisticOfficer->notify(new GoodRequestApproved($goodRequest));
+
+                // $approver = $goodRequest->approver;
+                // $logisticOfficer = $goodRequest->logisticOfficer;
+                // if ($approver) {
+                //     $approver->notify(new GoodRequestApproved($goodRequest, $logisticOfficer));
+                // }
+                // if ($logisticOfficer) {
+                //     $logisticOfficer->notify(new GoodRequestApproved($goodRequest, $approver));
+                // }
+
             }
 
             return redirect()->route('approve.good.requests.index')

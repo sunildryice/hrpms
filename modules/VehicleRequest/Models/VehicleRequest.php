@@ -77,6 +77,7 @@ class VehicleRequest extends Model
         'requester_id',
         'reviewer_id',
         'approver_id',
+        'driver_id',
         'created_by',
         'updated_by',
     ];
@@ -112,7 +113,7 @@ class VehicleRequest extends Model
     {
         return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
     }
-    
+
     public function getProjectCode()
     {
         return $this->projectCode->getProjectCodeWithDescription();
@@ -388,5 +389,15 @@ class VehicleRequest extends Model
                 $forText = '';
         }
         return $forText;
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'driver_id')->withDefault();
+    }
+
+    public function getDriverName()
+    {
+        return $this->driver->getFullName();
     }
 }

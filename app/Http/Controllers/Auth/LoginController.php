@@ -92,9 +92,9 @@ class LoginController extends Controller
             $user = auth()->user();
             if($user->activated_at) {
                 self::afterLogin($user);
-                if ($request->has('previous')) {
-                    return redirect()->intended($request->previous);
-                }
+                // if ($request->has('previous')) {
+                //     return redirect()->intended($request->previous);
+                // }
                 return redirect()->intended(route('dashboard.index'));
             } else {
                 auth()->logout();

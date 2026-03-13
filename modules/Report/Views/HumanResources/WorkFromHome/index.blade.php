@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Report : Work From Home')
+@section('title', 'Report : WFH / Field Report')
 
 @section('page_js')
     <script type="text/javascript">
@@ -57,7 +57,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label class="form-label" for="fiscal_year">Year</label>
                             <select class="form-control select2" name="fiscal_year" id="fiscal_year">
                                 <option value="">Select Year</option>
@@ -69,7 +69,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label class="form-label" for="month">Month</label>
                             <select class="form-control select2" name="month" id="month">
                                 <option value="">Select all</option>

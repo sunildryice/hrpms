@@ -26,7 +26,8 @@ class AssignRequest extends FormRequest
         return [
             'status_id'=>'required',
             'assigned_vehicle_id'=>'required_if:status_id,6',
-            'log_remarks'=>'required',
+            'driver_id'=>'required_if:status_id,6',
+            'log_remarks'=>'nullable',
         ];
     }
 
@@ -34,7 +35,8 @@ class AssignRequest extends FormRequest
     {
         return [
             'assigned_vehicle_id.required_if'=>'Vehicle is required.',
-            'log_remarks.required'=>'Remarks is required.',
+            'driver_id.required_if'=>'Driver is required.',
+            // 'log_remarks.required'=>'Remarks is required.',
         ];
     }
 }

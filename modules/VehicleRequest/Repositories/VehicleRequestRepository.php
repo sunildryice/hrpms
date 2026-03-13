@@ -175,6 +175,9 @@ class VehicleRequestRepository extends Repository
                 $inputs['assigned_arrival_datetime'] = $vehicleRequest->start_datetime->endOfDay()->format('Y-m-d H:i');
                 $inputs['status_id'] = config('constant.ASSIGNED_STATUS');
             }
+            if (isset($inputs['driver_id'])) {
+                $vehicleRequest->driver_id = $inputs['driver_id'];
+            }
             $vehicleRequest->update($inputs);
             $vehicleRequest->logs()->create($inputs);
             DB::commit();
@@ -191,7 +194,7 @@ class VehicleRequestRepository extends Repository
         try {
             $inputs['status_id'] = 1;
             $vehicleRequest = $this->model->create($inputs);
-            if(!empty($inputs['procurement_officer']) && $vehicleRequest->vehicle_request_type_id == 2){
+            if (!empty($inputs['procurement_officer']) && $vehicleRequest->vehicle_request_type_id == 2) {
                 $vehicleRequest->procurementOfficers()->sync($inputs['procurement_officer']);
             }
             if ($inputs['btn'] == 'submit') {
@@ -264,7 +267,7 @@ class VehicleRequestRepository extends Repository
         try {
             $vehicleRequest = $this->model->find($id);
             $vehicleRequest->fill($inputs)->save();
-            if(!empty($inputs['procurement_officer']) && $vehicleRequest->vehicle_request_type_id == 2){
+            if (!empty($inputs['procurement_officer']) && $vehicleRequest->vehicle_request_type_id == 2) {
                 $vehicleRequest->procurementOfficers()->sync($inputs['procurement_officer']);
             }
             if ($inputs['btn'] == 'submit') {

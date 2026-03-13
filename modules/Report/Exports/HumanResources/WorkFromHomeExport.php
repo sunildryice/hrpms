@@ -2,32 +2,34 @@
 
 namespace Modules\Report\Exports\HumanResources;
 
-use Maatwebsite\Excel\Excel;
 use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\FromView;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Excel;
 use Modules\Master\Repositories\FiscalYearRepository;
+use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class WorkFromHomeExport implements Responsable, ShouldAutoSize, WithStyles, WithStrictNullComparison, FromView
 {
     use Exportable;
 
-    private $office, $fiscalYear, $month, $employee, $requestDate;
+    private $office, $fiscalYear, $month, $employee, $requestDate, $type;
     private $fiscalYears, $workFromHomes;
 
-    public function __construct($fiscalYear, $month, $office, $employee, $requestDate)
+    public function __construct($fiscalYear, $month, $office, $employee, $requestDate, $type)
     {
         $this->fiscalYear   = $fiscalYear;
         $this->month        = $month;
         $this->office       = $office;
         $this->employee     = $employee;
         $this->requestDate  = $requestDate;
+        $this->type         = $type;
 
         $this->fiscalYears  = app(FiscalYearRepository::class);
         $this->workFromHomes = app(WorkFromHomeRepository::class);
@@ -78,6 +80,9 @@ class WorkFromHomeExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         }
         if ($this->employee) {
             $query->where('requester_id', $this->employee);
+        }
+        if ($this->type !== null && $this->type !== '') {
+            $query->where('type', $this->type);      
         }
 
         $workFromHomes = $query->orderBy('start_date', 'desc')->get();

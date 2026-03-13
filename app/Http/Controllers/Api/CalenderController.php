@@ -34,6 +34,9 @@ class CalenderController extends Controller
 
         $leaveRequests = $this->leaveRequest->query()
             ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->whereHas('leaveDays', function ($query) {
+                $query->where('leave_mode_id', '<>', config('constant.NO_LEAVE'));
+            })
             ->where(function ($q) use ($startOfMonth, $endOfMonth) {
                 $q->whereBetween('start_date', [$startOfMonth, $endOfMonth])
                     ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth]);

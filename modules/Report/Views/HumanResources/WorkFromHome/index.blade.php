@@ -32,7 +32,7 @@
                 </div>
                 <div class="add-info justify-content-end">
                     <a href="{{ route('report.work.from.home.export', $requestData) }}" id="btn_export"
-                       class="btn btn-primary btn-sm">
+                        class="btn btn-primary btn-sm">
                         Export
                     </a>
                 </div>
@@ -46,12 +46,24 @@
                 <form action="{{ route('report.work.from.home.index') }}" method="get">
                     <div class="mb-4 row" style="align-items: flex-end">
                         <div class="col-md-2">
+                            <label class="form-label" for="type">Type</label>
+                            <select class="form-control select2" name="type" id="type">
+                                <option value="">Select Type</option>
+                                @foreach ($typeOptions as $val => $label)
+                                    <option value="{{ $val }}"
+                                        {{ $val == request()->get('type') ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <label class="form-label" for="fiscal_year">Year</label>
-                            <select class="form-control" name="fiscal_year" id="fiscal_year">
+                            <select class="form-control select2" name="fiscal_year" id="fiscal_year">
                                 <option value="">Select Year</option>
                                 @foreach ($fiscalYears as $year)
                                     <option value="{{ $year->id }}"
-                                            {{ $year->id == request()->get('fiscal_year') ? 'selected' : '' }}>
+                                        {{ $year->id == request()->get('fiscal_year') ? 'selected' : '' }}>
                                         {{ $year->title }}
                                     </option>
                                 @endforeach
@@ -63,7 +75,7 @@
                                 <option value="">Select all</option>
                                 @foreach ($months as $key => $month)
                                     <option value="{{ $key }}"
-                                            {{ $key == request()->get('month') ? 'selected' : '' }}>
+                                        {{ $key == request()->get('month') ? 'selected' : '' }}>
                                         {{ $month }}
                                     </option>
                                 @endforeach
@@ -72,7 +84,7 @@
                         <div class="col-md-2">
                             <label class="form-label" for="request_date">Date</label>
                             <input type="text" class="form-control" name="request_date" id="request_date"
-                                   value="{{ $request_date }}" />
+                                value="{{ $request_date }}" />
                         </div>
                         <div class="col-md-2">
                             <label class="form-label" for="office">Office</label>
@@ -80,7 +92,7 @@
                                 <option value="">Select Office</option>
                                 @foreach ($offices as $office)
                                     <option value="{{ $office->id }}"
-                                            {{ $office->id == request()->get('office') ? 'selected' : '' }}>
+                                        {{ $office->id == request()->get('office') ? 'selected' : '' }}>
                                         {{ $office->getOfficeName() }}
                                     </option>
                                 @endforeach
@@ -93,7 +105,7 @@
                                 @foreach ($employees as $employee)
                                     @if ($employee->user)
                                         <option value="{{ $employee->user->id }}"
-                                                {{ $employee->user->id == request()->employee ? 'selected' : '' }}>
+                                            {{ $employee->user->id == request()->employee ? 'selected' : '' }}>
                                             {{ $employee->getFullName() }}
                                         </option>
                                     @endif
@@ -102,9 +114,9 @@
                         </div>
                         <div class="col">
                             <button type="submit" name="btn" value="search"
-                                    class="m-1 btn btn-primary btn-sm">Search</button>
+                                class="m-1 btn btn-primary btn-sm">Search</button>
                             <a href="{{ route('report.work.from.home.index') }}"
-                               class="m-1 btn btn-secondary btn-sm">Reset</a>
+                                class="m-1 btn btn-secondary btn-sm">Reset</a>
                         </div>
                     </div>
                     <span class="text-danger" id="error_message"></span>
@@ -117,6 +129,7 @@
                                 <th>{{ __('label.sn') }}</th>
                                 <th>Staff Name</th>
                                 <th>Office</th>
+                                <th>Type</th>
                                 <th>WFH Number</th>
                                 <th>Start Date</th>
                                 <th>End Date</th>
@@ -128,9 +141,11 @@
                         <tbody>
                             @foreach ($workFromHomes as $index => $wfh)
                                 <tr>
-                                    <td>{{ $workFromHomes->perPage() * ($workFromHomes->currentPage() - 1) + $index + 1 }}</td>
+                                    <td>{{ $workFromHomes->perPage() * ($workFromHomes->currentPage() - 1) + $index + 1 }}
+                                    </td>
                                     <td>{{ $wfh->getRequesterName() }}</td>
                                     <td>{{ $wfh->getOfficeName() ?? '-' }}</td>
+                                    <td>{{ $wfh->getTypeName() }}</td>
                                     <td>{{ $wfh->getRequestId() }}</td>
                                     <td>{{ $wfh->getStartDate() }}</td>
                                     <td>{{ $wfh->getEndDate() }}</td>

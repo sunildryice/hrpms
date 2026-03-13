@@ -97,22 +97,22 @@
                  ajax: window.location.href,
                  scrollX: true,
                  columns: [
-                    // {
-                    //      data: 'work_plan_date',
-                    //      name: 'work_plan_date',
-                    //      defaultContent: ''
-                    //  },
+                     // {
+                     //      data: 'work_plan_date',
+                     //      name: 'work_plan_date',
+                     //      defaultContent: ''
+                     //  },
                      {
                          data: 'project_name',
                          name: 'project_name',
                          defaultContent: ''
                      },
-                    //  {
-                    //      data: 'activity.title',
-                    //      name: 'activity.title',
-                    //      defaultContent: '',
-                    //      className: 'col-activity' // ensure cell uses wrapping style
-                    //  },
+                     //  {
+                     //      data: 'activity.title',
+                     //      name: 'activity.title',
+                     //      defaultContent: '',
+                     //      className: 'col-activity' // ensure cell uses wrapping style
+                     //  },
                      {
                          data: 'plan_tasks',
                          name: 'plan_tasks',
@@ -164,18 +164,29 @@
                      currentStatusElement = $select;
                      currentStatusPreviousValue = prev;
 
-                     var labelText = status === 'completed' ? 'Remarks' : 'Reason';
-                     var placeholderText = status === 'completed' ? 'Please provide remarks...' :
-                         'Please provide a reason...';
-                     var titleText = status === 'completed' ? 'Mark As Completed' : 'Mark As No Required';
+                     var isCompleted = status === 'completed';
+                     var labelText = isCompleted ? 'Remarks' : 'Reason';
 
-                     $('#statusReasonModalLabel').text(titleText);
-                     $('label[for="status_reason"]').text(labelText);
-                     $('#status_reason').attr('placeholder', placeholderText);
+                     $('#status-reason-label')
+                         .text(labelText)
+                         .toggleClass('required-label', !isCompleted); 
+
+                     var placeholder = isCompleted ?
+                         'Remarks (optional)' :
+                         'Please provide a reason...';
+
+                     $('#statusReasonModalLabel').text(
+                         isCompleted ? 'Mark As Completed' : 'Mark As No Required'
+                     );
+
+                     $('#status_reason')
+                         .attr('placeholder', placeholder)
+                         .prop('required', !isCompleted) 
+                         .removeClass('is-invalid') 
+                         .val('');
 
                      $('#status_detail_id').val(id);
                      $('#status_value').val(status);
-                     $('#status_reason').val('');
                      $('#statusReasonModal').modal('show');
                  } else {
                      updateWorkPlanStatus(id, status, null, $select, prev);
@@ -194,15 +205,25 @@
              // Handle Modal Submit
              $('#statusReasonForm').on('submit', function(e) {
                  e.preventDefault();
-                 var id = $('#status_detail_id').val();
-                 var status = $('#status_value').val();
-                 var reason = $('#status_reason').val();
 
+                 var reasonVal = $('#status_reason').val().trim();
+                 var status = $('#status_value').val();
+
+                 // Minimal client-side enforcement for no_required
+                 if (status === 'no_required' && !reasonVal) {
+                     $('#status_reason').addClass('is-invalid');
+                     toastr.warning('Reason is required');
+                     return;
+                 }
+
+                 $('#status_reason').removeClass('is-invalid');
+
+                 var id = $('#status_detail_id').val();
+                 var reason = reasonVal || null; // send null when empty (for completed)
                  var $select = currentStatusElement;
                  var prev = currentStatusPreviousValue;
 
-                 // Mark as handled so hide event doesn't revert
-                 currentStatusElement = null;
+                 currentStatusElement = null; // prevent revert
 
                  updateWorkPlanStatus(id, status, reason, $select, prev, function() {
                      $('#statusReasonModal').modal('hide');
@@ -530,18 +551,20 @@
                              <div class="row mb-2">
                                  <div class="col-lg-3">
                                      <div class="d-flex align-items-start h-100">
-                                         <label for="status_reason" class="form-label required-label m-0">Reason</label>
+                                         <label for="status_reason" class="form-label m-0"
+                                             id="status-reason-label">Reason</label>
                                      </div>
                                  </div>
                                  <div class="col-lg-9">
-                                     <textarea class="form-control" id="status_reason" name="reason" rows="3" required
-                                         placeholder="Please provide a reason for completion..."></textarea>
+                                     <textarea class="form-control" id="status_reason" name="reason" rows="3"
+                                         placeholder="Please provide remarks or reason..." aria-describedby="reasonHelp"></textarea>
+                                     <div id="reasonHelp" class="form-text text-muted small"></div>
                                  </div>
                              </div>
                          </div>
                          <div class="modal-footer">
+                             <button type="submit" class="btn btn-primary">Save</button>
                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                             <button type="submit" class="btn btn-primary">Save changes</button>
                          </div>
                      </form>
                  </div>

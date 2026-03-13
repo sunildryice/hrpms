@@ -243,7 +243,7 @@ class WorkPlanDetailController extends Controller
         $statusEnum = WorkPlanStatus::tryFrom($data['status']) ?? WorkPlanStatus::NotStarted;
         $reason = trim((string)($data['reason'] ?? ''));
 
-        if (in_array($statusEnum, [WorkPlanStatus::Completed, WorkPlanStatus::NoRequired]) && blank($reason)) {
+        if (in_array($statusEnum, [WorkPlanStatus::NoRequired]) && blank($reason)) {
             return response()->json(['message' => 'Reason is required.'], 422);
         }
 

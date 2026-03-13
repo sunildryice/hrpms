@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Report : WFH / Field Report')
+@section('title', 'Report : WFH / Field Work Report')
 
 @section('page_js')
     <script type="text/javascript">

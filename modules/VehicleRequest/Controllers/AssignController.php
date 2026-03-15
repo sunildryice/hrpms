@@ -14,6 +14,7 @@ use DataTables;
 use Modules\VehicleRequest\Notifications\VehicleRequestAssigned;
 use Modules\VehicleRequest\Notifications\VehicleRequestRejected;
 use Modules\VehicleRequest\Notifications\VehicleRequestReturned;
+use Modules\VehicleRequest\Notifications\VehicleRequestAssignedDriver;
 use Modules\VehicleRequest\Requests\Approve\AssignRequest;
 
 class AssignController extends Controller
@@ -27,12 +28,11 @@ class AssignController extends Controller
      * @param VehicleRepository $vehicles
      */
     public function __construct(
-        FiscalYearRepository     $fiscalYears,
+        FiscalYearRepository $fiscalYears,
         VehicleRequestRepository $vehicleRequests,
-        UserRepository           $users,
-        VehicleRepository        $vehicles
-    )
-    {
+        UserRepository $users,
+        VehicleRepository $vehicles
+    ) {
         $this->fiscalYears = $fiscalYears;
         $this->vehicleRequests = $vehicleRequests;
         $this->users = $users;
@@ -108,10 +108,21 @@ class AssignController extends Controller
             })->orWhereIn('id', [$vehicleRequest->assigned_vehicle_id]);
         }
         $vehicles = $query->orderBy('vehicle_number', 'asc')->get();
+        $drivers = $this->users->permissionBasedUsers('vehicle-request-driver');
+
+        // Prevent Driver assigned to two vehicles at same time
+        // $drivers = $this->users->permissionBasedUsers('vehicle-request-driver')
+        //     ->whereNotIn('id', function ($q) use ($vehicleRequest) {
+        //         $q->select('driver_id')
+        //             ->from('vehicle_requests')
+        //             ->whereBetween('start_datetime', [$vehicleRequest->start_datetime, $vehicleRequest->end_datetime])
+        //             ->orWhereBetween('end_datetime', [$vehicleRequest->start_datetime, $vehicleRequest->end_datetime]);
+        //     });
 
         return view('VehicleRequest::Assign.create')
             ->withAuthUser($authUser)
             ->withVehicleRequest($vehicleRequest)
+            ->withDrivers($drivers)
             ->withVehicles($vehicles);
     }
 
@@ -130,7 +141,10 @@ class AssignController extends Controller
             if ($vehicleRequest->status_id == config('constant.ASSIGNED_STATUS')) {
                 $message = 'Vehicle is successfully assigned to vehicle request.';
                 $vehicleRequest->requester->notify(new VehicleRequestAssigned($vehicleRequest));
-            } 
+                if ($vehicleRequest->driver) {
+                    $vehicleRequest->driver->notify(new VehicleRequestAssignedDriver($vehicleRequest));
+                }
+            }
             if ($vehicleRequest->status_id == config('constant.RETURNED_STATUS')) {
                 $message = 'Vehicle request is successfully returned.';
                 $vehicleRequest->requester->notify(new VehicleRequestReturned($vehicleRequest));
@@ -139,7 +153,7 @@ class AssignController extends Controller
                 $message = 'Vehicle request is successfully rejected.';
                 $vehicleRequest->requester->notify(new VehicleRequestRejected($vehicleRequest));
             }
-            
+
 
             return redirect()->route('assign.vehicle.requests.index')
                 ->withSuccessMessage($message);

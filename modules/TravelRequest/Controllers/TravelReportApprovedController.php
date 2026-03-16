@@ -129,10 +129,10 @@ class TravelReportApprovedController extends Controller
         $date['approved_date'] = '';
         foreach($travelReport->logs as $log){
             if($log->status_id == 3 ){
-                $date['submitted_date'] = $log->created_at;
+                $date['submitted_date'] = $log->created_at->format('Y-m-d');
             }
             if($log->status_id == 6 ){
-                $date['approved_date'] = $date['recommended_date'] = $log->created_at;
+                $date['approved_date'] = $date['recommended_date'] = $log->created_at->format('Y-m-d');
             }
         }
 

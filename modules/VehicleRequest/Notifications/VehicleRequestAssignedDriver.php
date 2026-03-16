@@ -42,7 +42,7 @@ class VehicleRequestAssignedDriver extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = route('vehicle.requests.show', $this->vehicleRequest->id);
+        $url = route('assigned.vehicle.requests.show', $this->vehicleRequest->id);
 
         return (new MailMessage)
             ->greeting('Dear ' . $notifiable->getFullName() . ',')
@@ -80,7 +80,7 @@ class VehicleRequestAssignedDriver extends Notification
 
         return [
             'vehicle_request_id' => $this->vehicleRequest->id,
-            'link' => route('vehicle.requests.show', $this->vehicleRequest->id),
+            'link' => route('assigned.vehicle.requests.show', $this->vehicleRequest->id),
             'subject' => 'You have been assigned as driver for vehicle request ' . $this->vehicleRequest->getVehicleRequestNumber() . '. Requester : ' . $this->vehicleRequest->getRequesterName(),
         ];
     }

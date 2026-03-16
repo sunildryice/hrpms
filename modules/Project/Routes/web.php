@@ -2,26 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Project\Controllers\ActivityController;
-use Modules\Project\Controllers\ProjectController;
-use Modules\Project\Controllers\WorkPlanController;
-use Modules\Project\Controllers\TimeSheetController;
 use Modules\Project\Controllers\ActivityStageController;
-use Modules\Project\Controllers\WorkPlanDetailController;
-use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ActivityUpdatePeriodController;
 use Modules\Project\Controllers\EmployeeWorkPlanController;
 use Modules\Project\Controllers\InvolvedWorkPlanController;
-use Modules\Project\Controllers\MonthlyTimeSheetController;
-use Modules\Project\Controllers\ProjectGanttChartController;
-use Modules\Project\Controllers\ActivityUpdatePeriodController;
-use Modules\Project\Controllers\ProjectActivityExportController;
-use Modules\Project\Controllers\ProjectActivityImportController;
-use Modules\Project\Controllers\MonthlyTimeSheetSummaryController;
 use Modules\Project\Controllers\MonthlyTimeSheetApprovedController;
 use Modules\Project\Controllers\MonthlyTimeSheetApproverController;
-use Modules\Project\Controllers\ProjectActivityExtensionController;
-use Modules\Project\Controllers\ProjectActivityTimeSheetController;
+use Modules\Project\Controllers\MonthlyTimeSheetController;
+use Modules\Project\Controllers\MonthlyTimeSheetSummaryController;
+use Modules\Project\Controllers\PmsController;
 use Modules\Project\Controllers\ProjectActivityAttachmentController;
+use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ProjectActivityExportController;
+use Modules\Project\Controllers\ProjectActivityExtensionController;
+use Modules\Project\Controllers\ProjectActivityImportController;
 use Modules\Project\Controllers\ProjectActivityOtherDetailsController;
+use Modules\Project\Controllers\ProjectActivityTimeSheetController;
+use Modules\Project\Controllers\ProjectController;
+use Modules\Project\Controllers\ProjectGanttChartController;
+use Modules\Project\Controllers\TimeSheetController;
+use Modules\Project\Controllers\WorkPlanController;
+use Modules\Project\Controllers\WorkPlanDetailController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('project.index');
@@ -32,6 +33,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('/projects/{id}/dashboard', [ProjectController::class, 'dashboard'])->name('project.dashboard');
     Route::post('/projects/{id}/update', [ProjectController::class, 'update'])->name('project.update');
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
+
+    Route::get('/pms/dashboard', [PmsController::class, 'dashboard'])->name('pms.dashboard');
 
     Route::get('assigned/activities', [ActivityController::class, 'index'])->name('assigned.activities.index');
 

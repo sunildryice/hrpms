@@ -103,6 +103,15 @@ class VehicleRequestRepository extends Repository
     {
         return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.ASSIGNED_STATUS')])->get();
     }
+    public function getDriverAssigned()
+    {
+        return $this->model
+            ->with(['status', 'assignedVehicle', 'requester', 'office'])
+            ->where('driver_id', auth()->id())
+            ->where('status_id', config('constant.ASSIGNED_STATUS'))
+            ->orderBy('start_datetime', 'desc')
+            ->get();
+    }
 
     public function getVehicleRequestsForApproval($authUser)
     {

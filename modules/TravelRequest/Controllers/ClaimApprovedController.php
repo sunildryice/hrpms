@@ -95,6 +95,32 @@ class ClaimApprovedController extends Controller
         $travelClaim = $this->travelClaims->find($id);
         $this->authorize('printApproved', $travelClaim);
 
+
+        $requester = $travelClaim->requester?->employee;
+        $reviewer = $travelClaim->reviewer?->employee;
+        $recommender = $travelClaim->recommender?->employee;
+        $approver = $travelClaim->approver?->employee;
+
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
+
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
+
+        $recommenderSignature = null;
+        if ($recommender && $recommender->signature && file_exists(public_path('storage/' . $recommender->signature))) {
+            $recommenderSignature = asset('storage/' . $recommender->signature);
+        }
+
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
+
         $travelClaim->load([
             'dsaClaims.activityCode',
             'localTravels.activityCode',
@@ -111,7 +137,12 @@ class ClaimApprovedController extends Controller
             'submittedLog',
         ]);
 
-        return view('TravelRequest::TravelClaim.print', compact('travelClaim'));
+        return view('TravelRequest::TravelClaim.print')
+            ->withTravelClaim($travelClaim)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withRecommenderSignature($recommenderSignature)
+            ->withApproverSignature($approverSignature);
     }
 
 }

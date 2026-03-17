@@ -339,7 +339,7 @@
                             <div><strong>Title:</strong> {{ $travelRequest->reviewer->employee->getDesignationName() }}
                             </div>
                             <div><strong>Date:</strong>
-                                {{ $travelRequest->recommendedLog ? $travelRequest->recommendedLog->created_at : '' }}
+                                {{ $travelRequest->recommendedLog ? $travelRequest->recommendedLog->created_at->format('Y-m-d') : '' }}
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">
@@ -348,7 +348,7 @@
                             <div><strong>Title:</strong> {{ $travelRequest->approver->employee->getDesignationName() }}
                             </div>
                             <div><strong>Date:</strong>
-                                {{ $travelRequest->approvedLog ? $travelRequest->approvedLog->created_at : '' }} </div>
+                                {{ $travelRequest->approvedLog ? $travelRequest->approvedLog->created_at->format('Y-m-d') : '' }} </div>
                         </div>
                     </div>
                 </div>

@@ -237,47 +237,37 @@ class ClaimController extends Controller
         $authUser = auth()->user();
         $travelClaim = $this->travelClaim->find($id);
         $this->authorize('print', $travelClaim);
-        // $itineraries = $travelClaim->itineraries()->with(['travelRequestItinerary.activityCode', 'travelRequestItinerary.donorCode', 'office'])
-        //     ->select(['travel_claim_itineraries.*', 'i2.activity_code_id'])
-        //     ->join('travel_request_itineraries as i2', 'i2.id', '=', 'travel_claim_itineraries.travel_itinerary_id')
-        //     ->get();
 
-        // $itineraries = $itineraries->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
-        //     ->map(function ($itinerary) {
-        //         $dsa = collect();
-        //         foreach ($itinerary as $index => $value) {
-        //             if ($index == 0) {
-        //                 $dsa = $value;
+        $requester = $travelClaim->requester?->employee;
+        $reviewer = $travelClaim->reviewer?->employee;
+        $recommender = $travelClaim->recommender?->employee;
+        $approver = $travelClaim->approver?->employee;
 
-        //                 continue;
-        //             }
-        //             $dsa->total_amount += $value->total_amount;
-        //         }
-        //         $dsa->subledger = 'DSA';
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
 
-        //         return $dsa;
-        //     });
-        // $expenses = $travelClaim->expenses()->with(['activityCode', 'donorCode', 'office'])->get();
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
 
-        // $expenses = $expenses->groupBy(['activity_code_id', 'donor_code_id', 'office_id'])->flatten(2)
-        //     ->map(function ($expense) {
-        //         $travel = collect();
-        //         foreach ($expense as $index => $value) {
-        //             if ($index == 0) {
-        //                 $travel = $value;
+        $recommenderSignature = null;
+        if ($recommender && $recommender->signature && file_exists(public_path('storage/' . $recommender->signature))) {
+            $recommenderSignature = asset('storage/' . $recommender->signature);
+        }
 
-        //                 continue;
-        //             }
-        //             $travel->expense_amount += $value->expense_amount;
-        //         }
-        //         $travel->subledger = 'Travel';
-
-        //         return $travel;
-        //     });
-        // $summaries = $expenses->merge($itineraries)->groupBy('activity_code_id')->flatten(1);
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
 
         return view('TravelRequest::TravelClaim.print')
-            // ->withSummaries($summaries)
-            ->withTravelClaim($travelClaim);
+            ->withTravelClaim($travelClaim)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withRecommenderSignature($recommenderSignature)
+            ->withApproverSignature($approverSignature);
     }
 }

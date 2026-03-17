@@ -274,6 +274,12 @@
 
         <div class="row mt-5">
             <div class="col-lg-6 mb-5">
+                @if ($requesterSignature)
+                    <img src="{{ $requesterSignature }}" alt="Signature of {{ $travelClaim->getRequesterName() }}"
+                        class="img-fluid signature-img" style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                @else
+                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                @endif
                 <div><strong>Claimed By:</strong></div>
                 <div class="sign-line"></div>
                 <div><strong>Name:</strong> {{ $travelClaim->getRequesterName() ?? '' }}</div>
@@ -282,6 +288,15 @@
             </div>
 
             <div class="col-lg-6 mb-5">
+                <div class="mb-2">
+                    @if ($reviewerSignature)
+                        <img src="{{ $reviewerSignature }}" alt="Signature of {{ $travelClaim->getReviewerName() }}"
+                            class="img-fluid signature-img"
+                            style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                    @else
+                        <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                    @endif
+                </div>
                 <div><strong>Checked By:</strong></div>
                 <div class="sign-line"></div>
                 <div><strong>Name:</strong> {{ $travelClaim->getReviewerName() ?? '' }}</div>
@@ -290,6 +305,15 @@
             </div>
 
             <div class="col-lg-6 mb-5">
+                <div class="mb-2">
+                    @if ($recommenderSignature)
+                        <img src="{{ $recommenderSignature }}" alt="Signature of {{ $travelClaim->getRecommenderName() }}"
+                            class="img-fluid signature-img"
+                            style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                    @else
+                        <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                    @endif
+                </div>
                 <div><strong>Certified By:</strong></div>
                 <div class="sign-line"></div>
                 <div><strong>Name:</strong> {{ $travelClaim->getRecommenderName() ?? '' }}</div>
@@ -298,6 +322,15 @@
             </div>
 
             <div class="col-lg-6 mb-5">
+                <div class="mb-2">
+                    @if ($approverSignature)
+                        <img src="{{ $approverSignature }}" alt="Signature of {{ $travelClaim->getApproverName() }}"
+                            class="img-fluid signature-img"
+                            style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                    @else
+                        <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                    @endif
+                </div>
                 <div><strong>Approved By:</strong></div>
                 <div class="sign-line"></div>
                 <div><strong>Name:</strong> {{ $travelClaim->getApproverName() ?? '' }}</div>

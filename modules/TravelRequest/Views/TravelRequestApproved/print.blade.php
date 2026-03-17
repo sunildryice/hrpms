@@ -323,6 +323,17 @@
                     </table>
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
+                            <div class="mb-2">
+                                @if ($requesterSignature)
+                                    <img src="{{ $requesterSignature }}"
+                                        alt="Signature of {{ $travelRequest->getRequesterName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto"
+                                        style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div>
                                 <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
                             </div>
@@ -334,6 +345,17 @@
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">
+                            <div class="mb-2">
+                                @if ($reviewerSignature)
+                                    <img src="{{ $reviewerSignature }}"
+                                        alt="Signature of {{ $travelRequest->getReviewerName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto"
+                                        style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Recommended By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelRequest->getReviewerName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->reviewer->employee->getDesignationName() }}
@@ -343,6 +365,17 @@
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">
+                            <div class="mb-2">
+                                @if ($approverSignature)
+                                    <img src="{{ $approverSignature }}"
+                                        alt="Signature of {{ $travelRequest->getApproverName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto"
+                                        style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Authorized By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelRequest->getApproverName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->approver->employee->getDesignationName() }}

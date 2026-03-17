@@ -17,10 +17,9 @@ class TravelRequestApprovedController extends Controller
      * @param TravelRequestViewRepository $travelRequestView
      */
     public function __construct(
-        TravelRequestRepository     $travelRequest,
+        TravelRequestRepository $travelRequest,
         TravelRequestViewRepository $travelRequestView,
-    )
-    {
+    ) {
         $this->travelRequest = $travelRequest;
         $this->travelRequestView = $travelRequestView;
     }
@@ -133,9 +132,31 @@ class TravelRequestApprovedController extends Controller
     {
         $travelRequest = $this->travelRequest->find($id);
 
+        $requester = $travelRequest->requester?->employee;
+        $reviewer = $travelRequest->reviewer?->employee;
+        $approver = $travelRequest->approver?->employee;
+
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
+
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
+
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
+
         return view('TravelRequest::TravelRequestApproved.print')
             ->withRequester($travelRequest->requester->employee)
-            ->withTravelRequest($travelRequest);
+            ->withTravelRequest($travelRequest)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withApproverSignature($approverSignature);
     }
 
     /**

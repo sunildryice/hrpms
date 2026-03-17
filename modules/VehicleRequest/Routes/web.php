@@ -11,12 +11,13 @@
 |
 */
 
-use Modules\VehicleRequest\Controllers\CloseController;
-use Modules\VehicleRequest\Controllers\ClosedController;
-use Modules\VehicleRequest\Controllers\VehicleRequestController;
 use Modules\VehicleRequest\Controllers\ApproveController;
 use Modules\VehicleRequest\Controllers\ApprovedController;
 use Modules\VehicleRequest\Controllers\AssignController;
+use Modules\VehicleRequest\Controllers\CloseController;
+use Modules\VehicleRequest\Controllers\ClosedController;
+use Modules\VehicleRequest\Controllers\DriverVehicleRequestController;
+use Modules\VehicleRequest\Controllers\VehicleRequestController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::middleware('can:vehicle-request')->group(function () {
@@ -48,10 +49,17 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::get('approved/vehicle/requests/{vehicleRequest}/show', [ApprovedController::class, 'show'])->name('approved.vehicle.requests.show');
         Route::get('approved/vehicle/requests/{vehicleRequest}/print', [ApprovedController::class, 'print'])->name('approved.vehicle.requests.print');
 
-        Route::get('close/vehicle/requests/{vehicleRequest}/create',[CloseController::class, 'create'])->name('close.vehicle.requests.create');
-        Route::post('close/vehicle/requests/{vehicleRequest}',[CloseController::class, 'store'])->name('close.vehicle.requests.store');
+        Route::get('close/vehicle/requests/{vehicleRequest}/create', [CloseController::class, 'create'])->name('close.vehicle.requests.create');
+        Route::post('close/vehicle/requests/{vehicleRequest}', [CloseController::class, 'store'])->name('close.vehicle.requests.store');
 
-        Route::get('closed/vehicle/requests',[ClosedController::class, 'index'])->name('closed.vehicle.requests.index');
-        Route::get('closed/vehicle/requests/{vehicleRequest}/show',[ClosedController::class, 'show'])->name('closed.vehicle.requests.show');
+        Route::get('closed/vehicle/requests', [ClosedController::class, 'index'])->name('closed.vehicle.requests.index');
+        Route::get('closed/vehicle/requests/{vehicleRequest}/show', [ClosedController::class, 'show'])->name('closed.vehicle.requests.show');
+    });
+
+    Route::middleware(['web', 'auth', 'logger', 'can:view-assigned-vehicle-requests'])->group(function () {
+
+        Route::get('driver/vehicle/requests',[DriverVehicleRequestController::class, 'index'])->name('assigned.vehicle.requests.index');
+        Route::get('driver/vehicle/requests/{vehicleRequest}',[DriverVehicleRequestController::class, 'show'])->name('assigned.vehicle.requests.show');
+
     });
 });

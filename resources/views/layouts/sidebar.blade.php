@@ -488,6 +488,14 @@
                         </div>
                     @endif --}}
 
+                    {{-- <div class="nav-item">
+                        <a class="nav-link" href="{{ route('pms.dashboard') }}" role="button"
+                           data-bs-toggle="tooltip" data-bs-placement="right" title="PMS Dashboard">
+                            <i class="bi bi-bar-chart-line nav-icon"></i>
+                            <span class="nav-link-title">PMS Dashboard</span>
+                        </a>
+                    </div> --}}
+
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"
                            data-bs-toggle="tooltip" data-bs-placement="right" title="Projects">
@@ -725,6 +733,11 @@
                                 @if ($authUser->can('view-approved-vehicle-request') || $authUser->can('manage-hire-vehicle-procurement'))
                                     <a class="nav-link" href="{{ route('closed.vehicle.requests.index') }}"
                                        id="closed-vehicle-requests-menu">Closed Vehicle Requests</a>
+                                @endif
+
+                                @if ($authUser->can('view-assigned-vehicle-requests'))
+                                    <a class="nav-link" href="{{ route('assigned.vehicle.requests.index') }}"
+                                       id="assigned-vehicle-requests-menu">Assigned Vehicle Requests</a>
                                 @endif
                             </div>
                         </div>

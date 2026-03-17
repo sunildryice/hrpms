@@ -133,7 +133,8 @@
                                     <td class="text-nowrap">{{ $formattedDate }}</td>
                                     <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
                                     <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
-                                    <td>{{ $itinerary->status ? \Modules\TravelRequest\Models\Enums\TravelReportStatus::tryFrom($itinerary->status)?->label() : '' }}</td>
+                                    <td>{{ $itinerary->status ? \Modules\TravelRequest\Models\Enums\TravelReportStatus::tryFrom($itinerary->status)?->label() : '' }}
+                                    </td>
                                     <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
                                 </tr>
                             @empty
@@ -150,10 +151,21 @@
                     <div class="mb-4" style="min-height: 20px;">{!! nl2br(e($travelReport->not_completed_activities)) !!}</div>
 
                     <div class="my-2 fw-bold">5. Conclusion & Recommendations</div>
-                    <div class="mb-5" style="min-height: 100px;">{!! nl2br(e($travelReport->conclusion_recommendations)) !!}</div>
+                    <div class="mb-2" style="min-height: 100px;">{!! nl2br(e($travelReport->conclusion_recommendations)) !!}</div>
 
                     <div class="row">
                         <div class="col-lg-6 mb-4">
+                            <div class="mb-2">
+                                @if ($requesterSignature)
+                                    <img src="{{ $requesterSignature }}"
+                                        alt="Signature of {{ $travelReport->getReporterName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto"
+                                        style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Submitted By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelReport->getReporterName() }}</div>
                             <div><strong>Position:</strong> {{ $requester->getDesignationName() }}</div>
@@ -161,6 +173,17 @@
                             <div><strong>Date:</strong> {{ $dates['submitted_date'] ?? '' }}</div>
                         </div>
                         <div class="col-lg-6 mb-4">
+                            <div class="mb-2">
+                                @if ($approverSignature)
+                                    <img src="{{ $approverSignature }}"
+                                        alt="Signature of {{ $travelReport->getApproverName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto"
+                                        style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Approved By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelReport->getApproverName() }}</div>
                             <div><strong>Position:</strong> {{ $approver?->getDesignationName() }}</div>

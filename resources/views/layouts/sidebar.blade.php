@@ -735,7 +735,7 @@
                                        id="closed-vehicle-requests-menu">Closed Vehicle Requests</a>
                                 @endif
 
-                                @if ($authUser->can('view-assigned-vehicle-requests'))
+                                @if ($authUser->can('vehicle-request-driver'))
                                     <a class="nav-link" href="{{ route('assigned.vehicle.requests.index') }}"
                                        id="assigned-vehicle-requests-menu">Assigned Vehicle Requests</a>
                                 @endif

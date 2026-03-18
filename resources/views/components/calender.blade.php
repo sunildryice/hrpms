@@ -484,8 +484,10 @@
         workFromHomeRequests.forEach(wfh => {
             const requester = wfh.requester || {};
             const desc = wfh.remarks || 'No description.';
+            const name = wfh.requester?.full_name ?? wfh.requester?.name ?? 'Employee';
+            const isFieldWork = wfh.type && wfh.type !== 'work_from_home';
             events.push({
-                title: `${requester.full_name ?? requester.name ?? 'Employee'} is Working from Home`,
+                title: `${name} is ${isFieldWork ? 'on Field Work' : 'Working from Home'}`,
                 start: normalizeDate(wfh.start_date),
                 end: addOneDay(normalizeDate(wfh.end_date)),
                 type: 'work_from_home',

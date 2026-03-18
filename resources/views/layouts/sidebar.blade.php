@@ -1137,6 +1137,11 @@
                                        id="off-day-work-report-menu">Off Day Work</a>
                                 @endif
 
+                                @if ($authUser->can('project-summary-report'))
+                                    <a class="nav-link" href="{{ route('report.project.summary.index') }}"
+                                       id="project-summary-report-menu">Project Summary</a>
+                                @endif
+
                                 @if ($authUser->can('stock-book-report'))
                                     <a class="nav-link" href="{{ route('report.stock.book.office.use.index') }}"
                                        id="stock-book-office-use-menu">Stock Book (Office Use)</a>

@@ -21,6 +21,7 @@ use Modules\Report\Controllers\HumanResources\LeaveRequestController;
 use Modules\Report\Controllers\HumanResources\LeaveSummaryController;
 use Modules\Report\Controllers\HumanResources\OffDayWorkReportController;
 use Modules\Report\Controllers\HumanResources\PerformanceReviewController;
+use Modules\Report\Controllers\HumanResources\ProjectSummaryController;
 use Modules\Report\Controllers\HumanResources\TrainingRequestController;
 use Modules\Report\Controllers\HumanResources\WorkFromHomeController;
 use Modules\Report\Controllers\LogisticsProcurement\AssetBookController;
@@ -154,4 +155,8 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     // Construction
     Route::any('construction/index', [ConstructionReportController::class, 'index'])->name('construction.index');
     Route::any('construction/export', [ConstructionReportController::class, 'export'])->name('construction.export');
+
+    // Project Summary
+    Route::any('project/summary/index', [ProjectSummaryController::class, 'index'])->name('project.summary.index');
+    Route::any('project/summary/export', [ProjectSummaryController::class, 'export'])->name('project.summary.export');
 });

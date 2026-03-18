@@ -210,41 +210,5 @@
             </div>
         </div>
 
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-light">
-                <h6 class="mb-0 fw-bold">Active Projects Summary</h6>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Code</th>
-                            <th>Project</th>
-                            <th>Activities</th>
-                            <th class="text-success">Completed</th>
-                            <th class="text-warning">Under Progress</th>
-                            <th class="text-orange">Not Started</th>
-                            <th class="text-danger">No Longer Req.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($projects as $p)
-                            <tr>
-                                <td>{{ $p->short_name ?: 'P' . ($loop->index + 1) }}</td>
-                                <td>
-                                    <a class="text-decoration-none"
-                                        href="{{ route('project.dashboard', $p->id) }}">{{ $p->title }}</a>
-                                </td>
-                                <td>{{ $p->total_activities }}</td>
-                                <td>{{ $p->completed_count }}</td>
-                                <td>{{ $p->under_progress_count }}</td>
-                                <td>{{ $p->not_started_count }}</td>
-                                <td>{{ $p->no_required_count }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 @endsection

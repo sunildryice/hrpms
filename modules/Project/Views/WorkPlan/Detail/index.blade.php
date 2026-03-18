@@ -160,7 +160,7 @@
                  var status = $select.val();
                  var prev = $select.data('prev');
 
-                 if (status === 'completed' || status === 'no_required') {
+                 if (status === 'no_required') {
                      currentStatusElement = $select;
                      currentStatusPreviousValue = prev;
 

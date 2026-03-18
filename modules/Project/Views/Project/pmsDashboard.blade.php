@@ -24,7 +24,7 @@
     <script>
         $(document).ready(function() {
             $('#project_ids').select2({
-                placeholder: "Select projects ",
+                // placeholder: "Select projects ",
                 allowClear: true,
                 width: '100%'
             });
@@ -202,13 +202,13 @@
             </div>
         </div>
 
-        {{-- <div class="card shadow-sm mb-4">
+        <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <form method="GET" action="{{ route('pms.dashboard') }}" class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <label for="project_ids" class="form-label">Select Projects</label>
-                        <select name="project_ids[]" id="project_ids" class="form-select select2" >
-                            <option value="" {{ empty($projectIds) ? 'selected' : '' }}>Select project</option>
+                        <label for="project_ids" class="form-label">Projects</label>
+                        <select name="project_ids[]" id="project_ids" class="form-control select2" multiple>
+                            {{-- <option value="" {{ empty($projectIds) ? 'selected' : '' }}>Select project</option> --}}
                             @foreach ($allProjects as $proj)
                                 <option value="{{ $proj->id }}"
                                     {{ in_array($proj->id, $projectIds ?? []) ? 'selected' : '' }}>
@@ -218,12 +218,12 @@
                         </select>
                     </div>
                     <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-primary">Search</button>
-                        <a href="{{ route('pms.dashboard') }}" class="btn btn-secondary">Reset</a>
+                        <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                        <a href="{{ route('pms.dashboard') }}" class="btn btn-secondary btn-sm">Reset</a>
                     </div>
                 </form>
             </div>
-        </div> --}}
+        </div>
 
         <!-- Chart 1: Timeline -->
         <div class="card shadow-sm">

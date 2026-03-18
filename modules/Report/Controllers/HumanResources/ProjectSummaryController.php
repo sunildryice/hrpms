@@ -39,7 +39,7 @@ class ProjectSummaryController extends Controller
 
         $allProjects = Project::whereNotNull('activated_at')
             ->orderBy('title')
-            ->get(['id', 'title']);
+            ->get(['id', 'title', 'short_name']);
 
         return view('Report::HumanResources.ProjectSummary.index', [
             'projects' => $projects,

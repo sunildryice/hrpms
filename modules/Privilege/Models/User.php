@@ -205,6 +205,11 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return $this->getFullName() . ' (' . $this->getEmployeeCode() . ')';
     }
 
+    public function isLocked(): bool
+    {
+        return is_null($this->activated_at);
+    }
+
     public function getOfficeName()
     {
         return $this->employee ? $this->employee->getOfficeName() : "";

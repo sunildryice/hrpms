@@ -57,10 +57,6 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     });
 
     Route::middleware(['web', 'auth', 'logger', 'can:vehicle-request-driver'])->group(function () {
-<<<<<<< HEAD
-
-=======
->>>>>>> master
         Route::get('driver/vehicle/requests',[DriverVehicleRequestController::class, 'index'])->name('assigned.vehicle.requests.index');
         Route::get('driver/vehicle/requests/{vehicleRequest}',[DriverVehicleRequestController::class, 'show'])->name('assigned.vehicle.requests.show');
     });

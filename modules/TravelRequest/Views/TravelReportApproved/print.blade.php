@@ -155,6 +155,7 @@
 
                     <div class="row">
                         <div class="col-lg-6 mb-4">
+                            <div><strong>Submitted By:</strong></div>
                             <div class="mb-2">
                                 @if ($requesterSignature)
                                     <img src="{{ $requesterSignature }}"
@@ -166,13 +167,13 @@
                                         style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
-                            <div><strong>Submitted By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelReport->getReporterName() }}</div>
                             <div><strong>Position:</strong> {{ $requester->getDesignationName() }}</div>
                             <div><strong>Signature:</strong></div>
                             <div><strong>Date:</strong> {{ $dates['submitted_date'] ?? '' }}</div>
                         </div>
                         <div class="col-lg-6 mb-4">
+                            <div><strong>Approved By:</strong></div>
                             <div class="mb-2">
                                 @if ($approverSignature)
                                     <img src="{{ $approverSignature }}"
@@ -184,7 +185,6 @@
                                         style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
-                            <div><strong>Approved By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelReport->getApproverName() }}</div>
                             <div><strong>Position:</strong> {{ $approver?->getDesignationName() }}</div>
                             <div><strong>Signature:</strong></div>

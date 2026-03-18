@@ -55,36 +55,36 @@ class ApprovedController extends Controller
                 ->addColumn('requester', function ($row) {
                     return $row->getRequesterName();
                 })->addColumn('office', function ($row) {
-                return $row->getOfficeName();
-            })->addColumn('request_number', function ($row) {
-                return $row->getVehicleRequestNumber();
-            })->addColumn('start_datetime', function ($row) {
-                return $row->getStartDatetime();
-            })->addColumn('end_datetime', function ($row) {
-                return $row->getEndDatetime();
-            })->addColumn('vehicle_request_type', function ($row) {
-                return $row->getVehicleRequestType();
-            })->addColumn('status', function ($row) {
-                return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
-            })->addColumn('action', function ($row) use ($authUser) {
-                $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                $btn .= route('approved.vehicle.requests.show', $row->id) . '" rel="tooltip" title="View Vehicle Request">';
-                $btn .= '<i class="bi bi-eye"></i></a>';
-                if ($authUser->can('assignVehicle', $row)) {
-                    $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('approved.vehicle.requests.assign.create', $row->id) . '" rel="tooltip" title="Assign Vehicle">';
-                    $btn .= '<i class="bi bi-droplet-fill"></i></a>';
-                }
-                $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
-                $btn .= route('approved.vehicle.requests.print', $row->id) . '" rel="tooltip" title="Print Vehicle Request"><i class="bi bi-printer"></i></a>';
+                    return $row->getOfficeName();
+                })->addColumn('request_number', function ($row) {
+                    return $row->getVehicleRequestNumber();
+                })->addColumn('start_datetime', function ($row) {
+                    return $row->getStartDatetime();
+                })->addColumn('end_datetime', function ($row) {
+                    return $row->getEndDatetime();
+                })->addColumn('vehicle_request_type', function ($row) {
+                    return $row->getVehicleRequestType();
+                })->addColumn('status', function ($row) {
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
+                })->addColumn('action', function ($row) use ($authUser) {
+                    $btn = '<a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= route('approved.vehicle.requests.show', $row->id) . '" rel="tooltip" title="View Vehicle Request">';
+                    $btn .= '<i class="bi bi-eye"></i></a>';
+                    if ($authUser->can('assignVehicle', $row)) {
+                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
+                        $btn .= route('approved.vehicle.requests.assign.create', $row->id) . '" rel="tooltip" title="Assign Vehicle">';
+                        $btn .= '<i class="bi bi-droplet-fill"></i></a>';
+                    }
+                    $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" target="_blank" href="';
+                    $btn .= route('approved.vehicle.requests.print', $row->id) . '" rel="tooltip" title="Print Vehicle Request"><i class="bi bi-printer"></i></a>';
 
-                if($authUser->can('close', $row)){
-                    $btn .= '&emsp;<a class="btn btn-danger btn-sm close-vehicle-modal-form" href="';
-                    $btn .= route('close.vehicle.requests.create', $row->id) . '" rel="tooltip" title="Close"><i class="bi bi-x-circle"></i></a>';
-                }
+                    if ($authUser->can('close', $row)) {
+                        $btn .= '&emsp;<a class="btn btn-danger btn-sm close-vehicle-modal-form" href="';
+                        $btn .= route('close.vehicle.requests.create', $row->id) . '" rel="tooltip" title="Close"><i class="bi bi-x-circle"></i></a>';
+                    }
 
-                return $btn;
-            })->rawColumns(['action', 'status'])
+                    return $btn;
+                })->rawColumns(['action', 'status'])
                 ->make(true);
         }
 
@@ -136,7 +136,7 @@ class ApprovedController extends Controller
             $message = 'Vehicle request is successfully updated.';
             if ($vehicleRequest->status_id == config('constant.ASSIGNED_STATUS')) {
                 $message = 'Vehicle is successfully assigned to vehicle request.';
-//                $vehicleRequest->requester->notify(new VehicleAssigned($vehicleRequest));
+                //                $vehicleRequest->requester->notify(new VehicleAssigned($vehicleRequest));
             }
 
             return redirect()->route('approved.vehicle.requests.index')
@@ -171,8 +171,30 @@ class ApprovedController extends Controller
     {
         $vehicleRequest = $this->vehicleRequests->find($vehicleRequestId);
 
+        $requester = $vehicleRequest->requester?->employee;
+        $reviewer = $vehicleRequest->reviewer?->employee;
+        $approver = $vehicleRequest->approver?->employee;
+
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
+
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
+
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
+
         return view('VehicleRequest::Approved.print')
-            ->withVehicleRequest($vehicleRequest);
+            ->withVehicleRequest($vehicleRequest)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withApproverSignature($approverSignature);
     }
 
     /**

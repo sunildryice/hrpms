@@ -362,8 +362,30 @@ class VehicleRequestController extends Controller
         $authUser = auth()->user();
         $vehicleRequest = $this->vehicleRequests->find($vehicleRequestId);
 
+        $requester = $vehicleRequest->requester?->employee;
+        $reviewer = $vehicleRequest->reviewer?->employee;
+        $approver = $vehicleRequest->approver?->employee;
+
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
+
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
+
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
+
         return view('VehicleRequest::print')
-            ->withVehicleRequest($vehicleRequest);
+            ->withVehicleRequest($vehicleRequest)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withApproverSignature($approverSignature);
     }
 
     /**

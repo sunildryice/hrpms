@@ -3,8 +3,6 @@
 @section('title', 'Local Travel Print')
 @section('page_css')
     <style>
-
-
         table {
             border: 1px solid;
         }
@@ -61,7 +59,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" style="width: 200px" alt="" class="align-self-end pe-5">
+                                <img src="{{ asset('img/logonp.png') }}" style="width: 200px" alt=""
+                                    class="align-self-end pe-5">
                             </div>
 
                         </div>
@@ -98,9 +97,10 @@
                                 <th scope="row">Phone:</th>
                                 <td>{{ $localTravel->getTravellerPhone() }}</td>
                             </tr>
-                                <th scope="row">Date:</th>
-                                <td colspan="3">{{ $localTravel->submittedLog ? $localTravel->submittedLog->created_at->toFormattedDateString() : '' }}
-                                </td>
+                            <th scope="row">Date:</th>
+                            <td colspan="3">
+                                {{ $localTravel->submittedLog ? $localTravel->submittedLog->created_at->toFormattedDateString() : '' }}
+                            </td>
                             </tr>
                             <tr>
                                 <th scope="row">Purpose:</th>
@@ -131,28 +131,63 @@
                     </table>
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
-                            <div><strong>{{$localTravel->isConsultantTravel() ? "Prepared By: (On Belalf of Consultant)" : 'Requested By:'}}</strong></div>
+                            <div>
+                                <strong>{{ $localTravel->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
+                            </div>
+                            <div class="mb-2">
+                                @if ($requesterSignature)
+                                    <img src="{{ $requesterSignature }}"
+                                        alt="Signature of {{ $localTravel->getRequesterName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong> {{ $localTravel->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
-                            <div><strong>Date:</strong> {{ $localTravel->submittedLog?->created_at }}</div>
+                            <div><strong>Date:</strong> {{ $localTravel->submittedLog?->created_at->format('Y-m-d') }}
+                            </div>
                         </div>
 
                         <div class="col-lg-4 mb-4">
                             <div><strong>Recommended By:</strong></div>
+                            <div class="mb-2">
+                                @if ($reviewerSignature)
+                                    <img src="{{ $reviewerSignature }}"
+                                        alt="Signature of {{ $localTravel->getReviewerName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong>
                                 {{ $localTravel->recommendedLog ? $localTravel->getReviewerName() : '' }} </div>
                             <div><strong>Title:</strong>
                                 {{ $localTravel->recommendedLog ? $localTravel->reviewer->employee->getDesignationName() : '' }}
                             </div>
-                            <div><strong>Date:</strong> {{ $localTravel->recommendedLog?->created_at }} </div>
+                            <div><strong>Date:</strong> {{ $localTravel->recommendedLog?->created_at->format('Y-m-d') }}
+                            </div>
                         </div>
                         <div class="col-lg-4 mb-4">
                             <div><strong>Authorized By:</strong></div>
+                            <div class="mb-2">
+                                @if ($approverSignature)
+                                    <img src="{{ $approverSignature }}"
+                                        alt="Signature of {{ $localTravel->getApproverName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong> {{ $localTravel->getApproverName() }} </div>
                             <div><strong>Title:</strong>
                                 {{ $localTravel->approvedLog ? $localTravel->approver->employee->getDesignationName() : '' }}
                             </div>
-                            <div><strong>Date:</strong> {{ $localTravel->approvedLog?->created_at }} </div>
+                            <div><strong>Date:</strong> {{ $localTravel->approvedLog?->created_at->format('Y-m-d') }}
+                            </div>
                         </div>
                     </div>
                 </div>

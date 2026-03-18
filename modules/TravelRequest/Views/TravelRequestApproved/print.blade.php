@@ -341,7 +341,7 @@
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
                             <div>
                                 <strong>Date:</strong>
-                                {{ $travelRequest->submittedLog ? $travelRequest->submittedLog->created_at : '' }}
+                                {{ $travelRequest->submittedLog ? $travelRequest->submittedLog->created_at->format('Y-m-d') : '' }}
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">

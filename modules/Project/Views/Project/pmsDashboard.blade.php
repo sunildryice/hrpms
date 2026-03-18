@@ -91,6 +91,10 @@
                 }],
                 chart: {
                     type: 'rangeBar',
+                    zoom: {
+                        enabled: true, 
+                        allowMouseWheelZoom: false 
+                    },
                     height: Math.max(400, {{ count($projectNames) * 70 }}),
                     toolbar: {
                         show: true

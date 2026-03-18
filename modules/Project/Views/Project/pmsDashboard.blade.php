@@ -92,8 +92,8 @@
                 chart: {
                     type: 'rangeBar',
                     zoom: {
-                        enabled: true, 
-                        allowMouseWheelZoom: false 
+                        enabled: true,
+                        allowMouseWheelZoom: false
                     },
                     height: Math.max(400, {{ count($projectNames) * 70 }}),
                     toolbar: {
@@ -122,26 +122,58 @@
                 yaxis: {
                     categories: @json($projectNames),
                 },
+                // tooltip: {
+                //     custom: function({
+                //         dataPointIndex,
+                //         w
+                //     }) {
+                //         const d = w.config.series[0].data[dataPointIndex];
+                //         const m = d.meta || {};
+                //         return `
+            // <div class="p-3 bg-white border rounded shadow-sm">
+            //     <strong>${d.x}</strong><br>
+            //     ${m.title || ''}<br>
+            //     Completed: ${m.percentages?.completed ?? 0}%<br>
+            //     Under Progress: ${m.percentages?.under_progress ?? 0}%<br>
+            //     Not Started: ${m.percentages?.not_started ?? 0}%<br>
+            //     No Longer Required: ${m.percentages?.no_required ?? 0}%
+            // </div>`;
+                //     }
+                // },
+                // legend: {
+                //     show: false
+                // }
                 tooltip: {
                     custom: function({
+                        series,
+                        seriesIndex,
                         dataPointIndex,
                         w
                     }) {
-                        const d = w.config.series[0].data[dataPointIndex];
+                        const d = w.config.series[seriesIndex].data[dataPointIndex];
                         const m = d.meta || {};
+                        const total = (m.percentages?.completed || 0) +
+                            (m.percentages?.under_progress || 0) +
+                            (m.percentages?.not_started || 0) +
+                            (m.percentages?.no_required || 0);
+
                         return `
-                <div class="p-3 bg-white border rounded shadow-sm">
-                    <strong>${d.x}</strong><br>
-                    ${m.title || ''}<br>
+            <div class="p-3 bg-white border rounded shadow" style="min-width:220px;">
+                <div class="fw-bold mb-2">${d.x} — ${m.title || 'Project'}</div>
+                <div class="progress" style="height:10px; margin-bottom:8px;">
+                    <div class="progress-bar bg-success" style="width: ${m.percentages?.completed || 0}%"></div>
+                    <div class="progress-bar bg-warning" style="width: ${m.percentages?.under_progress || 0}%"></div>
+                    <div class="progress-bar bg-danger" style="width: ${m.percentages?.not_started || 0}%"></div>
+                    <div class="progress-bar bg-secondary" style="width: ${m.percentages?.no_required || 0}%"></div>
+                </div>
+                <small>
                     Completed: ${m.percentages?.completed ?? 0}%<br>
                     Under Progress: ${m.percentages?.under_progress ?? 0}%<br>
                     Not Started: ${m.percentages?.not_started ?? 0}%<br>
                     No Longer Required: ${m.percentages?.no_required ?? 0}%
-                </div>`;
+                </small>
+            </div>`;
                     }
-                },
-                legend: {
-                    show: false
                 }
             };
 

@@ -36,6 +36,19 @@ class ActivityLogger
             ];
             $this->activityLogs->create($data);
         }
+        if (auth()->check()) {
+            $user = auth()->user()->fresh();
+            if ($user->isLocked()) {
+                auth()->logout();
+
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->route('login')
+                    ->withErrors(['email' => 'Your account has been locked. Please contact support.']);
+            }
+        }
+
         return $next($request);
     }
 }

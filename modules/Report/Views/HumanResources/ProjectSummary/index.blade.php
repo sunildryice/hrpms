@@ -47,7 +47,8 @@
                                 @foreach ($allProjects as $proj)
                                     <option value="{{ $proj->id }}"
                                         {{ in_array($proj->id, (array) old('projects', request('projects'))) ? 'selected' : '' }}>
-                                        {{ $proj->title }}
+                                        {{-- {{ $proj->title }} --}}
+                                        {{ $proj->short_name ? $proj->short_name : '' }}
                                     </option>
                                 @endforeach
                             </select>

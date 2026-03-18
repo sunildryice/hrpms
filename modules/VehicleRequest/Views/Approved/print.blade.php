@@ -20,14 +20,11 @@
 
                     <div class="print-header-info mb-3 d-none">
                         <ul class="list-unstyled m-0 p-0 fs-7">
-                            <li><span
-                                    class="fw-bold me-1">Travel Date From:</span><span>{!! $vehicleRequest->getStartDatetime() !!}</span>
+                            <li><span class="fw-bold me-1">Travel Date From:</span><span>{!! $vehicleRequest->getStartDatetime() !!}</span>
                             </li>
-                            <li><span
-                                    class="fw-bold me-1">Travel Date To :</span><span>{!! $vehicleRequest->getEndDatetime() !!}</span>
+                            <li><span class="fw-bold me-1">Travel Date To :</span><span>{!! $vehicleRequest->getEndDatetime() !!}</span>
                             </li>
-                            <li><span
-                                    class="fw-bold me-1">District :</span><span>{!! $vehicleRequest->getDistricts() !!}</span>
+                            <li><span class="fw-bold me-1">District :</span><span>{!! $vehicleRequest->getDistricts() !!}</span>
                             </li>
                         </ul>
                     </div>
@@ -36,7 +33,8 @@
                     <div class="d-flex flex-column justify-content-end">
                         <div class="d-flex flex-column justify-content-end brand-logo mb-4 flex-grow-1">
                             <div class="d-flex flex-column justify-content-end float-right">
-                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5" style="width: 200px">
+                                <img src="{{ asset('img/logonp.png') }}" alt="" class="align-self-end pe-5"
+                                    style="width: 200px">
                             </div>
                         </div>
                     </div>
@@ -172,7 +170,7 @@
                             <div class="col-lg-6">
                                 <div class="d-inline-flex gap-2">
                                     <span> <strong> Number of Overnight Stay</strong></span>
-                                    <span>{{$vehicleRequest->getOvernights()}}</span>
+                                    <span>{{ $vehicleRequest->getOvernights() }}</span>
                                 </div>
                             </div>
                         </div>
@@ -269,6 +267,16 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Prepared By:</strong></li>
+                        <div class="mb-2">
+                            @if ($requesterSignature)
+                                <img src="{{ $requesterSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getRequesterName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li><strong class="me-1">Name:</strong> {{ $vehicleRequest->getRequesterName() }} </li>
                         <li><strong class="me-1">Title:</strong>
                             {{ $vehicleRequest->requester->employee->latestTenure->getDesignationName() }} </li>
@@ -280,6 +288,16 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Recommended By:</strong></li>
+                        <div class="mb-2">
+                            @if ($reviewerSignature)
+                                <img src="{{ $reviewerSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getReviewerName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li><strong class="me-1">Name:</strong>
                             {{ $vehicleRequest->reviewer->getFullName() }}
                         </li>
@@ -294,6 +312,16 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Approved By:</strong></li>
+                        <div class="mb-2">
+                            @if ($approverSignature)
+                                <img src="{{ $approverSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getApproverName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li>
                             <strong class="me-1">Name:</strong>
                             {{ $vehicleRequest->getApproverName() }}
@@ -304,7 +332,7 @@
                         </li>
                         <li>
                             <strong class="me-1">Date:</strong>
-                            @if($vehicleRequest->vehicle_request_type_id == 1)
+                            @if ($vehicleRequest->vehicle_request_type_id == 1)
                                 {{ $vehicleRequest->getRequestAssignDate() }}
                             @else
                                 {{ $vehicleRequest->getRequestApprovalDate() }}

@@ -44,6 +44,14 @@ class VehicleRequestAssignedDriver extends Notification
     {
         $url = route('assigned.vehicle.requests.show', $this->vehicleRequest->id);
 
+        $travelRoute = trim(($this->vehicleRequest->travel_from ?? '') .
+            ($this->vehicleRequest->destination ? ' → ' . $this->vehicleRequest->destination : ''))
+            ?: '—';
+
+        $pickupTime = $this->vehicleRequest->pickup_time
+            ? \Carbon\Carbon::parse($this->vehicleRequest->pickup_time)->format('h:i A')
+            : '—';
+
         return (new MailMessage)
             ->greeting('Dear ' . $notifiable->getFullName() . ',')
             ->line('You have been assigned as a driver for a vehicle request.')
@@ -51,7 +59,9 @@ class VehicleRequestAssignedDriver extends Notification
             ->line('Requester : ' . $this->vehicleRequest->getRequesterName())
             ->line('Vehicle : ' . $this->vehicleRequest->assignedVehicle?->getVehicleNumberWithCapacity())
             ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y h:i A') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y h:i A') ?? '-'))
-            ->line('Purpose : ' . ($this->vehicleRequest->purpose_of_travel ?? '-'))
+            ->line('Travel Locations : ' . $travelRoute)
+            ->line('Pickup time : ' . $pickupTime)
+            ->line('Pickup place : ' . $this->vehicleRequest->pickup_place ?: '—')
             ->action('View Assignment', $url);
     }
 

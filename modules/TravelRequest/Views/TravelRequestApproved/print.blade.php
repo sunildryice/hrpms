@@ -323,6 +323,9 @@
                     </table>
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
+                            <div>
+                                <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
+                            </div>
                             <div class="mb-2">
                                 @if ($requesterSignature)
                                     <img src="{{ $requesterSignature }}"
@@ -334,9 +337,6 @@
                                         style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
-                            <div>
-                                <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
-                            </div>
                             <div><strong>Name:</strong> {{ $travelRequest->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
                             <div>
@@ -345,6 +345,7 @@
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">
+                            <div><strong>Recommended By:</strong></div>
                             <div class="mb-2">
                                 @if ($reviewerSignature)
                                     <img src="{{ $reviewerSignature }}"
@@ -356,7 +357,6 @@
                                         style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
-                            <div><strong>Recommended By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelRequest->getReviewerName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->reviewer->employee->getDesignationName() }}
                             </div>
@@ -365,6 +365,7 @@
                             </div>
                         </div>
                         <div class="col-lg-4 mb-4">
+                            <div><strong>Authorized By:</strong></div>
                             <div class="mb-2">
                                 @if ($approverSignature)
                                     <img src="{{ $approverSignature }}"
@@ -376,7 +377,6 @@
                                         style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
-                            <div><strong>Authorized By:</strong></div>
                             <div><strong>Name:</strong> {{ $travelRequest->getApproverName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->approver->employee->getDesignationName() }}
                             </div>

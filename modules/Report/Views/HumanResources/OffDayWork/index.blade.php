@@ -5,7 +5,7 @@
 @section('page_js')
     <script>
         $(document).ready(function () {
-            $('#navbarVerticalMenu').find('#off-day-work-report-menu').addClass('active'); // adjust menu id if needed
+            $('#navbarVerticalMenu').find('#off-day-work-report-menu').addClass('active'); 
 
             $('[name="request_date"], [name="off_day_date"]').datepicker({
                 language: 'en-GB',

@@ -91,6 +91,10 @@
                 }],
                 chart: {
                     type: 'rangeBar',
+                    zoom: {
+                        enabled: true,
+                        allowMouseWheelZoom: false
+                    },
                     height: Math.max(400, {{ count($projectNames) * 70 }}),
                     toolbar: {
                         show: true
@@ -118,26 +122,58 @@
                 yaxis: {
                     categories: @json($projectNames),
                 },
+                // tooltip: {
+                //     custom: function({
+                //         dataPointIndex,
+                //         w
+                //     }) {
+                //         const d = w.config.series[0].data[dataPointIndex];
+                //         const m = d.meta || {};
+                //         return `
+            // <div class="p-3 bg-white border rounded shadow-sm">
+            //     <strong>${d.x}</strong><br>
+            //     ${m.title || ''}<br>
+            //     Completed: ${m.percentages?.completed ?? 0}%<br>
+            //     Under Progress: ${m.percentages?.under_progress ?? 0}%<br>
+            //     Not Started: ${m.percentages?.not_started ?? 0}%<br>
+            //     No Longer Required: ${m.percentages?.no_required ?? 0}%
+            // </div>`;
+                //     }
+                // },
+                // legend: {
+                //     show: false
+                // }
                 tooltip: {
                     custom: function({
+                        series,
+                        seriesIndex,
                         dataPointIndex,
                         w
                     }) {
-                        const d = w.config.series[0].data[dataPointIndex];
+                        const d = w.config.series[seriesIndex].data[dataPointIndex];
                         const m = d.meta || {};
+                        const total = (m.percentages?.completed || 0) +
+                            (m.percentages?.under_progress || 0) +
+                            (m.percentages?.not_started || 0) +
+                            (m.percentages?.no_required || 0);
+
                         return `
-                <div class="p-3 bg-white border rounded shadow-sm">
-                    <strong>${d.x}</strong><br>
-                    ${m.title || ''}<br>
+            <div class="p-3 bg-white border rounded shadow" style="min-width:220px;">
+                <div class="fw-bold mb-2">${d.x} — ${m.title || 'Project'}</div>
+                <div class="progress" style="height:10px; margin-bottom:8px;">
+                    <div class="progress-bar bg-success" style="width: ${m.percentages?.completed || 0}%"></div>
+                    <div class="progress-bar bg-warning" style="width: ${m.percentages?.under_progress || 0}%"></div>
+                    <div class="progress-bar bg-danger" style="width: ${m.percentages?.not_started || 0}%"></div>
+                    <div class="progress-bar bg-secondary" style="width: ${m.percentages?.no_required || 0}%"></div>
+                </div>
+                <small>
                     Completed: ${m.percentages?.completed ?? 0}%<br>
                     Under Progress: ${m.percentages?.under_progress ?? 0}%<br>
                     Not Started: ${m.percentages?.not_started ?? 0}%<br>
                     No Longer Required: ${m.percentages?.no_required ?? 0}%
-                </div>`;
+                </small>
+            </div>`;
                     }
-                },
-                legend: {
-                    show: false
                 }
             };
 
@@ -210,41 +246,5 @@
             </div>
         </div>
 
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-light">
-                <h6 class="mb-0 fw-bold">Active Projects Summary</h6>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Code</th>
-                            <th>Project</th>
-                            <th>Activities</th>
-                            <th class="text-success">Completed</th>
-                            <th class="text-warning">Under Progress</th>
-                            <th class="text-orange">Not Started</th>
-                            <th class="text-danger">No Longer Req.</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($projects as $p)
-                            <tr>
-                                <td>{{ $p->short_name ?: 'P' . ($loop->index + 1) }}</td>
-                                <td>
-                                    <a class="text-decoration-none"
-                                        href="{{ route('project.dashboard', $p->id) }}">{{ $p->title }}</a>
-                                </td>
-                                <td>{{ $p->total_activities }}</td>
-                                <td>{{ $p->completed_count }}</td>
-                                <td>{{ $p->under_progress_count }}</td>
-                                <td>{{ $p->not_started_count }}</td>
-                                <td>{{ $p->no_required_count }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 @endsection

@@ -269,6 +269,16 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Prepared By:</strong></li>
+                        <div class="mb-2">
+                            @if ($requesterSignature)
+                                <img src="{{ $requesterSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getRequesterName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li><strong class="me-1">Name:</strong> {{ $vehicleRequest->getRequesterName() }} </li>
                         <li><strong class="me-1">Title:</strong>
                             {{ $vehicleRequest->requester->employee->latestTenure->getDesignationName() }} </li>
@@ -280,20 +290,40 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Recommended By:</strong></li>
+                        <div class="mb-2">
+                            @if ($reviewerSignature)
+                                <img src="{{ $reviewerSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getReviewerName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li><strong class="me-1">Name:</strong>
-                            {{-- {!! $vehicleRequest->getReviewerName() !!} --}}
+                            {!! $vehicleRequest->getReviewerName() !!}
                         </li>
                         <li><strong class="me-1">Title:</strong>
-                            {{-- {!! $vehicleRequest->reviewer?->employee->latestTenure->getDesignationName() !!} --}}
+                            {!! $vehicleRequest->reviewer?->employee->latestTenure->getDesignationName() !!}
                         </li>
                         <li><strong class="me-1">Date:</strong>
-                            {{-- {!! $vehicleRequest->getRequestReviewDate() !!} --}}
+                            {!! $vehicleRequest->getRequestRecommendedDate() !!}
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Approved By:</strong></li>
+                        <div class="mb-2">
+                            @if ($approverSignature)
+                                <img src="{{ $approverSignature }}"
+                                    alt="Signature of {{ $vehicleRequest->getApproverName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                            @endif
+                        </div>
                         <li><strong class="me-1">Name:</strong> {{ $vehicleRequest->getApproverName() }}</li>
                         <li><strong class="me-1">Title:</strong>
                             {{ $vehicleRequest->approver->employee->latestTenure->getDesignationName() }}</li>

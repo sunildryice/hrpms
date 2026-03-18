@@ -34,6 +34,7 @@ class ViewUserTimeSheetRepository extends Repository
         return $this->model
             ->where('requester_id', $userId)
             ->orderBy('year', 'desc')
+            ->orderBy('start_date', 'desc')
             ->get();
     }
 

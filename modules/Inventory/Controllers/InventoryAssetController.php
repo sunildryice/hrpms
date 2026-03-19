@@ -57,6 +57,8 @@ class InventoryAssetController extends Controller
                     return $row->getBrandName();
                 })->addColumn('asset_number', function ($row) {
                     return $row->getAssetNumber();
+                })->addColumn('assigned_user', function ($row) {
+                    return $row->getAssignedUserName();
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('assets.show', $row->id) . '" rel="tooltip" title="View Detail"><i class="bi bi-eye"></i></a>';

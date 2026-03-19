@@ -47,9 +47,13 @@
                         data: 'serial_number',
                         name: 'serial_number',
                     },
+                    // {
+                    //     data: 'room_number',
+                    //     name: 'room_number',
+                    // },
                     {
-                        data: 'room_number',
-                        name: 'room_number',
+                        data: 'assigned_user',
+                        name: 'assigned_user'
                     },
                     {
                         data: 'item_name',
@@ -482,7 +486,8 @@
                                                         <th scope="col">{{ __('label.asset-number') }}</th>
                                                         {{-- <th scope="col">{{ __('label.purchase-date') }}</th> --}}
                                                         <th scope="col">{{ __('label.serial-number') }}</th>
-                                                        <th scope="col">{{ __('label.room-no') }}</th>
+                                                        {{-- <th scope="col">{{ __('label.room-no') }}</th> --}}
+                                                        <th scope="col">Assigned Staff</th>
                                                         <th scope="col">{{ __('label.item') }}</th>
                                                         <th scope="col">{{ __('label.model-number') }}</th>
                                                         <th scope="col">{{ __('label.brand') }}</th>

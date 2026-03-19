@@ -590,7 +590,7 @@
                                     <div class="w-100">
                                         <div class="request-title d-flex justify-content-between">
                                             <div class="fw-bold">{{ $emp->getFullName() }}</div>
-                                            <small class="text-dark fw-semibold">{{ $emp->label }}</small>
+                                            <small class="text-dark fw-semibold">{{ $emp->label }} ({{ $emp->anniversary_label }})</small>
                                         </div>
                                         <div class="text-muted">
                                             <div class="mb-1">

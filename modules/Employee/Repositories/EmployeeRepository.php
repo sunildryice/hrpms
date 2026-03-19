@@ -261,6 +261,22 @@ class EmployeeRepository extends Repository
                     : ($daysUntil === 1 ? 'Tomorrow' : "in {$daysUntil} days");
                 $employee->years = $today->diffInYears(\Carbon\Carbon::parse($employee->joined_date));
 
+                $years = $today->year - \Carbon\Carbon::parse($employee->joined_date)->year;
+                // if ($today < $annivThisYear) {
+                //     $years--;
+                // }
+
+                $suffix = match ($years % 10) {
+                    1 => 'st',
+                    2 => 'nd',
+                    3 => 'rd',
+                    default => 'th',
+                };
+                if (in_array($years % 100, [11, 12, 13]))
+                    $suffix = 'th';
+
+                $employee->anniversary_label = $years > 0 ? "{$years}{$suffix} anniversary" : "Work anniversary";
+
                 return $employee;
             });
     }

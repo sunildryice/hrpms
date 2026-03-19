@@ -13,9 +13,8 @@ class TravelRequestRepository extends Repository
 
     public function __construct(
         FiscalYearRepository $fiscalYears,
-        TravelRequest        $travelRequest
-    )
-    {
+        TravelRequest $travelRequest
+    ) {
         $this->fiscalYears = $fiscalYears;
         $this->model = $travelRequest;
     }
@@ -50,8 +49,8 @@ class TravelRequestRepository extends Repository
     public function getTravelNumber($fiscalYearId)
     {
         $max = $this->model->select(['fiscal_year_id', 'travel_number'])
-                ->where('fiscal_year_id', $fiscalYearId)
-                ->max('travel_number') + 1;
+            ->where('fiscal_year_id', $fiscalYearId)
+            ->max('travel_number') + 1;
 
         return $max;
     }
@@ -89,23 +88,18 @@ class TravelRequestRepository extends Repository
             $clone->modification_travel_request_id = $travelRequest->id;
             $parentTravelRequestId = $travelRequest->modification_travel_request_id ?: $travelRequest->id;
             $clone->modification_number = $this->model->where('modification_travel_request_id', $parentTravelRequestId)
-                    ->max('modification_number') + 1;
+                ->max('modification_number') + 1;
             $clone->save();
+            foreach ($travelRequest->travelRequestDayItineraries as $itinerary) {
+                $newItinerary = $itinerary->replicate();
+                $newItinerary->travel_request_id = $clone->id;
+                $newItinerary->created_by = $inputs['created_by'];
+                $newItinerary->updated_by = $inputs['created_by'];
+                unset($newItinerary->id);
+                unset($newItinerary->created_at);
+                unset($newItinerary->updated_at);
 
-            foreach ($travelRequest->travelRequestItineraries as $itinerary) {
-                $travelModes = $itinerary->travelModes()->pluck('id')->toArray();
-                unset($itinerary->id);
-                unset($itinerary->travel_request_id);
-                unset($itinerary->created_at);
-                unset($itinerary->updated_at);
-                $itineraryInputs = $itinerary->toArray();
-                $itineraryInputs['created_by'] = $inputs['created_by'];
-                $itineraryInputs['departure_date'] = $itinerary->departure_date;
-                $itineraryInputs['arrival_date'] = $itinerary->arrival_date;
-                $cloneItinerary = $clone->travelRequestItineraries()->create($itineraryInputs);
-                if ($travelModes) {
-                    $cloneItinerary->travelModes()->sync($travelModes);
-                }
+                $newItinerary->save();
             }
 
             if ($travelRequest->travelRequestEstimate) {
@@ -126,6 +120,7 @@ class TravelRequestRepository extends Repository
 
             return $clone;
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e);
             DB::rollback();
 
             return false;
@@ -329,5 +324,5 @@ class TravelRequestRepository extends Repository
             ->exists();
     }
 
-   
+
 }

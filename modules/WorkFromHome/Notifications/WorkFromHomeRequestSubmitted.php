@@ -88,7 +88,7 @@ class WorkFromHomeRequestSubmitted extends Notification
         $typeLabel = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$this->workFromHomeRequest->type] ?? ucfirst(str_replace('_', ' ', $this->workFromHomeRequest->type));
         return [
             'work_from_home_id' => $this->workFromHomeRequest->id,
-            'link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
+            'link' => route('approve.wfh.requests.show', $this->workFromHomeRequest->id),
             'alternate_link' => route('wfh.requests.show', $this->workFromHomeRequest->id),
             'subject' => "Work from home request {$typeLabel} {$this->workFromHomeRequest->id} has been submitted. Requester : {$this->workFromHomeRequest->requester->full_name}",
         ];

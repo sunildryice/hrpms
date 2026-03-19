@@ -52,6 +52,8 @@ class AssetController extends Controller
                     return $row->getAssetNumber();
                 })->addColumn('old_asset_code', function ($row) {
                     return $row->asset->old_asset_code;
+                })->addColumn('serial_number', function ($row) {
+                    return $row->asset->getSerialNumber();
                 })->addColumn('assigned_user', function ($row) {
                     return $row->getAssignedUser();
                 })->addColumn('department', function ($row) {

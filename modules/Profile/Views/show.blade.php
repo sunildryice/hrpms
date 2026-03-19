@@ -49,6 +49,10 @@
                         name: 'asset_number'
                     },
                     {
+                        data: 'serial_number',
+                        name: 'serial_number'
+                    },
+                    {
                         data: 'item_name',
                         name: 'item_name'
                     },
@@ -954,6 +958,7 @@
                                             <tr>
                                                 <th>{{ __('label.sn') }}</th>
                                                 <th>{{ __('label.asset-number') }}</th>
+                                                <th>{{ __('label.serial-number') }}</th>
                                                 <th>{{ __('label.item-name') }}</th>
                                                 <th>{{ __('label.office') }}</th>
                                                 <th>{{ __('label.department') }}</th>

@@ -5,22 +5,37 @@ namespace Modules\Project\Controllers;
 use Illuminate\Http\Request;
 use Modules\Project\Models\Project;
 use Modules\Project\Models\Enums\ActivityStatus;
+use Modules\Project\Models\Enums\ActivityLevel;
 use Carbon\Carbon;
 
 class PmsController
 {
     public function dashboard(Request $request)
     {
-        $projectIds = $request->query('project_ids', []); 
+        $projectIds = $request->query('project_ids', []);
 
         $query = Project::query()
             ->whereNotNull('activated_at')
             ->withCount([
-                'activities as completed_count' => fn($q) => $q->where('status', ActivityStatus::Completed),
-                'activities as under_progress_count' => fn($q) => $q->where('status', ActivityStatus::UnderProgress),
-                'activities as not_started_count' => fn($q) => $q->where('status', ActivityStatus::NotStarted),
-                'activities as no_required_count' => fn($q) => $q->where('status', ActivityStatus::NoRequired),
-                'activities as total_activities',
+                'activities as completed_count' => function ($q) {
+                    $q->where('status', ActivityStatus::Completed)
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                },
+                'activities as under_progress_count' => function ($q) {
+                    $q->where('status', ActivityStatus::UnderProgress)
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                },
+                'activities as not_started_count' => function ($q) {
+                    $q->where('status', ActivityStatus::NotStarted)
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                },
+                'activities as no_required_count' => function ($q) {
+                    $q->where('status', ActivityStatus::NoRequired)
+                        ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                },
+                'activities as total_activities' => function ($q) {
+                    $q->where('activity_level', '!=', ActivityLevel::Theme->value);
+                },
             ]);
 
         if (!empty($projectIds)) {
@@ -29,30 +44,20 @@ class PmsController
 
         $projects = $query->orderBy('title')->get();
 
-        // Chart 1: Percentage 
-        $seriesPercent = [
+        $seriesTimeline = [
             ['name' => 'Completed', 'data' => []],
             ['name' => 'Under Progress', 'data' => []],
             ['name' => 'Not Started', 'data' => []],
-            ['name' => 'No Longer Required', 'data' => []],
-        ];
-
-        //  Chart 2: Timeline
-        $seriesTimeline = [
-            ['name' => 'Project Duration', 'data' => []],
+            ['name' => 'No Required', 'data' => []],
+            ['name' => 'No Activities', 'data' => []],
         ];
 
         $projectNames = [];
         $minDate = null;
         $maxDate = null;
-        $statusColors = [
-            ActivityStatus::Completed->value => '#27ae60',
-            ActivityStatus::UnderProgress->value => '#f8c90c',
-            ActivityStatus::NotStarted->value => '#eb7d1d',
-            ActivityStatus::NoRequired->value => '#e74c3c',
-        ];
 
         foreach ($projects as $idx => $project) {
+
             $code = $project->short_name ?: 'P' . ($idx + 1);
             $projectNames[] = $code;
 
@@ -63,55 +68,112 @@ class PmsController
                 $maxDate = $maxDate ? max($maxDate, $project->completion_date) : $project->completion_date;
             }
 
-            $total = $project->total_activities ?: 1;
+            $total = max(1, $project->total_activities);
 
-            $seriesPercent[0]['data'][] = round($project->completed_count / $total * 100, 1);
-            $seriesPercent[1]['data'][] = round($project->under_progress_count / $total * 100, 1);
-            $seriesPercent[2]['data'][] = round($project->not_started_count / $total * 100, 1);
-            $seriesPercent[3]['data'][] = round($project->no_required_count / $total * 100, 1);
+            $completed = $project->completed_count;
+            $under = $project->under_progress_count;
+            $notStarted = $project->not_started_count;
+            $noRequired = $project->no_required_count;
+
+            $hasAnyActivity = ($completed + $under + $notStarted + $noRequired) > 0;
+
+
+
+            $start = $project->start_date
+                ? Carbon::parse($project->start_date)
+                : now()->subYears(3);
+
+            $end = $project->completion_date
+                ? Carbon::parse($project->completion_date)
+                : now()->addYears(3);
+
+            $totalDuration = $end->diffInSeconds($start) ?: 1;
+
+            if (!$hasAnyActivity) {
+                // Special case: no activities → full bar in #01aef0
+                $seriesTimeline[4]['data'][] = [
+                    'x' => $code,
+                    'y' => [
+                        $start->timestamp * 1000,
+                        $end->timestamp * 1000
+                    ],
+                    'meta' => [
+                        'title' => $project->title,
+                        'status' => 'no_activities',
+                        'percentage' => 100.0
+                    ]
+                ];
+                continue;
+            }
+
+            $completedPct = ($completed / $total) * 100;
+            $underPct = ($under / $total) * 100;
+            $notStartedPct = ($notStarted / $total) * 100;
+            $noRequiredPct = ($noRequired / $total) * 100;
 
             $percentages = [
-                'completed' => end($seriesPercent[0]['data']),
-                'under_progress' => end($seriesPercent[1]['data']),
-                'not_started' => end($seriesPercent[2]['data']),
-                'no_required' => end($seriesPercent[3]['data']),
+                'completed' => $completedPct,
+                'under_progress' => $underPct,
+                'not_started' => $notStartedPct,
+                'no_required' => $noRequiredPct,
             ];
 
-            $dominantKey = array_keys($percentages, max($percentages))[0] ?? 'not_started';
+            $currentStart = $start->copy();
+            $accumulatedSeconds = 0;
+            $keys = ['completed', 'under_progress', 'not_started', 'no_required'];
 
-            $statusMap = [
-                'completed' => ActivityStatus::Completed->value,
-                'under_progress' => ActivityStatus::UnderProgress->value,
-                'not_started' => ActivityStatus::NotStarted->value,
-                'no_required' => ActivityStatus::NoRequired->value,
-            ];
+            foreach ($keys as $i => $key) {
+                $pct = $percentages[$key];
+                if ($pct <= 0)
+                    continue;
 
-            $dominantValue = $statusMap[$dominantKey] ?? ActivityStatus::NotStarted->value;
-            $color = $statusColors[$dominantValue] ?? '#6c757d';
+                if ($i === count($keys) - 1) {
+                    $segmentEnd = $end->copy();
+                } else {
+                    $segmentSeconds = ($pct / 100) * $totalDuration;
+                    $accumulatedSeconds += $segmentSeconds;
+                    $segmentEnd = $start->copy()->addSeconds($accumulatedSeconds);
+                }
 
-            $startMs = $project->start_date?->timestamp * 1000 ?? now()->subYears(3)->timestamp * 1000;
-            $endMs = $project->completion_date?->timestamp * 1000 ?? now()->addYears(3)->timestamp * 1000;
+                $seriesIndex = match ($key) {
+                    'completed' => 0,
+                    'under_progress' => 1,
+                    'not_started' => 2,
+                    'no_required' => 3,
+                };
 
-            $seriesTimeline[0]['data'][] = [
-                'x' => $code,
-                'y' => [$startMs, $endMs],
-                // 'fillColor' => $color,
-                'meta' => [
-                    'title' => $project->title,
-                    'percentages' => $percentages,
-                ]
-            ];
+                $seriesTimeline[$seriesIndex]['data'][] = [
+                    'x' => $code,
+                    'y' => [
+                        $currentStart->timestamp * 1000,
+                        $segmentEnd->timestamp * 1000
+                    ],
+                    'meta' => [
+                        'title' => $project->title,
+                        'status' => $key,
+                        'percentage' => round($pct, 1),
+                        'counts' => [
+                            'total' => (int) $total,
+                            'completed' => (int) $completed,
+                            'under_progress' => (int) $under,
+                            'not_started' => (int) $notStarted,
+                            'no_required' => (int) $noRequired,
+                        ]
+                    ]
+                ];
+
+                $currentStart = $segmentEnd;
+            }
         }
 
-        $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : Carbon::now()->subYears(3);
-        $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : Carbon::now()->addYears(3);
+        $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3);
+        $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
 
         $allProjects = Project::whereNotNull('activated_at')
             ->orderBy('title')
             ->get(['id', 'title', 'short_name']);
 
         return view('Project::Project.pmsDashboard', compact(
-            'seriesPercent',
             'seriesTimeline',
             'projectNames',
             'projects',

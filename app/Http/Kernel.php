@@ -65,6 +65,5 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
         'logger' => \App\Http\Middleware\ActivityLogger::class,
-        'check.locked' => \App\Http\Middleware\CheckUserLocked::class,
     ];
 }

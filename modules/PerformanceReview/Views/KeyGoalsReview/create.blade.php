@@ -241,7 +241,7 @@
                         <span class="card-title">
                             <span class="fw-bold">A.</span>
                             <span>
-                                Employee and Supervisor Details
+                                Employee and Line Manager Details
                             </span>
                         </span>
                     </div>
@@ -273,7 +273,7 @@
                             <div class="col-lg-6">
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <span class="fw-bold">Supervisor Name</span>
+                                        <span class="fw-bold">Line Manager Name</span>
                                     </div>
                                     <div class="col-lg-6">
                                         <span>{{$performanceReview->getSupervisorName()}}</span>
@@ -283,7 +283,7 @@
                             <div class="col-lg-6">
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <span class="fw-bold">Supervisor Title</span>
+                                        <span class="fw-bold">Line Manager Title</span>
                                     </div>
                                     <div class="col-lg-6">
                                         <span>{{$performanceReview->getSupervisorTitle()}}</span>
@@ -291,7 +291,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr>
+                        {{-- <hr>
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="row">
@@ -313,7 +313,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                         <hr>
                         <div class="row">
                             <div class="col-lg-6">

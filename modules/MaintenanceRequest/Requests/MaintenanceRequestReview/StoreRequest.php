@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id'=>'required',
-            'log_remarks'=>'required',
+            'log_remarks'=>'nullable',
             'logistic_officer_id'=>'required_if:status_id,6',
         ];
     }
@@ -34,7 +34,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'logistic_officer_id.required_if'=>'Logistic officier is required when approved.',
-            'log_remarks.required'=>'Remarks is required.'
+            // 'log_remarks.required'=>'Remarks is required.'
         ];
     }
 }

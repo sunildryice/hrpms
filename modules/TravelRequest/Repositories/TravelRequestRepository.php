@@ -120,7 +120,6 @@ class TravelRequestRepository extends Repository
 
             return $clone;
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             DB::rollback();
 
             return false;

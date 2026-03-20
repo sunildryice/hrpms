@@ -27,10 +27,10 @@ class TestUpdate extends Command
     protected $description = 'test update';
 
     /**
-     * @param AttendanceRepository $attendances
+     * @param AttendanceDetailRepository $attendanceDetails
      */
     public function __construct(
-        protected EmployeeRepository         $employees,
+        protected AttendanceDetailRepository $attendanceDetails,
     )
     {
         parent::__construct();
@@ -43,20 +43,19 @@ class TestUpdate extends Command
      */
     public function handle()
     {
-        $this->info('Getting employees.');
+        $this->info('Getting attendance details.');
 
-        $employees  = $this->employees->getAllEmployees();
-        foreach($employees as $employee){
-            if(!$employee->user) {
-                $employee->user()->create([
-                    'full_name'=>$employee->full_name,
-                    'email_address'=>$employee->official_email_address,
-                    'password'=>bcrypt($employee->official_email_address .rand(1000, 9999)),
+        $attendanceDetails = $this->attendanceDetails->get();
+        foreach ($attendanceDetails as $detail) {
+            if ($detail->attendance) {
+                $detail->update([
+                    'office_id' => $detail->attendance->employee->office_id,
+                    'weekend_type_id' => $detail->office ? $detail->office->weekend_type : null,
                 ]);
-                $this->info($employee->employee_code);
+                $this->info($detail->id);
             }
         }
 
-        $this->info('Users are created.');
+        $this->info('Attendance are updated.');
     }
 }

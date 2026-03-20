@@ -62,8 +62,7 @@ class EmployeeRepository extends Repository
 
     public function getActiveEmployees()
     {
-        return $this->model->select(['id', 'full_name', 'employee_code'])
-            //            ->whereHas('user')
+        return $this->model->select(['id', 'full_name', 'employee_code', 'office_id', 'department_id', 'designation_id'])
             ->with(['user'])
             ->whereNotNull('activated_at')
             ->where(function ($q) {

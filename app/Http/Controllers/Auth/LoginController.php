@@ -58,7 +58,7 @@ class LoginController extends Controller
      * @return void
      */
     public function __construct(
-        AuditLogRepository            $logs,
+        AuditLogRepository       $logs,
         UserRepository           $users,
         UserDelegationRepository $userDelegations
     )
@@ -90,8 +90,8 @@ class LoginController extends Controller
         $remember = $request->has('remember');
         if (Auth::attempt(['email_address' => $request->username, 'password' => $request->password], $remember)) {
             $user = auth()->user();
-            if($user->activated_at) {
-                self::afterLogin($user);
+            if ($user->activated_at) {
+//                self::afterLogin($user);
                 // if ($request->has('previous')) {
                 //     return redirect()->intended($request->previous);
                 // }
@@ -124,53 +124,16 @@ class LoginController extends Controller
         return redirect()->route('login');
     }
 
-    public function loginas($id)
-    {
-        $delegation = $this->userDelegations->find($id);
-        if ($delegation->start_date <= date('Y-m-d') && $delegation->end_date >= date('Y-m-d') && $delegation->to_user == auth()->id() && !session()->exists('original_user')) {
-            $loginUser = Auth::loginUsingId($delegation->from_user);
-            $this->logs->create([
-                'user_id' => $loginUser->id,
-                'action' => 'Login',
-                'description' => "Logged in to " . env('APP_NAME') . ' by ' . $delegation->toUser->full_name,
-                'ip_address' => $_SERVER['REMOTE_ADDR']
-            ]);
-            session()->put('original_user', $delegation->to_user);
-            self::afterLogin($loginUser);
-            return redirect()->intended(route('dashboard'));
-        }
-        return redirect()->back()
-            ->withWarningMessage('you are denied.');
-    }
-
-    public function loginasOriginal()
-    {
-        if (session()->exists('original_user')) {
-            $loginUser = Auth::loginUsingId(session()->get('original_user'));
-            $this->logs->create([
-                'user_id' => $loginUser->id,
-                'action' => 'Login',
-                'description' => "Logged in to " . env('APP_NAME') . ' by ' . $loginUser->full_name,
-                'ip_address' => $_SERVER['REMOTE_ADDR']
-            ]);
-            session()->forget('original_user');
-            self::afterLogin($loginUser);
-            return redirect()->intended(route('dashboard'));
-        }
-        return redirect()->back()
-            ->withWarningMessage('you are denied.');
-    }
-
     public function afterLogin($user)
     {
         $permissions = collect();
         $roles = collect();
-        foreach($user->roles as $role){
+        foreach ($user->roles as $role) {
             $permissions->push($role->permissions);
             $roles->push($role->id);
         }
         $access_permissions = [];
-        foreach($permissions->flatten(1) as $index=>$permission){
+        foreach ($permissions->flatten(1) as $index => $permission) {
             $access_permissions[] = $permission->guard_name;
         }
         $access_permissions = array_unique($access_permissions);

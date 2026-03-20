@@ -46,9 +46,35 @@ class ActivityLogger
 
                 return redirect()->route('login')
                     ->withErrors(['email' => 'Your account has been locked. Please contact support.']);
+            } else {
+                $this->setUserPermissions($user);
             }
         }
 
-        return $next($request);
+        $response = $next($request);
+        // Add headers to prevent caching
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+
+        return $response;
+    }
+
+    private function setUserPermissions($user)
+    {
+        $permissions = collect();
+        $roles = collect();
+        foreach ($user->roles as $role) {
+            $permissions->push($role->permissions);
+            $roles->push($role->id);
+        }
+        $access_permissions = [];
+        foreach ($permissions->flatten(1) as $index => $permission) {
+            $access_permissions[] = $permission->guard_name;
+        }
+        $access_permissions = array_unique($access_permissions);
+        session()->put('access_permissions', $access_permissions);
+        session()->put('roles', $user->roles);
+        return true;
     }
 }

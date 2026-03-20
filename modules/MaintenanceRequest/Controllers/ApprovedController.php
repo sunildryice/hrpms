@@ -118,8 +118,30 @@ class ApprovedController extends Controller
         $maintenanceRequest = $this->maintenanceRequest->find($id);
         $this->authorize('print', $maintenanceRequest);
 
+         $requester = $maintenanceRequest->requester?->employee;
+        $reviewer = $maintenanceRequest->reviewer?->employee;
+        $approver = $maintenanceRequest->approver?->employee;
+
+        $requesterSignature = null;
+        if ($requester && $requester->signature && file_exists(public_path('storage/' . $requester->signature))) {
+            $requesterSignature = asset('storage/' . $requester->signature);
+        }
+
+        $reviewerSignature = null;
+        if ($reviewer && $reviewer->signature && file_exists(public_path('storage/' . $reviewer->signature))) {
+            $reviewerSignature = asset('storage/' . $reviewer->signature);
+        }
+
+        $approverSignature = null;
+        if ($approver && $approver->signature && file_exists(public_path('storage/' . $approver->signature))) {
+            $approverSignature = asset('storage/' . $approver->signature);
+        }
+
         return view('MaintenanceRequest::print')
             ->withMaintenanceRequest($maintenanceRequest)
-            ->withRequester($maintenanceRequest->requester->employee);
+            ->withRequester($maintenanceRequest->requester->employee)
+            ->withRequesterSignature($requesterSignature)
+            ->withReviewerSignature($reviewerSignature)
+            ->withApproverSignature($approverSignature);
     }
 }

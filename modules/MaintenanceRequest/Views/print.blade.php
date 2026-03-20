@@ -120,6 +120,16 @@
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
                             <div><strong>Requested By:</strong></div>
+                            <div class="mb-2">
+                                @if ($requesterSignature)
+                                    <img src="{{ $requesterSignature }}"
+                                        alt="Signature of {{ $maintenanceRequest->getRequesterName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong> {{ $maintenanceRequest->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
                             <div><strong>Date:</strong>
@@ -128,6 +138,16 @@
 
                         <div class="col-lg-4 mb-4">
                             <div><strong>Recommended By:</strong></div>
+                            <div class="mb-2">
+                                @if ($reviewerSignature)
+                                    <img src="{{ $reviewerSignature }}"
+                                        alt="Signature of {{ $maintenanceRequest->getReviewer() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong>
                                 {{ $maintenanceRequest->reviewedLog ? $maintenanceRequest->getReviewer() : '' }}
                             </div>
@@ -139,6 +159,16 @@
                         </div>
                         <div class="col-lg-4 mb-4">
                             <div><strong>Authorized By:</strong></div>
+                            <div class="mb-2">
+                                @if ($approverSignature)
+                                    <img src="{{ $approverSignature }}"
+                                        alt="Signature of {{ $maintenanceRequest->getApproverName() }}"
+                                        class="img-fluid signature-img"
+                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                                @else
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
+                                @endif
+                            </div>
                             <div><strong>Name:</strong> {{ $maintenanceRequest->getApproverName() }} </div>
                             <div><strong>Title:</strong>
                                 {{ $maintenanceRequest->approvedLog ? $maintenanceRequest->approver->employee->getDesignationName() : '' }}

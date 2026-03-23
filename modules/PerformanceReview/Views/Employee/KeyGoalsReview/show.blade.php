@@ -205,7 +205,7 @@
             </div>
         </div>
 
-        <!-- B. Set Key Goals -->
+        <!-- B. Key Goals -->
         <div id="setKeyGoals" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">

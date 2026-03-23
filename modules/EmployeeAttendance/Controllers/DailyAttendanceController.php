@@ -53,8 +53,11 @@ class DailyAttendanceController extends Controller
                     }
                     $checkinTime = Carbon::parse($detail->checkin)->format('H:i:s');
                     $checkin = Carbon::parse($selectedDate . ' ' . $checkinTime);
-                    
+
                     $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKIN_TIME'));
+                    if($detail->weekend_type_id == config('constant.Saturday')){
+                        $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKIN_TIME'));
+                    }
                     $time = $checkin->format('H:i');
 
                     if ($checkin->gt($officeCheckin)) {
@@ -72,6 +75,9 @@ class DailyAttendanceController extends Controller
                     $checkout = Carbon::parse($selectedDate . ' ' . $checkoutTime);
 
                     $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKOUT_TIME'));
+                    if($detail->weekend_type_id == config('constant.Saturday')){
+                        $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKOUT_TIME'));
+                    }
                     $time = $checkout->format('H:i');
 
                     if ($checkout->lt($officeCheckout)) {
@@ -127,7 +133,7 @@ class DailyAttendanceController extends Controller
                             data-date="' . $selectedDate . '"
                             data-checkin="' . ($detail?->checkin?->format('H:i') ?? '') . '"
                             data-checkout="' . ($detail?->checkout?->format('H:i') ?? '') . '">
-                            <i class="bi bi-pencil-square"></i> 
+                            <i class="bi bi-pencil-square"></i>
                         </button>';
                 })
                 ->rawColumns(['action', 'remarks', 'time_in', 'time_out'])

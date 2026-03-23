@@ -56,7 +56,10 @@ class ImportEmployeeAttendance extends Command
             $manualCheckInExists = $attendanceDetail ? ($attendanceDetail->checkin && $attendanceDetail->checkin_from != 'Device' ? true : false) : false;
 
             if (count($attendanceLogs) > 0) {
-                $attendanceInputs = [];
+                $attendanceInputs = [
+                    'weekend_type_id' => $employee->office->weekend_type,
+                    'office_id' => $employee->office_id,
+                ];
                 if ($manualCheckInExists) {
                     $checkIn = $attendanceDetail->checkin;
                     $checkOut = $attendanceLogs->last()->attendance_timestamp;
@@ -75,19 +78,19 @@ class ImportEmployeeAttendance extends Command
                 }
 
                 $attendance = $this->attendances->getAttendanceObject($employee->id, $date->year, $date->month);
+
                 if (!$attendance) {
                     $inputs = [
                         'employee_id' => $employee->id,
-                        'department_id' => $employee->latestTenure->department_id,
-                        'designation_id' => $employee->latestTenure->designation_id,
-                        'office_id' => $employee->latestTenure->office_id,
+                        'department_id' => $employee->department_id,
+                        'designation_id' => $employee->designation_id,
+                        'office_id' => $employee->office_id,
                         'duty_station_id' => $employee->latestTenure->duty_station_id,
                         'year' => $date->year,
                         'month' => $date->month,
                         'requester_id' => auth()->id(),
                         'updated_by' => auth()->id(),
                         'status_id' => config('constant.CREATED_STATUS') ?? 1,
-                        'donor_codes' => '',
                     ];
                     $attendance = $this->attendances->create($inputs);
                 }
@@ -112,7 +115,7 @@ class ImportEmployeeAttendance extends Command
                     $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
                     $attendanceDetail->update(['worked_hours' => $workedHours]);
 
-                    $this->info('Work hour is updated for '. $employee->getFullName());
+                    $this->info('Work hour is updated for ' . $employee->getFullName());
                 }
             }
         }

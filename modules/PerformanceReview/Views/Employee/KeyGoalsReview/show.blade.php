@@ -209,7 +209,7 @@
         <div id="setKeyGoals" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">
-                    <span class="fw-bold">B.</span> Set Key Goals
+                    <span class="fw-bold">B.</span>Key Goals
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered" id="keygoals-table">

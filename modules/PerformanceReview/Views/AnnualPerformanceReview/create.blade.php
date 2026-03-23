@@ -732,7 +732,7 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <span class="fw-bold">Supervisor Name</span>
+                                    <span class="fw-bold">Line Manager Name</span>
                                 </div>
                                 <div class="col-lg-6">
                                     <span>{{ $performanceReview->getSupervisorName() }}</span>
@@ -742,33 +742,10 @@
                         <div class="col-lg-6">
                             <div class="row">
                                 <div class="col-lg-4">
-                                    <span class="fw-bold">Supervisor Title</span>
+                                    <span class="fw-bold">Line Manager Title</span>
                                 </div>
                                 <div class="col-lg-6">
                                     <span>{{ $performanceReview->getSupervisorTitle() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Technical Supervisor's Name</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getTechnicalSupervisorName() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Technical Supervisor's Title</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getTechnicalSupervisorTitle() }}</span>
                                 </div>
                             </div>
                         </div>
@@ -956,13 +933,15 @@
                             <div class="card-body">
                                 <table id="keyGoalTable" style="width: 100%">
                                     <tr>
-                                        <th style="width: 20%">Key Goals</th>
+                                        <th style="width: 20%">Objective</th>
+                                        <th style="width: 20%">Outputs / deliverables</th>
                                         <th style="width: 40%">To be completed by Employee</th>
                                         <th style="width: 40%">To be completed by Supervisor</th>
                                     </tr>
                                     @foreach ($keygoals as $keygoal)
                                         <tr>
                                             <td>{{ $keygoal->title }}</td>
+                                            <td>{{ $keygoal->output_deliverables }}</td>
                                             <td>
                                                 <textarea style="width:100%" name="{{ 'keygoal_employee_' . $keygoal->id }}"
                                                     id="{{ 'keygoal_employee_' . $keygoal->id }}" rows="2">{{ $keygoal->description_employee_annual }}</textarea>

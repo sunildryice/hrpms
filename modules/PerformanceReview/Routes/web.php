@@ -41,6 +41,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function() {
     Route::post('performance/employee/current/keygoal/get', [PerformanceReviewKeyGoalController::class, 'getEmployeeCurrentKeyGoals'])->name('performance.employee.current.keygoal.get');
     Route::post('performance/keygoal/delete', [PerformanceReviewKeyGoalController::class, 'destroy'])->name('performance.keygoal.destroy');
 
+    Route::post('performance/{id}/keygoals/save', [PerformanceReviewKeyGoalController::class, 'saveDraft'])->name('performance.keygoals.save-draft');
 
 
     Route::get('performance/review', [PerformanceReviewReviewController::class, 'index'])->name('performance.review.index');

@@ -18,6 +18,7 @@ class PerformanceReviewKeyGoal extends Model
     protected $fillable = [
         'performance_review_id',
         'title',
+        'output_deliverables',
         'description_employee',
         'description_supervisor',
         'description_employee_annual',

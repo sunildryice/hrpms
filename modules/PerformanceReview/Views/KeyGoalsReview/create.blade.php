@@ -135,7 +135,7 @@
                     <input type="text" class="form-control" 
                            name="keygoals[${idx}][title]" 
                            value="${title.replace(/"/g, '&quot;')}" 
-                           placeholder="Enter objective" required>
+                           placeholder="Objective" required>
                 </td>
                 <td class="col-output">
                     <input type="text" class="form-control" 
@@ -362,7 +362,7 @@
                                         <input type="text" class="form-control"
                                             name="keygoals[{{ $index }}][title]"
                                             value="{{ old('keygoals.' . $index . '.title', $kg->title) }}"
-                                            placeholder="Enter objective" required>
+                                            placeholder="Objective" required>
                                     </td>
                                     <td class="col-output">
                                         <input type="text" class="form-control"
@@ -383,7 +383,7 @@
                                 <tr class="keygoal-row" data-row-index="0">
                                     <td class="col-objective">
                                         <input type="text" class="form-control" name="keygoals[0][title]"
-                                            placeholder="Enter objective" required>
+                                            placeholder="Objective" required>
                                     </td>
                                     <td class="col-output">
                                         <input type="text" class="form-control"
@@ -436,7 +436,7 @@
                                         <input type="text" class="form-control"
                                             name="devplans[{{ $index }}][plan]"
                                             value="{{ old('devplans.' . $index . '.plan', $plan->answer ?? '') }}"
-                                            placeholder="Enter development plan / need" required>
+                                            placeholder="Development plan" required>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">
@@ -451,7 +451,7 @@
                                 <tr class="devplan-row" data-row-index="0">
                                     <td class="col-plan">
                                         <input type="text" class="form-control" name="devplans[0][plan]"
-                                            placeholder="Enter development plan / need" required>
+                                            placeholder="Development plan" required>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">

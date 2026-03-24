@@ -71,7 +71,9 @@ class PerformanceReviewPolicy
 
     public function edit(User $user, PerformanceReview $performanceReview)
     {
-        return $user->can('manage-performance-review');
+        return (in_array($performanceReview->status_id, [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]) &&
+        ($user->id == $performanceReview->created_by)) &&
+        $user->can('manage-performance-review');
     }
 
     public function view(User $user, PerformanceReview $performanceReview)

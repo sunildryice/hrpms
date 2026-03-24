@@ -2,464 +2,528 @@
 
 @section('title', 'Set Key Goals')
 
-@section('page_js')
-    <script type="text/javascript">
-
-        let previousLength = 0;
-        const handleInput = (event) => {
-            const bullet = "\u2022";
-            const newLength = event.target.value.length;
-            const characterCode = event.target.value.substr(-1).charCodeAt(0);
-            if (newLength > previousLength) {
-                if (characterCode === 10) {
-                event.target.value = `${event.target.value}${bullet} `;
-                } else if (newLength === 1) {
-                event.target.value = `${bullet} ${event.target.value}`;
-                }
-            }
-            previousLength = newLength;
+@section('page_css')
+    <style>
+        #keygoals-table th,
+        #keygoals-table td,
+        #devplan-table th,
+        #devplan-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            vertical-align: middle;
         }
 
-        let isFormESaved = false;
+        #keygoals-table,
+        #devplan-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-objective {
+            width: 45%;
+        }
+
+        .col-output {
+            width: 45%;
+        }
+
+        .col-plan {
+            width: 90%;
+        }
+
+        .col-action {
+            width: 10%;
+            text-align: center;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            margin: 0 2px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+    </style>
+@endsection
+
+@section('page_js')
+    <script type="text/javascript">
+        let keyGoalRowIndex = {{ $currentKeyGoals->count() ?: 0 }};
+        let devPlanRowIndex = {{ count($existingDevPlans ?? []) ?: 0 }};
 
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
 
-            $('#groupEForm').on('submit', function(e) {
-                e.preventDefault();
+            updateKeyGoalButtons();
+            updateDevPlanButtons();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
+            // Save draft
+            $('#btn-save-draft').on('click', function() {
+                let isValid = true;
 
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
+                // Validate Key Goals (B)
+                $('#keygoals-body .keygoal-row').each(function() {
+                    const title = $(this).find('input[name*="\\[title\\]"]').val()?.trim();
+                    const deliverables = $(this).find('input[name*="\\[output_deliverables\\]"]')
+                        .val()?.trim();
+
+                    if (!title || !deliverables) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
                     }
-                    return true;
                 });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {timeout: 2000});
+
+                // Validate Professional Development Plan (C)
+                $('#devplan-body .devplan-row').each(function() {
+                    const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
+
+                    if (!plan) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error(
+                        'Please fill all required fields (Objective, Output/Deliverable, and Development Plan).',
+                        'Validation Error');
                     return;
                 }
 
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
+                // If valid → proceed to save draft
+                const formData = $('#performance-keygoals-form').serialize();
+
+                $.ajax({
+                    url: "{{ route('performance.keygoals.save-draft', $performanceReview->id) }}",
+                    type: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        $('#btn-save-draft').prop('disabled', true).text('Saving...');
+                    },
+                    success: function(res) {
+                        toastr.success(res.message || 'Draft saved successfully');
+                        $('#btn-save-draft').prop('disabled', false).text('Save');
+                    },
+                    error: function(xhr) {
+                        toastr.error(xhr.responseJSON?.message ||
+                            'Could not save draft. Please try again.');
+                        console.log(xhr.responseJSON);
+                        $('#btn-save-draft').prop('disabled', false).text('Save');
+                    }
+                });
+            });
+
+            // SUBMIT BUTTON 
+            $('#btn-submit').on('click', function(e) {
+                e.preventDefault();
+
+                let isValid = true;
+
+                // Validation 
+                $('#keygoals-body .keygoal-row').each(function() {
+                    const title = $(this).find('input[name*="\\[title\\]"]').val()?.trim();
+                    const deliverables = $(this).find('input[name*="\\[output_deliverables\\]"]')
+                        .val()?.trim();
+                    if (!title || !deliverables) isValid = false;
                 });
 
-                isFormESaved = true;
+                $('#devplan-body .devplan-row').each(function() {
+                    const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
+                    if (!plan) isValid = false;
+                });
 
-                // toastr.success('Form saved', 'Success', {timeOut: 1000});
+                if (!isValid) {
+                    toastr.warning('Please complete all required fields before submitting.');
+                    return;
+                }
+
+                // Auto-save before submit
+                const formData = $('#performance-keygoals-form').serialize();
+
+                $.ajax({
+                    url: "{{ route('performance.keygoals.save-draft', $performanceReview->id) }}",
+                    type: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        $('#btn-submit').prop('disabled', true).text('Saving & Submitting...');
+                    },
+                    success: function(res) {
+                        toastr.success('Saved! Submitting now...');
+                        window.location.href =
+                            "{{ route('performance.submit', $performanceReview->id) }}";
+                    },
+                    error: function(xhr) {
+                        toastr.error('Failed to save. Please try again.');
+                        $('#btn-submit').prop('disabled', false).text('Submit');
+                    }
+                });
             });
-
-            getKeyGoalsEmployee();
         });
 
-        function addKeyGoal(event) {
-            $.ajax({
-                type: 'POST',
-                url: "{{route('performance.keygoal.store')}}",
-                data: {
-                    '_token': "{{csrf_token()}}",
-                    'performance_review_id': "{{$performanceReview->id}}",
-                    'title': $('#key_goal_input').val(),
-                    'type': 'current'
-                },
-                success: function(data) {
-                    $('#key_goal_input').val('');
-                    toastr.success('Key goal added.', 'Success', {timeOut: 2000});
-                    getKeyGoalsEmployee();
-                },
-                error: function(data) {
-                    toastr.error('Key goal could not be added.', 'Failed', {timeOut: 2000});
-                }
-            });
+        // KEY GOALS (B) 
+
+        function buildKeyGoalRow(idx, title = '', output_deliverables = '', id = null) {
+            const isExisting = id !== null;
+            return `
+            <tr class="keygoal-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
+                <td class="col-objective">
+                    <input type="text" class="form-control" 
+                           name="keygoals[${idx}][title]" 
+                           value="${title.replace(/"/g, '&quot;')}" 
+                           placeholder="Objective" required>
+                </td>
+                <td class="col-output">
+                    <input type="text" class="form-control" 
+                           name="keygoals[${idx}][output_deliverables]" 
+                           value="${output_deliverables.replace(/"/g, '&quot;')}" 
+                           placeholder="Output / Deliverable" required>
+                </td>
+                <td class="col-action">
+                    <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row" title="Add new row">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-keygoal-row" title="Remove this row">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
         }
 
-        function editKeyGoal(event, id) {
-            $keygoalTitle = event.target.parentElement.parentElement.querySelector('#keygoal-title').innerText;
-            $keygoalId = id;
+        function updateKeyGoalButtons() {
+            const $rows = $('#keygoals-body .keygoal-row');
+            $rows.find('.add-keygoal-row').hide();
+            $rows.find('.remove-keygoal-row').show();
 
-            console.log('id', id);
-
-            $('#key-goal-btn-add').hide();
-            $('#key-goal-btn-update').show();
-
-            $('#key_goal_input').val($keygoalTitle);
-            $('#key-goal-btn-update').attr('data-keygoalid', id);
-
-            console.log('key goal id during edit', $('#key-goal-btn-update').attr('data-keygoalid'));
+            if ($rows.length === 1) $rows.find('.remove-keygoal-row').hide();
+            $rows.last().find('.add-keygoal-row').show();
         }
 
-        function updateKeyGoal(event) {
-            console.log('key goal id before update', $('#key-goal-btn-update').attr('data-keygoalid'));
-            $.ajax({
-                type: 'POST',
-                url: "{{route('performance.keygoal.edit')}}",
-                data: {
-                    '_token': "{{csrf_token()}}",
-                    'title': $('#key_goal_input').val(),
-                    'keyGoalId': $('#key-goal-btn-update').attr('data-keygoalid')
-                },
-                success: function(data) {
-                    $('#key_goal_input').val('');
-                    $('#key-goal-btn-add').show();
-                    $('#key-goal-btn-update').hide();
-                    $('#key-goal-btn-update').attr('data-keygoalid', '');
-                    toastr.success('Key goal updated.', 'Success', {timeOut: 2000});
-                    getKeyGoalsEmployee();
-                },
-                error: function(data) {
-                    toastr.error('Key goal could not be updated.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
+        $(document).on('click', '.add-keygoal-row', function() {
+            keyGoalRowIndex++;
+            const $newRow = $(buildKeyGoalRow(keyGoalRowIndex));
+            $('#keygoals-body').append($newRow);
+            updateKeyGoalButtons();
+        });
 
-        function deleteKeyGoal(id) {
-            $.ajax({
-                type: 'POST',
-                url: "{{route('performance.keygoal.destroy')}}",
-                data: {
-                    '_token': "{{csrf_token()}}",
-                    'keyGoalId': id
-                },
-                success: function(data) {
-                    $('#key_goal_input').val('');
-                    toastr.success('Key goal deleted.', 'Success', {timeOut: 2000});
-                    getKeyGoalsEmployee();
-                    getKeyGoalsSupervisor();
-                },
-                error: function(data) {
-                    toastr.error('Key goal could not be deleted.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
+        $(document).on('click', '.remove-keygoal-row', function() {
+            const $row = $(this).closest('tr');
+            const goalId = $row.data('id');
 
-        function getKeyGoalsEmployee() {
-            $.ajax({
-                type: 'POST',
-                url: "{{route('performance.employee.current.keygoal.get')}}",
-                data: {
-                    '_token': "{{csrf_token()}}",
-                    'performance_review_id': "{{$performanceReview->id}}",
-                },
-                success: function(data) {
-                    $('#keygoal_employee').html.empty;
-                    $('#keygoal_employee').html(data.goal);
-                },
-                error: function(data) {
-                    // toastr.error('Key goal could not be added.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
+            if (goalId) {
 
-        function saveAnswer(questionId, answer) {
-            let flag;
-            $.ajax({
-                type: 'POST',
-                url: "{{route('performance.answer.store')}}",
-                data: {
-                    '_token': "{{csrf_token()}}",
-                    'performance_review_id': "{{$performanceReview->id}}",
-                    'question_id': questionId,
-                    'answer': answer
-                },
-                success: function(data) {
-                    toastr.success('Form saved', 'Success', {timeOut: 1000});
-                },
-                error: function(error) {
-                    toastr.error('Form could not be saved.', 'Error', {timeOut: 1000});
-                }
-            });
-            return flag;
-        }
-
-        function validateForm() {
-            let data = $('#groupEForm').serializeArray();
-            let filled = true;
-            data.every(element => {
-                if(element.value == '') {
-                    filled = false;
-                    return false;
-                }
-                return true;
-            });
-            if (filled && isFormESaved) {
-                window.location.href = "{{route('performance.submit',$performanceReview->id)}}";
+                $.ajax({
+                    url: "{{ route('performance.keygoal.destroy') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        keyGoalId: goalId
+                    },
+                    success: function(res) {
+                        if (res.type === 'success') {
+                            $row.remove();
+                            updateKeyGoalButtons();
+                            toastr.success('Key goal removed');
+                        } else {
+                            toastr.error('Failed to delete');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Server error');
+                    }
+                });
             } else {
-                toastr.warning('Please save the forms.', 'Warning', {timeOut: 2000});
+                $row.remove();
+                updateKeyGoalButtons();
             }
+        });
+
+        // PROFESSIONAL DEVELOPMENT PLAN (C) 
+
+        function buildDevPlanRow(idx, plan = '', id = null) {
+            const isExisting = id !== null;
+            return `
+            <tr class="devplan-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
+                <td class="col-plan">
+                    <input type="text" class="form-control" 
+                           name="devplans[${idx}][plan]" 
+                           value="${plan.replace(/"/g, '&quot;')}" 
+                           placeholder="Enter development plan / need" required>
+                </td>
+                <td class="col-action">
+                    <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row" title="Add new plan">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row" title="Remove this plan">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
         }
 
+        function updateDevPlanButtons() {
+            const $rows = $('#devplan-body .devplan-row');
+            $rows.find('.add-devplan-row').hide();
+            $rows.find('.remove-devplan-row').show();
+
+            if ($rows.length === 1) $rows.find('.remove-devplan-row').hide();
+            $rows.last().find('.add-devplan-row').show();
+        }
+
+        $(document).on('click', '.add-devplan-row', function() {
+            devPlanRowIndex++;
+            const $newRow = $(buildDevPlanRow(devPlanRowIndex));
+            $('#devplan-body').append($newRow);
+            updateDevPlanButtons();
+        });
+
+        $(document).on('click', '.remove-devplan-row', function() {
+            const $row = $(this).closest('tr');
+            const planId = $row.data('id');
+
+            if (planId) {
+                $row.remove();
+                updateDevPlanButtons();
+            } else {
+                $row.remove();
+                updateDevPlanButtons();
+            }
+        });
     </script>
 @endsection
 
 @section('page-content')
 
-<style>
-    td, th {
-        border: 1px solid grey;
-        padding: 8px;
-        text-align: left;
-    }
-</style>
+    <form id="performance-keygoals-form" method="POST">
+        @csrf
 
-
-
-        <div class="page-header pb-3 mb-3 border-bottom">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item">
-                                <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('performance.employee.index') }}"
-                                    class="text-decoration-none text-dark">Performance Review</a>
-                            </li>
-                            <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
-                        </ol>
-                    </nav>
-                    <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
+        <!-- A. Employee & Supervisor Details -->
+        <div id="employeeAndSupervisorDetails" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">A.</span> Employee and Line Manager Details
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Employee Name</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getEmployeeName() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Employee Title</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getEmployeeTitle() }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Line Manager Name</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getSupervisorName() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Line Manager Title</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getSupervisorTitle() }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Date of Joining</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->employee->getFirstJoinedDate() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">In Current Position Since</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getJoinedDate() }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row mb-2">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Review period from:</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getReviewFromDate() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Review period to:</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getReviewToDate() }}</div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mt-3">
+                            <div class="row">
+                                <div class="col-lg-4"><span class="fw-bold">Deadline:</span></div>
+                                <div class="col-lg-6">{{ $performanceReview->getDeadlineDate() }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <section>
+        <!-- B. Set Key Goals -->
+        <div id="setKeyGoals" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="fw-bold">B.</span> Set Key Goals
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="keygoals-table">
+                        <thead>
+                            <tr>
+                                <th class="col-objective">Objective</th>
+                                <th class="col-output">Output / Deliverable</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="keygoals-body">
+                            @forelse ($currentKeyGoals as $index => $kg)
+                                <tr class="keygoal-row" data-row-index="{{ $index }}"
+                                    data-id="{{ $kg->id }}">
+                                    <td class="col-objective">
+                                        <input type="text" class="form-control"
+                                            name="keygoals[{{ $index }}][title]"
+                                            value="{{ old('keygoals.' . $index . '.title', $kg->title) }}"
+                                            placeholder="Objective" required>
+                                    </td>
+                                    <td class="col-output">
+                                        <input type="text" class="form-control"
+                                            name="keygoals[{{ $index }}][output_deliverables]"
+                                            value="{{ old('keygoals.' . $index . '.output_deliverables', $kg->output_deliverables ?? '') }}"
+                                            placeholder="Output / Deliverable" required>
+                                    </td>
+                                    <td class="col-action">
+                                        <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-keygoal-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="keygoal-row" data-row-index="0">
+                                    <td class="col-objective">
+                                        <input type="text" class="form-control" name="keygoals[0][title]"
+                                            placeholder="Objective" required>
+                                    </td>
+                                    <td class="col-output">
+                                        <input type="text" class="form-control"
+                                            name="keygoals[0][output_deliverables]" placeholder="Output / Deliverable"
+                                            required>
+                                    </td>
+                                    <td class="col-action">
+                                        <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-keygoal-row"
+                                            style="display:none">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
 
-            <div id="employeeAndSupervisorDetails" class="mb-3">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">A.</span>
-                            <span>
-                                Employee and Supervisor Details
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Employee Name</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getEmployeeName()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Employee Title</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getEmployeeTitle()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Supervisor Name</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getSupervisorName()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Supervisor Title</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getSupervisorTitle()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Technical Supervisor's Name</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getTechnicalSupervisorName()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Technical Supervisor's Title</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getTechnicalSupervisorTitle()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Date of Joining</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->employee->getFirstJoinedDate()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">In Current Position Since</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getJoinedDate()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row mb-2">
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Review period from:</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getReviewFromDate()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Review period to:</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getReviewToDate()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mt-3">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <span class="fw-bold">Deadline:</span>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <span>{{$performanceReview->getDeadlineDate()}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mt-3">
+                        <a class="text-decoration-none"
+                            href="{{ route('performance.previous.show', $performanceReview->id) }}" target="_blank">
+                            View previous Key Goals <i class="bi bi-arrow-up-right-square"></i>
+                        </a>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="setKeyGoals" class="mb-3">
-                <form action="{{route('performance.answer.store')}}" method="POST" id="groupGForm">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">B. </span>
-                                <span>Set Key Goals</span>
-                               
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="row mb-2">
-                                    <div class="col-lg-6 d-flex align-items-center">
-                                        {{-- <input type="text" class="form-control" name="key_goal_input" id="key_goal_input" placeholder="Key goal"> --}}
-                                        <textarea class="form-control" name="key_goal_input" id="key_goal_input" cols="" rows="2" placeholder="Key goal"></textarea>
-                                    </div>
-                                    <div class="col d-flex align-items-center">
-                                        <button type="button" onclick="addKeyGoal(event)" class="btn btn-primary btn-sm" id="key-goal-btn-add">Add</button>
-                                        <button type="button" onclick="updateKeyGoal(event)" data-keygoalid="" style="display: none" class="btn btn-primary btn-sm" id="key-goal-btn-update">Update</button>
-                                    </div>
-                                </div>
-                                <div class="col-lg-8">
-                                    <div class="row" id="keygoal_employee" style="padding-left: 20px; padding-top: 10px;">
-                                    </div>
-                                    <span>
-                                        <a class="text-decoration-none" href="{{route('performance.previous.show', $performanceReview->id)}}" target="_blank">View previous Key Goals <i class="bi bi-arrow-up-right-square"></i></a>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div id="professionalDevelopmentPlan" class="mb-3">
-                <form action="{{route('performance.answer.store')}}" method="POST" id="groupEForm">
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">C.</span>
-                                <span>
-                                    Professional Development Plan
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <textarea name="{{'question_'.$professionalDevelopmentPlanQuestion->id}}" oninput="handleInput(event)" id="{{'question_'.$professionalDevelopmentPlanQuestion->id}}" style="width: 100%;" rows="5">{{$performanceReview->getAnswer($professionalDevelopmentPlanQuestion->id)}}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-        </section>
-
-        <section>
-            @if ($performanceReview->status_id == config('constant.RETURNED_STATUS'))
-                <div class="col-lg-6">
-                    <div class="row mb-2 border p-3">
-                        <div>
-                            <div class="d-flex align-items-start h-100">
-                                <span class="fw-bold" style="text-decoration: underline">Remarks:</span>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <span>{{$performanceReview->getLatestRemark()}}</span>
-                        </div>
-                    </div>
+        <!-- C. Professional Development Plan -->
+        <div id="professionalDevelopmentPlan" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="fw-bold">C.</span> Professional Development Plan
                 </div>
-            @endif
-        </section>
-
-
-        <section>
-            <div style="float: right">
-                <a onclick="validateForm()" type="button" class="btn btn-sm btn-success">Submit</a>
-                <a href="{{route('performance.index')}}" type="button" class="btn btn-sm btn-danger">Cancel</a>
+                <div class="card-body">
+                    <table class="table table-bordered" id="devplan-table">
+                        <thead>
+                            <tr>
+                                <th class="col-plan">Development Plan</th>
+                                <th class="col-action">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devplan-body">
+                            @forelse ($existingDevPlans ?? [] as $index => $plan)
+                                <tr class="devplan-row" data-row-index="{{ $index }}"
+                                    data-id="{{ $plan->id ?? '' }}">
+                                    <td class="col-plan">
+                                        <input type="text" class="form-control"
+                                            name="devplans[{{ $index }}][plan]"
+                                            value="{{ old('devplans.' . $index . '.plan', $plan->answer ?? '') }}"
+                                            placeholder="Development plan" required>
+                                    </td>
+                                    <td class="col-action">
+                                        <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr class="devplan-row" data-row-index="0">
+                                    <td class="col-plan">
+                                        <input type="text" class="form-control" name="devplans[0][plan]"
+                                            placeholder="Development plan" required>
+                                    </td>
+                                    <td class="col-action">
+                                        <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row"
+                                            style="display:none">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <br><br>
-        </section>
+        </div>
 
-@stop
+        <!-- Action Buttons -->
+        <div class="text-end mt-4">
+            <button type="button" id="btn-save-draft" class="btn btn-sm btn-primary px-4">Save</button>
+            <button type="button" id="btn-submit" class="btn btn-sm btn-success px-4">Submit</button>
+            <a href="{{ route('performance.employee.index') }}" class="btn btn-sm btn-danger px-4">Cancel</a>
+        </div>
+
+        @if ($performanceReview->status_id == config('constant.RETURNED_STATUS'))
+            <div class="mt-4 border p-3 bg-light">
+                <strong style="text-decoration: underline">Remarks from Supervisor:</strong><br>
+                {{ $performanceReview->getLatestRemark() ?? 'No remarks' }}
+            </div>
+        @endif
+    </form>
+
+@endsection

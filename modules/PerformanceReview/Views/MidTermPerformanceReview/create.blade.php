@@ -18,37 +18,62 @@
             $('#add-key-goal').click(async function(e) {
                 e.preventDefault();
                 let url = $(this).attr('data-href');
+
                 let successCallback = function(response) {
-                    toastr.success(response.message, 'Success', {
+                    toastr.success(response.message || 'Key Goal added successfully', 'Success', {
                         timeOut: 2000
                     });
-                    getNewKeyGoals();
+                    getNewKeyGoals(); // Refresh the additional key goals table
                 };
+
                 let errorCallback = function(response) {
-                    {{-- console.log(response.mesasge) --}}
-                    toastr.error('Key Goals could not be updated', 'Error', {
+                    toastr.error(response.message || 'Key Goal could not be added', 'Error', {
                         timeOut: 2000
                     });
-                }
+                };
+
+                // Show SweetAlert with two input fields
                 const {
-                    value: field
+                    value: formValues
                 } = await Swal.fire({
-                    title: 'Add Key Goal',
-                    input: "text",
-                    inputLabel: 'Title',
-                    inputAttributes: {
-                        name: 'title'
-                    },
+                    title: 'Add New Key Goal',
+                    html: `
+            <div class="mb-3">
+                <label for="swal-title" class="form-label fw-bold">Objective</label>
+                <input id="swal-title" class="swal2-input" placeholder="Objective" />
+            </div>
+            <div>
+                <label for="swal-output" class="form-label fw-bold">Output / Deliverable</label>
+                <input id="swal-output" class="swal2-input" placeholder="Output / Deliverable" />
+            </div>
+        `,
+                    focusConfirm: false,
                     showCancelButton: true,
+                    preConfirm: () => {
+                        const title = document.getElementById('swal-title').value.trim();
+                        const output = document.getElementById('swal-output').value.trim();
+
+                        if (!title) {
+                            Swal.showValidationMessage('Objective / Title is required');
+                            return false;
+                        }
+
+                        return {
+                            title,
+                            output
+                        };
+                    }
                 });
-                if (field) {
+
+                if (formValues) {
                     ajaxSubmit(url, 'POST', {
-                        ['title']: field,
-                        ['performance_review_id']: performanceReview.id,
-                        ['type']: 'current'
+                        title: formValues.title,
+                        output_deliverables: formValues.output,
+                        performance_review_id: performanceReview.id,
+                        type: 'current'
                     }, successCallback, errorCallback);
                 }
-            })
+            });
 
             $('#keygoal-body').on('click', '.edit-key-goal', async function(e) {
                 e.preventDefault();
@@ -212,54 +237,60 @@
                 }
             });
 
+            // GROUP C - KEY GOALS FORM 
             $('#groupCForm').on('submit', function(e) {
-                e.preventDefault();
+                    e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
+                    $(this).serializeArray().forEach(element => {
+                        let parts = element.name.split('_');
+                        let id = parts[parts.length - 1];
 
-                // Storing the form data.
-                data.forEach(element => {
-                    let keygoalId = element.name.split("_")[2];
-                    let titleElement = element.name.split('_');
-                    let title = '';
-                    if (titleElement[1] == 'title') {
-                        title = element.value;
+                        if (!id || isNaN(id)) return;
+
+                        let val = element.value.trim();
+
+                        // Only send the field that actually changed
+                        if (element.name.startsWith('title_')) {
+                            updateKeyGoal(id, val); // only title
+                        } else if (element.name.startsWith('output_deliverables_')) {
+                            updateKeyGoal(id, '', '', '', 'current', '', '', val); // only output
+                        } else if (element.name.startsWith('major_activities_employee_')) {
+                            updateKeyGoal(id, '', val); // only major activities
+                        } else if (element.name.startsWith('status_')) {
+                            updateKeyGoal(id, '', '', '', 'current', val); // only status
+                        } else if (element.name.startsWith('remarks_employee_')) {
+                            updateKeyGoal(id, '', '', '', 'current', '', val); // only remarks
+                        }
+                    });
+
+                    isGroupCFormSaved = true;
+                    toastr.success('Form saved', 'Success', {
+                        timeOut: 1000
+                    });
+                })
+                .on('change', 'textarea, select, input', function() {
+                    let name = $(this).attr('name');
+                    if (!name) return;
+
+                    let parts = name.split('_');
+                    let id = parts[parts.length - 1];
+
+                    if (!id || isNaN(id)) return;
+
+                    let val = $(this).val().trim();
+
+                    if (name.startsWith('title_')) {
+                        updateKeyGoal(id, val);
+                    } else if (name.startsWith('output_deliverables_')) {
+                        updateKeyGoal(id, '', '', '', 'current', '', '', val);
+                    } else if (name.startsWith('major_activities_employee_')) {
+                        updateKeyGoal(id, '', val);
+                    } else if (name.startsWith('status_')) {
+                        updateKeyGoal(id, '', '', '', 'current', val);
+                    } else if (name.startsWith('remarks_employee_')) {
+                        updateKeyGoal(id, '', '', '', 'current', '', val);
                     }
-                    let descriptionType = element.name.split("_")[1] == 'employee' ?
-                        'description_employee' : element.name.split("_")[1] == 'supervisor' ?
-                        'description_supervisor' : '';
-                    let description_employee = descriptionType == 'description_employee' ? element
-                        .value : '';
-                    let description_supervisor = descriptionType == 'description_supervisor' ?
-                        element.value : '';
-                    let type = 'current';
-                    updateKeyGoal(keygoalId, title, description_employee, description_supervisor,
-                        type);
                 });
-                isGroupCFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            }).on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let keyGoalId = $(this).attr('name').split("_")[2];
-                let titleElement = $(this).attr('name').split('_');
-                let title = '';
-                if (titleElement[1] == 'title') {
-                    title = $(this).val();
-                }
-                let descriptionType = $(this).attr('name').split("_")[1] == 'employee' ?
-                    'description_employee' : $(this).attr('name').split("_")[1] == 'supervisor' ?
-                    'description_supervisor' : '';
-                let description_employee = descriptionType == 'description_employee' ? $(this).val() : '';
-                let description_supervisor = descriptionType == 'description_supervisor' ? $(this).val() :
-                    '';
-                let type = 'current';
-                updateKeyGoal(keyGoalId, title, description_employee, description_supervisor, type);
-            });
 
             $('#groupEForm').on('submit', function(e) {
                 e.preventDefault();
@@ -417,7 +448,9 @@
 
         });
 
-        function updateKeyGoal(keyGoalId, title = '', descriptionEmployee = '', descriptionSupervisor = '', type) {
+        function updateKeyGoal(keyGoalId, title = '', majorActivities = '', descriptionSupervisor = '',
+            type = 'current', status = '', remarks = '', outputDeliverables = '') {
+
             $.ajax({
                 type: 'POST',
                 url: "{{ route('performance.keygoal.update') }}",
@@ -425,15 +458,19 @@
                     '_token': "{{ csrf_token() }}",
                     'key_goal_id': keyGoalId,
                     'title': title,
+                    'output_deliverables': outputDeliverables,
+                    'major_activities_employee': majorActivities,
+                    'description_supervisor_annual': descriptionSupervisor,
                     'performance_review_id': "{{ $performanceReview->id }}",
-                    'description_employee': descriptionEmployee,
-                    'description_supervisor': descriptionSupervisor,
-                    'type': type
+                    'type': type,
+                    'status': status,
+                    'remarks_employee': remarks
                 },
                 success: function(data) {
                     // toastr.success('Key goal updated.', 'Success', {timeOut: 2000});
                 },
                 error: function(data) {
+                    console.error(data);
                     // toastr.error('Key goal could not be updated.', 'Failed', {timeOut: 2000});
                 }
             });
@@ -705,12 +742,7 @@
                         </span>
                     </div>
                     <div class="card-body">
-                        <table class="table mb-3"  id="keyGoalTable">
-                            {{-- <tr>
-                                <th style="width: 24%">(Insert key goals agreed upon during previous performance review)
-                                </th>
-                                <th style="width: 38%">To be completed by Employee</th>
-                            </tr> --}}
+                        <table class="table mb-3" id="keyGoalTable">
                             <thead>
                                 <tr>
                                     <th rowspan="2" style="width: 18%">Objective</th>
@@ -723,32 +755,29 @@
                                     <th style="width: 25%">Remarks / Comments</th>
                                 </tr>
                             </thead>
-
-                            {{-- @foreach ($keygoals as $keygoal)
-                                <tr>
-                                    <td>
-                                        <span style="width: 100%">{{ $keygoal->title }}</span>
-                                    </td>
-                                    <td>
-                                        <textarea style="width:100%" name="{{ 'keygoal_employee_' . $keygoal->id }}"
-                                            id="{{ 'keygoal_employee_' . $keygoal->id }}" rows="2">{{ $keygoal->description_employee }}</textarea>
-                                    </td>
-                                </tr>
-                            @endforeach --}}
                             <tbody>
                                 @foreach ($keygoals as $keygoal)
-                                    <tr>
+                                    <tr data-keygoal-id="{{ $keygoal->id }}">
                                         <td>{{ $keygoal->title }}</td>
                                         <td>{{ $keygoal->output_deliverables }}</td>
-                                        <td>{{ $keygoal->major_activities_employee }}</td>
                                         <td>
-                                            @if ($keygoal->status)
-                                                <span class="{{ $keygoal->status->colorClass() }}">
-                                                    {{ $keygoal->status->label() }}
-                                                </span>
-                                            @endif
+                                            <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
                                         </td>
-                                        <td>{{ $keygoal->remarks_employee }}</td>
+                                        <td>
+                                            <select name="status_{{ $keygoal->id }}"
+                                                class="form-select status-dropdown">
+                                                <option value="">Select Status</option>
+                                                @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
+                                                    <option value="{{ $status->value }}"
+                                                        {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
+                                                        {{ $status->label() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -756,10 +785,18 @@
 
                         <table id="new-keyGoalTable"
                             style="width: 100%;@if (!$newKeyGoals->count()) display:none @endif">
-                            <tr>
-                                <th style="width: 24%">(Additional key goals)</th>
-                                <th style="width: 38%">To be completed by Employee</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 18%">(Additional Objective)</th>
+                                    <th rowspan="2" style="width: 15%">(Additional Output / Deliverable)</th>
+                                    <th rowspan="2" style="width: 22%">Major Activities</th>
+                                    <th colspan="2">Achievement against output / deliverable</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%">Status</th>
+                                    <th style="width: 25%">Remarks / Comments</th>
+                                </tr>
+                            </thead>
                             <tbody id="keygoal-body">
                                 @foreach ($newKeyGoals as $keygoal)
                                     <tr>
@@ -774,10 +811,24 @@
                                                 data-href="{{ route('performance.keygoal.destroy') }}"
                                                 data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>
                                         </td>
+                                        <td>{{ $keygoal->output_deliverables }}</td>
                                         <td>
-                                            <textarea style="width:100%" name="{{ 'keygoal_employee_' . $keygoal->id }}"
-                                                id="{{ 'keygoal_employee_' . $keygoal->id }}" rows="2">{{ $keygoal->description_employee }}</textarea>
-
+                                            <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                        </td>
+                                        <td>
+                                            <select name="status_{{ $keygoal->id }}"
+                                                class="form-select status-dropdown">
+                                                <option value="">Select Status</option>
+                                                @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
+                                                    <option value="{{ $status->value }}"
+                                                        {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
+                                                        {{ $status->label() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
                                         </td>
                                     </tr>
                                 @endforeach

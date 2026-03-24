@@ -20,7 +20,7 @@ enum KeyGoalStatus: string
     public function colorClass(): string
     {
         return match ($this) {
-            self::NotCompleted => 'badge bg-orange text-white',
+            self::NotCompleted => 'badge bg-secondary text-white',
             self::PartiallyCompleted => 'badge bg-warning',
             self::FullyCompleted => 'badge bg-success',
         };

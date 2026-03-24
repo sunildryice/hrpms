@@ -491,50 +491,71 @@
             @if ($approvedWorkFromHomes->isNotEmpty() || $upcomingWorkFromHomes->isNotEmpty())
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
-                        <div class="card-header fw-bold"> On / Upcoming Work From Home</div>
+                        <div class="card-header fw-bold"> On / Upcoming WFH/Field Work</div>
                         <div class="p-3 div-content-area">
                             @foreach ($approvedWorkFromHomes as $workFromHome)
+                                @php
+                                    $isFieldWork = $workFromHome->type && $workFromHome->type !== 'work_from_home';
+                                    $label = $isFieldWork ? 'Field Work' : 'WFH';
+                                @endphp
+
                                 <div class="gap-2 mb-4 d-flex align-items-start">
-                                    <div class="">
+                                    <div>
                                         <span
                                             class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person-workspace"></i>
                                         </span>
                                     </div>
+
                                     <div class="w-100">
                                         <div class="request-title d-flex justify-content-between">
                                             <div class="fw-bold">{{ $workFromHome->getRequesterName() }}</div>
                                         </div>
-                                        <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
-                                            <small>WFH for {{ $workFromHome->getWorkFromHomeDuration() }}
-                                                Day{{ $workFromHome->getWorkFromHomeDuration() > 1 ? 's' : '' }}</small>
-                                            <small> {{ $workFromHome->getStartDate() }} -
-                                                {{ $workFromHome->getEndDate() }}</small>
-                                        </div>
 
+                                        <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
+                                            <small>
+                                                {{ $label }} for {{ $workFromHome->getWorkFromHomeDuration() }}
+                                                Day{{ $workFromHome->getWorkFromHomeDuration() > 1 ? 's' : '' }}
+                                            </small>
+
+                                            <small>
+                                                {{ $workFromHome->getStartDate() }} - {{ $workFromHome->getEndDate() }}
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
                             @foreach ($upcomingWorkFromHomes as $upcomingWorkFromHome)
+                                @php
+                                    $isFieldWork =
+                                        $upcomingWorkFromHome->type && $upcomingWorkFromHome->type !== 'work_from_home';
+                                    $label = $isFieldWork ? 'Field Work' : 'WFH';
+                                @endphp
+
                                 <div class="gap-2 mb-4 d-flex align-items-start">
-                                    <div class="">
+                                    <div>
                                         <span
                                             class="text-white rounded bg-work-from-home avatar d-flex align-items-center justify-content-center">
                                             <i class="bi bi-person"></i>
                                         </span>
                                     </div>
+
                                     <div class="w-100">
                                         <div class="request-title d-flex justify-content-between">
                                             <div class="fw-bold">{{ $upcomingWorkFromHome->getRequesterName() }}</div>
                                         </div>
+
                                         <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
-                                            <small> {{ $upcomingWorkFromHome->getStartDate() }} -
-                                                {{ $upcomingWorkFromHome->getEndDate() }}</small>
+                                            <small>{{ $label }}</small>
+
+                                            <small>
+                                                {{ $upcomingWorkFromHome->getStartDate() }} -
+                                                {{ $upcomingWorkFromHome->getEndDate() }}
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
-
                         </div>
                     </div>
                 </div>

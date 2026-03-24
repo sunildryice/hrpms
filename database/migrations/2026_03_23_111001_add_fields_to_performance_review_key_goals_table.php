@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -15,6 +14,9 @@ return new class extends Migration
     {
         Schema::table('performance_review_key_goals', function (Blueprint $table) {
             $table->text('output_deliverables')->nullable()->after('title');
+            $table->text('major_activities_employee')->nullable()->after('output_deliverables');
+            $table->enum('status', ['fully_completed', 'partially_completed'])->nullable()->after('major_activities_employee');
+            $table->text('remarks_employee')->nullable()->after('status');
         });
     }
 
@@ -26,7 +28,12 @@ return new class extends Migration
     public function down()
     {
         Schema::table('performance_review_key_goals', function (Blueprint $table) {
-            $table->dropColumn('output_deliverables');
+            $table->dropColumn([
+                'output_deliverables',
+                'major_activities_employee',
+                'status',
+                'remarks_employee',
+            ]);
         });
     }
 };

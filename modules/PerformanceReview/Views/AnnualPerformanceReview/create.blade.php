@@ -934,7 +934,7 @@
                                 <table id="keyGoalTable" style="width: 100%">
                                     <tr>
                                         <th style="width: 20%">Objective</th>
-                                        <th style="width: 20%">Outputs / deliverables</th>
+                                        <th style="width: 20%">Output / Deliverable</th>
                                         <th style="width: 40%">To be completed by Employee</th>
                                         <th style="width: 40%">To be completed by Supervisor</th>
                                     </tr>
@@ -972,11 +972,35 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <span>{{ $professionalDevelopmentPlan }}</span>
+                    @php
+                        $devPlans = $keyGoalReview
+                            ->answers()
+                            ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
+                            ->get();
+                    @endphp
+
+                    @if ($devPlans->isEmpty())
+                        <div class="text-center text-muted py-4">
+                            No professional development plan has been added yet.
                         </div>
-                    </div>
+                    @else
+                        <table style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th class="col-plan">Development Plan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($devPlans as $plan)
+                                    <tr class="devplan-row readonly">
+                                        <td class="col-plan readonly-cell">
+                                            {{ $plan->answer }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
                 </div>
             </div>
         </div>

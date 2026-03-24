@@ -895,7 +895,7 @@
                             <div class="card mb-4">
                                 <div class="card-header fw-bold">Mid-Term Review</div>
                                 <div class="card-body">
-                                    <table class="table table-bordered">
+                                    <table class="table">
                                         <thead>
                                             <tr>
                                                 <th rowspan="2" style="width: 18%">Objective</th>
@@ -934,7 +934,7 @@
                         <div class="card">
                             <div class="card-header fw-bold">Annual Review (Employee Input)</div>
                             <div class="card-body">
-                                <table class="table table-bordered" id="keyGoalTable">
+                                <table class="table" id="keyGoalTable">
                                     <thead>
                                         <tr>
                                             <th rowspan="2" style="width: 18%">Objective</th>

@@ -1010,12 +1010,14 @@
                         <table style="width: 100%">
                             <thead>
                                 <tr>
+                                    <th style="width: 5%">SN</th>
                                     <th class="col-plan">Development Plan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($devPlans as $plan)
                                     <tr class="devplan-row readonly">
+                                        <td class="sn">{{ $loop->iteration }}</td>
                                         <td class="col-plan readonly-cell">
                                             {{ $plan->answer }}
                                         </td>

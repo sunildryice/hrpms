@@ -491,7 +491,7 @@
             @if ($approvedWorkFromHomes->isNotEmpty() || $upcomingWorkFromHomes->isNotEmpty())
                 <div class="mb-3 col-lg-4">
                     <div class="mb-2 border-0 shadow-sm card">
-                        <div class="card-header fw-bold"> On / Upcoming Work From Home</div>
+                        <div class="card-header fw-bold"> On / Upcoming WFH - Field Work</div>
                         <div class="p-3 div-content-area">
                             @foreach ($approvedWorkFromHomes as $workFromHome)
                                 <div class="gap-2 mb-4 d-flex align-items-start">

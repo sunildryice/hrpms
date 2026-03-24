@@ -249,11 +249,12 @@
             const isExisting = id !== null;
             return `
             <tr class="devplan-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
+                <td class="sn">${idx + 1}</td>
                 <td class="col-plan">
                     <input type="text" class="form-control" 
                            name="devplans[${idx}][plan]" 
                            value="${plan.replace(/"/g, '&quot;')}" 
-                           placeholder="Enter development plan / need" required>
+                           placeholder="Development plan" required>
                 </td>
                 <td class="col-action">
                     <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row" title="Add new plan">
@@ -465,6 +466,7 @@
                     <table class="table table-bordered" id="devplan-table">
                         <thead>
                             <tr>
+                                <th style="width: 5%">SN</th>
                                 <th class="col-plan">Development Plan</th>
                                 <th class="col-action">Action</th>
                             </tr>
@@ -473,6 +475,8 @@
                             @forelse ($existingDevPlans ?? [] as $index => $plan)
                                 <tr class="devplan-row" data-row-index="{{ $index }}"
                                     data-id="{{ $plan->id ?? '' }}">
+                                    <td class="sn">{{ $loop->iteration }}</td>
+
                                     <td class="col-plan">
                                         <input type="text" class="form-control"
                                             name="devplans[{{ $index }}][plan]"
@@ -490,6 +494,7 @@
                                 </tr>
                             @empty
                                 <tr class="devplan-row" data-row-index="0">
+                                    <td class="sn">1</td>
                                     <td class="col-plan">
                                         <input type="text" class="form-control" name="devplans[0][plan]"
                                             placeholder="Development plan" required>

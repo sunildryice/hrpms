@@ -239,58 +239,33 @@
 
             // GROUP C - KEY GOALS FORM 
             $('#groupCForm').on('submit', function(e) {
-                    e.preventDefault();
+                e.preventDefault();
 
-                    $(this).serializeArray().forEach(element => {
-                        let parts = element.name.split('_');
-                        let id = parts[parts.length - 1];
+                let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
 
-                        if (!id || isNaN(id)) return;
-
-                        let val = element.value.trim();
-
-                        // Only send the field that actually changed
-                        if (element.name.startsWith('title_')) {
-                            updateKeyGoal(id, val); // only title
-                        } else if (element.name.startsWith('output_deliverables_')) {
-                            updateKeyGoal(id, '', '', '', 'current', '', '', val); // only output
-                        } else if (element.name.startsWith('major_activities_employee_')) {
-                            updateKeyGoal(id, '', val); // only major activities
-                        } else if (element.name.startsWith('status_')) {
-                            updateKeyGoal(id, '', '', '', 'current', val); // only status
-                        } else if (element.name.startsWith('remarks_employee_')) {
-                            updateKeyGoal(id, '', '', '', 'current', '', val); // only remarks
-                        }
-                    });
-
-                    isGroupCFormSaved = true;
-                    toastr.success('Form saved', 'Success', {
-                        timeOut: 1000
-                    });
-                })
-                .on('change', 'textarea, select, input', function() {
-                    let name = $(this).attr('name');
-                    if (!name) return;
-
-                    let parts = name.split('_');
-                    let id = parts[parts.length - 1];
+                rows.each(function() {
+                    let row = $(this);
+                    let id = row.data('keygoal-id') || row.find('textarea, select').first().attr(
+                        'name')?.split('_').pop();
 
                     if (!id || isNaN(id)) return;
 
-                    let val = $(this).val().trim();
+                    let title = row.find(`[name="title_${id}"]`).val() || '';
+                    let output = row.find(`[name="output_deliverables_${id}"]`).val() || '';
+                    let majorActivities = row.find(`[name="major_activities_employee_${id}"]`)
+                    .val() || '';
+                    let status = row.find(`[name="status_${id}"]`).val() || '';
+                    let remarks = row.find(`[name="remarks_employee_${id}"]`).val() || '';
 
-                    if (name.startsWith('title_')) {
-                        updateKeyGoal(id, val);
-                    } else if (name.startsWith('output_deliverables_')) {
-                        updateKeyGoal(id, '', '', '', 'current', '', '', val);
-                    } else if (name.startsWith('major_activities_employee_')) {
-                        updateKeyGoal(id, '', val);
-                    } else if (name.startsWith('status_')) {
-                        updateKeyGoal(id, '', '', '', 'current', val);
-                    } else if (name.startsWith('remarks_employee_')) {
-                        updateKeyGoal(id, '', '', '', 'current', '', val);
-                    }
+                    updateKeyGoal(id, title, majorActivities, '', 'current', status, remarks, output);
                 });
+
+                isGroupCFormSaved = true;
+
+                toastr.success('Key Goals saved successfully', 'Success', {
+                    timeOut: 1000
+                });
+            });
 
             $('#groupEForm').on('submit', function(e) {
                 e.preventDefault();

@@ -2,12 +2,11 @@
 
 namespace Modules\PerformanceReview\Models;
 
+use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Modules\PerformanceReview\Models\Enums\KeyGoalStatus;
 use Modules\PerformanceReview\Models\PerformanceReview;
-
-use App\Traits\ModelEventLogger;
 
 class PerformanceReviewKeyGoal extends Model
 {
@@ -34,9 +33,21 @@ class PerformanceReviewKeyGoal extends Model
     protected $hidden = [];
 
     protected $dates = ['created_at', 'updated_at'];
+    protected $casts = [
+        'status' => KeyGoalStatus::class,
+    ];
 
     public function performanceReview()
     {
         return $this->belongsTo(PerformanceReview::class, 'performance_review_id');
+    }
+    public function getStatusLabelAttribute()
+    {
+        return $this->status?->label() ?? 'Not Set';
+    }
+
+    public function getStatusColorAttribute()
+    {
+        return $this->status?->colorClass() ?? 'badge bg-secondary';
     }
 }

@@ -87,49 +87,79 @@ class PerformanceReviewKeyGoalController extends Controller
         }
     }
 
+    // public function update(Request $request)
+    // {
+    //     $inputs = array();
+
+    //     if ($request->title != '') {
+    //         $inputs['title'] = $request->title;
+    //     }
+
+    //     if ($request->description_employee != '') {
+    //         $inputs['description_employee'] = $request->description_employee;
+    //     }
+
+    //     if ($request->description_supervisor != '') {
+    //         $inputs['description_supervisor'] = $request->description_supervisor;
+    //     }
+
+    //     if ($request->description_employee_annual != '') {
+    //         $inputs['description_employee_annual'] = $request->description_employee_annual;
+    //     }
+
+    //     if ($request->description_supervisor_annual != '') {
+    //         $inputs['description_supervisor_annual'] = $request->description_supervisor_annual;
+    //     }
+
+    //     if ($request->type != '') {
+    //         $inputs['type'] = $request->type;
+    //     }
+
+    //     $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->find($request->key_goal_id);
+
+    //     if ($performanceReviewKeyGoal) {
+    //         $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->update($request->key_goal_id, $inputs);
+    //     } else {
+    //         $inputs['performance_review_id'] = $request->performance_review_id;
+    //         $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->create($inputs);
+    //     }
+
+
+    //     if ($performanceReviewKeyGoal) {
+    //         return response()->json(['type' => 'success', 'message' => 'Key Goal Saved.'], 200);
+    //     } else {
+    //         return response()->json(['type' => 'success', 'message' => 'Key Goal could not be Saved.'], 422);
+    //     }
+    // }
+
     public function update(Request $request)
     {
-        $inputs = array();
+        $validated = $request->validate([
+            'key_goal_id' => 'required|exists:performance_review_key_goals,id',
+            'title' => 'nullable|string',
+            'major_activities_employee' => 'nullable|string',
+            'description_supervisor_annual' => 'nullable|string',
+            'status' => 'nullable|in:partially_completed,fully_completed',
+            'remarks_employee' => 'nullable|string',
+            'type' => 'nullable|in:current,future',
+            'performance_review_id' => 'nullable|exists:performance_reviews,id',
+        ]);
 
-        if ($request->title != '') {
-            $inputs['title'] = $request->title;
-        }
+        $keyGoal = $this->performanceReviewKeyGoal->find($request->key_goal_id);
 
-        if ($request->description_employee != '') {
-            $inputs['description_employee'] = $request->description_employee;
-        }
+        $keyGoal->update([
+            'title' => $request->title ?? $keyGoal->title,
+            'major_activities_employee' => $request->major_activities_employee ?? $keyGoal->major_activities_employee,
+            'description_supervisor_annual' => $request->description_supervisor_annual ?? $keyGoal->description_supervisor_annual,
+            'status' => $request->status,
+            'remarks_employee' => $request->remarks_employee,
+            'type' => $request->type ?? $keyGoal->type,
+        ]);
 
-        if ($request->description_supervisor != '') {
-            $inputs['description_supervisor'] = $request->description_supervisor;
-        }
-
-        if ($request->description_employee_annual != '') {
-            $inputs['description_employee_annual'] = $request->description_employee_annual;
-        }
-
-        if ($request->description_supervisor_annual != '') {
-            $inputs['description_supervisor_annual'] = $request->description_supervisor_annual;
-        }
-
-        if ($request->type != '') {
-            $inputs['type'] = $request->type;
-        }
-
-        $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->find($request->key_goal_id);
-
-        if ($performanceReviewKeyGoal) {
-            $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->update($request->key_goal_id, $inputs);
-        } else {
-            $inputs['performance_review_id'] = $request->performance_review_id;
-            $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->create($inputs);
-        }
-
-
-        if ($performanceReviewKeyGoal) {
-            return response()->json(['type' => 'success', 'message' => 'Key Goal Saved.'], 200);
-        } else {
-            return response()->json(['type' => 'success', 'message' => 'Key Goal could not be Saved.'], 422);
-        }
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Key Goal updated successfully.'
+        ]);
     }
 
     public function getKeyGoalsEmployee(Request $request)

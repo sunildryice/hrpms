@@ -85,65 +85,50 @@
             $('#groupCForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
+                let isValid = true;
 
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
+                $('#keyGoalTable tbody tr').each(function() {
+                    const majorActivities = $(this).find('.major-activities').val().trim();
+                    const status = $(this).find('.status-dropdown').val();
+
+                    if (!majorActivities || !status) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
                     }
-                    return true;
                 });
 
-                // Storing the form data.
-                data.forEach(element => {
-                    let keygoalId = element.name.split("_")[2];
-                    let titleElement = element.name.split('_');
-                    let title = '';
-                    if (titleElement[1] == 'title') {
-                        title = element.value;
-                    }
-                    let descriptionType = element.name.split("_")[1] == 'employee' ?
-                        'description_employee' : element.name.split("_")[1] == 'supervisor' ?
-                        'description_supervisor' : '';
-                    let description_employee = descriptionType == 'description_employee' ? element
-                        .value : '';
-                    let description_supervisor = descriptionType == 'description_supervisor' ?
-                        element.value : '';
-                    let type = 'current';
-                    updateKeyGoal(keygoalId, title, description_employee, description_supervisor,
-                        type);
-                });
-
-                if (!empty) {
-                    isGroupCFormSaved = true;
+                if (!isValid) {
+                    toastr.error('Please fill Major Activities and Status for all key goals.',
+                        'Validation Error');
+                    return;
                 }
 
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
+                // Save each row individually
+                $('#keyGoalTable tbody tr').each(function() {
+                    const keygoalId = $(this).data('keygoal-id');
+                    const majorActivities = $(this).find('.major-activities').val();
+                    const status = $(this).find('.status-dropdown').val();
+                    const remarks = $(this).find('.remarks-employee').val();
+
+                    updateKeyGoal(keygoalId, '', majorActivities, '', 'current', status, remarks);
                 });
-            }).on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let keyGoalId = $(this).attr('name').split("_")[2];
-                let titleElement = $(this).attr('name').split('_');
-                let title = '';
-                if (titleElement[1] == 'title') {
-                    title = $(this).val();
-                }
-                let descriptionType = $(this).attr('name').split("_")[1] == 'employee' ?
-                    'description_employee' : $(this).attr('name').split("_")[1] == 'supervisor' ?
-                    'description_supervisor' : '';
-                let description_employee = descriptionType == 'description_employee' ? $(this).val() : '';
-                let description_supervisor = descriptionType == 'description_supervisor' ? $(this).val() :
-                    '';
-                let type = 'current';
-                updateKeyGoal(keyGoalId, title, description_employee, description_supervisor, type);
+
+                isGroupCFormSaved = true;
+                toastr.success('Key Goals saved successfully!', 'Success');
             });
+
+            // Real-time save on change (optional but recommended)
+            // $('#keyGoalTable').on('change', 'textarea, select', function() {
+            //     const $row = $(this).closest('tr');
+            //     const keygoalId = $row.data('keygoal-id');
+            //     const majorActivities = $row.find('.major-activities').val();
+            //     const status = $row.find('.status-dropdown').val();
+            //     const remarks = $row.find('.remarks-employee').val();
+
+            //     updateKeyGoal(keygoalId, '', majorActivities, '', 'current', status, remarks);
+            // });
 
             $('#groupDForm').on('submit', function(e) {
                 e.preventDefault();
@@ -524,7 +509,8 @@
             });
         }
 
-        function updateKeyGoal(keyGoalId, title = '', descriptionEmployee = '', descriptionSupervisor = '', type) {
+        function updateKeyGoal(keyGoalId, title = '', majorActivities = '', descriptionSupervisor = '', type = 'current',
+            status = '', remarks = '') {
             $.ajax({
                 type: 'POST',
                 url: "{{ route('performance.keygoal.update') }}",
@@ -532,16 +518,20 @@
                     '_token': "{{ csrf_token() }}",
                     'key_goal_id': keyGoalId,
                     'title': title,
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                    'description_employee_annual': descriptionEmployee,
+                    'major_activities_employee': majorActivities,
                     'description_supervisor_annual': descriptionSupervisor,
-                    'type': type
+                    'performance_review_id': "{{ $performanceReview->id }}",
+                    'type': type,
+                    'status': status,
+                    'remarks_employee': remarks
                 },
                 success: function(data) {
-                    // toastr.success('Key goal updated.', 'Success', {timeOut: 2000});
+                    // Silent success - optional toast
+                    // toastr.success('Key goal updated.', 'Success');
                 },
                 error: function(data) {
-                    // toastr.error('Key goal could not be updated.', 'Failed', {timeOut: 2000});
+                    console.error(data);
+                    // toastr.error('Failed to update key goal.');
                 }
             });
         }
@@ -895,67 +885,100 @@
                     <div class="card-header fw-bold">
                         <span class="card-title">
                             <span class="fw-bold">C.</span>
-                            <span>
-                                Key Goals Review
-                            </span>
+                            Key Goals Review
                         </span>
                     </div>
                     <div class="card-body">
-                        @if ($midTermReview)
-                            <div class="card">
-                                <div class="card-header fw-bold">
-                                    Mid-Term Review
-                                </div>
-                                <div class="card-body">
-                                    <table id="keyGoalTable" style="width: 100%">
-                                        <tr>
-                                            <th style="width: 20%">Key Goals</th>
-                                            <th style="width: 40%">To be completed by Employee</th>
-                                            <th style="width: 40%">To be completed by Supervisor</th>
-                                        </tr>
 
-                                        @foreach ($keygoals as $keygoal)
+                        {{-- Mid-Term Review --}}
+                        @if ($midTermReview)
+                            <div class="card mb-4">
+                                <div class="card-header fw-bold">Mid-Term Review</div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $keygoal->title }}</td>
-                                                <td>{{ $keygoal->description_employee }}</td>
-                                                <td>{{ $keygoal->description_supervisor }}</td>
+                                                <th rowspan="2" style="width: 18%">Objective</th>
+                                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                                <th colspan="2">Achievement against output / deliverable</th>
                                             </tr>
-                                        @endforeach
+                                            <tr>
+                                                <th style="width: 15%">Status</th>
+                                                <th style="width: 25%">Remarks / Comments</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($keygoals as $keygoal)
+                                                <tr>
+                                                    <td>{{ $keygoal->title }}</td>
+                                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                                    <td>{{ $keygoal->major_activities_employee }}</td>
+                                                    <td>
+                                                        @if ($keygoal->status)
+                                                            <span class="{{ $keygoal->status->colorClass() }}">
+                                                                {{ $keygoal->status->label() }}
+                                                            </span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $keygoal->remarks_employee }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
                         @endif
 
+                        {{-- Annual Review --}}
                         <div class="card">
-                            <div class="card-header fw-bold">
-                                Annual Review
-                            </div>
+                            <div class="card-header fw-bold">Annual Review (Employee Input)</div>
                             <div class="card-body">
-                                <table id="keyGoalTable" style="width: 100%">
-                                    <tr>
-                                        <th style="width: 20%">Objective</th>
-                                        <th style="width: 20%">Output / Deliverable</th>
-                                        <th style="width: 40%">To be completed by Employee</th>
-                                        <th style="width: 40%">To be completed by Supervisor</th>
-                                    </tr>
-                                    @foreach ($keygoals as $keygoal)
+                                <table class="table table-bordered" id="keyGoalTable">
+                                    <thead>
                                         <tr>
-                                            <td>{{ $keygoal->title }}</td>
-                                            <td>{{ $keygoal->output_deliverables }}</td>
-                                            <td>
-                                                <textarea style="width:100%" name="{{ 'keygoal_employee_' . $keygoal->id }}"
-                                                    id="{{ 'keygoal_employee_' . $keygoal->id }}" rows="2">{{ $keygoal->description_employee_annual }}</textarea>
-                                            </td>
-                                            <td>{{ $keygoal->description_supervisor_annual }}</td>
+                                            <th rowspan="2" style="width: 18%">Objective</th>
+                                            <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                            <th rowspan="2" style="width: 22%">Major Activities</th>
+                                            <th colspan="2">Achievement against output / deliverable</th>
                                         </tr>
-                                    @endforeach
+                                        <tr>
+                                            <th style="width: 15%">Status</th>
+                                            <th style="width: 25%">Remarks / Comments</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($keygoals as $keygoal)
+                                            <tr data-keygoal-id="{{ $keygoal->id }}">
+                                                <td>{{ $keygoal->title }}</td>
+                                                <td>{{ $keygoal->output_deliverables }}</td>
+                                                <td>
+                                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                                </td>
+                                                <td>
+                                                    <select name="status_{{ $keygoal->id }}"
+                                                        class="form-select status-dropdown">
+                                                        <option value="">Select Status</option>
+                                                        @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
+                                                            <option value="{{ $status->value }}"
+                                                                {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
+                                                                {{ $status->label() }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
+                            <div class="card-footer">
+                                <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                            </div>
                         </div>
-
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
                     </div>
                 </div>
             </form>

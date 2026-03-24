@@ -61,44 +61,85 @@
 
             // Save draft
             $('#btn-save-draft').on('click', function() {
+                let isValid = true;
+
+                // Validate Key Goals (B)
+                $('#keygoals-body .keygoal-row').each(function() {
+                    const title = $(this).find('input[name*="\\[title\\]"]').val()?.trim();
+                    const deliverables = $(this).find('input[name*="\\[output_deliverables\\]"]')
+                        .val()?.trim();
+
+                    if (!title || !deliverables) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                // Validate Professional Development Plan (C)
+                $('#devplan-body .devplan-row').each(function() {
+                    const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
+
+                    if (!plan) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error(
+                        'Please fill all required fields (Objective, Output/Deliverable, and Development Plan).',
+                        'Validation Error');
+                    return;
+                }
+
+                // If valid → proceed to save draft
                 const formData = $('#performance-keygoals-form').serialize();
 
                 $.ajax({
                     url: "{{ route('performance.keygoals.save-draft', $performanceReview->id) }}",
                     type: 'POST',
                     data: formData,
+                    beforeSend: function() {
+                        $('#btn-save-draft').prop('disabled', true).text('Saving...');
+                    },
                     success: function(res) {
                         toastr.success(res.message || 'Draft saved successfully');
+                        $('#btn-save-draft').prop('disabled', false).text('Save');
                     },
                     error: function(xhr) {
                         toastr.error(xhr.responseJSON?.message ||
-                            'Could not save. Please check the fields.');
+                            'Could not save draft. Please try again.');
                         console.log(xhr.responseJSON);
+                        $('#btn-save-draft').prop('disabled', false).text('Save');
                     }
                 });
             });
 
-            // Submit with validation
+            // SUBMIT BUTTON 
             $('#btn-submit').on('click', function(e) {
                 e.preventDefault();
 
-                // Client validation first
-                let valid = true;
+                let isValid = true;
 
+                // Validation 
                 $('#keygoals-body .keygoal-row').each(function() {
                     const title = $(this).find('input[name*="\\[title\\]"]').val()?.trim();
                     const deliverables = $(this).find('input[name*="\\[output_deliverables\\]"]')
                         .val()?.trim();
-                    if (!title || !deliverables) valid = false;
+                    if (!title || !deliverables) isValid = false;
                 });
 
                 $('#devplan-body .devplan-row').each(function() {
                     const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
-                    if (!plan) valid = false;
+                    if (!plan) isValid = false;
                 });
 
-                if (!valid) {
-                    toastr.warning('Please complete all required fields.');
+                if (!isValid) {
+                    toastr.warning('Please complete all required fields before submitting.');
                     return;
                 }
 
@@ -414,7 +455,7 @@
             </div>
         </div>
 
-        <!-- C. Professional Development Plan - now same style as B -->
+        <!-- C. Professional Development Plan -->
         <div id="professionalDevelopmentPlan" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">

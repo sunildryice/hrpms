@@ -91,16 +91,10 @@
                                 <td>{{ $performanceReview->getEmployeeTitle() }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Supervisor Name:</th>
+                                <th scope="row">Line Manager Name:</th>
                                 <td>{{ $performanceReview->getSupervisorName() }}</td>
-                                <th scope="row">Supervisor Title: </th>
+                                <th scope="row">Line Manager Title: </th>
                                 <td>{{ $performanceReview->getSupervisorTitle() }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Technical Supervisor Name:</th>
-                                <td>{{ $performanceReview->getTechnicalSupervisorName() }}</td>
-                                <th scope="row">Technical Supervisor Title: </th>
-                                <td>{{ $performanceReview->getTechnicalSupervisorTitle() }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Date of joining:</th>
@@ -121,7 +115,7 @@
                         </tbody>
                     </table>
 
-                    <table class="table border">
+                    {{-- <table class="table border">
                         <thead>
                             <tr>
                                 <th scope="col" colspan="4">B. KEY GOALS</th>
@@ -147,6 +141,60 @@
                             <tr>
                                 <td>{{ $performanceReview->getAnswer($professionalDevelopmentPlanQuestion->id) }}</td>
                             </tr>
+                        </tbody>
+                    </table> --}}
+
+                    <table class="table border">
+                        <thead>
+                            <tr>
+                                <th colspan="2">B. KEY GOALS</th>
+                            </tr>
+                            <tr>
+                                <th>Objective</th>
+                                <th>Output / Deliverable</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($currentKeyGoals as $index => $keygoal)
+                                <tr>
+                                    <td>{{ $keygoal->title ?? '-' }}</td>
+                                    <td>{{ $keygoal->output_deliverables ?? '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center py-3 text-muted">
+                                        No key goals have been set.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th colspan="2">C. PROFESSIONAL DEVELOPMENT PLAN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $devPlans = $performanceReview
+                                    ->answers()
+                                    ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
+                                    ->get();
+                            @endphp
+
+                            @forelse ($devPlans as $index => $plan)
+                                <tr>
+                                    <td>{{ $plan->answer ?? 'N/A' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center py-3 text-muted">
+                                        No professional development plan has been added.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
 

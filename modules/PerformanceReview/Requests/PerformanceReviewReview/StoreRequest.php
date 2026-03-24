@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id'     => 'required',
-            'log_remarks'   => 'required',
+            'log_remarks'   => 'nullable',
             'receiver_id'   => 'required_if:status_id,'.config('constant.VERIFIED_STATUS'),
         ];
     }
@@ -34,7 +34,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id.required'    => 'Status is required.',
-            'log_remarks.required'  => 'Remarks is required.',
+            // 'log_remarks.required'  => 'Remarks is required.',
             'required_if'           => 'Please select a receiver if the status is verified.'
         ];
     }

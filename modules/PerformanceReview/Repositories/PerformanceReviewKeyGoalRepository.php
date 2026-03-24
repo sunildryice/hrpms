@@ -23,6 +23,7 @@ class PerformanceReviewKeyGoalRepository extends Repository
             DB::commit();
             return $performanceReviewKeyGoal;
         } catch (QueryException $e) {
+            dd($e);
             DB::rollBack();
             return false;
         }

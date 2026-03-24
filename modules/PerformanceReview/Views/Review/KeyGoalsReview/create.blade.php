@@ -2,6 +2,62 @@
 
 @section('title', 'Review Performance Review Key Goals')
 
+@section('page_css')
+    <style>
+        #keygoals-table th,
+        #keygoals-table td,
+        #devplan-table th,
+        #devplan-table td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            vertical-align: middle;
+        }
+
+        #keygoals-table,
+        #devplan-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .col-objective {
+            width: 45%;
+        }
+
+        .col-output {
+            width: 45%;
+        }
+
+        .col-plan {
+            width: 90%;
+        }
+
+        .col-action {
+            width: 10%;
+            text-align: center;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            margin: 0 2px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .readonly-cell {
+            background-color: #f8f9fa;
+            cursor: default;
+        }
+
+        .list-group-item.readonly {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(function() {
@@ -103,7 +159,7 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-lg-4">
-                                            <span class="fw-bold">Supervisor Name</span>
+                                            <span class="fw-bold">Line Manager Name</span>
                                         </div>
                                         <div class="col-lg-6">
                                             <span>{{ $performanceReview->getSupervisorName() }}</span>
@@ -113,33 +169,10 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-lg-4">
-                                            <span class="fw-bold">Supervisor Title</span>
+                                            <span class="fw-bold">Line Manager Title</span>
                                         </div>
                                         <div class="col-lg-6">
                                             <span>{{ $performanceReview->getSupervisorTitle() }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr>
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <span class="fw-bold">Technical Supervisor's Name</span>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <span>{{ $performanceReview->getTechnicalSupervisorName() }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="row">
-                                        <div class="col-lg-4">
-                                            <span class="fw-bold">Technical Supervisor's Title</span>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <span>{{ $performanceReview->getTechnicalSupervisorTitle() }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -204,42 +237,79 @@
                     </div>
                 </div>
 
-                <div id="keygoals" class="mb-3">
+                <!-- B. Set Key Goals -->
+                <div id="setKeyGoals" class="mb-3">
                     <div class="card">
                         <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">B.</span>
-                                <span>
-                                    Key Goals
-                                </span>
-                            </span>
+                            <span class="fw-bold">B.</span>Key Goals
                         </div>
                         <div class="card-body">
-                            <ol>
-                                @foreach ($currentKeyGoals as $goal)
-                                    <li>{{ $goal->title }}</li>
-                                @endforeach
-                            </ol>
+                            <table class="table table-bordered" id="keygoals-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-objective">Objective</th>
+                                        <th class="col-output">Output / Deliverable</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="keygoals-body">
+                                    @forelse ($currentKeyGoals as $kg)
+                                        <tr class="keygoal-row readonly">
+                                            <td class="col-objective readonly-cell">
+                                                {{ $kg->title }}
+                                            </td>
+                                            <td class="col-output readonly-cell">
+                                                {{ $kg->output_deliverables ?? '—' }}
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2" class="text-center text-muted py-4">
+                                                No key goals have been set yet.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
+                <!-- C. Professional Development Plan -->
                 <div id="professionalDevelopmentPlan" class="mb-3">
                     <div class="card">
                         <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">C.</span>
-                                <span>
-                                    Professional Development Plan
-                                </span>
-                            </span>
+                            <span class="fw-bold">C.</span> Professional Development Plan
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getAnswer($professionalDevelopmentPlanQuestion->id) }}</span>
+                            @php
+                                $devPlans = $performanceReview
+                                    ->answers()
+                                    ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
+                                    ->get();
+                            @endphp
+
+                            @if ($devPlans->isEmpty())
+                                <div class="text-center text-muted py-4">
+                                    No professional development plan has been added yet.
                                 </div>
-                            </div>
+                            @else
+                                <table class="table table-bordered" id="devplan-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-plan">Development Plan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="devplan-body">
+                                        @foreach ($devPlans as $plan)
+                                            <tr class="devplan-row readonly">
+                                                <td class="col-plan readonly-cell">
+                                                    {{ $plan->answer }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -273,7 +343,8 @@
                                                         {!! $log->createdBy->employee->latestTenure->getDesignationName() !!}
                                                     </span>
                                                 </div>
-                                                <small title="{{$log->created_at}}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
+                                                <small
+                                                    title="{{ $log->created_at }}">{{ $log->created_at->format('M d, Y h:i A') }}</small>
                                             </div>
                                             <p class="text-justify comment-text mb-0 mt-1">
                                                 {{ $log->log_remarks }}
@@ -345,7 +416,7 @@
                                 <div class="row mb-2">
                                     <div class="col-lg-3">
                                         <div class="d-flex align-items-start h-100">
-                                            <label for="log_remarks" class="form-label required-label">Remarks
+                                            <label for="log_remarks" class="form-label">Remarks
                                             </label>
                                         </div>
                                     </div>

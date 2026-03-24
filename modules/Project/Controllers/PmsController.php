@@ -2,21 +2,37 @@
 
 namespace Modules\Project\Controllers;
 
-use Illuminate\Http\Request;
-use Modules\Project\Models\Project;
-use Modules\Project\Models\Enums\ActivityStatus;
-use Modules\Project\Models\Enums\ActivityLevel;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Models\Enums\ActivityLevel;
+use Modules\Project\Models\Enums\ActivityStatus;
+use Modules\Project\Models\Project;
+use Modules\Project\Repositories\ProjectRepository;
 
 class PmsController
 {
+
+    public function __construct(
+        protected UserRepository $userRepository,
+        protected ProjectRepository $projects,
+    ) {
+    }
     public function dashboard(Request $request)
     {
+        $authUser = auth()->user();
         $projectIds = $request->query('project_ids', []);
         $startDateFilter = $request->query('start_date');
         $endDateFilter = $request->query('end_date');
 
-        $query = Project::query()
+        $query = $this->projects->getModel()
+            ->where(function ($q) use ($authUser) {
+                $q->where('focal_person_id', $authUser->id)
+                    ->orWhere('team_lead_id', $authUser->id)
+                    ->orWhereHas('members', function ($sq) use ($authUser) {
+                        $sq->where('user_id', $authUser->id);
+                    });
+            })
             ->whereNotNull('activated_at')
             ->withCount([
                 'activities as completed_count' => function ($q) use ($startDateFilter, $endDateFilter) {
@@ -215,9 +231,9 @@ class PmsController
             $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
         }
 
-        $allProjects = Project::whereNotNull('activated_at')
-            ->orderBy('title')
-            ->get(['id', 'title', 'short_name']);
+        $allProjects = $this->projects->getAssignedProjects($authUser)
+            ->sortBy('title')
+            ->values();
 
         return view('Project::Project.pmsDashboard', compact(
             'seriesTimeline',

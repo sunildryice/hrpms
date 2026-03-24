@@ -30,6 +30,7 @@ class Item extends Model
         'title',
         'item_code',
         'activated_at',
+        'record_exists',
         'created_by',
         'updated_by',
     ];

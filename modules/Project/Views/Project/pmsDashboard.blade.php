@@ -19,6 +19,22 @@
                 allowClear: true,
                 width: '100%'
             });
+
+            $('#start_date').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                clearBtn: true
+            });
+
+            $('#end_date').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                clearBtn: true
+            });
         });
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -143,6 +159,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <form method="GET" action="{{ route('pms.dashboard') }}" class="row g-3 align-items-end">
+                    <!-- Projects -->
                     <div class="col-md-3">
                         <label for="project_ids" class="form-label">Projects</label>
                         <select name="project_ids[]" id="project_ids" class="form-control select2" multiple>
@@ -155,6 +172,21 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <!-- Start Date -->
+                    <div class="col-md-2">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="text" name="start_date" id="start_date" class="form-control"
+                            value="{{ $startDateFilter ?? '' }}" placeholder="yyyy-mm-dd">
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-2">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="text" name="end_date" id="end_date" class="form-control"
+                            value="{{ $endDateFilter ?? '' }}" placeholder="yyyy-mm-dd">
+                    </div>
+
                     <div class="col-md-4 d-flex align-items-end gap-2">
                         <button type="submit" class="btn btn-primary btn-sm">Search</button>
                         <a href="{{ route('pms.dashboard') }}" class="btn btn-secondary btn-sm">Reset</a>

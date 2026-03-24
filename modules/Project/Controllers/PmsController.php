@@ -13,33 +13,68 @@ class PmsController
     public function dashboard(Request $request)
     {
         $projectIds = $request->query('project_ids', []);
+        $startDateFilter = $request->query('start_date');
+        $endDateFilter = $request->query('end_date');
 
         $query = Project::query()
             ->whereNotNull('activated_at')
             ->withCount([
-                'activities as completed_count' => function ($q) {
+                'activities as completed_count' => function ($q) use ($startDateFilter, $endDateFilter) {
                     $q->where('status', ActivityStatus::Completed)
                         ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+                    if ($startDateFilter && $endDateFilter) {
+                        $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                    }
                 },
-                'activities as under_progress_count' => function ($q) {
+
+                'activities as under_progress_count' => function ($q) use ($startDateFilter, $endDateFilter) {
                     $q->where('status', ActivityStatus::UnderProgress)
                         ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+                    if ($startDateFilter && $endDateFilter) {
+                        $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                    }
                 },
-                'activities as not_started_count' => function ($q) {
+
+                'activities as not_started_count' => function ($q) use ($startDateFilter, $endDateFilter) {
                     $q->where('status', ActivityStatus::NotStarted)
                         ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+                    if ($startDateFilter && $endDateFilter) {
+                        $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                    }
                 },
-                'activities as no_required_count' => function ($q) {
+
+                'activities as no_required_count' => function ($q) use ($startDateFilter, $endDateFilter) {
                     $q->where('status', ActivityStatus::NoRequired)
                         ->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+                    if ($startDateFilter && $endDateFilter) {
+                        $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                    }
                 },
-                'activities as total_activities' => function ($q) {
+
+                'activities as total_activities' => function ($q) use ($startDateFilter, $endDateFilter) {
                     $q->where('activity_level', '!=', ActivityLevel::Theme->value);
+
+                    if ($startDateFilter && $endDateFilter) {
+                        $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                    }
                 },
             ]);
 
+        // Filter by selected projects
         if (!empty($projectIds)) {
             $query->whereIn('id', $projectIds);
+        }
+
+        // Only show projects that have activities in selected date range
+        if ($startDateFilter && $endDateFilter) {
+            $query->whereHas('activities', function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter])
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+            });
         }
 
         $projects = $query->orderBy('title')->get();
@@ -77,8 +112,6 @@ class PmsController
 
             $hasAnyActivity = ($completed + $under + $notStarted + $noRequired) > 0;
 
-
-
             $start = $project->start_date
                 ? Carbon::parse($project->start_date)
                 : now()->subYears(3);
@@ -90,7 +123,6 @@ class PmsController
             $totalDuration = $end->diffInSeconds($start) ?: 1;
 
             if (!$hasAnyActivity) {
-                // Special case: no activities → full bar in #01aef0
                 $seriesTimeline[4]['data'][] = [
                     'x' => $code,
                     'y' => [
@@ -166,8 +198,22 @@ class PmsController
             }
         }
 
-        $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3);
-        $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
+        // Timeline range
+        if ($startDateFilter || $endDateFilter) {
+            // $minYear = $startDateFilter
+            //     ? Carbon::parse($startDateFilter)->subMonths(6)->startOfMonth()
+            //     : ($minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3));
+
+            // $maxYear = $endDateFilter
+            //     ? Carbon::parse($endDateFilter)->addMonths(6)->endOfMonth()
+            //     : ($maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3));
+
+            $minYear = Carbon::parse($startDateFilter)->subMonths(1)->startOfDay();
+            $maxYear = Carbon::parse($endDateFilter)->addMonths(1)->endOfDay();
+        } else {
+            $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3);
+            $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
+        }
 
         $allProjects = Project::whereNotNull('activated_at')
             ->orderBy('title')
@@ -180,7 +226,9 @@ class PmsController
             'minYear',
             'maxYear',
             'allProjects',
-            'projectIds'
+            'projectIds',
+            'startDateFilter',
+            'endDateFilter'
         ));
     }
 }

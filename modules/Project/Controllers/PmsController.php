@@ -30,7 +30,8 @@ class PmsController
         $endDateFilter = $request->query('end_date');
 
         $query = $this->projects->getModel()
-            ->whereNotNull('activated_at');
+            ->whereNotNull('activated_at')
+            ->where('show_pms_dashboard', true);
 
         if (!$isPMLT) {
             $query->where(function ($q) use ($authUser) {
@@ -242,10 +243,12 @@ class PmsController
         if ($isPMLT) {
             $allProjects = $this->projects->getModel()
                 ->whereNotNull('activated_at')
+                ->where('show_pms_dashboard', true)
                 ->orderBy('title')
                 ->get();
         } else {
             $allProjects = $this->projects->getAssignedProjects($authUser)
+                ->filter(fn($p) => $p->show_pms_dashboard)
                 ->sortBy('title')
                 ->values();
         }

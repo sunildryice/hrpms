@@ -95,7 +95,7 @@
                     <span class="card-title">
                         <span class="fw-bold">A.</span>
                         <span>
-                            Employee and Supervisor Details
+                            Employee and Line Manager Details
                         </span>
                     </span>
                 </div>

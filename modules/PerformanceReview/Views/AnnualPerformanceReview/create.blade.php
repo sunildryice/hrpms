@@ -690,7 +690,7 @@
                     <span class="card-title">
                         <span class="fw-bold">A.</span>
                         <span>
-                            Employee and Supervisor Details
+                            Employee and Line Manager Details
                         </span>
                     </span>
                 </div>
@@ -800,136 +800,16 @@
             </div>
         </div>
 
-        <div id="employeeFeedbackForThisReviewPeriod" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupBForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">B.</span>
-                            <span>
-                                Employee Feedback For This Review Period
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">
-                                            Mid-Term Review
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($groupBQuestions as $question)
-                                                @if (!$loop->first)
-                                                    <hr>
-                                                @endif
-                                                <div class="row">
-                                                    <label class="fw-bold">{{ $question->question }}</label>
-                                                    <span
-                                                        class="mt-2">{{ $midTermReview?->getAnswer($question->id) }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="col-md">
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        Annual Review
-                                    </div>
-                                    <div class="card-body">
-                                        @foreach ($groupBQuestions as $question)
-                                            @if (!$loop->first)
-                                                {{-- <hr> --}}
-                                            @endif
-                                            <label for="{{ 'question_' . $question->id }}"
-                                                class="fw-bold">{{ $question->question }}</label>
-                                            <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}"
-                                                data-question-id="{{ $question->id }}" style="width: 100%;" rows="5">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- <div class="col-md-6">
-                                    @foreach ($groupBQuestions as $question)
-                                        @if (!$loop->first)
-                                            <hr>
-                                        @endif
-                                        <div class="row">
-                                            <div class="col-lg-5">
-                                                <label for="{{'question_'.$question->id}}" class="fw-bold">{{$question->question}}</label>
-                                            </div>
-                                            <div class="col-lg-5">
-                                                <textarea name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" data-question-id="{{$question->id}}" style="width: 100%;" rows="5">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div> --}}
-
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
         <div id="keyGoalsReview" class="mb-3">
             <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupCForm">
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title">
-                            <span class="fw-bold">C.</span>
+                            <span class="fw-bold">B.</span>
                             Key Goals Review
                         </span>
                     </div>
                     <div class="card-body">
-
-                        {{-- Mid-Term Review --}}
-                        @if ($midTermReview)
-                            <div class="card mb-4">
-                                <div class="card-header fw-bold">Mid-Term Review</div>
-                                <div class="card-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2" style="width: 18%">Objective</th>
-                                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                                <th rowspan="2" style="width: 22%">Major Activities</th>
-                                                <th colspan="2">Achievement against output / deliverable</th>
-                                            </tr>
-                                            <tr>
-                                                <th style="width: 15%">Status</th>
-                                                <th style="width: 25%">Remarks / Comments</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($keygoals as $keygoal)
-                                                <tr>
-                                                    <td>{{ $keygoal->title }}</td>
-                                                    <td>{{ $keygoal->output_deliverables }}</td>
-                                                    <td>{{ $keygoal->major_activities_employee }}</td>
-                                                    <td>
-                                                        @if ($keygoal->status)
-                                                            <span class="{{ $keygoal->status->colorClass() }}">
-                                                                {{ $keygoal->status->label() }}
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $keygoal->remarks_employee }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @endif
-
                         {{-- Annual Review --}}
                         <div class="card">
                             <div class="card-header fw-bold">Annual Review (Employee Input)</div>
@@ -988,7 +868,7 @@
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold"></span>
+                        <span class="fw-bold">C.</span>
                         <span>
                             Professional Development Plan
                         </span>
@@ -1030,242 +910,6 @@
             </div>
         </div>
 
-        <div id="keySkillsEvaluation" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupDForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">D.</span>
-                            <span>
-                                Key Skills Evaluation (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        @foreach ($groupDQuestions as $question)
-                            @if (!$loop->first)
-                                <hr>
-                            @endif
-                            <div class="mb-2 row">
-                                <label for="{{ 'question_' . $question->id }}"
-                                    class="fw-bold">{{ $question->question }}</label>
-                                <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-
-                                {{-- <div class="col-lg-5">
-                                        <label for="{{'question_'.$question->id}}" class="fw-bold">{{$question->question}}</label>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 100%;" rows="2">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                    </div> --}}
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                            style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="strengthsAndAreasForGrowth" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupEForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">E.</span>
-                            <span>
-                                Strengths and Areas for Growth (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">
-                                            Mid-Term Review
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($groupEQuestions as $question)
-                                                @if (!$loop->last)
-                                                    @if (!$loop->first)
-                                                        <hr>
-                                                    @endif
-                                                    <div class="row">
-                                                        <label class="fw-bold">{{ $question->question }}</label>
-                                                        <span
-                                                            class="mt-2">{{ $midTermReview?->getAnswer($question->id) }}</span>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="col-md">
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        Annual Review
-                                    </div>
-                                    <div class="card-body">
-                                        @foreach ($groupEQuestions as $question)
-                                            @if (!$loop->last)
-                                                @if (!$loop->first)
-                                                    <hr>
-                                                @endif
-                                                <div class="row">
-                                                    <label class="fw-bold">{{ $question->question }}</label>
-                                                    <span
-                                                        class="mt-2">{{ $performanceReview->getAnswer($question->id) }}</span>
-                                                </div>
-                                                {{-- <label for="{{'question_'.$question->id}}" class="fw-bold">{{$question->question}}</label>
-                                                    <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" data-question-id="{{$question->id}}" style="width: 100%;" rows="5">{{$performanceReview->getAnswer($question->id)}}</textarea> --}}
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {{-- @foreach ($groupEQuestions as $question)
-                                @if (!$loop->last)
-                                    @if (!$loop->first)
-                                        <hr>
-                                    @endif
-                                    <div class="row">
-                                        <div class="col-lg-5">
-                                            <label for="{{'question_'.$question->id}}" class="fw-bold">{{$question->question}}</label>
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 100%;" rows="3">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                        </div>
-                                    </div>
-                                @endif
-                            @endforeach --}}
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                            style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="overallPerformanceEvaluation" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupFForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">F.</span>
-                            <span>
-                                Overall Performance Evaluation (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <table style="">
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <th style="width: 20%">{{ $question->question }}</th>
-                                @endforeach
-                            </tr>
-
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <td style="font-style: italic">{{ $question->description }}</td>
-                                @endforeach
-                            </tr>
-
-                            <tr>
-                                @php
-                                    $counter = 5;
-                                @endphp
-                                @foreach ($groupFQuestions as $question)
-                                    <td style="text-align: center">
-                                        <input type="hidden" name="{{ 'question_' . $question->id }}"
-                                            id="{{ 'question_' . $question->id }}">
-                                        <input disabled type="checkbox" name="{{ 'question_' . $question->id }}"
-                                            id="{{ 'question_' . $question->id }}"
-                                            {{ $performanceReview->getAnswer($question->id) == 'true' ? 'checked' : '' }}>
-                                        <label for="{{ 'question_' . $question->id }}">{{ $counter-- }}</label>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                            style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!--futurekeygoals-->
-        <div id="identifyKeyGoals" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupGForm">
-                @foreach ($groupGQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">G.</span>
-                                <span>{{ $question->question }}</span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-
-                            <div class="row">
-
-                                <div class="mb-2 row">
-                                    <div class="col-lg-4 d-flex align-items-center">
-                                        <textarea class="form-control" style="width:100%" name="key_goal_input" id="key_goal_input" rows="2"
-                                            placeholder="Key goal"></textarea>
-                                    </div>
-                                    <div class="col d-flex align-items-center">
-                                        <button type="button" onclick="addKeyGoal(event)"
-                                            class="btn btn-primary btn-sm">Add</button>
-                                    </div>
-                                </div>
-            </form>
-            <hr>
-            <div class="col-lg-6">
-                <div class="mb-2 row">
-                    <span class="fw-bold">Filled by Employee:</span>
-                </div>
-
-                <div class="p-2 row" id="keygoal_employee"></div>
-            </div>
-
-
-            <div class="col-lg-6">
-                <div class="mb-2 row">
-                    <span class="fw-bold">Filled by Supervisor:</span>
-                </div>
-
-                <div class="p-2 row" id="keygoal_supervisor"></div>
-            </div>
-
-        </div>
-
-
-
-        {{-- <div>
-                                    <textarea oninput="handleInput(event)" name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 50%" rows="7">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                </div> --}}
-        </div>
-        {{-- <div class="card-footer">
-                                <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                            </div> --}}
-        </div>
-        @endforeach
-        </form>
-        </div>
-
         <div id="employeeComments" class="mb-3">
             <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
                 @foreach ($groupHQuestions as $question)
@@ -1286,33 +930,6 @@
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="supervisorComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupIForm">
-                @foreach ($groupIQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">I.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <textarea disabled name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}"
-                                    style="width: 50%" rows="7">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="d-none btn btn-sm btn-outline-primary"
                                 style="float: right">Save</button>
                         </div>
                     </div>

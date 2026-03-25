@@ -44,7 +44,7 @@
 
                 chart: {
                     type: 'rangeBar',
-                    height: Math.max(100, {{ count($projectNames) * 40 }}),
+                    height: Math.max(200, {{ count($projectNames) * 45 }}),
                     zoom: {
                         enabled: true,
                         allowMouseWheelZoom: false

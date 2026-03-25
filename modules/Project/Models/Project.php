@@ -24,6 +24,7 @@ class Project extends Model
         'team_lead_id',
         'focal_person_id',
         'activated_at',
+        'show_pms_dashboard',
     ];
 
     protected $dates = [

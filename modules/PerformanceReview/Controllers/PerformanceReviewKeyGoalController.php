@@ -27,6 +27,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $inputs = array(
             'performance_review_id' => $request->performance_review_id,
             'title' => $request->title,
+            'output_deliverables'   => $request->output_deliverables,
             'description_employee' => $request->description_employee,
             'description_supervisor' => $request->description_supervisor,
             'type' => $request->type,
@@ -139,7 +140,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'title' => 'nullable|string',
             'major_activities_employee' => 'nullable|string',
             'description_supervisor_annual' => 'nullable|string',
-            'status' => 'nullable|in:partially_completed,fully_completed',
+            'status' => 'nullable|in:not_completed,partially_completed,fully_completed',
             'remarks_employee' => 'nullable|string',
             'type' => 'nullable|in:current,future',
             'performance_review_id' => 'nullable|exists:performance_reviews,id',

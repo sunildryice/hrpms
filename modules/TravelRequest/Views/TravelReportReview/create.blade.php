@@ -4,6 +4,17 @@
 
 @section('page_css')
     <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 230px;
+        }
+    </style>
+@endsection
+
+@section('page_css')
+    <style>
         .recommend-col {
             max-width: 350px;
             white-space: pre-line;
@@ -118,10 +129,12 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th style="width: 15%">{{ __('label.date') }}</th>
-                                                <th>{{ __('label.activity') }}</th>
-                                                <th>Planned Activities</th>
-                                                <th>{{ __('label.status') }}</th>
+                                                <th style="width: 8%">{{ __('label.date') }}</th>
+                                                <th style="width: 15%">{{ __('label.activity') }}</th>
+                                                <th style="width: 15%">Planned Activities</th>
+                                                <th style="width: 22%" class="wrap-text">Comprehensive Activity Description
+                                                </th>
+                                                <th style="width: 20%">{{ __('label.status') }}</th>
                                                 <th style="width: 20%">{{ __('label.remarks') }}</th>
                                             </tr>
                                         </thead>
@@ -140,8 +153,9 @@
 
                                                 <tr>
                                                     <td class="text-nowrap">{{ $formattedDate }}</td>
-                                                    <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
-                                                    <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
+                                                    <td class="wrap-text">{{ $itinerary?->activity?->title }}</td>
+                                                    <td class="wrap-text">{{ $itinerary?->planned_activities }}</td>
+                                                    <td class="wrap-text">{{ $itinerary?->comprehensive_activity_description }}</td>
                                                     <td>
                                                         @if (
                                                             $itinerary->status &&
@@ -216,8 +230,7 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationRemarks"
-                                                    class="form-label">Remarks</label>
+                                                <label for="validationRemarks" class="form-label">Remarks</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">

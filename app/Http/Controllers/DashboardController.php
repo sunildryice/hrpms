@@ -89,7 +89,7 @@ class DashboardController extends Controller
         $upcomingAnniversaries = collect();
         $upcomingContractEndings = collect();
         $upcomingProbationCompletions = collect();
-        $days = 7;
+        $days = 45;
 
         $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
         $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);

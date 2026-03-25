@@ -488,13 +488,13 @@
                         </div>
                     @endif --}}
 
-                    {{-- <div class="nav-item">
+                    <div class="nav-item">
                         <a class="nav-link" href="{{ route('pms.dashboard') }}" role="button"
                            data-bs-toggle="tooltip" data-bs-placement="right" title="PMS Dashboard">
                             <i class="bi bi-bar-chart-line nav-icon"></i>
                             <span class="nav-link-title">PMS Dashboard</span>
                         </a>
-                    </div> --}}
+                    </div>
 
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('project.index') }}" role="button" id="project-index"

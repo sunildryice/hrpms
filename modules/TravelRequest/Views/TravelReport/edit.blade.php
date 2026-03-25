@@ -2,6 +2,17 @@
 
 @section('title', 'Travel Report')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 230px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -68,6 +79,33 @@
                     //         }
                     //     }
                     // },
+                    'itinerary.comprehensive_activity_description.*': {
+                        selector: '#activitiesErrorContainer',
+                        validators: {
+                            callback: {
+                                message: 'Comprehensive activity description is required for each day',
+                                callback: function(input) {
+                                    const fields = form.querySelectorAll(
+                                        'textarea[name^="itinerary[comprehensive_activity_description]"]'
+                                    );
+
+                                    let allFilled = true;
+
+                                    fields.forEach(function(field) {
+                                        if (field.value.trim() === '') {
+                                            allFilled = false;
+                                            field.closest('tr').classList.add('table-danger');
+                                        } else {
+                                            field.closest('tr').classList.remove(
+                                                'table-danger');
+                                        }
+                                    });
+
+                                    return allFilled;
+                                }
+                            }
+                        }
+                    },
                     'itinerary.status.*': {
                         selector: '#activitiesErrorContainer',
                         validators: {
@@ -130,6 +168,13 @@
                     fv.revalidateField('itinerary.status.*');
                 });
             });
+
+            form.querySelectorAll('textarea[name^="itinerary[comprehensive_activity_description]"]').forEach(
+                function(field) {
+                    field.addEventListener('input', function() {
+                        fv.revalidateField('itinerary.comprehensive_activity_description.*');
+                    });
+                });
 
             @if ($errors->any())
                 fv.revalidateField('itinerary.status.*');
@@ -212,10 +257,11 @@
                                                             Completed Tasks</th>
                                                     </tr>
                                                     <tr>
-                                                        <th style="width: 15%">{{ __('label.date') }}</th>
+                                                        <th style="width: 8%">{{ __('label.date') }}</th>
                                                         <th style="width: 15%">{{ __('label.activity') }}</th>
-                                                        <th style="width: 25%">Planned Activities</th>
-                                                        <th style="width: 25%">{{ __('label.status') }}</th>
+                                                        <th style="width: 15%">Planned Activities</th>
+                                                        <th style="width: 22%" class="wrap-text">Comprehensive Activity Description</th>
+                                                        <th style="width: 20%">{{ __('label.status') }}</th>
                                                         <th style="width: 20%">{{ __('label.remarks') }}</th>
                                                     </tr>
                                                 </thead>
@@ -241,12 +287,18 @@
                                                                     value="{{ $itinerary->id }}">
                                                             </td>
 
-                                                            <td>
+                                                            <td class="wrap-text">
                                                                 {{ $itinerary?->activity?->title }}
                                                             </td>
 
-                                                            <td>
+                                                            <td class="wrap-text">
                                                                 {{ $itinerary->planned_activities ?? '' }}
+                                                            </td>
+                                                            <td>
+                                                                <textarea name="itinerary[comprehensive_activity_description][{{ $index }}]" rows="3"
+                                                                    class="form-control @if (old(
+                                                                            'itinerary.comprehensive_activity_description.' . $index,
+                                                                            $itinerary->comprehensive_activity_description ?? '') == '') is-invalid @endif">{{ old('itinerary.comprehensive_activity_description.' . $index, $itinerary->comprehensive_activity_description ?? '') }}</textarea>
                                                             </td>
                                                             <td>
                                                                 <select name="itinerary[status][{{ $index }}]"

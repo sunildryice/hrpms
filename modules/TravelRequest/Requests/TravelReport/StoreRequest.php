@@ -33,6 +33,7 @@ class StoreRequest extends FormRequest
 
             'itinerary.itinerary_id.*' => 'required|integer|exists:travel_request_day_itineraries,id',
             // 'itinerary.completed_tasks.*' => 'nullable|string',
+            'itinerary.comprehensive_activity_description.*' => 'required|string',
             'itinerary.status.*' => 'required|in:' . implode(',', array_column(TravelReportStatus::cases(), 'value')),
             'itinerary.remarks.*' => 'nullable|string',
 
@@ -44,6 +45,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'itinerary.completed_tasks.*.required' => 'Please describe the activities completed on this day.',
+            'itinerary.comprehensive_activity_description.*.required' => 'Comprehensive activity description is required for each day.',
         ];
     }
 }

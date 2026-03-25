@@ -44,7 +44,7 @@
 
                 chart: {
                     type: 'rangeBar',
-                    height: Math.max(400, {{ count($projectNames) * 70 }}),
+                    height: Math.max(100, {{ count($projectNames) * 40 }}),
                     zoom: {
                         enabled: true,
                         allowMouseWheelZoom: false
@@ -160,7 +160,7 @@
             <div class="card-body">
                 <form method="GET" action="{{ route('pms.dashboard') }}" class="row g-3 align-items-end">
                     <!-- Projects -->
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label for="project_ids" class="form-label">Projects</label>
                         <select name="project_ids[]" id="project_ids" class="form-control select2" multiple>
                             {{-- <option value="" {{ empty($projectIds) ? 'selected' : '' }}>Select project</option> --}}
@@ -187,7 +187,7 @@
                             value="{{ $endDateFilter ?? '' }}" placeholder="yyyy-mm-dd">
                     </div>
 
-                    <div class="col-md-4 d-flex align-items-end gap-2">
+                    <div class="col-md-2 d-flex align-items-end gap-2">
                         <button type="submit" class="btn btn-primary btn-sm">Search</button>
                         <a href="{{ route('pms.dashboard') }}" class="btn btn-secondary btn-sm">Reset</a>
                     </div>

@@ -85,18 +85,14 @@ class DashboardController extends Controller
 
         $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));
 
-        $upcomingBirthdays = collect();
-        $upcomingAnniversaries = collect();
         $upcomingContractEndings = collect();
         $upcomingProbationCompletions = collect();
-        $days = 45;
-
-        $upcomingBirthdays = $this->employees->getUpcomingBirthdays($days);
-        $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries($days);
+        $upcomingBirthdays = $this->employees->getUpcomingBirthdays(7);
+        $upcomingAnniversaries = $this->employees->getUpcomingAnniversaries(7);
 
         if ($canSeeTeamEvents) {
-            $upcomingContractEndings = $this->employees->getUpcomingContractEndings($days);
-            $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions($days);
+            $upcomingContractEndings = $this->employees->getUpcomingContractEndings(45);
+            $upcomingProbationCompletions = $this->employees->getUpcomingProbationCompletions(30);
         }
 
         $lieuLeaveRequests = $this->lieuLeaveRequests->getLieuLeaveRequestsForApproval($authUser);

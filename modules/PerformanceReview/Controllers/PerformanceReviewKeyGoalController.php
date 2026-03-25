@@ -152,8 +152,9 @@ class PerformanceReviewKeyGoalController extends Controller
             'title' => $request->title ?? $keyGoal->title,
             'major_activities_employee' => $request->major_activities_employee ?? $keyGoal->major_activities_employee,
             'description_supervisor_annual' => $request->description_supervisor_annual ?? $keyGoal->description_supervisor_annual,
-            'status' => $request->status,
-            'remarks_employee' => $request->remarks_employee,
+            'output_deliverables' => $request->output_deliverables ?? $keyGoal->output_deliverables,
+            'status' => $request->status ?? $keyGoal->status,
+            'remarks_employee' => $request->remarks_employee ?? $keyGoal->remarks_employee,
             'type' => $request->type ?? $keyGoal->type,
         ]);
 

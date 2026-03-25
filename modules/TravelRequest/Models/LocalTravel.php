@@ -288,4 +288,9 @@ class LocalTravel extends Model
     {
         return $this->getTraveller()->mobile_number;
     }
+
+    public function getIsApproved()
+    {
+        return $this->status_id == config('constant.APPROVED_STATUS') ? 'Yes' : 'No';
+    }
 }

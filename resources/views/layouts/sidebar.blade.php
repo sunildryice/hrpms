@@ -32,7 +32,7 @@
                         </a>
                     </div>
 
-                                        <div class="nav-item">
+                    <div class="nav-item">
                         <a class="nav-link dropdown-toggle" href="#navbarEmployeeAttendance" role="button"
                            data-bs-toggle="collapse" data-bs-target="#navbarEmployeeAttendance"
                            aria-expanded="false" aria-controls="navbarEmployeeAttendance"
@@ -1113,6 +1113,8 @@
                                 @endif
 
                                 @if ($authUser->can('employee-profile-report'))
+                                    <a class="nav-link" href="{{ route('report.consultant.profile.index') }}"
+                                       id="consultant-profile-report-menu">Consultant Profile</a>
                                     <a class="nav-link" href="{{ route('report.employee.profile.index') }}"
                                        id="employee-profile-report-menu">Employee Profile</a>
                                 @endif
@@ -1151,6 +1153,8 @@
                                        id="stock-book-distribution-menu">Stock Book (Distribution)</a>
                                 @endif
                                 @if ($authUser->can('travel-request-report'))
+                                    <a class="nav-link" href="{{ route('report.local.travel.request.index') }}"
+                                       id="local-travel-request-report-menu">Local Travel Request</a>
                                     <a class="nav-link" href="{{ route('report.travel.request.index') }}"
                                        id="travel-request-report-menu">Travel Request</a>
                                 @endif

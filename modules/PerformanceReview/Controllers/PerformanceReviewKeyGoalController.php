@@ -5,6 +5,7 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\PerformanceReview\Models\PerformanceProfessionalDevelopmentPlan;
 use Modules\PerformanceReview\Models\PerformanceReviewAnswer;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
 use Modules\PerformanceReview\Repositories\PerformanceReviewKeyGoalRepository;
@@ -27,7 +28,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $inputs = array(
             'performance_review_id' => $request->performance_review_id,
             'title' => $request->title,
-            'output_deliverables'   => $request->output_deliverables,
+            'output_deliverables' => $request->output_deliverables,
             'description_employee' => $request->description_employee,
             'description_supervisor' => $request->description_supervisor,
             'type' => $request->type,
@@ -312,26 +313,19 @@ class PerformanceReviewKeyGoalController extends Controller
         DB::beginTransaction();
 
         try {
-            //  Delete old dev plans (group E)
-            $performanceReview->answers()
-                ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
+            //  Delete old development plans
+            PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
                 ->delete();
 
+            //  Insert new development plans
             foreach ($request->devplans as $item) {
-                $question = $this->performanceReviewQuestion
-                    ->where('group', 'E')
-                    ->latest('position')
-                    ->first();
-
-                if ($question) {
-                    PerformanceReviewAnswer::create([
-                        'performance_review_id' => $performanceReview->id,
-                        'question_id' => $question->id,
-                        'answer' => trim($item['plan']),
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id(),
-                    ]);
-                }
+                PerformanceProfessionalDevelopmentPlan::create([
+                    'performance_review_id' => $performanceReview->id,
+                    'objective' => trim($item['plan']), 
+                    'activity' => null,
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
             }
 
             //  Delete old key goals

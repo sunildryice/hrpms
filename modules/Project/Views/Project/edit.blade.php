@@ -397,6 +397,22 @@
                             </div>
                         </div>
 
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label for="showPmsDashboard" class="m-0">Show PMS Dashboard?</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <div class="form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="showPmsDashboard"
+                                        name="show_pms_dashboard" value="1"
+                                        @if ($project->show_pms_dashboard) checked @endif>
+                                    <label class="form-check-label" for="showPmsDashboard"></label>
+                                </div>
+                            </div>
+                        </div>
+
                         {!! csrf_field() !!}
 
                     </div>

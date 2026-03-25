@@ -197,6 +197,7 @@ class ProjectController
         $inputs = $request->validated();
         $inputs['updated_by'] = $authUser->id;
         $inputs['activated_at'] = $request->active ? date('Y-m-d H:i:s') : null;
+        $inputs['show_pms_dashboard'] = $request->has('show_pms_dashboard') ? 1 : 0;
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

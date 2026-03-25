@@ -13,6 +13,10 @@ class ProjectRepository extends Repository
     {
         $this->model = $model;
     }
+    public function getModel()
+    {
+        return $this->model;
+    }
 
     public function getActiveProjects()
     {

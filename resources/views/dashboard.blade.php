@@ -546,8 +546,8 @@
                                         </div>
 
                                         <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
-                                            <small>{{ $label }}</small>
-
+                                            <small>{{ $label }} for {{ $upcomingWorkFromHome->getWorkFromHomeDuration() }}
+                                                Day{{ $upcomingWorkFromHome->getWorkFromHomeDuration() > 1 ? 's' : '' }}</small> 
                                             <small>
                                                 {{ $upcomingWorkFromHome->getStartDate() }} -
                                                 {{ $upcomingWorkFromHome->getEndDate() }}

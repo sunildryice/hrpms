@@ -176,51 +176,8 @@
                 $('input[type="checkbox"]').not(this).prop('checked', false);
             });
 
+            // GROUP B - KEY GOALS FORM 
             $('#groupBForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                isGroupBFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            }).on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
-                }
-            });
-
-            // GROUP C - KEY GOALS FORM 
-            $('#groupCForm').on('submit', function(e) {
                 e.preventDefault();
 
                 let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
@@ -267,6 +224,49 @@
 
                 toastr.success('Key Goals saved successfully', 'Success', {
                     timeOut: 1000
+                });
+            });
+            
+
+            $('#groupCForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                let isValid = true;
+                // Validation: Check if Activity is filled for all rows
+                $('#devplan-table tbody tr').each(function() {
+                    const activity = $(this).find('.devplan-activity').val().trim();
+
+                    if (!activity) {
+                        isValid = false;
+                        $(this).addClass('table-danger'); 
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error('Please fill Activity for all development plans.', 'Validation Error');
+                    return; 
+                }
+                // If validation passes, submit the form via AJAX 
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Professional Development Plan saved successfully!',
+                                'Success');
+                            isGroupCFormSaved = true;
+                        } else {
+                            toastr.error(response.message || 'Failed to save development plan.',
+                                'Error');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                        toastr.error('Something went wrong while saving activities.', 'Error');
+                    }
                 });
             });
 
@@ -673,7 +673,7 @@
         </div>
 
         <div id="keyGoalsReview" class="mb-3">
-            <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupCForm">
+            <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title d-flex justify-content-between">
@@ -790,47 +790,60 @@
             </form>
         </div>
 
+        <!-- C. Professional Development Plan -->
         <div id="professionalDevelopmentPlan" class="mb-3">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    <span class="card-title">
-                        <span class="fw-bold">C.</span>
-                        <span>
-                            Professional Development Plan
-                        </span>
-                    </span>
-                </div>
-                <div class="card-body">
-                    @php
-                        $devPlans = $keyGoalReview->developmentPlans;
-                    @endphp
+            <form action="{{ route('performance.devplan.update') }}" method="POST" id="groupCForm">
+                @csrf
+                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
 
-                    @if ($devPlans->isEmpty())
-                        <div class="text-center text-muted py-4">
-                            No professional development plan has been added yet.
-                        </div>
-                    @else
-                        <table style="width: 100%">
-                            <thead>
-                                <tr>
-                                    <th style="width: 5%">SN</th>
-                                    <th class="col-plan">Development Plan</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($devPlans as $plan)
-                                    <tr class="devplan-row readonly">
-                                        <td class="sn">{{ $loop->iteration }}</td>
-                                        <td class="col-plan readonly-cell">
-                                            {{ $plan->objective }}
-                                        </td>
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">C.</span> Professional Development Plan
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        @php
+                            $devPlans = $keyGoalReview->developmentPlans ?? collect();
+                        @endphp
+
+                        @if ($devPlans->isEmpty())
+                            <div class="text-center text-muted py-4">
+                                No professional development plan has been added yet.
+                            </div>
+                        @else
+                            <table class="table table-bordered" id="devplan-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">SN</th>
+                                        <th style="width: 45%">Development Plan Objective</th>
+                                        <th style="width: 45%">Activity</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
+                                </thead>
+                                <tbody>
+                                    @foreach ($devPlans as $index => $plan)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td class="readonly-cell">
+                                                {{ $plan->objective }}
+                                            </td>
+                                            <td>
+                                                <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="1"
+                                                    data-id="{{ $plan->id }}" placeholder="Enter activities...">{{ $plan->activity ?? '' }}</textarea>
+                                                <input type="hidden" name="devplans[{{ $index }}][id]"
+                                                    value="{{ $plan->id }}">
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <div id="employeeComments" class="mb-3">

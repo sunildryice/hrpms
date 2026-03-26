@@ -114,77 +114,114 @@
                 });
             });
 
-            $('#groupDForm').on('submit', function(e) {
-                e.preventDefault();
+            // groupEForm
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
+            let challengeRowIndex = {{ $challenges->count() ?: 0 }};
 
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
+            function buildChallengeRow(idx, challenge = '', result = '', id = null) {
+                const isExisting = id !== null;
+                return `
+    <tr class="challenge-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
+        <td>
+            <textarea name="challenges[${idx}][challenge]" 
+                class="form-control" 
+                rows="2">${challenge.replace(/"/g, '&quot;')}</textarea>
+        </td>
+        <td>
+            <textarea name="challenges[${idx}][result]" 
+                class="form-control" 
+                rows="2">${result.replace(/"/g, '&quot;')}</textarea>
+        </td>
+        <td class="text-center col-action">
+            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row" title="Add new challenge">
+                <i class="bi bi-plus"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row" title="Remove this row">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    </tr>`;
+            }
+
+            function updateChallengeButtons() {
+                const $rows = $('#challenges-body .challenge-row');
+                $rows.find('.add-challenge-row').hide();
+                $rows.find('.remove-challenge-row').show();
+
+                if ($rows.length === 1) {
+                    $rows.find('.remove-challenge-row').hide();
                 }
+                $rows.last().find('.add-challenge-row').show();
+            }
 
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
+            // Initialize buttons on load
+            $(function() {
+                updateChallengeButtons();
             });
 
+            // Add new row
+            $(document).on('click', '.add-challenge-row', function() {
+                challengeRowIndex++;
+                const $newRow = $(buildChallengeRow(challengeRowIndex));
+                $('#challenges-body').append($newRow);
+                updateChallengeButtons();
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-challenge-row', function() {
+                const $row = $(this).closest('tr');
+                const challengeId = $row.data('id');
+
+                if (challengeId) {
+                    $.ajax({
+                        url: "{{ route('performance.challenge.destroy') }}",
+                        type: 'POST',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            challenge_id: challengeId
+                        },
+                        success: function(res) {
+                            if (res.type === 'success' || res.success) {
+                                $row.remove();
+                                updateChallengeButtons();
+                                toastr.success('Challenge removed successfully');
+                            } else {
+                                toastr.error('Failed to delete challenge');
+                            }
+                        },
+                        error: function() {
+                            toastr.error('Server error while deleting challenge');
+                        }
+                    });
+                } else {
+                    $row.remove();
+                    updateChallengeButtons();
+                }
+            });
+
+            // Handle form submission for challenges
             $('#groupEForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Challenges saved successfully!', 'Success');
+                            // location.reload(); 
+                        } else {
+                            toastr.error(response.message || 'Failed to save challenges');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Something went wrong while saving challenges.');
+                        console.error(xhr);
                     }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
                 });
             });
+
 
             $('#groupFForm').on('submit', function(e) {
                 e.preventDefault();
@@ -507,7 +544,7 @@
                     'performance_review_id': "{{ $performanceReview->id }}",
                     'type': type,
                     'status': status,
-                    'remarks_employee': remarksc
+                    'remarks_employee': remarks
                 },
                 success: function(data) {
                     // toastr.success('Key goal updated.', 'Success');
@@ -528,7 +565,7 @@
                     'performance_review_id': "{{ $performanceReview->id }}",
                 },
                 success: function(data) {
-                    $('#keygoal_employee').html.empty;
+                    $('#keygoal_employee').html('');
                     $('#keygoal_employee').html(data.goal);
                 },
                 error: function(data) {
@@ -547,7 +584,7 @@
                     'performance_review_id': "{{ $performanceReview->id }}",
                 },
                 success: function(data) {
-                    $('#keygoal_supervisor').html.empty;
+                    $('#keygoal_supervisor').html('');
                     $('#keygoal_supervisor').html(data.goal);
                 },
                 error: function(data) {
@@ -922,23 +959,80 @@
             </form>
         </div>
 
-        <!-- E. Challenges or difficulties -->
-        <div id="professionalDevelopmentPlan" class="mb-3">
-            <form action="" method="POST" id="groupEForm">
-
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">E.</span> Challenges / Difficulties
-                        </span>
-                    </div>
-                    <div class="card-body">
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
-                    </div>
+        <!-- E. Challenges / Difficulties -->
+        <div id="challengesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">E.</span> Challenges / Difficulties
+                    </span>
                 </div>
-            </form>
+
+                <div class="card-body">
+                    <form id="groupEForm" method="POST" action="{{ route('performance.challenge.store') }}">
+                        @csrf
+                        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                        <table class="table table-bordered" id="challenges-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">Challenge / Difficulty Faced</th>
+                                    <th style="width: 45%">Result / Outcome</th>
+                                    <th style="width: 10%" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="challenges-body">
+                                @forelse ($challenges as $index => $challenge)
+                                    <tr class="challenge-row" data-row-index="{{ $index }}"
+                                        data-id="{{ $challenge->id }}">
+                                        <td>
+                                            <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="2">{{ $challenge->challenge }}</textarea>
+                                        </td>
+
+                                        <td>
+                                            <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="2">{{ $challenge->result }}</textarea>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="challenge-row" data-row-index="0">
+                                        <td>
+                                            <textarea name="challenges[0][challenge]" class="form-control" rows="2"></textarea>
+                                        </td>
+                                        <td>
+                                            <textarea name="challenges[0][result]" class="form-control" rows="2"></textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row"
+                                                style="display:none;">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+
+                        <div class="text-end mt-2">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <div id="employeeComments" class="mb-3">

@@ -76,6 +76,11 @@ class PerformanceReview extends Model
         return $this->hasMany(PerformanceProfessionalDevelopmentPlan::class, 'performance_review_id');
     }
 
+    public function challenges()
+    {
+        return $this->hasMany(PerformanceChallenge::class, 'performance_review_id');
+    }
+
     public function logs()
     {
         return $this->hasMany(PerformanceReviewLog::class, 'performance_review_id');

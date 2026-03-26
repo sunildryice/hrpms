@@ -74,7 +74,7 @@
 
             $('#groupCForm').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 let isValid = true;
                 // Validation: Check if Activity is filled for all rows
                 $('#devplan-table tbody tr').each(function() {
@@ -82,7 +82,7 @@
 
                     if (!activity) {
                         isValid = false;
-                        $(this).addClass('table-danger'); 
+                        $(this).addClass('table-danger');
                     } else {
                         $(this).removeClass('table-danger');
                     }
@@ -90,7 +90,7 @@
 
                 if (!isValid) {
                     toastr.error('Please fill Activity for all development plans.', 'Validation Error');
-                    return; 
+                    return;
                 }
                 // If validation passes, submit the form via AJAX 
                 $.ajax({
@@ -510,7 +510,6 @@
                     'remarks_employee': remarksc
                 },
                 success: function(data) {
-                    // Silent success - optional toast
                     // toastr.success('Key goal updated.', 'Success');
                 },
                 error: function(data) {
@@ -621,7 +620,6 @@
             isGroupCFormSaved = !checkEmpty(groupCData);
             isGroupHFormSaved = !checkEmpty(groupHData);
             isGroupJFormSaved = !checkEmpty(groupJData);
-            // console.log('b',isGroupBFormSaved,'c',isGroupCFormSaved,'h',isGroupHFormSaved,'j',isGroupJFormSaved)
             if (isGroupBFormSaved && isGroupCFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {
@@ -784,6 +782,7 @@
             </div>
         </div>
 
+        <!-- B. Key Goals Review -->
         <div id="keyGoalsReview" class="mb-3">
             <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
                 <div class="card">
@@ -896,6 +895,44 @@
                                 </tbody>
                             </table>
                         @endif
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- D. Core Competencies -->
+        <div id="professionalDevelopmentPlan" class="mb-3">
+            <form action="" method="POST" id="groupDForm">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">D.</span> Core Competencies
+                        </span>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- E. Challenges or difficulties -->
+        <div id="professionalDevelopmentPlan" class="mb-3">
+            <form action="" method="POST" id="groupEForm">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">E.</span> Challenges / Difficulties
+                        </span>
+                    </div>
+                    <div class="card-body">
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>

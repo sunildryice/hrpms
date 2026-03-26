@@ -83,7 +83,7 @@ class DashboardController extends Controller
             $currentWeekWorkPlans = $this->workPlanDetails->getUserWorkPlanDetails($currentWeekStart->toDateString(), $currentWeekEnd->toDateString(), $authUser)->get();
         }
 
-        $canSeeTeamEvents = $authUser->employee && ($authUser->employee->isSupervisor() || $authUser->can('view-upcoming-events'));
+        $canSeeTeamEvents = $authUser->employee && $authUser->can('view-upcoming-events');
 
         $upcomingContractEndings = collect();
         $upcomingProbationCompletions = collect();

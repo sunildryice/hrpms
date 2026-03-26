@@ -226,11 +226,11 @@
                     timeOut: 1000
                 });
             });
-            
+
 
             $('#groupCForm').on('submit', function(e) {
                 e.preventDefault();
-                
+
                 let isValid = true;
                 // Validation: Check if Activity is filled for all rows
                 $('#devplan-table tbody tr').each(function() {
@@ -238,7 +238,7 @@
 
                     if (!activity) {
                         isValid = false;
-                        $(this).addClass('table-danger'); 
+                        $(this).addClass('table-danger');
                     } else {
                         $(this).removeClass('table-danger');
                     }
@@ -246,7 +246,7 @@
 
                 if (!isValid) {
                     toastr.error('Please fill Activity for all development plans.', 'Validation Error');
-                    return; 
+                    return;
                 }
                 // If validation passes, submit the form via AJAX 
                 $.ajax({
@@ -270,40 +270,85 @@
                 });
             });
 
+
+            // groupEForm
+            let challengeRowIndex = $('#challenges-body .challenge-row').length - 1;
+
+            function buildChallengeRow(idx, challenge = '', result = '', id = null) {
+                return `
+                <tr class="challenge-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
+                    <td>
+                        <textarea name="challenges[${idx}][challenge]" class="form-control" rows="2">${challenge}</textarea>
+                        <input type="hidden" name="challenges[${idx}][id]" value="${id ?? ''}">
+                    </td>
+                    <td>
+                        <textarea name="challenges[${idx}][result]" class="form-control" rows="2">${result}</textarea>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            }
+
+            function updateChallengeButtons() {
+                const $rows = $('#challenges-body .challenge-row');
+                $rows.find('.add-challenge-row').hide();
+                $rows.find('.remove-challenge-row').show();
+
+                if ($rows.length === 1) {
+                    $rows.find('.remove-challenge-row').hide();
+                }
+                $rows.last().find('.add-challenge-row').show();
+            }
+
+            // Initialize buttons on load
+            $(function() {
+                updateChallengeButtons();
+            });
+
+            // Add new row
+            $(document).on('click', '.add-challenge-row', function() {
+                challengeRowIndex++;
+                const $newRow = $(buildChallengeRow(challengeRowIndex));
+                $('#challenges-body').append($newRow);
+                updateChallengeButtons();
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-challenge-row', function() {
+                const $row = $(this).closest('tr');
+                $row.remove();
+                updateChallengeButtons();
+            });
+
+            // Handle form submission for challenges
             $('#groupEForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Challenges saved successfully!', 'Success');
+                            // location.reload(); 
+                        } else {
+                            toastr.error(response.message || 'Failed to save challenges');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Something went wrong while saving challenges.');
+                        console.error(xhr);
                     }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
                 });
             });
+
 
             $('#groupHForm').on('submit', function(e) {
                 e.preventDefault();
@@ -846,13 +891,114 @@
             </form>
         </div>
 
+        <!-- D. Core Competencies -->
+        <div id="professionalDevelopmentPlan" class="mb-3">
+            <form action="" method="POST" id="groupDForm">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">D.</span> Core Competencies
+                        </span>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- E. Challenges / Difficulties -->
+        <div id="challengesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">E.</span> Challenges / Difficulties
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <form id="groupEForm" method="POST" action="{{ route('performance.challenge.store') }}">
+                        @csrf
+                        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                        <table class="table table-bordered" id="challenges-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">Challenge / Difficulty Faced</th>
+                                    <th style="width: 45%">Result / Outcome</th>
+                                    <th style="width: 10%" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="challenges-body">
+                                @forelse ($challenges as $index => $challenge)
+                                    <tr class="challenge-row" data-row-index="{{ $index }}"
+                                        data-id="{{ $challenge->id }}">
+                                        <td>
+                                            <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="2">{{ $challenge->challenge }}</textarea>
+                                            <input type="hidden" name="challenges[{{ $index }}][id]"
+                                                value="{{ $challenge->id }}">
+                                        </td>
+
+                                        <td>
+                                            <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="2">{{ $challenge->result }}</textarea>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-challenge-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-challenge-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="challenge-row" data-row-index="0">
+                                        <td>
+                                            <textarea name="challenges[0][challenge]" class="form-control" rows="2"></textarea>
+                                        </td>
+                                        <td>
+                                            <textarea name="challenges[0][result]" class="form-control" rows="2"></textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-challenge-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-challenge-row"
+                                                style="display:none;">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+
+                        <div class="text-end mt-2">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div id="employeeComments" class="mb-3">
             <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
                 @foreach ($groupHQuestions as $question)
                     <div class="card">
                         <div class="card-header fw-bold">
                             <span class="card-title">
-                                <span class="fw-bold">E.</span>
+                                <span class="fw-bold">F.</span>
                                 <span>
                                     {{ $question->question }}
                                 </span>

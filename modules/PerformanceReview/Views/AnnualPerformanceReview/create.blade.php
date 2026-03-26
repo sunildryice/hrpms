@@ -115,32 +115,27 @@
             });
 
             // groupEForm
-
-            let challengeRowIndex = {{ $challenges->count() ?: 0 }};
+            let challengeRowIndex = $('#challenges-body .challenge-row').length - 1;
 
             function buildChallengeRow(idx, challenge = '', result = '', id = null) {
-                const isExisting = id !== null;
                 return `
-    <tr class="challenge-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
-        <td>
-            <textarea name="challenges[${idx}][challenge]" 
-                class="form-control" 
-                rows="2">${challenge.replace(/"/g, '&quot;')}</textarea>
-        </td>
-        <td>
-            <textarea name="challenges[${idx}][result]" 
-                class="form-control" 
-                rows="2">${result.replace(/"/g, '&quot;')}</textarea>
-        </td>
-        <td class="text-center col-action">
-            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row" title="Add new challenge">
-                <i class="bi bi-plus"></i>
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row" title="Remove this row">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
-    </tr>`;
+                <tr class="challenge-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
+                    <td>
+                        <textarea name="challenges[${idx}][challenge]" class="form-control" rows="2">${challenge}</textarea>
+                        <input type="hidden" name="challenges[${idx}][id]" value="${id ?? ''}">
+                    </td>
+                    <td>
+                        <textarea name="challenges[${idx}][result]" class="form-control" rows="2">${result}</textarea>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
             }
 
             function updateChallengeButtons() {
@@ -170,33 +165,8 @@
             // Remove row
             $(document).on('click', '.remove-challenge-row', function() {
                 const $row = $(this).closest('tr');
-                const challengeId = $row.data('id');
-
-                if (challengeId) {
-                    $.ajax({
-                        url: "{{ route('performance.challenge.destroy') }}",
-                        type: 'POST',
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            challenge_id: challengeId
-                        },
-                        success: function(res) {
-                            if (res.type === 'success' || res.success) {
-                                $row.remove();
-                                updateChallengeButtons();
-                                toastr.success('Challenge removed successfully');
-                            } else {
-                                toastr.error('Failed to delete challenge');
-                            }
-                        },
-                        error: function() {
-                            toastr.error('Server error while deleting challenge');
-                        }
-                    });
-                } else {
-                    $row.remove();
-                    updateChallengeButtons();
-                }
+                $row.remove();
+                updateChallengeButtons();
             });
 
             // Handle form submission for challenges
@@ -988,6 +958,8 @@
                                         data-id="{{ $challenge->id }}">
                                         <td>
                                             <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="2">{{ $challenge->challenge }}</textarea>
+                                            <input type="hidden" name="challenges[{{ $index }}][id]"
+                                                value="{{ $challenge->id }}">
                                         </td>
 
                                         <td>
@@ -995,10 +967,12 @@
                                         </td>
 
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-challenge-row">
                                                 <i class="bi bi-plus"></i>
                                             </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row">
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-challenge-row">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </td>
@@ -1012,10 +986,12 @@
                                             <textarea name="challenges[0][result]" class="form-control" rows="2"></textarea>
                                         </td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-challenge-row">
                                                 <i class="bi bi-plus"></i>
                                             </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm remove-challenge-row"
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-challenge-row"
                                                 style="display:none;">
                                                 <i class="bi bi-trash"></i>
                                             </button>

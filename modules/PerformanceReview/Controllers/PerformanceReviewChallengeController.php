@@ -20,33 +20,74 @@ class PerformanceReviewChallengeController extends Controller
         ]);
 
         DB::beginTransaction();
+
         try {
-            // Delete all existing challenges for this review
-            PerformanceReviewChallenge::where('performance_review_id', $request->performance_review_id)
-                ->delete();
+            $reviewId = $request->performance_review_id;
+
+            // Existing IDs in DB
+            $existingIds = PerformanceReviewChallenge::where('performance_review_id', $reviewId)
+                ->pluck('id')
+                ->toArray();
+
+            $submittedIds = [];
 
             if (!empty($request->challenges)) {
                 foreach ($request->challenges as $item) {
+
                     if (empty(trim($item['challenge'] ?? ''))) {
                         continue;
                     }
 
-                    PerformanceReviewChallenge::create([
-                        'performance_review_id' => $request->performance_review_id,
-                        'challenge' => trim($item['challenge']),
-                        'result' => trim($item['result'] ?? ''),
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id(),
-                    ]);
+                    // UPDATE
+                    if (!empty($item['id'])) {
+                        $challenge = PerformanceReviewChallenge::find($item['id']);
+
+                        if ($challenge) {
+                            $challenge->update([
+                                'challenge' => trim($item['challenge']),
+                                'result' => trim($item['result'] ?? ''),
+                                'updated_by' => auth()->id(),
+                            ]);
+
+                            $submittedIds[] = $challenge->id;
+                        }
+                    }
+                    // CREATE
+                    else {
+                        $new = PerformanceReviewChallenge::create([
+                            'performance_review_id' => $reviewId,
+                            'challenge' => trim($item['challenge']),
+                            'result' => trim($item['result'] ?? ''),
+                            'created_by' => auth()->id(),
+                            'updated_by' => auth()->id(),
+                        ]);
+
+                        $submittedIds[] = $new->id;
+                    }
                 }
             }
 
+            // DELETE removed rows
+            $idsToDelete = array_diff($existingIds, $submittedIds);
+
+            if (!empty($idsToDelete)) {
+                PerformanceReviewChallenge::whereIn('id', $idsToDelete)->delete();
+            }
+
             DB::commit();
-            return response()->json(['type' => 'success', 'message' => 'Challenges saved successfully.']);
+
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Challenges synced successfully.'
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['type' => 'error', 'message' => 'Failed to save challenges.'], 500);
+
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Failed to save challenges.'
+            ], 500);
         }
     }
 

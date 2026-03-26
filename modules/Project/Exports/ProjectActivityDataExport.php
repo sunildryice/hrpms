@@ -23,35 +23,42 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
 
     public function collection()
     {
-        // Load all activities with necessary relationships
+        // Load ALL activities
         $activities = $this->project->activities()
             ->with(['stage', 'parent', 'members'])
             ->get();
 
         $data = [];
+        $processedIds = [];
 
-        // Group by Stage first (same as Gantt chart)
-        $stages = $activities->where('activity_level', 'theme')
-            ->groupBy('activity_stage_id')
-            ->sortKeys();  
+        // Group by Stage
+        $stages = $activities->groupBy('activity_stage_id');
 
-        foreach ($stages as $stageId => $themesInStage) {
-            // Sort themes within the stage
-            $themes = $themesInStage->sortBy('title');
+        foreach ($stages as $stageId => $itemsInStage) {
+
+            // Get Themes
+            $themes = $itemsInStage
+                ->where('activity_level', 'theme')
+                ->sortBy('title');
 
             foreach ($themes as $theme) {
-                $data[] = $this->formatRow($theme, count($data) + 1);
 
-                // Get Activities under this Theme
+                // Add Theme
+                $data[] = $this->formatRow($theme, count($data) + 1);
+                $processedIds[] = $theme->id;
+
+                // Activities under Theme
                 $childActivities = $activities
                     ->where('parent_id', $theme->id)
                     ->where('activity_level', 'activity')
                     ->sortBy('title');
 
                 foreach ($childActivities as $activity) {
-                    $data[] = $this->formatRow($activity, count($data) + 1);
 
-                    // Get Sub-activities under this Activity
+                    $data[] = $this->formatRow($activity, count($data) + 1);
+                    $processedIds[] = $activity->id;
+
+                    // Sub Activities
                     $subActivities = $activities
                         ->where('parent_id', $activity->id)
                         ->where('activity_level', 'sub_activity')
@@ -59,15 +66,29 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
 
                     foreach ($subActivities as $sub) {
                         $data[] = $this->formatRow($sub, count($data) + 1);
+                        $processedIds[] = $sub->id;
                     }
                 }
             }
         }
 
-        // Add empty rows at the bottom for new data entry
-        for ($i = 1; $i <= 5; $i++) {
-            $data[] = [
-                'sn' => count($data) + $i,
+        // Add ANY missing activities
+        $remaining = $activities->whereNotIn('id', $processedIds);
+
+        foreach ($remaining as $activity) {
+            $data[] = $this->formatRow($activity, count($data) + 1);
+        }
+
+        // Remove internal ID before export
+        $data = collect($data)->map(function ($row) {
+            unset($row['id']);
+            return $row;
+        });
+
+        // Add empty rows for template (optional)
+        for ($i = 1; $i <= 25; $i++) {
+            $data->push([
+                'sn' => $data->count() + 1,
                 'activity_level' => '',
                 'stage_name' => '',
                 'activity_name' => '',
@@ -76,10 +97,10 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
                 'end_date' => '',
                 'members' => '',
                 'activity_status' => '',
-            ];
+            ]);
         }
 
-        return collect($data);
+        return $data;
     }
 
     private function formatRow($activity, int $sn)
@@ -101,6 +122,7 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
         };
 
         return [
+            'id' => $activity->id, // important for tracking
             'sn' => $sn,
             'activity_level' => ucfirst(str_replace('_', ' ', $activity->activity_level ?? '')),
             'stage_name' => $activity->stage?->title ?? '',
@@ -132,19 +154,27 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
+
                 $sheet = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
 
                 $sheet->getStyle('A1:I' . $highestRow)->applyFromArray([
-                    'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                    'borders' => [
+                        'allBorders' => ['borderStyle' => Border::BORDER_THIN]
+                    ],
                 ]);
 
                 $sheet->getStyle('A1:I1')->applyFromArray([
-                    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '4472C4']],
-                    'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => '4472C4']
+                    ],
+                    'font' => [
+                        'bold' => true,
+                        'color' => ['rgb' => 'FFFFFF']
+                    ],
                 ]);
 
-                // Column widths
                 $sheet->getColumnDimension('A')->setWidth(6);
                 $sheet->getColumnDimension('B')->setWidth(18);
                 $sheet->getColumnDimension('C')->setWidth(25);
@@ -167,6 +197,6 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
 
     public function title(): string
     {
-        return 'Activity';
+        return 'Activity Import Template';
     }
 }

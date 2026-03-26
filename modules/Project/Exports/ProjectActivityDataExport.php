@@ -182,6 +182,6 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
 
     public function title(): string
     {
-        return 'Activity Import Template';
+        return 'Activity';
     }
 }

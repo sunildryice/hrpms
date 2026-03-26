@@ -13,125 +13,89 @@
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
 
-
-
-            $('#add-key-goal').click(async function(e) {
+            $('#add-key-goal').click(function(e) {
                 e.preventDefault();
-                let url = $(this).attr('data-href');
 
-                let successCallback = function(response) {
-                    toastr.success(response.message || 'Key Goal added successfully', 'Success', {
-                        timeOut: 2000
-                    });
-                    getNewKeyGoals(); // Refresh the additional key goals table
-                };
+                $('#keyGoalForm')[0].reset();
+                $('#key_goal_id').val('');
+                $('#keyGoalModalTitle').text('Add Key Goal');
 
-                let errorCallback = function(response) {
-                    toastr.error(response.message || 'Key Goal could not be added', 'Error', {
-                        timeOut: 2000
-                    });
-                };
-
-                // Show SweetAlert with two input fields
-                const {
-                    value: formValues
-                } = await Swal.fire({
-                    title: 'Add New Key Goal',
-                    html: `
-            <div class="mb-3">
-                <label for="swal-title" class="form-label fw-bold">Objective</label>
-                <input id="swal-title" class="swal2-input" placeholder="Objective" />
-            </div>
-            <div>
-                <label for="swal-output" class="form-label fw-bold">Output / Deliverable</label>
-                <input id="swal-output" class="swal2-input" placeholder="Output / Deliverable" />
-            </div>
-        `,
-                    focusConfirm: false,
-                    showCancelButton: true,
-                    preConfirm: () => {
-                        const title = document.getElementById('swal-title').value.trim();
-                        const output = document.getElementById('swal-output').value.trim();
-
-                        if (!title) {
-                            Swal.showValidationMessage('Objective / Title is required');
-                            return false;
-                        }
-
-                        return {
-                            title,
-                            output
-                        };
-                    }
-                });
-
-                if (formValues) {
-                    ajaxSubmit(url, 'POST', {
-                        title: formValues.title,
-                        output_deliverables: formValues.output,
-                        performance_review_id: performanceReview.id,
-                        type: 'current'
-                    }, successCallback, errorCallback);
-                }
+                $('#keyGoalModal').modal('show');
             });
 
-            $('#keygoal-body').on('click', '.edit-key-goal', async function(e) {
+            $('#keygoal-body').on('click', '.edit-key-goal', function(e) {
                 e.preventDefault();
-                let inputValue = $(this).attr('data-title');
-                let id = $(this).attr('data-id');
-                let url = $(this).attr('data-href');
-                let successCallback = function(response) {
-                    toastr.success(response.message, 'Success', {
-                        timeOut: 2000
-                    });
-                    getNewKeyGoals();
-                };
-                let errorCallback = function(response) {
-                    {{-- console.log(response.mesasge) --}}
-                    toastr.error('Key Goals could not be updated', 'Error', {
-                        timeOut: 2000
-                    });
-                }
-                const {
-                    value: field
-                } = await Swal.fire({
-                    title: 'Edit Key Goal',
-                    input: "text",
-                    inputLabel: 'Title',
-                    inputValue,
-                    inputAttributes: {
-                        name: 'title',
-                    },
-                    showCancelButton: true,
-                });
-                if (field) {
-                    ajaxSubmit(url, 'POST', {
-                        ['title']: field,
-                        ['key_goal_id']: id,
-                    }, successCallback, errorCallback);
-                }
+
+                let id = $(this).data('id');
+                let row = $(this).closest('tr');
+                let titleEl = row.find('td:first-child input[id^="keygoal_title_"], td:first-child span')
+                    .first();
+                let title = titleEl.is('input') ? titleEl.val() : titleEl.text().trim();
+                let outputEl = row.find('td:nth-child(2) input[id^="keygoal_employee_"], td:nth-child(2)')
+                    .first();
+                let output = outputEl.is('input') ? outputEl.val() : outputEl.text().trim();
+
+                $('#key_goal_id').val(id);
+                $('#title').val(title);
+                $('#output_deliverables').val(output);
+
+                $('#keyGoalModalTitle').text('Edit Key Goal');
+
+                $('#keyGoalModal').modal('show');
             });
 
             $('#keygoal-body').on('click', '.delete-key-goal', function(e) {
                 e.preventDefault();
-                let url = $(this).attr('data-href');
-                let id = $(this).attr('data-id');
-                let successCallback = function(response) {
-                    toastr.success(response.message, 'Success', {
-                        timeOut: 2000
-                    });
-                    getNewKeyGoals();
-                };
-                let errorCallback = function(response) {
-                    {{-- console.log(response.mesasge) --}}
-                    toastr.error('Key Goals could not be updated', 'Error', {
-                        timeOut: 2000
-                    });
-                }
+
+                let id = $(this).data('id');
+                let url = $(this).data('href');
 
                 ajaxSweetAlert(url, 'POST', {
-                    ['keyGoalId']: id,
-                }, 'Delete Key Goal', successCallback, errorCallback);
+                    keyGoalId: id
+                }, 'Delete Key Goal', function(res) {
+                    toastr.success(res.message);
+                    $('.preloader').show();
+                    location.reload();
+                });
+            });
+
+            $('#keyGoalForm').submit(function(e) {
+                e.preventDefault();
+
+                let id = $('#key_goal_id').val();
+                let isEdit = !!id;
+
+                let url = isEdit ?
+                    "{{ route('performance.keygoal.update') }}" :
+                    "{{ route('performance.keygoal.store') }}";
+
+                let payload = {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: performanceReview.id,
+                    title: $('#title').val(),
+                    output_deliverables: $('#output_deliverables').val(),
+                    type: 'current'
+                };
+
+                if (isEdit) {
+                    payload.key_goal_id = id;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: payload,
+                    success: function(res) {
+                        toastr.success(res.message || 'Saved successfully');
+                        $('#keyGoalModal').modal('hide');
+                        $('.preloader').show();
+                        location.reload();
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        toastr.error('Something went wrong');
+                    }
+                });
             });
 
             function getNewKeyGoals() {
@@ -139,37 +103,55 @@
                     type: 'get',
                     url: `${baseUrl}/api/performance/${performanceReview.id}/keygoals`,
                     success: function(response) {
-                        const newRowContent = []
+
                         if (response?.keyGoals.length) {
                             $('#new-keyGoalTable').show();
-                            $('#keygoal-body').html('');
-                            let newRowContent = '';
-                            response.keyGoals.forEach((goal) => {
-                                newRowContent += `
-                                <tr>
-                                    <td>
-                                        <span style="width: 100%">${goal.title}</span>
-                                        <a class="edit-key-goal text-primary" href="#"  data-href="{{ route('performance.keygoal.update') }}" data-title="${goal.title ?? ''}" data-id="${goal.id}"u><i class="bi bi-pencil-square"></i></a>
-                                        <a class="delete-key-goal text-danger" href="#"  data-href="{{ route('performance.keygoal.destroy') }}" data-id="${goal.id}"><i class="bi bi-trash"></i></a>
-                                    </td>
-                                    <td>
-                                        <textarea style="width:100%" name="keygoal_employee_${goal.id}" id="keygoal_employee_${goal.id}" rows="2">${goal.description_employee ?? ''}</textarea>
-                                    </td>
-                                    <td>
-                                        <span style="width: 100%">${goal.description_supervisor ?? ''}</span>
-                                    </td>
-                                </tr>
-                            `;
-                            })
-                            $('#keygoal-body').html(newRowContent);
+
+                            let html = '';
+
+                            response.keyGoals.forEach(goal => {
+                                html += `
+                    <tr>
+                        <td>
+                            ${goal.title}
+                            <a class="edit-key-goal text-primary ms-2" 
+                               href="#" 
+                               data-id="${goal.id}" 
+                               data-title="${goal.title}">
+                               <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a class="delete-key-goal text-danger ms-2" 
+                               href="#" 
+                               data-id="${goal.id}" 
+                               data-href="{{ route('performance.keygoal.destroy') }}">
+                               <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+
+                        <td>${goal.output_deliverables ?? ''}</td>
+
+                        <td>
+                            <textarea name="major_activities_employee_${goal.id}" class="form-control">${goal.major_activities_employee ?? ''}</textarea>
+                        </td>
+
+                        <td>
+                            <select name="status_${goal.id}" class="form-select">
+                                <option value="">Select Status</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <textarea name="remarks_employee_${goal.id}" class="form-control">${goal.remarks_employee ?? ''}</textarea>
+                        </td>
+                    </tr>`;
+                            });
+
+                            $('#keygoal-body').html(html);
+
                         } else {
                             $('#new-keyGoalTable').hide();
                         }
-                    },
-                    error: function(data) {
-                        // toastr.error('Key goal could not be added.', 'Failed', {timeOut: 2000});
                     }
-
                 });
             }
 
@@ -243,6 +225,26 @@
 
                 let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
 
+                let isValid = true;
+
+                rows.each(function() {
+                    const majorActivities = $(this).find('.major-activities').val().trim();
+                    const status = $(this).find('.status-dropdown').val();
+
+                    if (!majorActivities || !status) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error('Please fill Major Activities and Status for all key goals.',
+                        'Validation Error');
+                    return;
+                }
+
                 rows.each(function() {
                     let row = $(this);
                     let id = row.data('keygoal-id') || row.find('textarea, select').first().attr(
@@ -253,11 +255,12 @@
                     let title = row.find(`[name="title_${id}"]`).val() || '';
                     let output = row.find(`[name="output_deliverables_${id}"]`).val() || '';
                     let majorActivities = row.find(`[name="major_activities_employee_${id}"]`)
-                    .val() || '';
+                        .val() || '';
                     let status = row.find(`[name="status_${id}"]`).val() || '';
                     let remarks = row.find(`[name="remarks_employee_${id}"]`).val() || '';
 
-                    updateKeyGoal(id, title, majorActivities, '', 'current', status, remarks, output);
+                    updateKeyGoal(id, title, majorActivities, '', 'current', status, remarks,
+                        output);
                 });
 
                 isGroupCFormSaved = true;
@@ -481,7 +484,8 @@
                     'performance_review_id': "{{ $performanceReview->id }}"
                 },
                 success: function(data) {
-                    $('#keyGoalTable').append(data.html);
+                    $('.preloader').show();
+                    location.reload();
                 },
                 error: function(error) {
                     //
@@ -558,7 +562,7 @@
                     <span class="card-title">
                         <span class="fw-bold">A.</span>
                         <span>
-                            Employee and Supervisor Details
+                            Employee and Line Manager Details
                         </span>
                     </span>
                 </div>
@@ -668,50 +672,15 @@
             </div>
         </div>
 
-        <div id="employeeFeedbackForThisReviewPeriod" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupBForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">B.</span>
-                            <span>
-                                Employee Feedback For This Review Period
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        @foreach ($groupBQuestions as $question)
-                            @if (!$loop->first)
-                                <hr>
-                            @endif
-                            <div class="row">
-                                <div class="col-lg-5">
-                                    <label for="{{ 'question_' . $question->id }}"
-                                        class="fw-bold">{{ $question->question }}</label>
-                                </div>
-                                <div class="col-lg-5">
-                                    <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}"
-                                        data-question-id="{{ $question->id }}" style="width: 100%;" rows="5">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
         <div id="keyGoalsReview" class="mb-3">
             <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupCForm">
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title d-flex justify-content-between">
-                            <span class="fw-bold">C.
+                            <span class="fw-bold">B.
                                 Key Goals Review
                             </span>
-                            <button class="btn btn-primary" id="add-key-goal"
+                            <button class="btn btn-sm btn-primary" id="add-key-goal"
                                 data-href="{{ route('performance.keygoal.store') }}"><i class="bi bi-plus"></i>Add
                                 New</button>
                         </span>
@@ -739,8 +708,7 @@
                                             <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
                                         </td>
                                         <td>
-                                            <select name="status_{{ $keygoal->id }}"
-                                                class="form-select status-dropdown">
+                                            <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
                                                 <option value="">Select Status</option>
                                                 @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
                                                     <option value="{{ $status->value }}"
@@ -766,6 +734,7 @@
                                     <th rowspan="2" style="width: 15%">(Additional Output / Deliverable)</th>
                                     <th rowspan="2" style="width: 22%">Major Activities</th>
                                     <th colspan="2">Achievement against output / deliverable</th>
+                                    <th rowspan="2" style="width: 22%">Action</th>
                                 </tr>
                                 <tr>
                                     <th style="width: 15%">Status</th>
@@ -778,13 +747,6 @@
                                         <td>
                                             <span style="width: 100%">{{ $keygoal->title }}
                                             </span>
-                                            <a class="edit-key-goal text-primary" href="#"
-                                                data-href="{{ route('performance.keygoal.update') }}"
-                                                data-title="{{ $keygoal->title }}" data-id="{{ $keygoal->id }}"u><i
-                                                    class="bi bi-pencil-square"></i></a>
-                                            <a class="delete-key-goal text-danger" href="#"
-                                                data-href="{{ route('performance.keygoal.destroy') }}"
-                                                data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>
                                         </td>
                                         <td>{{ $keygoal->output_deliverables }}</td>
                                         <td>
@@ -805,11 +767,20 @@
                                         <td>
                                             <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
                                         </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <a class="edit-key-goal btn btn-outline-primary btn-sm" href="#"
+                                                    data-href="{{ route('performance.keygoal.update') }}"
+                                                    data-title="{{ $keygoal->title }}" data-id="{{ $keygoal->id }}"u><i
+                                                        class="bi bi-pencil-square"></i></a>
+                                                <a class="delete-key-goal btn btn-outline-danger btn-sm" href="#"
+                                                    data-href="{{ route('performance.keygoal.destroy') }}"
+                                                    data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
-
-
                         </table>
                     </div>
                     <div class="card-footer">
@@ -823,7 +794,7 @@
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold"></span>
+                        <span class="fw-bold">C.</span>
                         <span>
                             Professional Development Plan
                         </span>
@@ -831,10 +802,7 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $devPlans = $keyGoalReview
-                            ->answers()
-                            ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
-                            ->get();
+                        $devPlans = $keyGoalReview->developmentPlans;
                     @endphp
 
                     @if ($devPlans->isEmpty())
@@ -854,7 +822,7 @@
                                     <tr class="devplan-row readonly">
                                         <td class="sn">{{ $loop->iteration }}</td>
                                         <td class="col-plan readonly-cell">
-                                            {{ $plan->answer }}
+                                            {{ $plan->objective }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -864,59 +832,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="strengthsAndAreasForGrowth" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupEForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">D.</span>
-                            <span>
-                                Strengths and Areas for Growth (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        @foreach ($groupEQuestions as $question)
-                            @if (!$loop->last)
-                                @if (!$loop->first)
-                                    <hr>
-                                @endif
-                                <div class="row">
-                                    <div class="col-lg-5">
-                                        <label for="{{ 'question_' . $question->id }}"
-                                            class="fw-bold">{{ $question->question }}</label>
-                                    </div>
-                                    <div class="col-lg-5">
-                                        <span
-                                            style="width: 100%">{{ $performanceReview->getAnswer($question->id) }}</span>
-                                        {{-- <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 100%;" rows="3">{{$performanceReview->getAnswer($question->id)}}</textarea> --}}
-                                    </div>
-                                </div>
-                            @endif
-
-                            {{-- @if ($loop->last)
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-lg-5">
-                                            <label for="{{'question_'.$question->id}}" class="fw-bold">Professional Development Plan</label>
-                                        </div>
-                                        <div class="col-lg-5">
-                                            <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 100%;" rows="3">{{$professionalDevelopmentPlan}}</textarea>
-                                        </div>
-                                    </div>
-                                @endif --}}
-                        @endforeach
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                            style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-
 
         <div id="employeeComments" class="mb-3">
             <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
@@ -938,33 +853,6 @@
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="supervisorComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupIForm">
-                @foreach ($groupIQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">F.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <span style="width: 100%">{{ $performanceReview->getAnswer($question->id) }}</span>
-                                {{-- <textarea disabled name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 50%" rows="7">{{$performanceReview->getAnswer($question->id)}}</textarea> --}}
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="d-none btn btn-sm btn-outline-primary"
                                 style="float: right">Save</button>
                         </div>
                     </div>
@@ -1025,5 +913,48 @@
         </div>
         <br><br>
     </section>
+
+    <!-- Key Goal Modal -->
+    <div class="modal fade" id="keyGoalModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fs-6" id="keyGoalModalTitle">Add Key Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="keyGoalForm">
+                    <div class="modal-body">
+
+                        <input type="hidden" name="key_goal_id" id="key_goal_id">
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <label class="form-label fw-bold">Objective</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" name="title" id="title" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <label class="form-label fw-bold">Output / Deliverable</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea class="form-control" name="output_deliverables" id="output_deliverables" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                    @csrf
+                </form>
+            </div>
+        </div>
+    </div>
 
 @stop

@@ -532,7 +532,9 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'))->with('performanceReview', $performanceReview);
+            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'))
+            ->with('performanceReview', $performanceReview)
+            ->with('challenges', $performanceReview->challenges ?? collect());
             ;
         } else {
             $existingDevPlans = $performanceReview->developmentPlans;

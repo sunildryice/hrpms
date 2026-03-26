@@ -509,8 +509,9 @@ class PerformanceReviewController extends Controller
                 ->orderBy('position', 'desc')
                 ->first();
 
-            return view('PerformanceReview::AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals'))->with('performanceReview', $performanceReview);
-            ;
+            return view('PerformanceReview::AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals'))
+                ->with('performanceReview', $performanceReview)
+                ->with('challenges', $performanceReview->challenges ?? collect());
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
 
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -534,12 +535,6 @@ class PerformanceReviewController extends Controller
             return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'))->with('performanceReview', $performanceReview);
             ;
         } else {
-            // $existingDevPlans = $performanceReview->answers()
-            //     ->whereHas('performanceReviewQuestion', function ($q) {
-            //         $q->where('group', 'E');
-            //     })
-            //     ->get();
-
             $existingDevPlans = $performanceReview->developmentPlans;
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,

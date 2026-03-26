@@ -802,10 +802,7 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $devPlans = $keyGoalReview
-                            ->answers()
-                            ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
-                            ->get();
+                        $devPlans = $keyGoalReview->developmentPlans;
                     @endphp
 
                     @if ($devPlans->isEmpty())
@@ -825,7 +822,7 @@
                                     <tr class="devplan-row readonly">
                                         <td class="sn">{{ $loop->iteration }}</td>
                                         <td class="col-plan readonly-cell">
-                                            {{ $plan->answer }}
+                                            {{ $plan->objective }}
                                         </td>
                                     </tr>
                                 @endforeach

@@ -5,11 +5,11 @@ namespace Modules\PerformanceReview\Repositories;
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
-use Modules\PerformanceReview\Models\PerformanceChallenge;
+use Modules\PerformanceReview\Models\PerformanceReviewChallenge;
 
-class PerformanceChallengeRepository extends Repository
+class PerformanceReviewChallengeRepository extends Repository
 {
-    public function __construct(PerformanceChallenge $model)
+    public function __construct(PerformanceReviewChallenge $model)
     {
         $this->model = $model;
     }

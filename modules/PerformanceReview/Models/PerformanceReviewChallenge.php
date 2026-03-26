@@ -4,9 +4,9 @@ namespace Modules\PerformanceReview\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PerformanceChallenge extends Model
+class PerformanceReviewChallenge extends Model
 {
-    protected $table = 'performance_challenges';
+    protected $table = 'performance_review_challenges';
 
     protected $fillable = [
         'performance_review_id',

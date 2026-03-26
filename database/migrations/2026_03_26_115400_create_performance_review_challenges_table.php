@@ -12,7 +12,7 @@ return new class extends Migration {
      */
     public function up()
     {
-        Schema::create('performance_challenges', function (Blueprint $table) {
+        Schema::create('performance_review_challenges', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('performance_review_id')->nullable();
             $table->longText('challenge')->nullable();
@@ -32,6 +32,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('performance_challenges');
+        Schema::dropIfExists('performance_review_challenges');
     }
 };

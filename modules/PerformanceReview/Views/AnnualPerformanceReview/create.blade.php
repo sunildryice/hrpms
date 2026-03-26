@@ -115,7 +115,6 @@
             });
 
             // groupEForm
-
             let challengeRowIndex = $('#challenges-body .challenge-row').length - 1;
 
             function buildChallengeRow(idx, challenge = '', result = '', id = null) {

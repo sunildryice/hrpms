@@ -8,7 +8,7 @@ use Modules\PerformanceReview\Controllers\PerformanceReviewKeyGoalController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewRecommendController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewReviewController;
 
-Route::middleware(['web', 'auth', 'logger'])->group(function() {
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('performance', [PerformanceReviewController::class, 'index'])->name('performance.index');
     Route::get('performance/employee', [PerformanceReviewController::class, 'employeeIndex'])->name('performance.employee.index');
@@ -42,6 +42,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function() {
     Route::post('performance/keygoal/delete', [PerformanceReviewKeyGoalController::class, 'destroy'])->name('performance.keygoal.destroy');
 
     Route::post('performance/{id}/keygoals/save', [PerformanceReviewKeyGoalController::class, 'saveDraft'])->name('performance.keygoals.save-draft');
+    Route::post('performance/devplan/save', [PerformanceReviewKeyGoalController::class, 'updateDevPlan'])->name('performance.devplan.update');
 
 
     Route::get('performance/review', [PerformanceReviewReviewController::class, 'index'])->name('performance.review.index');

@@ -85,21 +85,6 @@ class ProjectActivityDataExport implements FromCollection, WithHeadings, WithEve
             return $row;
         });
 
-        // Add empty rows for template (optional)
-        for ($i = 1; $i <= 25; $i++) {
-            $data->push([
-                'sn' => $data->count() + 1,
-                'activity_level' => '',
-                'stage_name' => '',
-                'activity_name' => '',
-                'parent_activity' => '',
-                'start_date' => '',
-                'end_date' => '',
-                'members' => '',
-                'activity_status' => '',
-            ]);
-        }
-
         return $data;
     }
 

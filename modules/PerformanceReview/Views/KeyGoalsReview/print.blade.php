@@ -80,7 +80,7 @@
                     <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="4">A. EMPLOYEE AND SUPERVISOR DETAILS</th>
+                                <th scope="col" colspan="4">A. EMPLOYEE AND LINE MANAGER DETAILS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -175,18 +175,18 @@
                             <tr>
                                 <th colspan="2">C. PROFESSIONAL DEVELOPMENT PLAN</th>
                             </tr>
+                            {{-- <tr>
+                                <th class="col-plan">Development Plan</th>
+                            </tr> --}}
                         </thead>
                         <tbody>
                             @php
-                                $devPlans = $performanceReview
-                                    ->answers()
-                                    ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
-                                    ->get();
+                                $devPlans = $performanceReview->developmentPlans;
                             @endphp
 
                             @forelse ($devPlans as $index => $plan)
                                 <tr>
-                                    <td>{{ $plan->answer ?? 'N/A' }}</td>
+                                    <td>{{ $plan->objective ?? '' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -209,7 +209,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row">Supervisor:</th>
+                                <th scope="row">Line Manager:</th>
                                 <td>{{ $performanceReview->getSupervisorName() }}</td>
                                 <th scope="row">Date:</th>
                                 <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at?->toFormattedDateString() }}

@@ -533,16 +533,18 @@ class PerformanceReviewController extends Controller
 
             return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'));
         } else {
-            $existingDevPlans = $performanceReview->answers()
-                ->whereHas('performanceReviewQuestion', function ($q) {
-                    $q->where('group', 'E');
-                })
-                ->get();
+            // $existingDevPlans = $performanceReview->answers()
+            //     ->whereHas('performanceReviewQuestion', function ($q) {
+            //         $q->where('group', 'E');
+            //     })
+            //     ->get();
+
+            $existingDevPlans = $performanceReview->developmentPlans;
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,
                 'professionalDevelopmentPlanQuestion' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position', 'desc')->first(),
                 'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
-                'existingDevPlans'    => $existingDevPlans,
+                'existingDevPlans' => $existingDevPlans,
             ]);
         }
     }

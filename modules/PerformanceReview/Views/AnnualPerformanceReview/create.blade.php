@@ -144,7 +144,7 @@
                 <input type="text" 
                        name="competencies[${competencyRowIndex}][competency]" 
                        class="form-control competency-name" 
-                       placeholder="Enter competency (e.g. Customer Focus, Teamwork, etc.)"
+                       placeholder="Competency"
                        required>
             </td>
             <td>

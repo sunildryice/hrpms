@@ -37,182 +37,178 @@
         <!-- A. Employee and Line Manager Details -->
         @include('PerformanceReview::Partials.employeeDetails')
 
-        <div id="employeeFeedbackForThisReviewPeriod" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupBForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">B.</span>
-                            <span>
-                                Employee Feedback For This Review Period
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        @foreach ($groupBQuestions as $question)
-                            @if (!$loop->first)
-                                <hr>
-                            @endif
-                            <div class="row">
-                                <label class="fw-bold">{{ $question->question }}</label>
-                                <span class="mt-2">{{ $performanceReview->getAnswer($question->id) }}</span>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </form>
-        </div>
-
+        <!-- B. Key Goals Review -->
         <div id="keyGoalsReview" class="mb-3">
-            <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupCForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">C.</span>
-                            <span>
-                                Key Goals Review
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-sm table-bordered text-wrap" id="keyGoalTable">
-                            <tr>
-                                <th style="width: 24%">Key goals agreed upon during previous performance review</th>
-                                <th style="width: 38%">Completed by Employee</th>
-                                <th style="width: 38%">Completed by Supervisor</th>
-                            </tr>
-
-                            @foreach ($keygoals as $keygoal)
-                                <tr>
-                                    <td>
-                                        <span class="text-black">{{ $keygoal->title }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-black">{{ $keygoal->description_employee }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-black">{{ $keygoal->description_supervisor }}</span>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </table>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="professionalDevelopmentPlan" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold"></span>
-                        <span>
-                            Professional Development Plan
-                        </span>
+                        <span class="fw-bold">B.</span> Key Goals Review
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <span>{{ $professionalDevelopmentPlan }}</span>
-                        </div>
-                    </div>
+                    <table class="table table-bordered" id="keyGoalTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 18%">Objective</th>
+                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                <th colspan="2">Achievement against output / deliverable</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 25%">Remarks / Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($keygoals as $keygoal)
+                                <tr>
+                                    <td>{{ $keygoal->title }}</td>
+                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
+                                            {{ $keygoal->status?->label() ?? 'Not Set' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div id="strengthsAndAreasForGrowth" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupEForm">
-                <div class="card">
+        <!-- C. Professional Development Plan -->
+        <div id="professionalDevelopmentPlan" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">C.</span> Professional Development Plan
+                    </span>
+                </div>
+                <div class="card-body">
+                    @php $devPlans = $keyGoalReview->developmentPlans ?? collect(); @endphp
+
+                    @if ($devPlans->isEmpty())
+                        <div class="text-center text-muted py-4">
+                            No professional development plan has been added yet.
+                        </div>
+                    @else
+                        <table class="table table-bordered" id="devplan-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%">SN</th>
+                                    <th style="width: 45%">Development Plan Objective</th>
+                                    <th style="width: 45%">Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($devPlans as $index => $plan)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $plan->objective }}</td>
+                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- D. Core Competencies -->
+        <div id="coreCompetenciesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">D.</span> Core Competencies
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%">Competency</th>
+                                <th style="width: 15%">Rating (1-5)</th>
+                                <th style="width: 50%">Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($coreCompetencies ?? collect() as $comp)
+                                <tr>
+                                    <td>{{ $comp->competency }}</td>
+                                    <td>
+                                        @if ($comp->rating)
+                                            <span class="badge bg-primary">{{ $comp->rating }}</span>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td>{{ $comp->example ?? '—' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No core competencies recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- E. Challenges / Difficulties -->
+        <div id="challengesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">E.</span> Challenges / Difficulties
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 45%">Challenge / Difficulty Faced</th>
+                                <th style="width: 45%">Result / Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($challenges ?? collect() as $challenge)
+                                <tr>
+                                    <td>{{ $challenge->challenge }}</td>
+                                    <td>{{ $challenge->result }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No challenges recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- F. Employee Comments -->
+        <div id="employeeComments" class="mb-3">
+            @foreach ($groupHQuestions as $question)
+                <div class="card mb-3">
                     <div class="card-header fw-bold">
                         <span class="card-title">
-                            <span class="fw-bold">D.</span>
-                            <span>
-                                Strengths and Areas for Growth (to be completed by supervisor)
-                            </span>
+                            <span class="fw-bold">F.</span>
+                            Employee Comments
                         </span>
                     </div>
                     <div class="card-body">
-                        @foreach ($groupEQuestions as $question)
-                            @if (!$loop->last)
-                                @if (!$loop->first)
-                                    <hr>
-                                @endif
-                                <div class="row">
-                                    <label class="fw-bold">{{ $question->question }}</label>
-                                    <span class="mt-2">{{ $performanceReview->getAnswer($question->id) }}</span>
-                                </div>
-                            @endif
-                        @endforeach
+                        <div class="col-md-12' }}">
+                            <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
+                        </div>
                     </div>
                 </div>
-            </form>
-        </div>
-
-        <div id="employeeComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
-                @foreach ($groupHQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">E.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="supervisorComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupIForm">
-                @foreach ($groupIQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">F.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="acknowledgements" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupJForm">
-                @foreach ($groupJQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">G.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
+            @endforeach
         </div>
 
     </section>

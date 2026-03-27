@@ -46,40 +46,35 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="card">
-                        <div class="card-header fw-bold">Annual Review (Employee Input)</div>
-                        <div class="card-body">
-                            <table class="table table-bordered" id="keyGoalTable">
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2" style="width: 18%">Objective</th>
-                                        <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                        <th rowspan="2" style="width: 22%">Major Activities</th>
-                                        <th colspan="2">Achievement against output / deliverable</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 15%">Status</th>
-                                        <th style="width: 25%">Remarks / Comments</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($keygoals as $keygoal)
-                                        <tr>
-                                            <td>{{ $keygoal->title }}</td>
-                                            <td>{{ $keygoal->output_deliverables }}</td>
-                                            <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
-                                            <td>
-                                                <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
-                                                    {{ $keygoal->status?->label() ?? 'Not Set' }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <table class="table table-bordered" id="keyGoalTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 18%">Objective</th>
+                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                <th colspan="2">Achievement against output / deliverable</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 25%">Remarks / Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($keygoals as $keygoal)
+                                <tr>
+                                    <td>{{ $keygoal->title }}</td>
+                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
+                                            {{ $keygoal->status?->label() ?? 'Not Set' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -294,10 +294,10 @@
                                     class="select2 form-control @if ($errors->has('team_lead_id')) is-invalid @endif"
                                     data-width="100%">
                                     <option value="">Select Team Lead</option>
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}"
-                                            @if (old('team_lead_id', $project->team_lead_id) == $id) selected @endif>
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            @if (old('team_lead_id', $project->team_lead_id) == $user->id) selected @endif>
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('team_lead_id'))
@@ -319,10 +319,10 @@
                                     class="select2 form-control @if ($errors->has('focal_person_id')) is-invalid @endif"
                                     data-width="100%">
                                     <option value="">Select Focal Person</option>
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}"
-                                            @if (old('focal_person_id', $project->focal_person_id) == $id) selected @endif>
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            @if (old('focal_person_id', $project->focal_person_id) == $user->id) selected @endif>
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('focal_person_id'))
@@ -343,10 +343,10 @@
                                 <select name="members[]"
                                     class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
                                     multiple data-placeholder="Select Members" style="width: 100%">
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}"
-                                            @if (in_array($id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            @if (in_array($user->id, old('members', $project->members->pluck('id')->toArray()))) selected @endif>
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('members'))

@@ -607,4 +607,23 @@ class PerformanceReviewController extends Controller
         }
         return redirect()->back()->withWarningMessage('Previous record could not be found');
     }
+
+    public function storeEmployeeComments(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'employee_comments' => 'required|string'
+        ]);
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+        $this->authorize('employeeFill', $performanceReview); 
+
+        $performanceReview->update([
+            'employee_comments' => $request->employee_comments
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Employee comments saved successfully.'
+        ]);
+    }
 }

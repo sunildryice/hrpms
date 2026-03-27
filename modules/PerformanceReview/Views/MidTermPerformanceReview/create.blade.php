@@ -7,7 +7,6 @@
         let isGroupBFormSaved = false;
         let isGroupCFormSaved = false;
         let isGroupHFormSaved = false;
-        let isGroupJFormSaved = false;
 
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
@@ -503,84 +502,6 @@
                 }
             });
 
-            $('#groupIForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupJForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                isGroupJFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            }).on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
-                }
-            });
-
         });
 
         function updateKeyGoal(keyGoalId, title = '', majorActivities = '', descriptionSupervisor = '',
@@ -656,22 +577,69 @@
         }
 
         function validateForm() {
-            let data = $('#groupBForm').serializeArray();
-            let filled = true;
-            data.every(element => {
-                if (element.value == '') {
-                    filled = false;
-                    return false;
-                }
-                return true;
-            });
-            // console.log('b',isGroupBFormSaved,'c',isGroupCFormSaved,'h',isGroupHFormSaved,'j',isGroupJFormSaved)
+            let isGroupBFormSaved = true;
+            let isGroupCFormSaved = true;
+            let isGroupDFormSaved = true;
+            let isGroupEFormSaved = true;
+            let isGroupHFormSaved = true;
 
-            if (filled && isGroupBFormSaved && isGroupCFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+            // B. Key Goals Review
+            $('#keyGoalTable tbody tr').each(function() {
+                const majorActivities = $(this).find('.major-activities').val().trim();
+                const status = $(this).find('.status-dropdown').val();
+                if (!majorActivities || !status) {
+                    isGroupBFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // C. Professional Development Plan
+            $('#devplan-table tbody tr').each(function() {
+                const activity = $(this).find('.devplan-activity').val().trim();
+                if (!activity) {
+                    isGroupCFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // D. Core Competencies
+            $('#competencies-body tr.competency-row').each(function() {
+                const competency = $(this).find('.competency-name').val().trim();
+                if (!competency) {
+                    isGroupDFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // E. Challenges / Difficulties
+            $('#challenges-body tr.challenge-row').each(function() {
+                const challenge = $(this).find('textarea[name*="challenge"]').first().val().trim();
+                const result = $(this).find('textarea[name*="result"]').first().val().trim();
+                if (!challenge || !result) {
+                    isGroupEFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // H & J already use your existing logic
+            let groupHData = $('#groupHForm').serializeArray();
+            isGroupHFormSaved = !checkEmpty(groupHData);
+
+            if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
+                isGroupEFormSaved && isGroupHFormSaved) {
+
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {
-                toastr.warning('Please save the forms.', 'Warning', {
-                    timeOut: 2000
+                toastr.warning('Please save all sections properly before submitting.', 'Warning', {
+                    timeOut: 2500
                 });
             }
         }
@@ -1207,34 +1175,7 @@
                             <span class="card-title">
                                 <span class="fw-bold">F.</span>
                                 <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}" style="width: 50%"
-                                    rows="7">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="acknowledgements" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupJForm">
-                @foreach ($groupJQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">G.</span>
-                                <span>
-                                    {{ $question->question }}
+                                    Employee Comments
                                 </span>
                             </span>
                         </div>

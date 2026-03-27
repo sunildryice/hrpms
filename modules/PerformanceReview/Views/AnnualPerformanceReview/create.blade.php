@@ -7,7 +7,6 @@
         let isGroupBFormSaved = false;
         let isGroupCFormSaved = false;
         let isGroupHFormSaved = false;
-        let isGroupJFormSaved = false;
 
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
@@ -498,144 +497,8 @@
                 }
             });
 
-            $('#groupIForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-
-            $('#groupJForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-
-                isGroupJFormSaved = true;
-
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            }).on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
-                }
-            });
-
             getKeyGoalsEmployee();
             getKeyGoalsSupervisor();
-
-            $(document).on('click', '.open-edit-modal-form', function(e) {
-                e.preventDefault();
-                $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
-                    const editForm = document.getElementById('keyGoalEditForm');
-
-                    const fv = FormValidation.formValidation(editForm, {
-                        fields: {
-                            title: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Title is required'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            trigger: new FormValidation.plugins.Trigger(),
-                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
-                            submitButton: new FormValidation.plugins.SubmitButton(),
-                            icon: new FormValidation.plugins.Icon({
-                                valid: 'bi bi-check2-square',
-                                invalid: 'bi bi-x-lg',
-                                validating: 'bi bi-arrow-repeat',
-                            }),
-
-                        }
-                    }).on('core.form.valid', function(e) {
-                        url = fv.form.action;
-                        form = fv.form
-                        data = $(form).serialize();
-                        var successCallBack = function(response) {
-                            $('#openModal').modal('hide');
-                            toastr.success('Key goal updated.', 'Success', {
-                                timeOut: 2000
-                            });
-                            getKeyGoalsEmployee();
-                            getKeyGoalsSupervisor();
-
-                        }
-
-                        var errorCallback = function(response) {
-                            console.log(response);
-                            toastr.error('Key goal cannot be updated.', 'Failed', {
-                                timeOut: 2000
-                            })
-                        }
-
-                        ajaxSubmit(url, 'PUT', data, successCallBack, errorCallback);
-                    })
-                })
-            })
-
         });
 
         function addKeyGoal(event) {
@@ -812,7 +675,6 @@
             let isGroupDFormSaved = true;
             let isGroupEFormSaved = true;
             let isGroupHFormSaved = true;
-            let isGroupJFormSaved = true;
 
             // B. Key Goals Review
             $('#keyGoalTable tbody tr').each(function() {
@@ -864,11 +726,8 @@
             let groupHData = $('#groupHForm').serializeArray();
             isGroupHFormSaved = !checkEmpty(groupHData);
 
-            let groupJData = $('#groupJForm').serializeArray();
-            isGroupJFormSaved = !checkEmpty(groupJData);
-
             if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
-                isGroupEFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+                isGroupEFormSaved && isGroupHFormSaved) {
 
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {
@@ -1403,59 +1262,28 @@
         </div>
 
         <div id="employeeComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
-                @foreach ($groupHQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">H.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
+            <form action="" method="POST" id="groupFForm">
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">F.</span>
+                            <span>
+                                Employee Comments
                             </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}" style="width: 50%"
-                                    rows="7">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <textarea name="" id="" style="width: 50%"
+                                rows="7">{{ $performanceReview }}</textarea>
                         </div>
                     </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="acknowledgements" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupJForm">
-                @foreach ($groupJQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">J.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}" style="width: 50%"
-                                    rows="7">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
                     </div>
-                @endforeach
+                </div>
             </form>
         </div>
-
     </section>
 
     <section>

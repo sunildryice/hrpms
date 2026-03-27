@@ -732,19 +732,73 @@
         }
 
         function validateForm() {
-            let groupBData = $('#groupBForm').serializeArray();
-            let groupCData = $('#groupCForm').serializeArray();
+            let isGroupBFormSaved = true;
+            let isGroupCFormSaved = true;
+            let isGroupDFormSaved = true;
+            let isGroupEFormSaved = true;
+            let isGroupHFormSaved = true;
+            let isGroupJFormSaved = true;
+
+            // B. Key Goals Review
+            $('#keyGoalTable tbody tr').each(function() {
+                const majorActivities = $(this).find('.major-activities').val().trim();
+                const status = $(this).find('.status-dropdown').val();
+                if (!majorActivities || !status) {
+                    isGroupBFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // C. Professional Development Plan
+            $('#devplan-table tbody tr').each(function() {
+                const activity = $(this).find('.devplan-activity').val().trim();
+                if (!activity) {
+                    isGroupCFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // D. Core Competencies
+            $('#competencies-body tr.competency-row').each(function() {
+                const competency = $(this).find('.competency-name').val().trim();
+                if (!competency) {
+                    isGroupDFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // E. Challenges / Difficulties
+            $('#challenges-body tr.challenge-row').each(function() {
+                const challenge = $(this).find('textarea[name*="challenge"]').first().val().trim();
+                const result = $(this).find('textarea[name*="result"]').first().val().trim();
+                if (!challenge || !result) {
+                    isGroupEFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // H & J already use your existing logic
             let groupHData = $('#groupHForm').serializeArray();
-            let groupJData = $('#groupJForm').serializeArray();
-            isGroupBFormSaved = !checkEmpty(groupBData);
-            isGroupCFormSaved = !checkEmpty(groupCData);
             isGroupHFormSaved = !checkEmpty(groupHData);
+
+            let groupJData = $('#groupJForm').serializeArray();
             isGroupJFormSaved = !checkEmpty(groupJData);
-            if (isGroupBFormSaved && isGroupCFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+
+            if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
+                isGroupEFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {
-                toastr.warning('Please save the forms.', 'Warning', {
-                    timeOut: 2000
+                toastr.warning('Please save all sections properly before submitting.', 'Warning', {
+                    timeOut: 2500
                 });
             }
         }

@@ -114,6 +114,119 @@
                 });
             });
 
+            // ====================== D. Core Competencies ======================
+            let competencyRowIndex = 0;
+
+            function updateCompetencyActionButtons() {
+                const $rows = $('#competencies-body .competency-row');
+
+                $rows.find('.add-competency-row').hide();
+                $rows.find('.remove-competency-row').show();
+
+                if ($rows.length === 1) {
+                    $rows.find('.remove-competency-row').hide();
+                }
+
+                $rows.last().find('.add-competency-row').show();
+            }
+
+            $(function() {
+                updateCompetencyActionButtons();
+            });
+
+            // Add new row
+            $(document).on('click', '.add-competency-row', function() {
+                competencyRowIndex++;
+
+                const newRow = `
+        <tr class="competency-row" data-row-index="${competencyRowIndex}">
+            <td>
+                <input type="text" 
+                       name="competencies[${competencyRowIndex}][competency]" 
+                       class="form-control competency-name" 
+                       placeholder="Enter competency (e.g. Customer Focus, Teamwork, etc.)"
+                       required>
+            </td>
+            <td>
+                <select name="competencies[${competencyRowIndex}][rating]" 
+                        class="form-select competency-rating">
+                    <option value="">Select Rating</option>
+                    <option value="1">1 - Poor</option>
+                    <option value="2">2 - Fair</option>
+                    <option value="3">3 - Good</option>
+                    <option value="4">4 - Very Good</option>
+                    <option value="5">5 - Excellent</option>
+                </select>
+            </td>
+            <td>
+                <textarea name="competencies[${competencyRowIndex}][example]" 
+                    class="form-control competency-example" 
+                    rows="3"
+                    placeholder="Provide specific examples that reflect your roles..."></textarea>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
+                    <i class="bi bi-plus"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+
+                $('#competencies-body').append(newRow);
+                updateCompetencyActionButtons();
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-competency-row', function() {
+                if ($('#competencies-body .competency-row').length > 1) {
+                    $(this).closest('tr').remove();
+                    updateCompetencyActionButtons();
+                }
+            });
+
+            // Form Submission
+            $('#groupDForm').on('submit', function(e) {
+                e.preventDefault();
+
+                // Optional: Basic validation
+                let isValid = true;
+                $('#competencies-body tr').each(function() {
+                    const competency = $(this).find('.competency-name').val().trim();
+                    if (!competency) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error('Please enter competency name for all rows.', 'Validation Error');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Core Competencies saved successfully!', 'Success');
+                        } else {
+                            toastr.error(response.message ||
+                                'Failed to save core competencies.');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Something went wrong while saving core competencies.');
+                        console.error(xhr);
+                    }
+                });
+            });
+
             // groupEForm
             let challengeRowIndex = $('#challenges-body .challenge-row').length - 1;
 
@@ -911,22 +1024,69 @@
         </div>
 
         <!-- D. Core Competencies -->
-        <div id="professionalDevelopmentPlan" class="mb-3">
-            <form action="" method="POST" id="groupDForm">
-
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">D.</span> Core Competencies
-                        </span>
-                    </div>
-                    <div class="card-body">
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
-                    </div>
+        <div id="coreCompetenciesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">D.</span> Core Competencies
+                    </span>
                 </div>
-            </form>
+
+                <div class="card-body">
+                    <form id="groupDForm" method="POST" action="{{ route('performance.corecompetency.store') }}">
+                        @csrf
+                        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                        <table class="table table-bordered" id="competencies-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%">Competency</th>
+                                    <th style="width: 15%">Rating (1-5)</th>
+                                    <th style="width: 45%">Provide examples that reflect your roles</th>
+                                    <th style="width: 5%" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="competencies-body">
+                                <tr class="competency-row" data-row-index="0">
+                                    <td>
+                                        <input type="text" name="competencies[0][competency]"
+                                            class="form-control competency-name"
+                                            placeholder="Competency" required>
+                                    </td>
+                                    <td>
+                                        <select name="competencies[0][rating]" class="form-select competency-rating">
+                                            <option value="">Select Rating</option>
+                                            <option value="1">1 - Poor</option>
+                                            <option value="2">2 - Fair</option>
+                                            <option value="3">3 - Good</option>
+                                            <option value="4">4 - Very Good</option>
+                                            <option value="5">5 - Excellent</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <textarea name="competencies[0][example]" class="form-control competency-example" rows="1"
+                                            placeholder="Provide specific examples that reflect your roles..."></textarea>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row"
+                                            style="display: none;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- E. Challenges / Difficulties -->

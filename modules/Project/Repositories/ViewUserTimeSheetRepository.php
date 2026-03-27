@@ -44,6 +44,7 @@ class ViewUserTimeSheetRepository extends Repository
             ->where('approver_id', $approverId)
             ->where('status_id', config('constant.SUBMITTED_STATUS'))
             ->orderBy('year', 'desc')
+            ->orderBy('start_date', 'desc')
             ->get();
     }
 
@@ -52,6 +53,7 @@ class ViewUserTimeSheetRepository extends Repository
         return $this->model
             ->where('status_id', config('constant.APPROVED_STATUS'))
             ->orderBy('year', 'desc')
+            ->orderBy('start_date', 'desc')
             ->get();
     }
 

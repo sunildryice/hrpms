@@ -508,9 +508,10 @@ class PerformanceReviewController extends Controller
             $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
                 ->orderBy('position', 'desc')
                 ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals'))
+                ->with('performanceReview', $performanceReview)
+                ->with('challenges', $performanceReview->challenges ?? collect());
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
 
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -531,14 +532,11 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'));
+            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'))
+            ->with('performanceReview', $performanceReview)
+            ->with('challenges', $performanceReview->challenges ?? collect());
+            ;
         } else {
-            // $existingDevPlans = $performanceReview->answers()
-            //     ->whereHas('performanceReviewQuestion', function ($q) {
-            //         $q->where('group', 'E');
-            //     })
-            //     ->get();
-
             $existingDevPlans = $performanceReview->developmentPlans;
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,

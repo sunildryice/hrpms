@@ -308,6 +308,7 @@ class PerformanceReviewKeyGoalController extends Controller
 
             'devplans' => 'required|array|min:1',
             'devplans.*.plan' => 'required|string|max:500',
+            'devplans.*.activity' => 'nullable|string|max:1000',
         ]);
 
         DB::beginTransaction();
@@ -321,8 +322,8 @@ class PerformanceReviewKeyGoalController extends Controller
             foreach ($request->devplans as $item) {
                 PerformanceProfessionalDevelopmentPlan::create([
                     'performance_review_id' => $performanceReview->id,
-                    'objective' => trim($item['plan']), 
-                    'activity' => null,
+                    'objective' => trim($item['plan']),
+                    'activity' => trim($item['activity'] ?? null),
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ]);
@@ -353,12 +354,43 @@ class PerformanceReviewKeyGoalController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
 
             return response()->json([
                 'type' => 'error',
                 'message' => 'Failed to save',
+            ], 500);
+        }
+    }
+    public function updateDevPlan(Request $request)
+    {
+        $request->validate([
+            'devplans' => 'required|array',
+            'devplans.*.id' => 'required|integer|exists:performance_professional_development_plans,id',
+            'devplans.*.activity' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            foreach ($request->devplans as $item) {
+                if (empty($item['id']))
+                    continue;
+
+                PerformanceProfessionalDevelopmentPlan::where('id', $item['id'])
+                    ->update([
+                        'activity' => trim($item['activity'] ?? null),
+                        'updated_by' => auth()->id(),
+                    ]);
+            }
+
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Activities updated successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Failed to update activities.'
             ], 500);
         }
     }

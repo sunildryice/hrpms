@@ -114,8 +114,46 @@
                 });
             });
 
-            // ====================== D. Core Competencies ======================
-            let competencyRowIndex = 0;
+            // D. Core Competencies 
+            let competencyRowIndex = $('#competencies-body .competency-row').length - 1;
+
+            function buildCompetencyRow(idx, competency = '', rating = '', example = '', id = null) {
+                return `
+        <tr class="competency-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
+            <td>
+                <input type="text" 
+                       name="competencies[${idx}][competency]" 
+                       class="form-control competency-name" 
+                       value="${competency}"
+                       placeholder="Competency">
+                ${id ? `<input type="hidden" name="competencies[${idx}][id]" value="${id}">` : ''}
+            </td>
+            <td>
+                <select name="competencies[${idx}][rating]" class="form-select competency-rating">
+                    <option value="">Select Rating</option>
+                    <option value="1" ${rating == 1 ? 'selected' : ''}>1 - Poor</option>
+                    <option value="2" ${rating == 2 ? 'selected' : ''}>2 - Fair</option>
+                    <option value="3" ${rating == 3 ? 'selected' : ''}>3 - Good</option>
+                    <option value="4" ${rating == 4 ? 'selected' : ''}>4 - Very Good</option>
+                    <option value="5" ${rating == 5 ? 'selected' : ''}>5 - Excellent</option>
+                </select>
+            </td>
+            <td>
+                <textarea name="competencies[${idx}][example]" 
+                    class="form-control competency-example" 
+                    rows="1"
+                    placeholder="Provide examples that reflect your roles...">${example}</textarea>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
+                    <i class="bi bi-plus"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+            }
 
             function updateCompetencyActionButtons() {
                 const $rows = $('#competencies-body .competency-row');
@@ -137,45 +175,8 @@
             // Add new row
             $(document).on('click', '.add-competency-row', function() {
                 competencyRowIndex++;
-
-                const newRow = `
-        <tr class="competency-row" data-row-index="${competencyRowIndex}">
-            <td>
-                <input type="text" 
-                       name="competencies[${competencyRowIndex}][competency]" 
-                       class="form-control competency-name" 
-                       placeholder="Competency"
-                       required>
-            </td>
-            <td>
-                <select name="competencies[${competencyRowIndex}][rating]" 
-                        class="form-select competency-rating">
-                    <option value="">Select Rating</option>
-                    <option value="1">1 - Poor</option>
-                    <option value="2">2 - Fair</option>
-                    <option value="3">3 - Good</option>
-                    <option value="4">4 - Very Good</option>
-                    <option value="5">5 - Excellent</option>
-                </select>
-            </td>
-            <td>
-                <textarea name="competencies[${competencyRowIndex}][example]" 
-                    class="form-control competency-example" 
-                    rows="3"
-                    placeholder="Provide specific examples that reflect your roles..."></textarea>
-            </td>
-            <td class="text-center">
-                <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
-                    <i class="bi bi-plus"></i>
-                </button>
-                <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `;
-
-                $('#competencies-body').append(newRow);
+                const $newRow = $(buildCompetencyRow(competencyRowIndex));
+                $('#competencies-body').append($newRow);
                 updateCompetencyActionButtons();
             });
 
@@ -191,7 +192,6 @@
             $('#groupDForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Optional: Basic validation
                 let isValid = true;
                 $('#competencies-body tr').each(function() {
                     const competency = $(this).find('.competency-name').val().trim();
@@ -204,7 +204,7 @@
                 });
 
                 if (!isValid) {
-                    toastr.error('Please enter competency name for all rows.', 'Validation Error');
+                    toastr.error('Please enter competency for all rows.', 'Validation Error');
                     return;
                 }
 
@@ -1048,36 +1048,84 @@
                             </thead>
 
                             <tbody id="competencies-body">
-                                <tr class="competency-row" data-row-index="0">
-                                    <td>
-                                        <input type="text" name="competencies[0][competency]"
-                                            class="form-control competency-name"
-                                            placeholder="Competency" required>
-                                    </td>
-                                    <td>
-                                        <select name="competencies[0][rating]" class="form-select competency-rating">
-                                            <option value="">Select Rating</option>
-                                            <option value="1">1 - Poor</option>
-                                            <option value="2">2 - Fair</option>
-                                            <option value="3">3 - Good</option>
-                                            <option value="4">4 - Very Good</option>
-                                            <option value="5">5 - Excellent</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <textarea name="competencies[0][example]" class="form-control competency-example" rows="1"
-                                            placeholder="Provide specific examples that reflect your roles..."></textarea>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row"
-                                            style="display: none;">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
+                                @php
+                                    $existingCompetencies = $coreCompetencies ?? collect();
+                                @endphp
+
+                                @forelse ($existingCompetencies as $index => $comp)
+                                    <tr class="competency-row" data-row-index="{{ $index }}"
+                                        data-id="{{ $comp->id }}">
+                                        <td>
+                                            <input type="text" name="competencies[{{ $index }}][competency]"
+                                                class="form-control competency-name"
+                                                value="{{ $comp->competency ?? '' }}" placeholder="Competency">
+                                            <input type="hidden" name="competencies[{{ $index }}][id]"
+                                                value="{{ $comp->id }}">
+                                        </td>
+                                        <td>
+                                            <select name="competencies[{{ $index }}][rating]"
+                                                class="form-select competency-rating">
+                                                <option value="">Select Rating</option>
+                                                <option value="1" {{ $comp->rating == 1 ? 'selected' : '' }}>1 - Poor
+                                                </option>
+                                                <option value="2" {{ $comp->rating == 2 ? 'selected' : '' }}>2 - Fair
+                                                </option>
+                                                <option value="3" {{ $comp->rating == 3 ? 'selected' : '' }}>3 - Good
+                                                </option>
+                                                <option value="4" {{ $comp->rating == 4 ? 'selected' : '' }}>4 - Very
+                                                    Good</option>
+                                                <option value="5" {{ $comp->rating == 5 ? 'selected' : '' }}>5 -
+                                                    Excellent</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="competencies[{{ $index }}][example]" class="form-control competency-example" rows="1"
+                                                placeholder="Provide examples that reflect your roles...">{{ $comp->example ?? '' }}</textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-competency-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-competency-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="competency-row" data-row-index="0">
+                                        <td>
+                                            <input type="text" name="competencies[0][competency]"
+                                                class="form-control competency-name" placeholder="Competency">
+                                        </td>
+                                        <td>
+                                            <select name="competencies[0][rating]" class="form-select competency-rating">
+                                                <option value="">Select Rating</option>
+                                                <option value="1">1 - Poor</option>
+                                                <option value="2">2 - Fair</option>
+                                                <option value="3">3 - Good</option>
+                                                <option value="4">4 - Very Good</option>
+                                                <option value="5">5 - Excellent</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="competencies[0][example]" class="form-control competency-example" rows="1"
+                                                placeholder="Provide examples that reflect your roles..."></textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-competency-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-competency-row"
+                                                style="display: none;">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
 

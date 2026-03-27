@@ -47,7 +47,6 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('performance/devplan/save', [PerformanceReviewKeyGoalController::class, 'updateDevPlan'])->name('performance.devplan.update');
 
     Route::post('performance/challenge/store', [PerformanceReviewChallengeController::class, 'store'])->name('performance.challenge.store');
-    Route::post('performance/challenge/destroy', [PerformanceReviewChallengeController::class, 'destroy'])->name('performance.challenge.destroy');
 
     Route::post('performance/core-competency/store', [PerformanceReviewCoreCompetencyController::class, 'store'])->name('performance.corecompetency.store');
 

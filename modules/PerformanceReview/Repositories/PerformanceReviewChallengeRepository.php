@@ -4,7 +4,6 @@ namespace Modules\PerformanceReview\Repositories;
 
 use App\Repositories\Repository;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\QueryException;
 use Modules\PerformanceReview\Models\PerformanceReviewChallenge;
 
 class PerformanceReviewChallengeRepository extends Repository
@@ -14,59 +13,64 @@ class PerformanceReviewChallengeRepository extends Repository
         $this->model = $model;
     }
 
-    public function create($inputs)
+    /**
+     * Sync challenges (create/update/delete)
+     */
+    public function sync($reviewId, array $challenges = [])
     {
         DB::beginTransaction();
-        try {
-            $inputs['created_by'] = auth()->id();
-            $inputs['updated_by'] = auth()->id();
 
-            $challenge = $this->model->create($inputs);
+        try {
+            // Get existing IDs
+            $existingIds = $this->model
+                ->where('performance_review_id', $reviewId)
+                ->pluck('id')
+                ->toArray();
+
+            $submittedIds = [];
+
+            foreach ($challenges as $item) {
+                if (empty(trim($item['challenge'] ?? ''))) {
+                    continue;
+                }
+
+                if (!empty($item['id'])) {
+                    // Update existing
+                    $challenge = $this->model->find($item['id']);
+                    if ($challenge) {
+                        $challenge->update([
+                            'challenge'  => trim($item['challenge']),
+                            'result'     => trim($item['result'] ?? ''),
+                            'updated_by' => auth()->id(),
+                        ]);
+                        $submittedIds[] = $challenge->id;
+                    }
+                } else {
+                    // Create new
+                    $new = $this->model->create([
+                        'performance_review_id' => $reviewId,
+                        'challenge'             => trim($item['challenge']),
+                        'result'                => trim($item['result'] ?? ''),
+                        'created_by'            => auth()->id(),
+                        'updated_by'            => auth()->id(),
+                    ]);
+                    $submittedIds[] = $new->id;
+                }
+            }
+
+            // Delete removed rows
+            $idsToDelete = array_diff($existingIds, $submittedIds);
+            if (!empty($idsToDelete)) {
+                $this->model->whereIn('id', $idsToDelete)->delete();
+            }
 
             DB::commit();
-            return $challenge;
-        } catch (QueryException $e) {
-            DB::rollBack();
-            return false;
-        }
-    }
 
-    public function update($id, $inputs)
-    {
-        DB::beginTransaction();
-        try {
-            $challenge = $this->model->findOrFail($id);
-            $inputs['updated_by'] = auth()->id();
-
-            $challenge->update($inputs);
-
-            DB::commit();
-            return $challenge;
-        } catch (QueryException $e) {
-            DB::rollBack();
-            return false;
-        }
-    }
-
-    public function delete($id)
-    {
-        DB::beginTransaction();
-        try {
-            $challenge = $this->model->findOrFail($id);
-            $challenge->delete();
-
-            DB::commit();
             return true;
-        } catch (QueryException $e) {
-            DB::rollBack();
-            return false;
-        }
-    }
 
-    public function getByReview($performanceReviewId)
-    {
-        return $this->model
-            ->where('performance_review_id', $performanceReviewId)
-            ->get();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;   
+        }
     }
 }

@@ -503,6 +503,7 @@ class PerformanceReviewController extends Controller
                 return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
             }
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $newKeyGoals = $performanceReview->keyGoals()->where('type', 'current')->get();
 
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
@@ -515,6 +516,7 @@ class PerformanceReviewController extends Controller
             return view('PerformanceReview::AnnualPerformanceReview.create', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
+                'newKeyGoals' => $newKeyGoals,
                 'midTermReview' => $midTermReview,
                 'keygoals' => $keygoals,
                 'performanceReview' => $performanceReview,

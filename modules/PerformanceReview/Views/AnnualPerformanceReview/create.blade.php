@@ -9,38 +9,102 @@
         let isGroupHFormSaved = false;
         let isGroupJFormSaved = false;
 
-        $(document).ready(function() {
-
+        $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
+            const performanceReview = @json($performanceReview);
 
-            let previousLength = 0;
-            const handleInput = (event) => {
-                const bullet = "\u2022";
-                const newLength = event.target.value.length;
-                const characterCode = event.target.value.substr(-1).charCodeAt(0);
+            // ====================== KEY GOAL ADD BUTTON ======================
+            $('#add-key-goal').click(function(e) {
+                e.preventDefault();
 
-                if (newLength > previousLength) {
-                    if (characterCode === 10) {
-                        event.target.value = `${event.target.value}${bullet} `;
-                    } else if (newLength === 1) {
-                        event.target.value = `${bullet} ${event.target.value}`;
-                    }
-                }
+                $('#keyGoalForm')[0].reset();
+                $('#key_goal_id').val('');
+                $('#keyGoalModalTitle').text('Add New Key Goal');
 
-                previousLength = newLength;
-            }
-
-            $('input[type="checkbox"]').on('change', function() {
-                $('input[type="checkbox"]').not(this).prop('checked', false);
+                $('#keyGoalModal').modal('show');
             });
 
+            // Edit Key Goal (for additional/new key goals)
+            $('#keygoal-body').on('click', '.edit-key-goal', function(e) {
+                e.preventDefault();
 
+                let id = $(this).data('id');
+                let row = $(this).closest('tr');
+                let title = row.find('td:first-child span').first().text().trim();
+                let output = row.find('td:nth-child(2)').text().trim();
+
+                $('#key_goal_id').val(id);
+                $('#title').val(title);
+                $('#output_deliverables').val(output);
+
+                $('#keyGoalModalTitle').text('Edit Key Goal');
+                $('#keyGoalModal').modal('show');
+            });
+
+            // Delete Key Goal
+            $('#keygoal-body').on('click', '.delete-key-goal', function(e) {
+                e.preventDefault();
+
+                let id = $(this).data('id');
+                let url = $(this).data('href');
+
+                ajaxSweetAlert(url, 'POST', {
+                    keyGoalId: id
+                }, 'Delete Key Goal', function(res) {
+                    toastr.success(res.message || 'Key goal deleted successfully');
+                    $('.preloader').show();
+                    location.reload();
+                });
+            });
+
+            // Key Goal Form Submit (Add/Edit)
+            $('#keyGoalForm').submit(function(e) {
+                e.preventDefault();
+
+                let id = $('#key_goal_id').val();
+                let isEdit = !!id;
+
+                let url = isEdit ?
+                    "{{ route('performance.keygoal.update') }}" :
+                    "{{ route('performance.keygoal.store') }}";
+
+                let payload = {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: performanceReview.id,
+                    title: $('#title').val().trim(),
+                    output_deliverables: $('#output_deliverables').val().trim(),
+                    type: 'current'
+                };
+
+                if (isEdit) {
+                    payload.key_goal_id = id;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: payload,
+                    success: function(res) {
+                        toastr.success(res.message || 'Key Goal saved successfully');
+                        $('#keyGoalModal').modal('hide');
+                        $('.preloader').show();
+                        location.reload();
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        toastr.error('Something went wrong while saving key goal');
+                    }
+                });
+            });
+
+            // ====================== GROUP B - KEY GOALS FORM ======================
             $('#groupBForm').on('submit', function(e) {
                 e.preventDefault();
 
+                let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
                 let isValid = true;
 
-                $('#keyGoalTable tbody tr').each(function() {
+                rows.each(function() {
                     const majorActivities = $(this).find('.major-activities').val().trim();
                     const status = $(this).find('.status-dropdown').val();
 
@@ -58,18 +122,29 @@
                     return;
                 }
 
-                // Save each row individually
-                $('#keyGoalTable tbody tr').each(function() {
-                    const keygoalId = $(this).data('keygoal-id');
-                    const majorActivities = $(this).find('.major-activities').val();
-                    const status = $(this).find('.status-dropdown').val();
-                    const remarks = $(this).find('.remarks-employee').val();
+                // Update each key goal via AJAX
+                rows.each(function() {
+                    let row = $(this);
+                    let id = row.data('keygoal-id') ||
+                        row.find('textarea, select').first().attr('name')?.split('_').pop();
 
-                    updateKeyGoal(keygoalId, '', majorActivities, '', 'current', status, remarks);
+                    if (!id || isNaN(id)) return;
+
+                    let majorActivities = row.find(`[name="major_activities_employee_${id}"]`)
+                        .val() || '';
+                    let status = row.find(`[name="status_${id}"]`).val() || '';
+                    let remarks = row.find(`[name="remarks_employee_${id}"]`).val() || '';
+                    let title = row.find('td:first-child').text().trim() || '';
+                    let output = row.find('td:nth-child(2)').text().trim() || '';
+
+                    updateKeyGoal(id, title, majorActivities, '', 'current', status, remarks,
+                        output);
                 });
 
-                isGroupCFormSaved = true;
-                toastr.success('Key Goals saved successfully!', 'Success');
+                isGroupBFormSaved = true; // Note: You had isGroupCFormSaved here before — fixed
+                toastr.success('Key Goals saved successfully', 'Success', {
+                    timeOut: 1000
+                });
             });
 
             $('#groupCForm').on('submit', function(e) {
@@ -961,61 +1036,115 @@
             <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
                 <div class="card">
                     <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">B.</span>
-                            Key Goals Review
+                        <span class="card-title d-flex justify-content-between">
+                            <span class="fw-bold">B.
+                                Key Goals Review
+                            </span>
+                            <button class="btn btn-sm btn-primary" id="add-key-goal"
+                                data-href="{{ route('performance.keygoal.store') }}"><i class="bi bi-plus"></i>Add
+                                New</button>
                         </span>
                     </div>
                     <div class="card-body">
-                        {{-- Annual Review --}}
-                        <div class="card">
-                            <div class="card-header fw-bold">Annual Review (Employee Input)</div>
-                            <div class="card-body">
-                                <table class="table" id="keyGoalTable">
-                                    <thead>
-                                        <tr>
-                                            <th rowspan="2" style="width: 18%">Objective</th>
-                                            <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                            <th rowspan="2" style="width: 22%">Major Activities</th>
-                                            <th colspan="2">Achievement against output / deliverable</th>
-                                        </tr>
-                                        <tr>
-                                            <th style="width: 15%">Status</th>
-                                            <th style="width: 25%">Remarks / Comments</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($keygoals as $keygoal)
-                                            <tr data-keygoal-id="{{ $keygoal->id }}">
-                                                <td>{{ $keygoal->title }}</td>
-                                                <td>{{ $keygoal->output_deliverables }}</td>
-                                                <td>
-                                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
-                                                </td>
-                                                <td>
-                                                    <select name="status_{{ $keygoal->id }}"
-                                                        class="form-select status-dropdown">
-                                                        <option value="">Select Status</option>
-                                                        @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
-                                                            <option value="{{ $status->value }}"
-                                                                {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
-                                                                {{ $status->label() }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </td>
-                                                <td>
-                                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
-                            </div>
-                        </div>
+                        <table class="table" id="keyGoalTable">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 18%">Objective</th>
+                                    <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                    <th rowspan="2" style="width: 22%">Major Activities</th>
+                                    <th colspan="2">Achievement against output / deliverable</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%">Status</th>
+                                    <th style="width: 25%">Remarks / Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($keygoals as $keygoal)
+                                    <tr data-keygoal-id="{{ $keygoal->id }}">
+                                        <td>{{ $keygoal->title }}</td>
+                                        <td>{{ $keygoal->output_deliverables }}</td>
+                                        <td>
+                                            <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                        </td>
+                                        <td>
+                                            <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
+                                                <option value="">Select Status</option>
+                                                @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
+                                                    <option value="{{ $status->value }}"
+                                                        {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
+                                                        {{ $status->label() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+
+                        <table id="new-keyGoalTable"
+                            style="width: 100%;@if (!$newKeyGoals->count()) display:none @endif">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 18%">(Additional Objective)</th>
+                                    <th rowspan="2" style="width: 15%">(Additional Output / Deliverable)</th>
+                                    <th rowspan="2" style="width: 22%">Major Activities</th>
+                                    <th colspan="2">Achievement against output / deliverable</th>
+                                    <th rowspan="2" style="width: 22%">Action</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%">Status</th>
+                                    <th style="width: 25%">Remarks / Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keygoal-body">
+                                @foreach ($newKeyGoals as $keygoal)
+                                    <tr>
+                                        <td>
+                                            <span style="width: 100%">{{ $keygoal->title }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $keygoal->output_deliverables }}</td>
+                                        <td>
+                                            <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                        </td>
+                                        <td>
+                                            <select name="status_{{ $keygoal->id }}"
+                                                class="form-select status-dropdown">
+                                                <option value="">Select Status</option>
+                                                @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
+                                                    <option value="{{ $status->value }}"
+                                                        {{ $keygoal->status?->value === $status->value ? 'selected' : '' }}>
+                                                        {{ $status->label() }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1">
+                                                <a class="edit-key-goal btn btn-outline-primary btn-sm" href="#"
+                                                    data-href="{{ route('performance.keygoal.update') }}"
+                                                    data-title="{{ $keygoal->title }}" data-id="{{ $keygoal->id }}"u><i
+                                                        class="bi bi-pencil-square"></i></a>
+                                                <a class="delete-key-goal btn btn-outline-danger btn-sm" href="#"
+                                                    data-href="{{ route('performance.keygoal.destroy') }}"
+                                                    data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
                     </div>
                 </div>
             </form>
@@ -1353,5 +1482,48 @@
         </div>
         <br><br>
     </section>
+
+    <!-- Key Goal Modal -->
+    <div class="modal fade" id="keyGoalModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fs-6" id="keyGoalModalTitle">Add Key Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <form id="keyGoalForm">
+                    <div class="modal-body">
+
+                        <input type="hidden" name="key_goal_id" id="key_goal_id">
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <label class="form-label fw-bold">Objective</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" name="title" id="title" required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <label class="form-label fw-bold">Output / Deliverable</label>
+                            </div>
+                            <div class="col-lg-9">
+                                <textarea class="form-control" name="output_deliverables" id="output_deliverables" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                    @csrf
+                </form>
+            </div>
+        </div>
+    </div>
 
 @stop

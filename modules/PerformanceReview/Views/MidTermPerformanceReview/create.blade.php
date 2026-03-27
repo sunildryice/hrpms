@@ -14,6 +14,7 @@
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
 
+            // KEY GOAL ADD BUTTON 
             $('#add-key-goal').click(function(e) {
                 e.preventDefault();
 

@@ -14,7 +14,7 @@
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
 
-            // ====================== KEY GOAL ADD BUTTON ======================
+            // KEY GOAL ADD BUTTON 
             $('#add-key-goal').click(function(e) {
                 e.preventDefault();
 
@@ -98,7 +98,7 @@
                 });
             });
 
-            // ====================== GROUP B - KEY GOALS FORM ======================
+            // GROUP B - KEY GOALS FORM 
             $('#groupBForm').on('submit', function(e) {
                 e.preventDefault();
 
@@ -142,7 +142,7 @@
                         output);
                 });
 
-                isGroupBFormSaved = true; // Note: You had isGroupCFormSaved here before — fixed
+                isGroupBFormSaved = true; 
                 toastr.success('Key Goals saved successfully', 'Success', {
                     timeOut: 1000
                 });

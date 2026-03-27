@@ -19,11 +19,10 @@ class ProjectGanttChartController
     public function index(Request $request, $id)
     {
         $project = $this->projectRepository->find($id);
-        $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
         $projectActivity = $project->activities;
         $authUser = auth()->user();
 
-        return view('Project::ProjectGanttChart.index', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
+        return view('Project::ProjectGanttChart.index', compact('project', 'stages', 'authUser', 'projectActivity'));
     }
 }

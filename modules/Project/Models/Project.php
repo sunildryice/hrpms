@@ -125,4 +125,14 @@ class Project extends Model
     {
         return $this->activated_at ? 'Active' : 'Inactive';
     }
+
+    public function getFocalPersonNameAttribute()
+    {
+        return $this->focalPerson ? $this->focalPerson->getFullName() : '';
+    }
+
+    public function getTeamLeadNameAttribute()
+    {
+        return $this->teamLead ? $this->teamLead->getFullName() : '';
+    }
 }

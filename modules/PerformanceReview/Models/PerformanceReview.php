@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\Status;
+use Modules\PerformanceReview\Models\PerformanceReviewCoreCompetency;
 use Modules\Privilege\Models\User;
 
 class PerformanceReview extends Model
@@ -79,6 +80,11 @@ class PerformanceReview extends Model
     public function challenges()
     {
         return $this->hasMany(PerformanceReviewChallenge::class, 'performance_review_id');
+    }
+
+    public function coreCompetencies()
+    {
+        return $this->hasMany(PerformanceReviewCoreCompetency::class, 'performance_review_id');
     }
 
     public function logs()

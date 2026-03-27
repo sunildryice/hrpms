@@ -114,6 +114,119 @@
                 });
             });
 
+            // D. Core Competencies 
+            let competencyRowIndex = $('#competencies-body .competency-row').length - 1;
+
+            function buildCompetencyRow(idx, competency = '', rating = '', example = '', id = null) {
+                return `
+        <tr class="competency-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
+            <td>
+                <input type="text" 
+                       name="competencies[${idx}][competency]" 
+                       class="form-control competency-name" 
+                       value="${competency}"
+                       placeholder="Competency">
+                ${id ? `<input type="hidden" name="competencies[${idx}][id]" value="${id}">` : ''}
+            </td>
+            <td>
+                <select name="competencies[${idx}][rating]" class="form-select competency-rating">
+                    <option value="">Select Rating</option>
+                    <option value="1" ${rating == 1 ? 'selected' : ''}>1 - Poor</option>
+                    <option value="2" ${rating == 2 ? 'selected' : ''}>2 - Fair</option>
+                    <option value="3" ${rating == 3 ? 'selected' : ''}>3 - Good</option>
+                    <option value="4" ${rating == 4 ? 'selected' : ''}>4 - Very Good</option>
+                    <option value="5" ${rating == 5 ? 'selected' : ''}>5 - Excellent</option>
+                </select>
+            </td>
+            <td>
+                <textarea name="competencies[${idx}][example]" 
+                    class="form-control competency-example" 
+                    rows="1"
+                    placeholder="Provide examples that reflect your roles...">${example}</textarea>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-primary btn-sm add-competency-row">
+                    <i class="bi bi-plus"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-competency-row">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+            }
+
+            function updateCompetencyActionButtons() {
+                const $rows = $('#competencies-body .competency-row');
+
+                $rows.find('.add-competency-row').hide();
+                $rows.find('.remove-competency-row').show();
+
+                if ($rows.length === 1) {
+                    $rows.find('.remove-competency-row').hide();
+                }
+
+                $rows.last().find('.add-competency-row').show();
+            }
+
+            $(function() {
+                updateCompetencyActionButtons();
+            });
+
+            // Add new row
+            $(document).on('click', '.add-competency-row', function() {
+                competencyRowIndex++;
+                const $newRow = $(buildCompetencyRow(competencyRowIndex));
+                $('#competencies-body').append($newRow);
+                updateCompetencyActionButtons();
+            });
+
+            // Remove row
+            $(document).on('click', '.remove-competency-row', function() {
+                if ($('#competencies-body .competency-row').length > 1) {
+                    $(this).closest('tr').remove();
+                    updateCompetencyActionButtons();
+                }
+            });
+
+            // Form Submission
+            $('#groupDForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let isValid = true;
+                $('#competencies-body tr').each(function() {
+                    const competency = $(this).find('.competency-name').val().trim();
+                    if (!competency) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error('Please enter competency for all rows.', 'Validation Error');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Core Competencies saved successfully!', 'Success');
+                        } else {
+                            toastr.error(response.message ||
+                                'Failed to save core competencies.');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Something went wrong while saving core competencies.');
+                        console.error(xhr);
+                    }
+                });
+            });
+
             // groupEForm
             let challengeRowIndex = $('#challenges-body .challenge-row').length - 1;
 
@@ -619,19 +732,73 @@
         }
 
         function validateForm() {
-            let groupBData = $('#groupBForm').serializeArray();
-            let groupCData = $('#groupCForm').serializeArray();
+            let isGroupBFormSaved = true;
+            let isGroupCFormSaved = true;
+            let isGroupDFormSaved = true;
+            let isGroupEFormSaved = true;
+            let isGroupHFormSaved = true;
+            let isGroupJFormSaved = true;
+
+            // B. Key Goals Review
+            $('#keyGoalTable tbody tr').each(function() {
+                const majorActivities = $(this).find('.major-activities').val().trim();
+                const status = $(this).find('.status-dropdown').val();
+                if (!majorActivities || !status) {
+                    isGroupBFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // C. Professional Development Plan
+            $('#devplan-table tbody tr').each(function() {
+                const activity = $(this).find('.devplan-activity').val().trim();
+                if (!activity) {
+                    isGroupCFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // D. Core Competencies
+            $('#competencies-body tr.competency-row').each(function() {
+                const competency = $(this).find('.competency-name').val().trim();
+                if (!competency) {
+                    isGroupDFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // E. Challenges / Difficulties
+            $('#challenges-body tr.challenge-row').each(function() {
+                const challenge = $(this).find('textarea[name*="challenge"]').first().val().trim();
+                const result = $(this).find('textarea[name*="result"]').first().val().trim();
+                if (!challenge || !result) {
+                    isGroupEFormSaved = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            // H & J already use your existing logic
             let groupHData = $('#groupHForm').serializeArray();
-            let groupJData = $('#groupJForm').serializeArray();
-            isGroupBFormSaved = !checkEmpty(groupBData);
-            isGroupCFormSaved = !checkEmpty(groupCData);
             isGroupHFormSaved = !checkEmpty(groupHData);
+
+            let groupJData = $('#groupJForm').serializeArray();
             isGroupJFormSaved = !checkEmpty(groupJData);
-            if (isGroupBFormSaved && isGroupCFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+
+            if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
+                isGroupEFormSaved && isGroupHFormSaved && isGroupJFormSaved) {
+
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {
-                toastr.warning('Please save the forms.', 'Warning', {
-                    timeOut: 2000
+                toastr.warning('Please save all sections properly before submitting.', 'Warning', {
+                    timeOut: 2500
                 });
             }
         }
@@ -911,22 +1078,117 @@
         </div>
 
         <!-- D. Core Competencies -->
-        <div id="professionalDevelopmentPlan" class="mb-3">
-            <form action="" method="POST" id="groupDForm">
-
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">D.</span> Core Competencies
-                        </span>
-                    </div>
-                    <div class="card-body">
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
-                    </div>
+        <div id="coreCompetenciesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">D.</span> Core Competencies
+                    </span>
                 </div>
-            </form>
+
+                <div class="card-body">
+                    <form id="groupDForm" method="POST" action="{{ route('performance.corecompetency.store') }}">
+                        @csrf
+                        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                        <table class="table table-bordered" id="competencies-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 35%">Competency</th>
+                                    <th style="width: 15%">Rating (1-5)</th>
+                                    <th style="width: 45%">Provide examples that reflect your roles</th>
+                                    <th style="width: 5%" class="text-center">Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="competencies-body">
+                                @php
+                                    $existingCompetencies = $coreCompetencies ?? collect();
+                                @endphp
+
+                                @forelse ($existingCompetencies as $index => $comp)
+                                    <tr class="competency-row" data-row-index="{{ $index }}"
+                                        data-id="{{ $comp->id }}">
+                                        <td>
+                                            <input type="text" name="competencies[{{ $index }}][competency]"
+                                                class="form-control competency-name"
+                                                value="{{ $comp->competency ?? '' }}" placeholder="Competency">
+                                            <input type="hidden" name="competencies[{{ $index }}][id]"
+                                                value="{{ $comp->id }}">
+                                        </td>
+                                        <td>
+                                            <select name="competencies[{{ $index }}][rating]"
+                                                class="form-select competency-rating">
+                                                <option value="">Select Rating</option>
+                                                <option value="1" {{ $comp->rating == 1 ? 'selected' : '' }}>1 - Poor
+                                                </option>
+                                                <option value="2" {{ $comp->rating == 2 ? 'selected' : '' }}>2 - Fair
+                                                </option>
+                                                <option value="3" {{ $comp->rating == 3 ? 'selected' : '' }}>3 - Good
+                                                </option>
+                                                <option value="4" {{ $comp->rating == 4 ? 'selected' : '' }}>4 - Very
+                                                    Good</option>
+                                                <option value="5" {{ $comp->rating == 5 ? 'selected' : '' }}>5 -
+                                                    Excellent</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="competencies[{{ $index }}][example]" class="form-control competency-example" rows="1"
+                                                placeholder="Provide examples that reflect your roles...">{{ $comp->example ?? '' }}</textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-competency-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-competency-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr class="competency-row" data-row-index="0">
+                                        <td>
+                                            <input type="text" name="competencies[0][competency]"
+                                                class="form-control competency-name" placeholder="Competency">
+                                        </td>
+                                        <td>
+                                            <select name="competencies[0][rating]" class="form-select competency-rating">
+                                                <option value="">Select Rating</option>
+                                                <option value="1">1 - Poor</option>
+                                                <option value="2">2 - Fair</option>
+                                                <option value="3">3 - Good</option>
+                                                <option value="4">4 - Very Good</option>
+                                                <option value="5">5 - Excellent</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <textarea name="competencies[0][example]" class="form-control competency-example" rows="1"
+                                                placeholder="Provide examples that reflect your roles..."></textarea>
+                                        </td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                class="btn btn-outline-primary btn-sm add-competency-row">
+                                                <i class="bi bi-plus"></i>
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-outline-danger btn-sm remove-competency-row"
+                                                style="display: none;">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+
+                        <div class="text-end mt-3">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- E. Challenges / Difficulties -->

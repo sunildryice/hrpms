@@ -18,7 +18,8 @@ class PerformanceReviewApproveController extends Controller
         protected PerformanceReviewRepository $performanceReview,
         protected PerformanceReviewLog $performanceReviewLog,
         protected PerformanceReviewQuestion $performanceReviewQuestion
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -47,11 +48,11 @@ class PerformanceReviewApproveController extends Controller
                     return $performanceReview->getReviewToDate();
                 })
                 ->addColumn('status', function ($performanceReview) {
-                    return '<span class="'.$performanceReview->getStatusClass().'">'.$performanceReview->getStatus().'</span>';
+                    return '<span class="' . $performanceReview->getStatusClass() . '">' . $performanceReview->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($performanceReview) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
-                    $btn .= route('performance.approve.create', [$performanceReview->id]).'" rel="tooltip" title="Fill/Approve Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
+                    $btn .= route('performance.approve.create', [$performanceReview->id]) . '" rel="tooltip" title="Fill/Approve Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
 
                     return $btn;
                 })
@@ -104,7 +105,15 @@ class PerformanceReviewApproveController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::Approve.AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::Approve.AnnualPerformanceReview.create', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
 
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -117,7 +126,16 @@ class PerformanceReviewApproveController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::Approve.MidTermPerformanceReview.create', $record, compact('keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::Approve.MidTermPerformanceReview.create', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
         } else {
             return view('PerformanceReview::Approve.KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,

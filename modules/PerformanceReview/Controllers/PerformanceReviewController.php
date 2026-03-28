@@ -646,4 +646,30 @@ class PerformanceReviewController extends Controller
             'message' => 'Employee comments saved successfully.'
         ]);
     }
+
+    /**
+     * Store Line Manager's Result and Comments (Similar to employee comments)
+     */
+    public function storeManagerResultComments(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'result' => 'nullable|string',
+            'comments' => 'nullable|string',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('review', $performanceReview);   
+
+        $performanceReview->update([
+            'result' => $request->result,
+            'comments' => $request->comments,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Result and Comments saved successfully.'
+        ]);
+    }
 }

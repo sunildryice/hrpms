@@ -259,6 +259,27 @@
             </div>
         </div>
 
+        <!-- G. Line Manager Result and Comments -->
+        <div id="managerResultComments" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">G.</span> Result and Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12 mb-2">
+                        <label class="form-label fw-bold">Result</label>
+                        <p class="mb-0">{{ $performanceReview->result ?: '—' }}</p>
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Comments</label>
+                        <p class="mb-0">{{ $performanceReview->comments ?: '—' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </section>
 
 

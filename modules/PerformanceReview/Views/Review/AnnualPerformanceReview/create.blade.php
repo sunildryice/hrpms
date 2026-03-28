@@ -47,15 +47,54 @@
                 }
             });
 
-            function validateForm() {
-                if (isGroupCFormSaved && isGroupDFormSaved && isGroupEFormSaved && isGroupFFormSaved &&
-                    isGroupIFormSaved) {
-                    window.location.href = "{{ route('performance.review.store') }}";
-                } else {
-                    toastr.warning('Please save the forms.', 'Warning', {
-                        timeOut: 2000
-                    });
+            // GROUP G - LINE MANAGER RESULT AND COMMENTS
+            $('#groupGForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let result = $('#result').val().trim();
+                let comments = $('#comments').val().trim();
+
+                if (!result || !comments) {
+                    toastr.error('Please provide both Result and Comments before saving.',
+                        'Validation Error');
+                    return;
                 }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.manager.result.store') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        performance_review_id: "{{ $performanceReview->id }}",
+                        result: result,
+                        comments: comments
+                    },
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Result and Comments saved successfully!',
+                                'Success');
+                        } else {
+                            toastr.error(response.message ||
+                                'Failed to save result and comments.');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                        toastr.error('Something went wrong while saving result and comments.');
+                    }
+                });
+            });
+
+            // validateForm()
+            const managerResult = $('#result').val().trim();
+            const managerComments = $('#comments').val().trim();
+
+            if (!managerResult && !managerComments) {
+                isGroupGFormSaved = false;
+                $('#result, #comments').addClass('is-invalid');
+                toastr.error('Please fill Result and Comments (Section G) before submitting.', 'Validation Error');
+            } else {
+                $('#result, #comments').removeClass('is-invalid');
             }
         });
     </script>
@@ -279,6 +318,40 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- G. Line Manager Result and Comments -->
+        <div id="managerResultComments" class="mb-3">
+            <form id="groupGForm" method="POST">
+                @csrf
+                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">G.</span> Result and Comments
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Result</label>
+                            <textarea name="result" id="result" class="form-control" rows="4"
+                                placeholder="Summarize the overall performance result...">{{ old('result', $performanceReview->result ?? '') }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comments</label>
+                            <textarea name="comments" id="comments" class="form-control" rows="4"
+                                placeholder="Provide detailed comments and feedback...">{{ old('comments', $performanceReview->comments ?? '') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-sm btn-outline-primary" id="save-result-comments">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
     </section>

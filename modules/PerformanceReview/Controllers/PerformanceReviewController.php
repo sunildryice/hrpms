@@ -237,9 +237,6 @@ class PerformanceReviewController extends Controller
             if (is_null($keyGoalReview)) {
                 return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
             }
-            // if (is_null($midTermReview)) {
-            //     return redirect()->back()->withWarningMessage('Mid-Term Performance Review not filled yet.');
-            // }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             if ($midTermReview) {
@@ -251,7 +248,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::AnnualPerformanceReview.show', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::AnnualPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'midTermReview' => $midTermReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
 
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -270,7 +275,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.show', $record, compact('keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::MidTermPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
         } else {
             return view('PerformanceReview::KeyGoalsReview.show', [
                 'performanceReview' => $performanceReview,
@@ -622,7 +635,7 @@ class PerformanceReviewController extends Controller
             'employee_comments' => 'required|string'
         ]);
         $performanceReview = $this->performanceReview->find($request->performance_review_id);
-        $this->authorize('employeeFill', $performanceReview); 
+        $this->authorize('employeeFill', $performanceReview);
 
         $performanceReview->update([
             'employee_comments' => $request->employee_comments

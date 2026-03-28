@@ -206,21 +206,19 @@
 
         <!-- F. Employee Comments -->
         <div id="employeeComments" class="mb-3">
-            @foreach ($groupHQuestions as $question)
-                <div class="card mb-3">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">F.</span>
-                            Employee Comments
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="col-md-12' }}">
-                            <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
-                        </div>
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">F.</span>
+                        Employee Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
                     </div>
                 </div>
-            @endforeach
+            </div>
         </div>
 
     </section>

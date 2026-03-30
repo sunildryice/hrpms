@@ -32,6 +32,7 @@ class UpdateRequest extends FormRequest
             'total_travel_days' => 'nullable|integer|min:1',
 
             'itinerary.itinerary_id.*' => 'required|integer|exists:travel_request_day_itineraries,id',
+            'itinerary.comprehensive_activity_description.*' => 'required|string',
             'itinerary.status.*' => 'required|in:' . implode(',', array_column(TravelReportStatus::cases(), 'value')),
             // 'itinerary.completed_tasks.*' => 'nullable|string',
             'itinerary.remarks.*' => 'nullable|string',
@@ -47,6 +48,7 @@ class UpdateRequest extends FormRequest
             'recommendation.activity_date.*.required' => 'Date is required for each day.',
             'recommendation.activity_date.*.date' => 'Please enter a valid date.',
             'recommendation.completed_tasks.*.required' => 'Please describe the activities completed on this day.',
+            'itinerary.comprehensive_activity_description.*.required' => 'Comprehensive activity description is required for each day.',
         ];
     }
 }

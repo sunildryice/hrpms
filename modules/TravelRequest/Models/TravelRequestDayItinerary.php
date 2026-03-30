@@ -29,6 +29,7 @@ class TravelRequestDayItinerary extends Model
         'activity_id',
         'date',
         'planned_activities',
+        'comprehensive_activity_description',
         'accommodation',
         'air_ticket',
         'departure_place',

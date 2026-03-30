@@ -94,6 +94,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'key_goal_id' => 'required|exists:performance_review_key_goals,id',
             'title' => 'nullable|string',
             'major_activities_employee' => 'nullable|string',
+            'description_supervisor' => 'nullable|string',
             'description_supervisor_annual' => 'nullable|string',
             'status' => 'nullable|in:not_completed,partially_completed,fully_completed',
             'remarks_employee' => 'nullable|string',
@@ -106,6 +107,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $keyGoal->update([
             'title' => $request->title ?? $keyGoal->title,
             'major_activities_employee' => $request->major_activities_employee ?? $keyGoal->major_activities_employee,
+            'description_supervisor' => $request->description_supervisor ?? $keyGoal->description_supervisor,
             'description_supervisor_annual' => $request->description_supervisor_annual ?? $keyGoal->description_supervisor_annual,
             'output_deliverables' => $request->output_deliverables ?? $keyGoal->output_deliverables,
             'status' => $request->status ?? $keyGoal->status,

@@ -24,13 +24,13 @@
                             },
                         },
                     },
-                    resignation_date: {
-                        validators: {
-                            notEmpty: {
-                                message: 'Resignation Date is required',
-                            },
-                        },
-                    },
+                    // resignation_date: {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'Resignation Date is required',
+                    //         },
+                    //     },
+                    // },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-lg-9">
                                     <input type="text" class="form-control datepicker" name="resignation_date"
-                                        value="{{ old('resignation_date') ?: $exitHandOverNote->resignation_date->format('Y-m-d') }}"
+                                        value="{{ old('resignation_date') ?: $exitHandOverNote->resignation_date?->format('Y-m-d') }}"
                                         placeholder="Resignation Date" readonly>
                                 </div>
                             </div>

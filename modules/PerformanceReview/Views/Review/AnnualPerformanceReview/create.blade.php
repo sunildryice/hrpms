@@ -146,18 +146,42 @@
                 });
             });
 
-            // validateForm()
-            const managerResult = $('#result').val().trim();
-            const managerComments = $('#comments').val().trim();
+        });
 
-            if (!managerResult && !managerComments) {
-                isGroupGFormSaved = false;
+        // SUBMIT VALIDATION
+        function validate() {
+            let isGroupBValid = true;
+            let isGroupGValid = true;
+
+            $('#keyGoalTable tbody tr').each(function() {
+                const supervisorComment = $(this).find('.description-supervisor').val().trim();
+                if (!supervisorComment) {
+                    isGroupBValid = false;
+                    $(this).addClass('table-danger');
+                } else {
+                    $(this).removeClass('table-danger');
+                }
+            });
+
+            const resultVal = $('#result').val().trim();
+            const commentsVal = $('#comments').val().trim();
+
+            if (!resultVal || !commentsVal) {
+                isGroupGValid = false;
                 $('#result, #comments').addClass('is-invalid');
-                toastr.error('Please fill Result and Comments (Section G) before submitting.', 'Validation Error');
             } else {
                 $('#result, #comments').removeClass('is-invalid');
             }
-        });
+
+            if (isGroupBValid && isGroupGValid) {
+                $('#performanceReviewProcessForm').submit();
+            } else {
+                toastr.warning('Please fill and save all required sections (B and G) before submitting.',
+                    'Validation Warning', {
+                        timeOut: 3000
+                    });
+            }
+        }
     </script>
 @endsection
 
@@ -436,8 +460,7 @@
                 Performance Review Process
             </div>
             <form action="{{ route('performance.review.store') }}" id="performanceReviewProcessForm" method="post"
-                enctype="multipart/form-data" autocomplete="off"
-                onsubmit="return confirm('Have you saved all the forms? Are you sure to submit?');">
+                enctype="multipart/form-data" autocomplete="off">
                 <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
                 <div class="card-body">
                     <div class="row">
@@ -556,7 +579,11 @@
                     </div>
                 </div>
                 <div class="gap-2 border-0 card-footer justify-content-end d-flex">
-                    <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                    {{-- <button type="submit" onclick="validate()" name="btn" value="submit"
+                        class="btn btn-success btn-sm">
+                        Submit
+                    </button> --}}
+                    <button type="button" onclick="validate()" class="btn btn-success btn-sm">
                         Submit
                     </button>
                     <a href="{!! route('performance.review.index') !!}" class="btn btn-danger btn-sm">Cancel</a>

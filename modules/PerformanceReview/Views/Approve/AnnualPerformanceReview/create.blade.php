@@ -81,14 +81,15 @@
                     <table class="table table-bordered" id="keyGoalTable">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="width: 18%">Objective</th>
+                                <th rowspan="2" style="width: 10%">Objective</th>
                                 <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                <th rowspan="2" style="width: 15%">Major Activities</th>
                                 <th colspan="2">Achievement against output / deliverable</th>
+                                <th rowspan="2" style="width: 22%">Line Manager Comments</th>
                             </tr>
                             <tr>
-                                <th style="width: 15%">Status</th>
-                                <th style="width: 25%">Remarks / Comments</th>
+                                <th style="width: 10%">Status</th>
+                                <th style="width: 15%">Remarks / Comments</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -103,6 +104,7 @@
                                         </span>
                                     </td>
                                     <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                    <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

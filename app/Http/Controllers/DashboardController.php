@@ -16,9 +16,6 @@ use Modules\Master\Repositories\OfficeRepository;
 use Modules\MeetingHallBooking\Repositories\MeetingHallBookingRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Modules\Project\Repositories\WorkPlanDetailRepository;
-use Modules\PurchaseOrder\Repositories\PurchaseOrderRepository;
-use Modules\PurchaseRequest\Models\PurchaseRequest;
-use Modules\PurchaseRequest\Repositories\PurchaseRequestRepository;
 use Modules\TravelRequest\Repositories\LocalTravelRepository;
 use Modules\TravelRequest\Repositories\TravelRequestRepository;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
@@ -37,10 +34,8 @@ class DashboardController extends Controller
      * @param TravelRequestRepository $travelRequests
      * @param VehicleRequestRepository $vehicleRequests
      * @param LeaveRequestRepository $leaveRequests
-     * @param PurchaseOrderRepository $purchaseOrders
      * @param MeetingHallBookingRepository $meetingHallBookings
      * @param AnnouncementRepository $announcements
-     * @param PurchaseRequestRepository $purchaseRequests
      * @param LocalTravelRepository $localTravels
      */
     public function __construct(
@@ -56,8 +51,6 @@ class DashboardController extends Controller
         protected NotificationRepository $notifications,
         protected OfficeRepository $offices,
         protected PerformanceReviewRepository $performanceReviews,
-        protected PurchaseOrderRepository $purchaseOrders,
-        protected PurchaseRequestRepository $purchaseRequests,
         protected StaffClearanceRepository $staffClearances,
         protected TravelRequestRepository $travelRequests,
         protected VehicleRequestRepository $vehicleRequests,
@@ -110,8 +103,6 @@ class DashboardController extends Controller
             'leaveRequests' => $this->leaveRequests->getLeaveRequestsForApproval($authUser),
             'allLeaveRequests' => $allLeaveRequests,
             'workFromHomeRequests' => $this->workFromHomes->getWorkFromHomeRequestsForApproval($authUser),
-            'purchaseOrders' => $this->purchaseOrders->getPurchaseOrdersForReviewAndApproval($authUser),
-            'purchaseRequests' => $this->purchaseRequests->getPurchaseRequestsForReviewAndApproval($authUser),
             'hallBookings' => $this->meetingHallBookings->getBookings(),
             'approvedLeaves' => $this->leaveRequests->getEmployeesOnLeave(),
             'upcomingLeaves' => $upcomingLeaves,

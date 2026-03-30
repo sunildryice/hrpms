@@ -286,28 +286,28 @@
                                 <th scope="row">Employee Name:</th>
                                 <td>{{ $performanceReview->getEmployeeName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.SUBMITTED_STATUS'))->last()?->created_at->format('Y-m-d') }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.SUBMITTED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Line Manager:</th>
                                 <td>{{ $performanceReview->getSupervisorName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.VERIFIED_STATUS'))->last()?->created_at->format('Y-m-d') }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.VERIFIED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Next Line Manager:</th>
                                 <td>{{ $performanceReview->getRecommenderName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.RECOMMENDED_STATUS'))->last()?->created_at->format('Y-m-d') }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.RECOMMENDED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Executive Director:</th>
                                 <td>{{ $performanceReview->getApproverName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at->format('Y-m-d') }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
                             </tr>
                         </tbody>

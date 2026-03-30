@@ -80,6 +80,7 @@ class TravelReportRepository extends Repository
                     $travelReport->travelRequest->travelRequestDayItineraries()
                         ->where('id', $update['itinerary_id'])
                         ->update([
+                            'comprehensive_activity_description' => $update['comprehensive_activity_description'],
                             'status' => $update['status'],
                             'remarks' => $update['remarks'],
                             'updated_at' => now(),
@@ -155,6 +156,7 @@ class TravelReportRepository extends Repository
                     $travelReport->travelRequest->travelRequestDayItineraries()
                         ->where('id', $update['itinerary_id'])
                         ->update([
+                            'comprehensive_activity_description' => $update['comprehensive_activity_description'],
                             'status' => $update['status'],
                             'remarks' => $update['remarks'],
                             'updated_at' => now(),

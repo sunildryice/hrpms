@@ -2,6 +2,17 @@
 
 @section('title', 'View Travel Report')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 230px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -66,10 +77,12 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th style="width: 15%">{{ __('label.date') }}</th>
-                                                <th>{{ __('label.activity') }}</th>
-                                                <th>Planned Activities</th>
-                                                <th>{{ __('label.status') }}</th>
+                                                <th style="width: 8%">{{ __('label.date') }}</th>
+                                                <th style="width: 15%">{{ __('label.activity') }}</th>
+                                                <th style="width: 20%">Planned Activities</th>
+                                                <th style="width: 22%" class="wrap-text">Comprehensive Activity Description
+                                                </th>
+                                                <th style="width: 15%">{{ __('label.status') }}</th>
                                                 <th style="width: 20%">{{ __('label.remarks') }}</th>
                                             </tr>
                                         </thead>
@@ -87,9 +100,11 @@
                                                 @endphp
 
                                                 <tr>
-                                                    <td class="text-nowrap">{{ $formattedDate }}</td>
-                                                    <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
-                                                    <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
+                                                    <td>{{ $formattedDate }}</td>
+                                                    <td class="wrap-text">{{ $itinerary?->activity?->title }}</td>
+                                                    <td class="wrap-text">{{ $itinerary?->planned_activities }}</td>
+                                                    <td class="wrap-text">
+                                                        {{ $itinerary?->comprehensive_activity_description }}</td>
                                                     <td>
                                                         @if (
                                                             $itinerary->status &&

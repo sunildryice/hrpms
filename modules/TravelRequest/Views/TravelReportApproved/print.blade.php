@@ -25,6 +25,13 @@
             padding: 0.25rem 0.75rem;
             vertical-align: top;
         }
+
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 180px;
+            max-width: 230px;
+        }
     </style>
 @endsection
 
@@ -110,10 +117,12 @@
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th style="width: 15%">{{ __('label.date') }}</th>
-                                <th>{{ __('label.activity') }}</th>
-                                <th>Planned Activities</th>
-                                <th>{{ __('label.status') }}</th>
+                                <th style="width: 8%">{{ __('label.date') }}</th>
+                                <th style="width: 15%">{{ __('label.activity') }}</th>
+                                <th style="width: 20%">Planned Activities</th>
+                                <th style="width: 22%" class="wrap-text">Comprehensive Activity Description
+                                </th>
+                                <th style="width: 15%">{{ __('label.status') }}</th>
                                 <th style="width: 20%">{{ __('label.remarks') }}</th>
                             </tr>
                         </thead>
@@ -130,9 +139,10 @@
                                 @endphp
 
                                 <tr>
-                                    <td class="text-nowrap">{{ $formattedDate }}</td>
-                                    <td class="text-nowrap">{{ $itinerary?->activity?->title }}</td>
-                                    <td class="text-nowrap">{{ $itinerary?->planned_activities }}</td>
+                                    <td>{{ $formattedDate }}</td>
+                                    <td class="wrap-text">{{ $itinerary?->activity?->title }}</td>
+                                    <td class="wrap-text">{{ $itinerary?->planned_activities }}</td>
+                                    <td class="wrap-text">{{ $itinerary?->comprehensive_activity_description }}</td>
                                     <td>{{ $itinerary->status ? \Modules\TravelRequest\Models\Enums\TravelReportStatus::tryFrom($itinerary->status)?->label() : '' }}
                                     </td>
                                     <td>{!! $itinerary->remarks ? nl2br(e($itinerary->remarks)) : '' !!}</td>
@@ -163,8 +173,7 @@
                                         class="img-fluid signature-img"
                                         style="max-height: 90px; max-width: 240px; object-fit: contain;">
                                 @else
-                                    <div class="signature-line mx-auto"
-                                        style="width: 240px; height: 90px;"></div>
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
                             <div><strong>Name:</strong> {{ $travelReport->getReporterName() }}</div>
@@ -181,8 +190,7 @@
                                         class="img-fluid signature-img"
                                         style="max-height: 90px; max-width: 240px; object-fit: contain;">
                                 @else
-                                    <div class="signature-line mx-auto"
-                                        style="width: 240px; height: 90px;"></div>
+                                    <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
                                 @endif
                             </div>
                             <div><strong>Name:</strong> {{ $travelReport->getApproverName() }}</div>

@@ -184,12 +184,13 @@ class TravelReportController extends Controller
         foreach ($inputs['itinerary']['itinerary_id'] as $index => $itineraryId) {
             $itineraryData = [
                 'itinerary_id' => $itineraryId,
+                'comprehensive_activity_description' => $inputs['itinerary']['comprehensive_activity_description'][$index] ?? null,
                 // 'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
                 'status' => $inputs['itinerary']['status'][$index] ?? null,
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
             // if (trim($itineraryData['remarks']) !== '') {
-                $inputs['itinerary_updates'][$index] = $itineraryData;
+            $inputs['itinerary_updates'][$index] = $itineraryData;
             // }
         }
         $travelRequest = $this->travelRequest->find($travelRequestId);
@@ -254,13 +255,15 @@ class TravelReportController extends Controller
         foreach ($inputs['itinerary']['itinerary_id'] ?? [] as $index => $itineraryId) {
             $itineraryData = [
                 'itinerary_id' => $itineraryId,
+                'comprehensive_activity_description' => $inputs['itinerary']['comprehensive_activity_description'][$index] ?? null,
+
                 // 'completed_tasks' => $inputs['itinerary']['completed_tasks'][$index] ?? null,
                 'status' => $inputs['itinerary']['status'][$index] ?? null,
                 'remarks' => $inputs['itinerary']['remarks'][$index] ?? null,
             ];
 
             // if (trim($itineraryData['remarks']) !== '') {
-                $inputs['itinerary_updates'][$index] = $itineraryData;
+            $inputs['itinerary_updates'][$index] = $itineraryData;
             // }
         }
 

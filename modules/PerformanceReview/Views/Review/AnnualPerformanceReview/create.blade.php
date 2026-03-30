@@ -47,6 +47,67 @@
                 }
             });
 
+            // GROUP B - KEY GOALS (Line Manager Comments)
+            $('#groupBForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let isValid = true;
+
+                $('#keyGoalTable tbody tr').each(function() {
+                    const supervisorComment = $(this).find('.description-supervisor').val().trim();
+
+                    if (!supervisorComment) {
+                        isValid = false;
+                        $(this).addClass('table-danger');
+                    } else {
+                        $(this).removeClass('table-danger');
+                    }
+                });
+
+                if (!isValid) {
+                    toastr.error('Please fill Line Manager Comments for all key goals.',
+                        'Validation Error');
+                    return;
+                }
+
+                // Save each row via AJAX
+                $('#keyGoalTable tbody tr').each(function() {
+                    let row = $(this);
+                    let keyGoalId = row.data('keygoal-id');
+
+                    if (!keyGoalId) return;
+
+                    let descriptionSupervisor = row.find('.description-supervisor').val().trim();
+
+                    updateKeyGoalSupervisor(keyGoalId, descriptionSupervisor);
+                });
+
+                toastr.success('Line Manager Comments saved successfully!', 'Success', {
+                    timeOut: 1500
+                });
+            });
+
+            function updateKeyGoalSupervisor(keyGoalId, descriptionSupervisor) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.keygoal.update') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        key_goal_id: keyGoalId,
+                        performance_review_id: "{{ $performanceReview->id }}",
+                        description_supervisor: descriptionSupervisor,
+                        type: 'current'
+                    },
+                    success: function(res) {
+                        // toastr.success('Comment updated');
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        toastr.error('Failed to update one of the comments.');
+                    }
+                });
+            }
+
             // GROUP G - LINE MANAGER RESULT AND COMMENTS
             $('#groupGForm').on('submit', function(e) {
                 e.preventDefault();
@@ -138,44 +199,56 @@
 
         <!-- B. Key Goals Review -->
         <div id="keyGoalsReview" class="mb-3">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    <span class="card-title">
-                        <span class="fw-bold">B.</span> Key Goals Review
-                    </span>
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered" id="keyGoalTable">
-                        <thead>
-                            <tr>
-                                <th rowspan="2" style="width: 18%">Objective</th>
-                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                <th rowspan="2" style="width: 22%">Major Activities</th>
-                                <th colspan="2">Achievement against output / deliverable</th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%">Status</th>
-                                <th style="width: 25%">Remarks / Comments</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($keygoals as $keygoal)
+            <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
+                @csrf
+                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">B.</span> Key Goals Review
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered" id="keyGoalTable">
+                            <thead>
                                 <tr>
-                                    <td>{{ $keygoal->title }}</td>
-                                    <td>{{ $keygoal->output_deliverables }}</td>
-                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
-                                    <td>
-                                        <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
-                                            {{ $keygoal->status?->label() ?? 'Not Set' }}
-                                        </span>
-                                    </td>
-                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                    <th rowspan="2" style="width: 10%">Objective</th>
+                                    <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                    <th rowspan="2" style="width: 15%">Major Activities</th>
+                                    <th colspan="2">Achievement against output / deliverable</th>
+                                    <th rowspan="2" style="width: 22%">Line Manager Comments</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 15%">Remarks / Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keygoal-body">
+                                @foreach ($keygoals as $keygoal)
+                                    <tr data-keygoal-id="{{ $keygoal->id }}">
+                                        <td>{{ $keygoal->title }}</td>
+                                        <td>{{ $keygoal->output_deliverables }}</td>
+                                        <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                        <td>
+                                            <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
+                                                {{ $keygoal->status?->label() ?? 'Not Set' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                        <td>
+                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="1">{{ $keygoal->description_supervisor ?? '' }}</textarea>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-sm btn-outline-primary float-end">Save</button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
 
         <!-- C. Professional Development Plan -->

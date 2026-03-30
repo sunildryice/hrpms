@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Modules\LeaveRequest\Models\LeaveRequest;
 
-class LeaveRequestApproved extends Notification
+class LeaveRequestReviewed extends Notification
 {
     use Queueable;
 

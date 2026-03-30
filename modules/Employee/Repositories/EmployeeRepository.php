@@ -24,7 +24,8 @@ class EmployeeRepository extends Repository
 
     public function activeEmployees()
     {
-        return $this->model->whereNotNull('activated_at')->orderBy('employee_code', 'asc')->get();
+        return $this->model->whereNotNull('activated_at')
+            ->orderBy('full_name', 'asc')->get();
     }
 
     public function getActiveEmployeesQuery()

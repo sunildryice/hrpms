@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\ExitStaffClearanceRecord\Policies;
+namespace Modules\ExitStaffClearance\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Modules\ExitStaffClearance\Models\StaffClearanceRecord;

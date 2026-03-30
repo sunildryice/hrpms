@@ -463,31 +463,6 @@
                     @endif
                     {{-- Project Management Menu --}}
                     <span class="dropdown-header fw-bold">Project Management</span>
-
-                    {{-- @if ($authUser->can('manage-activity-stages') || $authUser->can('manage-activity-update-periods'))
-                        <div class="nav-item">
-                            <a class="nav-link dropdown-toggle" href="#navbarActivitiesMenuName" role="button"
-                                data-bs-toggle="collapse" data-bs-target="#navbarActivitiesMenuName"
-                                aria-expanded="false" aria-controls="navbarActivitiesMenuName"
-                                data-bs-toggle="tooltip" data-bs-placement="right" title="Activities">
-                                <i class="bi bi-list-stars nav-icon"></i>
-                                <span class="nav-link-title">Activities</span>
-                            </a>
-                            <div id="navbarActivitiesMenuName" class="nav-collapse collapse"
-                                data-bs-parent="#navbarActivitiesMenu" hs-parent-area="#navbarActivitiesMenu"
-                                style="">
-                                @if ($authUser->can('manage-activity-stages'))
-                                    <a class="nav-link" href="{{ route('activity-stages.index') }}"
-                                        id="activity-stages-index">Activity Stages</a>
-                                @endif
-                                @if ($authUser->can('manage-activity-update-periods'))
-                                    <a class="nav-link" href="{{ route('activity-update-periods.index') }}"
-                                        id="activity-update-periods-index">Activity Update Periods</a>
-                                @endif
-                            </div>
-                        </div>
-                    @endif --}}
-
                     <div class="nav-item">
                         <a class="nav-link" href="{{ route('pms.dashboard') }}" role="button"
                            data-bs-toggle="tooltip" data-bs-placement="right" title="PMS Dashboard">
@@ -659,10 +634,6 @@
                                        id="approve-travel-report-menu">Approve
                                         Travel Reports ({{ $approveTravelReportCount }})</a>
                                 @endif
-                                {{-- @if ($authUser->can('travel-request-advance'))
-                                    <a class="nav-link" href="{{ route('approve.travel.requests.advance.index') }}"
-                                        id="approve-travel-advance-menu">Approve Travel Advance </a>
-                                @endif --}}
                                 @if ($authUser->can('finance-review-travel-claim'))
                                     <a class="nav-link" href="{{ route('review.travel.claims.index') }}"
                                        id="review-travel-claims-menu">Review
@@ -1059,12 +1030,6 @@
                                     <a class="nav-link" href="{{ route('master.holidays.index') }}"
                                        id="holidays-menu">Office Holidays </a>
                                 @endif
-
-                                {{--                                @if ($authUser->can('manage-projects')) --}}
-                                {{--                                    <a class="nav-link" href="{{ route('master.project.codes.index') }}" --}}
-                                {{--                                        id="project-codes-menu">{{ __('label.projects') }}</a> --}}
-                                {{--                                @endif --}}
-
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"
                                        id="probationary-indicators-menu">{{ __('label.probationary-indicators') }}</a>

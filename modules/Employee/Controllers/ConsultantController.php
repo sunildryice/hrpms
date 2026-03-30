@@ -25,7 +25,6 @@ use Modules\Master\Repositories\EmployeeTypeRepository;
 use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
-use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
 
 class ConsultantController extends Controller
 {
@@ -46,7 +45,6 @@ class ConsultantController extends Controller
         protected LocalLevelRepository $localLevels,
         protected MaritalStatusRepository $maritalStatus,
         protected OfficeRepository $offices,
-        protected PayrollFiscalYearRepository $payrollFiscalYears,
         protected ProvinceRepository $provinces,
         protected RoleRepository $roles,
         protected EmployeeTypeRepository $employeeTypes

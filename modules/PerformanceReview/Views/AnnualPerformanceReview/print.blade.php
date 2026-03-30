@@ -77,10 +77,11 @@
 
             <div class="row">
                 <div class="col-lg-12">
+                    <!-- A. Employee and Supervisor Details -->
                     <table class="table mb-4 border">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="4">A. EMPLOYEE AND SUPERVISOR DETAILS</th>
+                                <th scope="col" colspan="4">A. EMPLOYEE AND LINE MANAGER DETAILS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,286 +92,190 @@
                                 <td>{{ $performanceReview->getEmployeeTitle() }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Supervisor Name:</th>
+                                <th scope="row">Line Manager Name:</th>
                                 <td>{{ $performanceReview->getSupervisorName() }}</td>
-                                <th scope="row">Supervisor Title: </th>
+                                <th scope="row">Line Manager Title:</th>
                                 <td>{{ $performanceReview->getSupervisorTitle() }}</td>
                             </tr>
                             <tr>
-                                <th scope="row">Technical Supervisor Name:</th>
-                                <td>{{ $performanceReview->getTechnicalSupervisorName() }}</td>
-                                <th scope="row">Technical Supervisor Title: </th>
-                                <td>{{ $performanceReview->getTechnicalSupervisorTitle() }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Date of joining:</th>
+                                <th scope="row">Date of Joining:</th>
                                 <td>{{ $performanceReview->employee->getFirstJoinedDate() }}</td>
-                                <th scope="row">In current position since: </th>
+                                <th scope="row">In Current Position Since:</th>
                                 <td>{{ $performanceReview->getJoinedDate() }}</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Duty Station:</th>
-                                <td colspan="3">{{ $performanceReview->getDutyStation() }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Review period from:</th>
                                 <td>{{ $performanceReview->getReviewFromDate() }}</td>
-                                <th scope="row">Review period to: </th>
+                                <th scope="row">Review period to:</th>
                                 <td>{{ $performanceReview->getReviewToDate() }}</td>
                             </tr>
+                            <tr>
+                                <th scope="row">Deadline:</th>
+                                <td colspan="3">{{ $performanceReview->getDeadlineDate() }}</td>
+                            </tr>
                         </tbody>
                     </table>
 
-                    <table class="table border">
+                    <!-- B. Key Goals Review -->
+                    <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="4">B.EMPLOYEE FEEDBACK FOR THIS REVIEW PERIOD</th>
+                                <th scope="col" colspan="6">B. KEY GOALS REVIEW</th>
+                            </tr>
+                            <tr>
+                                <th rowspan="2" style="width: 10%">Objective</th>
+                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 15%">Major Activities</th>
+                                <th colspan="2">Achievement against output / deliverable</th>
+                                <th rowspan="2" style="width: 22%">Line Manager Comments</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 10%">Status</th>
+                                <th style="width: 15%">Remarks / Comments</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($midTermReview)
-                                <th colspan="2">Mid-Term Review</th>
-                                @foreach ($groupBQuestions as $question)
-                                    <tr>
-                                        <th scope="row">{{ $question->question }}</th>
-                                        <td>{{ $midTermReview->getAnswer($question->id) }}</td>
-                                    </tr>
-                                @endforeach
-
-                            @endif
-                            <th colspan="2">Annual Review</th>
-                            @foreach ($groupBQuestions as $question)
+                            @foreach ($keygoals as $keygoal)
                                 <tr>
-                                    <th scope="row">{{ $question->question }}</th>
-                                    <td>{{ $performanceReview->getAnswer($question->id) }}</td>
+                                    <td>{{ $keygoal->title }}</td>
+                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td><span>{{ $keygoal->status?->label() ?? 'Not Set' }}</span></td>
+                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                    <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
 
-
-                    <table class="table border">
+                    <!-- C. Professional Development Plan -->
+                    <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="4">C. KEY GOALS REVIEW </th>
+                                <th scope="col" colspan="3">C. PROFESSIONAL DEVELOPMENT PLAN</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($midTermReview)
-                                <th colspan="3">Mid-Term Review</th>
+                            @php $devPlans = $keyGoalReview->developmentPlans ?? collect(); @endphp
+                            @if ($devPlans->isEmpty())
                                 <tr>
-                                    <th scope="col">Key goals agreed upon during previous performance review</th>
-                                    <th scope="col">To be completed by Employee</th>
-                                    <th scope="col">To be completed by Supervisor</th>
-                                </tr>
-                                @foreach ($keygoals as $key => $keygoal)
-                                    <tr>
-                                        <td>{{ ++$key . '. ' . $keygoal->title }}</td>
-                                        <td>{{ $keygoal->description_employee }}</td>
-                                        <td>{{ $keygoal->description_supervisor }}</td>
-                                    </tr>
-                                @endforeach
-                            @endif
-
-                            <th colspan="3">Annual Review</th>
-                            <tr>
-                                <th scope="col">Key goals agreed upon during previous performance review</th>
-                                <th scope="col">To be completed by Employee</th>
-                                <th scope="col">To be completed by Supervisor</th>
-                            </tr>
-                            @foreach ($keygoals as $key => $keygoal)
-                                <tr>
-                                    <td>{{ ++$key . '. ' . $keygoal->title }}</td>
-                                    <td>{{ $keygoal->description_employee_annual }}</td>
-                                    <td>{{ $keygoal->description_supervisor_annual }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <table class="table border">
-                        <thead>
-                            <tr>
-                                <th scope="col" colspan="4">PROFESSIONAL DEVELOPMENT PLAN</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ $professionalDevelopmentPlan }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-
-                    <table class="table border">
-                        <thead>
-                            <tr>
-                                <th scope="col" colspan="4">D. KEY SKILLS EVALUATION (to be completed by supervisor)
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($groupDQuestions as $question)
-                                <tr>
-                                    <th scope="row">{{ $question->question }}</th>
-                                    <td>{{ $performanceReview->getAnswer($question->id) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-
-                    <table class="table border">
-                        <thead>
-                            <tr>
-                                <th scope="col" colspan="4">E. STRENGTHS AND AREAS FOR GROWTH (to be completed by
-                                    supervisor)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if ($midTermReview)
-                                <th colspan="2">Mid-Term Review</th>
-                                @foreach ($groupEQuestions as $question)
-                                    @if (!$loop->last)
-                                        <tr>
-                                            <th scope="row">{{ $question->question }}</th>
-                                            <td>{{ $midTermReview->getAnswer($question->id) }}</td>
-                                        </tr>
-                                    @endif
-                                @endforeach
-                            @endif
-
-                            <th colspan="2">Annual Review</th>
-                            @foreach ($groupEQuestions as $question)
-                                @if (!$loop->last)
-                                    <tr>
-                                        <th scope="row">{{ $question->question }}</th>
-                                        <td>{{ $performanceReview->getAnswer($question->id) }}</td>
-                                    </tr>
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-
-
-                    <table class="table border">
-                        <thead>
-                            <tr>
-                                <th scope="col" colspan="4">F. OVERALL PERFORMANCE EVALUATION (to be completed by
-                                    supervisor)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <th style="width: 20%">{{ $question->question }}</th>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <td style="font-style: italic">{{ $question->description }}</td>
-                                @endforeach
-                            </tr>
-                            <tr>
-                                @php
-                                    $counter = 5;
-                                @endphp
-                                @foreach ($groupFQuestions as $question)
-                                    <td>
-                                        <input disabled type="checkbox" name="{{ 'question_' . $question->id }}"
-                                            id="{{ 'question_' . $question->id }}"
-                                            {{ $performanceReview->getAnswer($question->id) == 'true' ? 'checked' : '' }}>
-                                        <label for="{{ 'question_' . $question->id }}">{{ $counter-- }}</label>
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        No professional development plan has been added yet.
                                     </td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th style="width: 5%">SN</th>
+                                    <th style="width: 45%">Development Plan Objective</th>
+                                    <th style="width: 45%">Activity</th>
+                                </tr>
+                                @foreach ($devPlans as $index => $plan)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $plan->objective }}</td>
+                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                    </tr>
                                 @endforeach
+                            @endif
+                        </tbody>
+                    </table>
+
+                    <!-- D. Core Competencies -->
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="3">D. CORE COMPETENCIES</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 35%">Competency</th>
+                                <th style="width: 15%">Rating (1-5)</th>
+                                <th style="width: 50%">Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($coreCompetencies ?? collect() as $comp)
+                                <tr>
+                                    <td>{{ $comp->competency }}</td>
+                                    <td>@php
+                                        $ratings = [
+                                            1 => '1 - Poor',
+                                            2 => '2 - Fair',
+                                            3 => '3 - Good',
+                                            4 => '4 - Very Good',
+                                            5 => '5 - Excellent',
+                                        ];
+                                    @endphp
+                                        @if ($comp->rating)
+                                            <span>{{ $ratings[$comp->rating] ?? $comp->rating }}</span>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td>{{ $comp->example ?? '—' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No core competencies recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    <!-- E. Challenges / Difficulties -->
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2">E. CHALLENGES / DIFFICULTIES</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 45%">Challenge / Difficulty Faced</th>
+                                <th style="width: 45%">Result / Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($challenges ?? collect() as $challenge)
+                                <tr>
+                                    <td>{{ $challenge->challenge }}</td>
+                                    <td>{{ $challenge->result }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No challenges recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    <!-- F. Employee Comments -->
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2">F. EMPLOYEE COMMENTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p></td>
                             </tr>
                         </tbody>
                     </table>
 
-
-                    <table class="table border">
+                    <!-- G. Line Manager Result and Comments -->
+                    <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="4">G. IDENTIFY AT LEAST 3 KEY GOALS FOR THE NEXT REVIEW
-                                    PERIOD: (To be completed jointly)</th>
+                                <th scope="col" colspan="2">G. RESULT AND COMMENTS</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $counter = 1;
-                            @endphp
-                            @foreach ($futureKeyGoals as $item)
-                                <tr>
-                                    <td>{{ $counter++ . '. ' . $item->title }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <table class="table border">
-                        <thead>
                             <tr>
-                                <th scope="col" colspan="4">H. EMPLOYEE COMMENTS (optional)</th>
+                                <th style="width: 20%">Result</th>
+                                <td>{{ $performanceReview->result ?: '—' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($groupHQuestions as $question)
-                                @if ($midTermReview)
-                                    <tr>
-                                        <th>Mid-Term Review</th>
-                                        <td>{{ $midTermReview->getAnswer($question->id) }}</td>
-                                    </tr>
-                                @endif
-                                <tr>
-                                    <th>Annual Review</th>
-                                    <td>{{ $performanceReview->getAnswer($question->id) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-
-                    <table class="table border">
-                        <thead>
                             <tr>
-                                <th scope="col" colspan="4">I. SUPERVISOR /NEXT LINE MANAGER COMMENTS (OPTIONAL)</th>
+                                <th style="width: 20%">Comments</th>
+                                <td>{{ $performanceReview->comments ?: '—' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($groupIQuestions as $question)
-                                @if ($midTermReview)
-                                    <tr>
-                                        <th>Mid-Term Review</th>
-                                        <td>{{ $midTermReview->getAnswer($question->id) }}</td>
-                                    </tr>
-                                @endif
-                                <tr>
-                                    <th>Annual Review</th>
-                                    <td>{{ $performanceReview->getAnswer($question->id) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <table class="table border">
-                        <thead>
-                            <tr>
-                                <th scope="col" colspan="4">J. ACKNOWLEDGEMENTS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($groupJQuestions as $question)
-                                @if ($midTermReview)
-                                    <tr>
-                                        <th>Mid-Term Review</th>
-                                        <td>{{ $midTermReview->getAnswer($question->id) }}</td>
-                                    </tr>
-                                @endif
-                                <tr>
-                                    <th>Annual Review</th>
-                                    <td>{{ $performanceReview->getAnswer($question->id) }}</td>
-                                </tr>
-                            @endforeach
                         </tbody>
                     </table>
 
@@ -381,28 +286,28 @@
                                 <th scope="row">Employee Name:</th>
                                 <td>{{ $performanceReview->getEmployeeName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.SUBMITTED_STATUS'))->last()?->created_at }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.SUBMITTED_STATUS'))->last()?->created_at->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
-                                <th scope="row">Supervisor:</th>
+                                <th scope="row">Line Manager:</th>
                                 <td>{{ $performanceReview->getSupervisorName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.VERIFIED_STATUS'))->last()?->created_at }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.VERIFIED_STATUS'))->last()?->created_at->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Next Line Manager:</th>
                                 <td>{{ $performanceReview->getRecommenderName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.RECOMMENDED_STATUS'))->last()?->created_at }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.RECOMMENDED_STATUS'))->last()?->created_at->format('Y-m-d') }}
                                 </td>
                             </tr>
                             <tr>
                                 <th scope="row">Executive Director:</th>
                                 <td>{{ $performanceReview->getApproverName() }}</td>
                                 <th scope="row">Date:</th>
-                                <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at }}
+                                <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at->format('Y-m-d') }}
                                 </td>
                             </tr>
                         </tbody>

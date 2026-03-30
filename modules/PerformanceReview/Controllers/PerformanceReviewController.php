@@ -342,7 +342,14 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::AnnualPerformanceReview.print', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::AnnualPerformanceReview.print', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
 
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -360,7 +367,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.print', $record, compact('keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::MidTermPerformanceReview.print', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
         } else {
             return view('PerformanceReview::KeyGoalsReview.print', [
                 'performanceReview' => $performanceReview,
@@ -660,7 +675,7 @@ class PerformanceReviewController extends Controller
 
         $performanceReview = $this->performanceReview->find($request->performance_review_id);
 
-        $this->authorize('review', $performanceReview);   
+        $this->authorize('review', $performanceReview);
 
         $performanceReview->update([
             'result' => $request->result,

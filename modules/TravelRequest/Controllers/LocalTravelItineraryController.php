@@ -121,8 +121,8 @@ class LocalTravelItineraryController extends Controller
     {
         $localTravel = $this->localTravels->find($id);
         $this->authorize('update', $localTravel);
-        $authUser = auth()->user();
         $inputs = $request->validated();
+        $inputs['number_of_travelers'] = $localTravel->number_of_travelers ?: 0;
         if ($request->file('attachment')) {
             $filename = $request->file('attachment')
                 ->storeAs($this->destinationPath . '/' . $localTravel->id, time() . '_reimbursement_itinerary.' . $request->file('attachment')->getClientOriginalExtension());
@@ -135,7 +135,7 @@ class LocalTravelItineraryController extends Controller
         if ($localTravelItinerary) {
             return response()->json([
                 'status' => 'ok',
-                'purchaseRequestItem' => $localTravelItinerary,
+                'localTravelItinerary' => $localTravelItinerary,
                 'message' => 'Local travel detail is successfully added.'
             ], 200);
         }

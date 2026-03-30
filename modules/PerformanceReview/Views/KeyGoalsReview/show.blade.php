@@ -95,7 +95,7 @@
                     <span class="card-title">
                         <span class="fw-bold">A.</span>
                         <span>
-                            Employee and Supervisor Details
+                            Employee and Line Manager Details
                         </span>
                     </span>
                 </div>
@@ -250,10 +250,7 @@
                 </div>
                 <div class="card-body">
                     @php
-                        $devPlans = $performanceReview
-                            ->answers()
-                            ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
-                            ->get();
+                        $devPlans = $performanceReview->developmentPlans;
                     @endphp
 
                     @if ($devPlans->isEmpty())
@@ -264,14 +261,16 @@
                         <table class="table table-bordered" id="devplan-table">
                             <thead>
                                 <tr>
+                                    <th style="width: 5%">SN</th>
                                     <th class="col-plan">Development Plan</th>
                                 </tr>
                             </thead>
                             <tbody id="devplan-body">
                                 @foreach ($devPlans as $plan)
                                     <tr class="devplan-row readonly">
+                                        <td class="sn">{{ $loop->iteration }}</td>
                                         <td class="col-plan readonly-cell">
-                                            {{ $plan->answer }}
+                                            {{ $plan->objective }}
                                         </td>
                                     </tr>
                                 @endforeach

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\Status;
+use Modules\PerformanceReview\Models\PerformanceReviewCoreCompetency;
 use Modules\Privilege\Models\User;
 
 class PerformanceReview extends Model
@@ -28,6 +29,10 @@ class PerformanceReview extends Model
         'reviewer_id',
         'recommender_id',
         'approver_id',
+        'employee_comments',
+        'reviewer_comments',
+        'result',
+        'comments',
         'goal_setting_date',
         'mid_term_per_date',
         'final_per_date',
@@ -69,6 +74,21 @@ class PerformanceReview extends Model
     public function keyGoals()
     {
         return $this->hasMany(PerformanceReviewKeyGoal::class, 'performance_review_id');
+    }
+
+    public function developmentPlans()
+    {
+        return $this->hasMany(PerformanceProfessionalDevelopmentPlan::class, 'performance_review_id');
+    }
+
+    public function challenges()
+    {
+        return $this->hasMany(PerformanceReviewChallenge::class, 'performance_review_id');
+    }
+
+    public function coreCompetencies()
+    {
+        return $this->hasMany(PerformanceReviewCoreCompetency::class, 'performance_review_id');
     }
 
     public function logs()
@@ -163,13 +183,14 @@ class PerformanceReview extends Model
         return null;
     }
 
+    // public function getProfessionalDevelopmentPlan()
+    // {
+    //     return $this->getAnswer(10);
+    // }
+
     public function getProfessionalDevelopmentPlan()
     {
-        // if ($this->review_type_id == 3) {
-            return $this->getAnswer(10);
-        // }
-
-        // return null;
+        return $this->developmentPlans;
     }
 
     public function getKeyGoalsFields($value = 1)
@@ -178,9 +199,9 @@ class PerformanceReview extends Model
         if ($keyGoals) {
             $titles = $keyGoals->map(function ($goal, $index) use ($value) {
                 $returnString = match ($value) {
-                    1 => ++$index.'. '.$goal->title,
-                    2 => ++$index.'. '.$goal->description_employee_annual,
-                    3 => ++$index.'. '.$goal->description_supervisor_annual,
+                    1 => ++$index . '. ' . $goal->title,
+                    2 => ++$index . '. ' . $goal->description_employee_annual,
+                    3 => ++$index . '. ' . $goal->description_supervisor_annual,
                 };
 
                 return $returnString;
@@ -221,7 +242,7 @@ class PerformanceReview extends Model
         $answers = $this->answers()->with('performanceReviewQuestion')->whereBetween('question_id', [11, 15])->get();
         foreach ($answers as $answer) {
             if ($answer->answer == 'true') {
-                return $answer->performanceReviewQuestion->question.'-'.$rateMap[$answer->performanceReviewQuestion->position];
+                return $answer->performanceReviewQuestion->question . '-' . $rateMap[$answer->performanceReviewQuestion->position];
             }
         }
 
@@ -319,6 +340,6 @@ class PerformanceReview extends Model
 
     public function midtermReviewRequired()
     {
-        return ! $this->employee->firstTenure->joined_date->isCurrentYear();
+        return !$this->employee->firstTenure->joined_date->isCurrentYear();
     }
 }

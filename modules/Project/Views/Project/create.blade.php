@@ -262,9 +262,9 @@
                                     class="select2 form-control @if ($errors->has('team_lead_id')) is-invalid @endif"
                                     data-width="100%">
                                     <option value="">Select Team Lead</option>
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}">
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" @selected(old('team_lead_id') == $user->id)>
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('team_lead_id'))
@@ -286,9 +286,9 @@
                                     class="select2 form-control @if ($errors->has('focal_person_id')) is-invalid @endif"
                                     data-width="100%">
                                     <option value="">Select Focal Person</option>
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}">
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" @selected(old('focal_person_id') == $user->id)>
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('focal_person_id'))
@@ -309,9 +309,9 @@
                                 <select name="members[]"
                                     class="select2 form-control @if ($errors->has('members')) is-invalid @endif"
                                     multiple data-placeholder="Select Members" style="width: 100%">
-                                    @foreach ($users as $id => $name)
-                                        <option value="{{ $id }}">
-                                            {{ $name }}</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">
+                                            {{ $user->full_name }}</option>
                                     @endforeach
                                 </select>
                                 @if ($errors->has('members'))

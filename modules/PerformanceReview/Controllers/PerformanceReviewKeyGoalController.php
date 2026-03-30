@@ -5,6 +5,7 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\PerformanceReview\Models\PerformanceProfessionalDevelopmentPlan;
 use Modules\PerformanceReview\Models\PerformanceReviewAnswer;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
 use Modules\PerformanceReview\Repositories\PerformanceReviewKeyGoalRepository;
@@ -27,7 +28,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $inputs = array(
             'performance_review_id' => $request->performance_review_id,
             'title' => $request->title,
-            'output_deliverables'   => $request->output_deliverables,
+            'output_deliverables' => $request->output_deliverables,
             'description_employee' => $request->description_employee,
             'description_supervisor' => $request->description_supervisor,
             'type' => $request->type,
@@ -87,52 +88,6 @@ class PerformanceReviewKeyGoalController extends Controller
             return response()->json(['type' => 'success', 'html' => ''], 422);
         }
     }
-
-    // public function update(Request $request)
-    // {
-    //     $inputs = array();
-
-    //     if ($request->title != '') {
-    //         $inputs['title'] = $request->title;
-    //     }
-
-    //     if ($request->description_employee != '') {
-    //         $inputs['description_employee'] = $request->description_employee;
-    //     }
-
-    //     if ($request->description_supervisor != '') {
-    //         $inputs['description_supervisor'] = $request->description_supervisor;
-    //     }
-
-    //     if ($request->description_employee_annual != '') {
-    //         $inputs['description_employee_annual'] = $request->description_employee_annual;
-    //     }
-
-    //     if ($request->description_supervisor_annual != '') {
-    //         $inputs['description_supervisor_annual'] = $request->description_supervisor_annual;
-    //     }
-
-    //     if ($request->type != '') {
-    //         $inputs['type'] = $request->type;
-    //     }
-
-    //     $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->find($request->key_goal_id);
-
-    //     if ($performanceReviewKeyGoal) {
-    //         $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->update($request->key_goal_id, $inputs);
-    //     } else {
-    //         $inputs['performance_review_id'] = $request->performance_review_id;
-    //         $performanceReviewKeyGoal = $this->performanceReviewKeyGoal->create($inputs);
-    //     }
-
-
-    //     if ($performanceReviewKeyGoal) {
-    //         return response()->json(['type' => 'success', 'message' => 'Key Goal Saved.'], 200);
-    //     } else {
-    //         return response()->json(['type' => 'success', 'message' => 'Key Goal could not be Saved.'], 422);
-    //     }
-    // }
-
     public function update(Request $request)
     {
         $validated = $request->validate([
@@ -152,8 +107,9 @@ class PerformanceReviewKeyGoalController extends Controller
             'title' => $request->title ?? $keyGoal->title,
             'major_activities_employee' => $request->major_activities_employee ?? $keyGoal->major_activities_employee,
             'description_supervisor_annual' => $request->description_supervisor_annual ?? $keyGoal->description_supervisor_annual,
-            'status' => $request->status,
-            'remarks_employee' => $request->remarks_employee,
+            'output_deliverables' => $request->output_deliverables ?? $keyGoal->output_deliverables,
+            'status' => $request->status ?? $keyGoal->status,
+            'remarks_employee' => $request->remarks_employee ?? $keyGoal->remarks_employee,
             'type' => $request->type ?? $keyGoal->type,
         ]);
 
@@ -306,31 +262,25 @@ class PerformanceReviewKeyGoalController extends Controller
 
             'devplans' => 'required|array|min:1',
             'devplans.*.plan' => 'required|string|max:500',
+            'devplans.*.activity' => 'nullable|string|max:1000',
         ]);
 
         DB::beginTransaction();
 
         try {
-            //  Delete old dev plans (group E)
-            $performanceReview->answers()
-                ->whereHas('performanceReviewQuestion', fn($q) => $q->where('group', 'E'))
+            //  Delete old development plans
+            PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
                 ->delete();
 
+            //  Insert new development plans
             foreach ($request->devplans as $item) {
-                $question = $this->performanceReviewQuestion
-                    ->where('group', 'E')
-                    ->latest('position')
-                    ->first();
-
-                if ($question) {
-                    PerformanceReviewAnswer::create([
-                        'performance_review_id' => $performanceReview->id,
-                        'question_id' => $question->id,
-                        'answer' => trim($item['plan']),
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id(),
-                    ]);
-                }
+                PerformanceProfessionalDevelopmentPlan::create([
+                    'performance_review_id' => $performanceReview->id,
+                    'objective' => trim($item['plan']),
+                    'activity' => trim($item['activity'] ?? null),
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
             }
 
             //  Delete old key goals
@@ -358,12 +308,43 @@ class PerformanceReviewKeyGoalController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            dd($e);
             DB::rollBack();
 
             return response()->json([
                 'type' => 'error',
                 'message' => 'Failed to save',
+            ], 500);
+        }
+    }
+    public function updateDevPlan(Request $request)
+    {
+        $request->validate([
+            'devplans' => 'required|array',
+            'devplans.*.id' => 'required|integer|exists:performance_professional_development_plans,id',
+            'devplans.*.activity' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            foreach ($request->devplans as $item) {
+                if (empty($item['id']))
+                    continue;
+
+                PerformanceProfessionalDevelopmentPlan::where('id', $item['id'])
+                    ->update([
+                        'activity' => trim($item['activity'] ?? null),
+                        'updated_by' => auth()->id(),
+                    ]);
+            }
+
+            return response()->json([
+                'type' => 'success',
+                'message' => 'Activities updated successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Failed to update activities.'
             ], 500);
         }
     }

@@ -480,7 +480,7 @@
                                     <td class="col-plan">
                                         <input type="text" class="form-control"
                                             name="devplans[{{ $index }}][plan]"
-                                            value="{{ old('devplans.' . $index . '.plan', $plan->answer ?? '') }}"
+                                            value="{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}"
                                             placeholder="Development plan" required>
                                     </td>
                                     <td class="col-action">

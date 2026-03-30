@@ -237,9 +237,6 @@ class PerformanceReviewController extends Controller
             if (is_null($keyGoalReview)) {
                 return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
             }
-            // if (is_null($midTermReview)) {
-            //     return redirect()->back()->withWarningMessage('Mid-Term Performance Review not filled yet.');
-            // }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             if ($midTermReview) {
@@ -251,7 +248,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::AnnualPerformanceReview.show', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::AnnualPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'midTermReview' => $midTermReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
 
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -270,7 +275,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.show', $record, compact('keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::MidTermPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
         } else {
             return view('PerformanceReview::KeyGoalsReview.show', [
                 'performanceReview' => $performanceReview,
@@ -392,9 +405,6 @@ class PerformanceReviewController extends Controller
             if (is_null($keyGoalReview)) {
                 return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
             }
-            // if (is_null($midTermReview)) {
-            //     return redirect()->back()->withWarningMessage('Mid-Term Performance Review not filled yet.');
-            // }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             if ($midTermReview) {
@@ -406,8 +416,15 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::Employee.AnnualPerformanceReview.show', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
-
+            return view('PerformanceReview::Employee.AnnualPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'midTermReview' => $midTermReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
                 ->where('review_type_id', '=', 3)
@@ -425,7 +442,14 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::Employee.MidTermPerformanceReview.show', $record, compact('keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::Employee.MidTermPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
         } else {
             return view('PerformanceReview::Employee.KeyGoalsReview.show', [
                 'performanceReview' => $performanceReview,
@@ -499,18 +523,26 @@ class PerformanceReviewController extends Controller
                 return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
             }
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $newKeyGoals = $performanceReview->keyGoals()->where('type', 'current')->get();
 
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
-                // return redirect()->back()->withWarningMessage('Mid-Term Performance Review not filled yet.');
             }
 
             $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
                 ->orderBy('position', 'desc')
                 ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::AnnualPerformanceReview.create', $record, compact('keyGoalReview', 'midTermReview', 'keygoals', 'professionalDevelopmentPlan'));
+            return view('PerformanceReview::AnnualPerformanceReview.create', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'newKeyGoals' => $newKeyGoals,
+                'midTermReview' => $midTermReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
 
             $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
@@ -531,18 +563,18 @@ class PerformanceReviewController extends Controller
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
-            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'));
+            return view('PerformanceReview::MidTermPerformanceReview.create', $record, compact('keyGoalReview', 'keygoals', 'professionalDevelopmentPlan', 'newKeyGoals'))
+                ->with('performanceReview', $performanceReview)
+                ->with('challenges', $performanceReview->challenges ?? collect())
+                ->with('coreCompetencies', $performanceReview->coreCompetencies ?? collect());
+            ;
         } else {
-            $existingDevPlans = $performanceReview->answers()
-                ->whereHas('performanceReviewQuestion', function ($q) {
-                    $q->where('group', 'E');
-                })
-                ->get();
+            $existingDevPlans = $performanceReview->developmentPlans;
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,
                 'professionalDevelopmentPlanQuestion' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position', 'desc')->first(),
                 'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
-                'existingDevPlans'    => $existingDevPlans,
+                'existingDevPlans' => $existingDevPlans,
             ]);
         }
     }
@@ -594,5 +626,50 @@ class PerformanceReviewController extends Controller
             return redirect(route('performance.employee.show', $annualPER->id) . '#identifyKeyGoals');
         }
         return redirect()->back()->withWarningMessage('Previous record could not be found');
+    }
+
+    public function storeEmployeeComments(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'employee_comments' => 'required|string'
+        ]);
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+        $this->authorize('employeeFill', $performanceReview);
+
+        $performanceReview->update([
+            'employee_comments' => $request->employee_comments
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Employee comments saved successfully.'
+        ]);
+    }
+
+    /**
+     * Store Line Manager's Result and Comments (Similar to employee comments)
+     */
+    public function storeManagerResultComments(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'result' => 'nullable|string',
+            'comments' => 'nullable|string',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('review', $performanceReview);   
+
+        $performanceReview->update([
+            'result' => $request->result,
+            'comments' => $request->comments,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Result and Comments saved successfully.'
+        ]);
     }
 }

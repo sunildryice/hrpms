@@ -3,15 +3,7 @@
 @section('title', 'Annual Performance Review Form')
 
 @section('page_js')
-
-
     <script type="text/javascript">
-        let isGroupCFormSaved = false;
-        let isGroupDFormSaved = false;
-        let isGroupEFormSaved = false;
-        let isGroupFFormSaved = false;
-        let isGroupIFormSaved = false;
-
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#performance-review-index').addClass('active');
 
@@ -45,654 +37,66 @@
                 $('input[type="checkbox"]').not(this).prop('checked', false);
             });
 
-            $('#groupBForm').on('submit', function(e) {
-                e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupCForm').on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let keyGoalId = $(this).attr('name').split("_")[2];
-                let titleElement = $(this).attr('name').split('_');
-                let title = '';
-                if (titleElement[1] == 'title') {
-                    title = $(this).val();
-                }
-                let descriptionType = $(this).attr('name').split("_")[1] == 'employee' ?
-                    'description_employee' : $(this).attr('name').split("_")[1] == 'supervisor' ?
-                    'description_supervisor' : '';
-                let description_employee = descriptionType == 'description_employee' ? $(this).val() : '';
-                let description_supervisor = descriptionType == 'description_supervisor' ? $(this).val() :
-                    '';
-                let type = 'current';
-                updateKeyGoal(keyGoalId, title, description_employee, description_supervisor, type);
-            });
-
-            $('#groupCForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                //Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let keygoalId = element.name.split("_")[2];
-                    let titleElement = element.name.split('_');
-                    let title = '';
-                    if (titleElement[1] == 'title') {
-                        title = element.value;
-                    }
-                    let descriptionType = element.name.split("_")[1] == 'employee' ?
-                        'description_employee' : element.name.split("_")[1] == 'supervisor' ?
-                        'description_supervisor' : '';
-                    let description_employee = descriptionType == 'description_employee' ? element
-                        .value : '';
-                    let description_supervisor = descriptionType == 'description_supervisor' ?
-                        element.value : '';
-                    let type = 'current';
-                    updateKeyGoal(keygoalId, title, description_employee, description_supervisor,
-                        type);
-                });
-
-                if (!empty) {
-                    isGroupCFormSaved = true;
-                }
-
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupDForm').on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
+            $('#status_id').on('change', function() {
+                let status = $('#status_id').val();
+                if (status == {{ config('constant.VERIFIED_STATUS') }}) {
+                    $('#receiver').show();
+                } else {
+                    $('#receiver').hide();
                 }
             });
 
-            $('#groupDForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                isGroupDFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupEForm').on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
-                }
-            });
-
-            $('#groupEForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                isGroupEFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            //save on check
-            $('#groupFForm').on('change', 'input[type="checkbox"]', function(e) {
-                e.preventDefault();
-                let data = $('#groupFForm').serializeArray();
-                let questionId = $(this).attr('name').split("_")[1];
-                // Checking if any input field in the form is empty.
-                let filled = false;
-                data.every(element => {
-                    if (element.value) {
-                        filled = true;
-                        return false;
-                    }
-                    return true;
-                });
-                data = data.map(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value == 'on' ? 'true' : 'false';
-                    return {
-                        'question_id': questionId,
-                        'answer': answer
-                    };
-                })
-                saveAnswerAll(data);
-                isGroupFFormSaved = true;
-                if (!filled) {
-                    isGroupFFormSaved = false;
-                }
-
-            });
-
-            $('#groupFForm').on('submit', function(e) {
-                e.preventDefault();
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let filled = false;
-                data.every(element => {
-                    if (element.value) {
-                        filled = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (!filled) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value == 'on' ? 'true' : 'false';
-                    saveAnswer(questionId, answer);
-                });
-                isGroupFFormSaved = true;
-                toastr.success('Answer saved', 'Success', {
-                    timeOut: 1000
-                });
-
-            });
-
+            // GROUP G - LINE MANAGER RESULT AND COMMENTS
             $('#groupGForm').on('submit', function(e) {
                 e.preventDefault();
 
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
+                let result = $('#result').val().trim();
+                let comments = $('#comments').val().trim();
 
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
+                if (!result || !comments) {
+                    toastr.error('Please provide both Result and Comments before saving.',
+                        'Validation Error');
                     return;
                 }
 
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupHForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupIForm').on('change', 'textarea', function(e) {
-                e.preventDefault();
-                let questionId = $(this).attr('name').split("_")[1];
-                let answer = $(this).val();
-                if (questionId) {
-                    saveAnswer(questionId, answer);
-                }
-            });
-
-            $('#groupIForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                isGroupIFormSaved = true;
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            $('#groupJForm').on('submit', function(e) {
-                e.preventDefault();
-
-                // Getting form action, method and data.
-                var action = $(this).attr("action");
-                var method = $(this).attr('method');
-                let data = $(this).serializeArray();
-
-                // Checking if any input field in the form is empty.
-                let empty = false;
-                data.every(element => {
-                    if (!element.value) {
-                        empty = true;
-                        return false;
-                    }
-                    return true;
-                });
-                if (empty) {
-                    toastr.error('Please complete the form.', 'Error', {
-                        timeout: 2000
-                    });
-                    return;
-                }
-
-                // Storing the form data.
-                data.forEach(element => {
-                    let questionId = element.name.split("_")[1];
-                    let answer = element.value;
-                    saveAnswer(questionId, answer);
-                });
-                toastr.success('Form saved', 'Success', {
-                    timeOut: 1000
-                });
-            });
-
-            getKeyGoalsEmployee();
-            getKeyGoalsSupervisor();
-
-
-            $(document).on('click', '.open-edit-modal-form', function(e) {
-                e.preventDefault();
-                $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
-                    const editForm = document.getElementById('keyGoalEditForm');
-
-                    const fv = FormValidation.formValidation(editForm, {
-                        fields: {
-                            title: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Title is required'
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            trigger: new FormValidation.plugins.Trigger(),
-                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
-                            submitButton: new FormValidation.plugins.SubmitButton(),
-                            icon: new FormValidation.plugins.Icon({
-                                valid: 'bi bi-check2-square',
-                                invalid: 'bi bi-x-lg',
-                                validating: 'bi bi-arrow-repeat',
-                            }),
-
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.manager.result.store') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        performance_review_id: "{{ $performanceReview->id }}",
+                        result: result,
+                        comments: comments
+                    },
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Result and Comments saved successfully!',
+                                'Success');
+                        } else {
+                            toastr.error(response.message ||
+                                'Failed to save result and comments.');
                         }
-                    }).on('core.form.valid', function(e) {
-                        url = fv.form.action;
-                        form = fv.form
-                        data = $(form).serialize();
-                        var successCallBack = function(response) {
-                            $('#openModal').modal('hide');
-                            toastr.success('Key goal updated.', 'Success', {
-                                timeOut: 2000
-                            });
-                            getKeyGoalsEmployee();
-                            getKeyGoalsSupervisor();
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                        toastr.error('Something went wrong while saving result and comments.');
+                    }
+                });
+            });
 
-                        }
+            // validateForm()
+            const managerResult = $('#result').val().trim();
+            const managerComments = $('#comments').val().trim();
 
-                        var errorCallback = function(response) {
-                            console.log(response);
-                            toastr.error('Key goal cannot be updated.', 'Failed', {
-                                timeOut: 2000
-                            })
-                        }
-
-                        ajaxSubmit(url, 'PUT', data, successCallBack, errorCallback);
-                    })
-                })
-            })
-
-        });
-
-        $('#status_id').on('change', function() {
-            let status = $('#status_id').val();
-            if (status == {{ config('constant.VERIFIED_STATUS') }}) {
-                $('#receiver').show();
+            if (!managerResult && !managerComments) {
+                isGroupGFormSaved = false;
+                $('#result, #comments').addClass('is-invalid');
+                toastr.error('Please fill Result and Comments (Section G) before submitting.', 'Validation Error');
             } else {
-                $('#receiver').hide();
+                $('#result, #comments').removeClass('is-invalid');
             }
         });
-
-        function addKeyGoal(event) {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.store') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                    'title': $('#key_goal_input').val(),
-                    'type': 'future'
-                },
-                success: function(data) {
-                    $('#key_goal_input').val('');
-                    getKeyGoalsEmployee();
-                    getKeyGoalsSupervisor();
-                    toastr.success('Key goal added.', 'Success', {
-                        timeOut: 2000
-                    });
-                },
-                error: function(data) {
-                    toastr.error('Key goal could not be added.', 'Failed', {
-                        timeOut: 2000
-                    });
-                }
-            });
-        }
-
-        function deleteKeyGoal(id) {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.destroy') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'keyGoalId': id
-                },
-                success: function(data) {
-                    $('#key_goal_input').val('');
-                    getKeyGoalsEmployee();
-                    getKeyGoalsSupervisor();
-                    toastr.success('Key goal deleted.', 'Success', {
-                        timeOut: 2000
-                    });
-                },
-                error: function(data) {
-                    toastr.error('Key goal could not be deleted.', 'Failed', {
-                        timeOut: 2000
-                    });
-                }
-            });
-        }
-
-        function updateKeyGoal(keyGoalId, title = '', descriptionEmployee = '', descriptionSupervisor = '', type) {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.update') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'key_goal_id': keyGoalId,
-                    'title': title,
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                    'description_employee_annual': descriptionEmployee,
-                    'description_supervisor_annual': descriptionSupervisor,
-                    'type': type
-                },
-                success: function(data) {
-                    // toastr.success('Key goal updated.', 'Success', {timeOut: 2000});
-                },
-                error: function(data) {
-                    // toastr.error('Key goal could not be updated.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
-
-        function getKeyGoalsEmployee() {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.employee.get') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                },
-                success: function(data) {
-                    $('#keygoal_employee').html.empty;
-                    $('#keygoal_employee').html(data.goal);
-                },
-                error: function(data) {
-                    // toastr.error('Key goal could not be added.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
-
-        function getKeyGoalsSupervisor() {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.supervisor.get') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                },
-                success: function(data) {
-                    $('#keygoal_supervisor').html.empty;
-                    $('#keygoal_supervisor').html(data.goal);
-                },
-                error: function(data) {
-                    // toastr.error('Key goal could not be added.', 'Failed', {timeOut: 2000});
-                }
-            });
-        }
-
-        function appendKeyGoal() {
-            $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.keygoal.append') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}"
-                },
-                success: function(data) {
-                    $('#keyGoalTable').append(data.html);
-                },
-                error: function(error) {
-                    //
-                }
-            });
-        }
-
-        function saveAnswer(questionId, answer) {
-            let flag;
-            return $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.answer.store') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                    'question_id': questionId,
-                    'answer': answer
-                },
-                success: function(data) {
-                    // toastr.success('Answer saved', 'Success', {timeOut: 1000});
-                },
-                error: function(error) {
-                    // toastr.error('Answer could not be saved.', 'Error', {timeOut: 1000});
-                }
-            });
-        }
-
-        function saveAnswerAll(data) {
-            return $.ajax({
-                type: 'POST',
-                url: "{{ route('performance.answer.store.all') }}",
-                data: {
-                    '_token': "{{ csrf_token() }}",
-                    'performance_review_id': "{{ $performanceReview->id }}",
-                    data
-                },
-                success: function(data) {
-                    toastr.success(data.question + ' is saved', 'Success', {
-                        timeOut: 1000
-                    });
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-        }
-
-        function validateForm() {
-            if (isGroupCFormSaved && isGroupDFormSaved && isGroupEFormSaved && isGroupFFormSaved && isGroupIFormSaved) {
-                window.location.href = "{{ route('performance.review.store') }}";
-            } else {
-                toastr.warning('Please save the forms.', 'Warning', {
-                    timeOut: 2000
-                });
-            }
-        }
     </script>
 @endsection
 
@@ -729,684 +133,229 @@
 
     <section>
 
-        <div id="employeeAndSupervisorDetails" class="mb-3">
+        <!-- A. Employee and Line Manager Details -->
+        @include('PerformanceReview::Partials.employeeDetails')
+
+        <!-- B. Key Goals Review -->
+        <div id="keyGoalsReview" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">A.</span>
-                        <span>
-                            Employee and Supervisor Details
-                        </span>
+                        <span class="fw-bold">B.</span> Key Goals Review
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Employee Name</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getEmployeeName() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Employee Title</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getEmployeeTitle() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Supervisor Name</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getSupervisorName() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Supervisor Title</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getSupervisorTitle() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Technical Supervisor's Name</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getTechnicalSupervisorName() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Technical Supervisor's Title</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getTechnicalSupervisorTitle() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Date of Joining</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->employee->getFirstJoinedDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">In Current Position Since</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getJoinedDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="mb-2 row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Review period from:</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getReviewFromDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Review period to:</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getReviewToDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-3 col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <span class="fw-bold">Deadline:</span>
-                                </div>
-                                <div class="col-lg-6">
-                                    <span>{{ $performanceReview->getDeadlineDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <table class="table table-bordered" id="keyGoalTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 18%">Objective</th>
+                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                <th colspan="2">Achievement against output / deliverable</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 25%">Remarks / Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($keygoals as $keygoal)
+                                <tr>
+                                    <td>{{ $keygoal->title }}</td>
+                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
+                                            {{ $keygoal->status?->label() ?? 'Not Set' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div id="employeeFeedbackForThisReviewPeriod" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupBForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">B.</span>
-                            <span>
-                                Employee Feedback For This Review Period
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">
-                                            Mid-Term Review
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($groupBQuestions as $question)
-                                                @if (!$loop->first)
-                                                    <hr>
-                                                @endif
-                                                <div class="row">
-                                                    <label class="fw-bold">{{ $question->question }}</label>
-                                                    <span
-                                                        class="mt-2">{{ $midTermReview->getAnswer($question->id) }}</span>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="col-md">
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        Annual Review
-                                    </div>
-                                    <div class="card-body">
-                                        @foreach ($groupBQuestions as $question)
-                                            @if (!$loop->first)
-                                                <hr>
-                                            @endif
-                                            <div class="row">
-                                                <label class="fw-bold">{{ $question->question }}</label>
-                                                <span
-                                                    class="mt-2">{{ $performanceReview->getAnswer($question->id) }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- <div class="card-footer">
-                            <button type="submit" class="d-none btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                        </div> --}}
-                </div>
-            </form>
-        </div>
-
-        <div id="keyGoalsReview" class="mb-3">
-            <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupCForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">C.</span>
-                            <span>
-                                Key Goals Review
-                            </span>
-                            <button class="d-none" type="button" onclick="appendKeyGoal()"><i
-                                    class="bi bi-plus"></i></button>
-                        </span>
-                    </div>
-                    <div class="card-body">
-
-                        @if ($midTermReview)
-                            <div class="card">
-                                <div class="card-header fw-bold">
-                                    Mid-Term Review
-                                </div>
-                                <div class="card-body">
-                                    <table id="keyGoalTable" style="width: 100%">
-                                        <tr>
-                                            <th style="width: 20%">Key Goals</th>
-                                            <th style="width: 40%">To be completed by Employee</th>
-                                            <th style="width: 40%">To be completed by Supervisor</th>
-                                        </tr>
-
-                                        @foreach ($keygoals as $keygoal)
-                                            <tr>
-                                                <td>{{ $keygoal->title }}</td>
-                                                <td>{{ $keygoal->description_employee }}</td>
-                                                <td>{{ $keygoal->description_supervisor }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </table>
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="card">
-                            <div class="card-header fw-bold">
-                                Annual Review
-                            </div>
-                            <div class="card-body">
-                                <table id="keyGoalTable" style="width: 100%">
-                                    <tr>
-                                        <th style="width: 20%">Key Goals</th>
-                                        <th style="width: 40%">To be completed by Employee</th>
-                                        <th style="width: 40%">To be completed by Supervisor</th>
-                                    </tr>
-                                    @foreach ($keygoals as $keygoal)
-                                        <tr>
-                                            <td>{{ $keygoal->title }}</td>
-                                            <td>{{ $keygoal->description_employee_annual }}</td>
-                                            <td>
-                                                {{-- <input style="width: 100%" type="text" name="{{'keygoal_supervisor_'.$keygoal->id}}" id="{{'keygoal_supervisor_'.$keygoal->id}}" value="{{$keygoal->description_supervisor_annual}}"> --}}
-                                                <textarea style="width:100%" name="{{ 'keygoal_supervisor_' . $keygoal->id }}"
-                                                    id="{{ 'keygoal_supervisor_' . $keygoal->id }}" rows="2">{{ $keygoal->description_supervisor_annual }}</textarea>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </table>
-                            </div>
-                        </div>
-
-
-                        {{-- <table id="keyGoalTable">
-                                <tr>
-                                    <th style="width: 24%">(Insert key goals agreed upon during previous performance review)</th>
-                                    <th style="width: 38%">To be completed by Employee</th>
-                                    <th style="width: 38%">To be completed by Supervisor</th>
-                                </tr>
-
-                                @foreach ($currentKeyGoals as $keygoal)
-                                    <tr>
-                                        <td>
-                                            <input disabled style="width: 100%" type="text" name="{{'keygoal_title_'.$keygoal->id}}" id="{{'keygoal_title_'.$keygoal->id}}" value="{{$keygoal->title}}">
-                                        </td>
-                                        <td>
-                                            <input disabled style="width: 100%" type="text" name="{{'keygoal_employee_'.$keygoal->id}}" id="{{'keygoal_employee_'.$keygoal->id}}" value="{{$keygoal->description_employee}}">
-                                        </td>
-                                        <td>
-                                            <input style="width: 100%" type="text" name="{{'keygoal_supervisor_'.$keygoal->id}}" id="{{'keygoal_supervisor_'.$keygoal->id}}" value="{{$keygoal->description_supervisor}}">
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </table> --}}
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
+        <!-- C. Professional Development Plan -->
         <div id="professionalDevelopmentPlan" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold"></span>
-                        <span>
-                            Professional Development Plan
-                        </span>
+                        <span class="fw-bold">C.</span> Professional Development Plan
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <span>{{ $professionalDevelopmentPlan }}</span>
+                    @php $devPlans = $keyGoalReview->developmentPlans ?? collect(); @endphp
+
+                    @if ($devPlans->isEmpty())
+                        <div class="text-center text-muted py-4">
+                            No professional development plan has been added yet.
                         </div>
+                    @else
+                        <table class="table table-bordered" id="devplan-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%">SN</th>
+                                    <th style="width: 45%">Development Plan Objective</th>
+                                    <th style="width: 45%">Activity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($devPlans as $index => $plan)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $plan->objective }}</td>
+                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- D. Core Competencies -->
+        <div id="coreCompetenciesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">D.</span> Core Competencies
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 35%">Competency</th>
+                                <th style="width: 15%">Rating (1-5)</th>
+                                <th style="width: 50%">Examples</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($coreCompetencies ?? collect() as $comp)
+                                <tr>
+                                    <td>{{ $comp->competency }}</td>
+                                    <td>
+                                        @php
+                                            $ratings = [
+                                                1 => '1 - Poor',
+                                                2 => '2 - Fair',
+                                                3 => '3 - Good',
+                                                4 => '4 - Very Good',
+                                                5 => '5 - Excellent',
+                                            ];
+                                        @endphp
+
+                                        @if ($comp->rating)
+                                            <span class="badge bg-primary">
+                                                {{ $ratings[$comp->rating] ?? $comp->rating }}
+                                            </span>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td>{{ $comp->example ?? '—' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No core competencies recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- E. Challenges / Difficulties -->
+        <div id="challengesSection" class="mb-3">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">E.</span> Challenges / Difficulties
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 45%">Challenge / Difficulty Faced</th>
+                                <th style="width: 45%">Result / Outcome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($challenges ?? collect() as $challenge)
+                                <tr>
+                                    <td>{{ $challenge->challenge }}</td>
+                                    <td>{{ $challenge->result }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">No challenges recorded.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- F. Employee Comments -->
+        <div id="employeeComments" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">F.</span>
+                        Employee Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="keySkillsEvaluation" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupDForm">
+        <!-- G. Line Manager Result and Comments -->
+        <div id="managerResultComments" class="mb-3">
+            <form id="groupGForm" method="POST">
+                @csrf
+                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title">
-                            <span class="fw-bold">D.</span>
-                            <span>
-                                Key Skills Evaluation (to be completed by supervisor)
-                            </span>
+                            <span class="fw-bold">G.</span> Result and Comments
                         </span>
                     </div>
                     <div class="card-body">
-                        @foreach ($groupDQuestions as $question)
-                            @if (!$loop->first)
-                                <hr>
-                            @endif
-                            <div class="row">
-                                <div class="col-lg-5">
-                                    <label for="{{ 'question_' . $question->id }}"
-                                        class="fw-bold">{{ $question->question }}</label>
-                                </div>
-                                <div class="col-lg-5">
-                                    <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}" style="width: 100%;"
-                                        rows="2">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                                </div>
-                            </div>
-                        @endforeach
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Result</label>
+                            <textarea name="result" id="result" class="form-control" rows="4"
+                                placeholder="Summarize the overall performance result...">{{ old('result', $performanceReview->result ?? '') }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comments</label>
+                            <textarea name="comments" id="comments" class="form-control" rows="4"
+                                placeholder="Provide detailed comments and feedback...">{{ old('comments', $performanceReview->comments ?? '') }}</textarea>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-sm btn-outline-primary" id="save-result-comments">
+                            Save
+                        </button>
                     </div>
                 </div>
-            </form>
-        </div>
-
-        <div id="strengthsAndAreasForGrowth" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupEForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">E.</span>
-                            <span>
-                                Strengths and Areas for Growth (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">
-                                            Mid-Term Review
-                                        </div>
-                                        <div class="card-body">
-                                            @foreach ($groupEQuestions as $question)
-                                                @if (!$loop->last)
-                                                    @if (!$loop->first)
-                                                        <hr>
-                                                    @endif
-                                                    <div class="row">
-                                                        <label class="fw-bold">{{ $question->question }}</label>
-                                                        <span
-                                                            class="mt-2">{{ $midTermReview->getAnswer($question->id) }}</span>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header fw-bold">
-                                        Annual Review
-                                    </div>
-                                    <div class="card-body">
-                                        @foreach ($groupEQuestions as $question)
-                                            @if (!$loop->last)
-                                                @if (!$loop->first)
-                                                    {{-- <hr> --}}
-                                                @endif
-                                                <div class="mb-2 row">
-                                                    <label class="mb-2 fw-bold">{{ $question->question }}</label>
-                                                    <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}"
-                                                        style="width: 95%; margin-left: 10px" rows="3">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="overallPerformanceEvaluation" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupFForm">
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <span class="card-title">
-                            <span class="fw-bold">F.</span>
-                            <span>
-                                Overall Performance Evaluation (to be completed by supervisor)
-                            </span>
-                        </span>
-                    </div>
-                    <div class="card-body">
-                        <table style="">
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <th style="width: 20%">{{ $question->question }}</th>
-                                @endforeach
-                            </tr>
-
-                            <tr>
-                                @foreach ($groupFQuestions as $question)
-                                    <td style="font-style: italic">{{ $question->description }}</td>
-                                @endforeach
-                            </tr>
-
-                            <tr>
-                                @php
-                                    $counter = 5;
-                                @endphp
-                                @foreach ($groupFQuestions as $question)
-                                    <td style="text-align: center">
-                                        <input type="hidden" name="{{ 'question_' . $question->id }}"
-                                            id="{{ 'question_' . $question->id }}">
-                                        <input type="checkbox" name="{{ 'question_' . $question->id }}"
-                                            id="{{ 'question_' . $question->id }}"
-                                            {{ $performanceReview->getAnswer($question->id) == 'true' ? 'checked' : '' }}>
-                                        <label for="{{ 'question_' . $question->id }}">{{ $counter-- }}</label>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        {{-- <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button> --}}
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="identifyKeyGoals" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupGForm">
-                @foreach ($groupGQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">G.</span>
-                                <span>{{ $question->question }}</span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-
-                            <div class="row">
-
-                                <div class="mb-2 row">
-                                    <div class="col-lg-4 d-flex align-items-center">
-                                        <textarea class="form-control" style="width:100%" name="key_goal_input" id="key_goal_input" rows="2"
-                                            placeholder="Key goal"></textarea>
-                                    </div>
-                                    <div class="col d-flex align-items-center">
-                                        <button type="button" onclick="addKeyGoal(event)"
-                                            class="btn btn-primary btn-sm">Add</button>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <div class="col-lg-6">
-                                    <div class="mb-2 row">
-                                        <span class="fw-bold">Filled by Employee:</span>
-                                    </div>
-                                    <div class="row">
-                                        @foreach ($futureKeyGoals->where('created_by', $performanceReview->requester_id) as $key => $item)
-                                            <span>{{ ++$key . '. ' . $item->title }}</span>
-                                        @endforeach
-                                    </div>
-                                    {{-- <div class="p-2 row" id="keygoal_employee"></div> --}}
-                                </div>
-
-                                <div class="col-lg-6">
-                                    <div class="mb-2 row">
-                                        <span class="fw-bold">Filled by Supervisor:</span>
-                                    </div>
-                                    {{-- <div class="row">
-                                            @foreach ($futureKeyGoals->where('created_by', '!=', $performanceReview->requester_id) as $key => $item)
-                                                <span>{{++$key.'. '.$item->title}}</span>
-                                            @endforeach
-                                        </div> --}}
-                                    <div class="p-2 row" id="keygoal_supervisor"></div>
-                                </div>
-                            </div>
-
-
-
-                            {{-- <div>
-                                    <textarea oninput="handleInput(event)" name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 50%" rows="7">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                </div> --}}
-                        </div>
-                        {{-- <div class="card-footer">
-                                <button type="submit" class="btn btn-sm btn-outline-primary" style="float: right">Save</button>
-                            </div> --}}
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="employeeComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupHForm">
-                @foreach ($groupHQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">H.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @if ($midTermReview)
-                                    <div class="col-md">
-                                        <div class="card">
-                                            <div class="card-header fw-bold">Mid-Term Review</div>
-                                            <div class="card-body">
-                                                <span>{{ $midTermReview->getAnswer($question->id) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">Annual Review</div>
-                                        <div class="card-body">
-                                            <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="supervisorComments" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupIForm">
-                @foreach ($groupIQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">I.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @if ($midTermReview)
-                                    <div class="col-md">
-                                        <div class="card">
-                                            <div class="card-header fw-bold">Mid-Term Review</div>
-                                            <div class="card-body">
-                                                <span>{{ $midTermReview->getAnswer($question->id) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">Annual Review</div>
-                                        <div class="card-body">
-                                            {{-- <span>{{$performanceReview->getAnswer($question->id)}}</span> --}}
-                                            <textarea name="{{ 'question_' . $question->id }}" id="{{ 'question_' . $question->id }}" style="width: 100%"
-                                                rows="7">{{ $performanceReview->getAnswer($question->id) }}</textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- <div>
-                                    <textarea name="{{'question_'.$question->id}}" id="{{'question_'.$question->id}}" style="width: 50%" rows="7">{{$performanceReview->getAnswer($question->id)}}</textarea>
-                                </div> --}}
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
-            </form>
-        </div>
-
-        <div id="acknowledgements" class="mb-3">
-            <form action="{{ route('performance.answer.store') }}" method="POST" id="groupJForm">
-                @foreach ($groupJQuestions as $question)
-                    <div class="card">
-                        <div class="card-header fw-bold">
-                            <span class="card-title">
-                                <span class="fw-bold">J.</span>
-                                <span>
-                                    {{ $question->question }}
-                                </span>
-                            </span>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                @if ($midTermReview)
-                                    <div class="col-md">
-                                        <div class="card">
-                                            <div class="card-header fw-bold">Mid-Term Review</div>
-                                            <div class="card-body">
-                                                <span>{{ $midTermReview->getAnswer($question->id) }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                                <div class="col-md">
-                                    <div class="card">
-                                        <div class="card-header fw-bold">Annual Review</div>
-                                        <div class="card-body">
-                                            <span>{{ $performanceReview->getAnswer($question->id) }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <button type="submit" class="d-none btn btn-sm btn-outline-primary"
-                                style="float: right">Save</button>
-                        </div>
-                    </div>
-                @endforeach
             </form>
         </div>
 
     </section>
 
-    {{-- <section>
-            <div style="float: right">
-                <a href="{{route('performance.submit', $performanceReview->id)}}" type="button" class="btn btn-sm btn-success">Submit</a>
-                <a href="{{route('performance.index')}}" type="button" class="btn btn-sm btn-danger">Cancel</a>
-            </div>
-            <br><br>
-        </section> --}}
 
     <section>
         <div class="card">
@@ -1521,8 +470,7 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-9">
-                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif"
-                                        name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
                                     @if ($errors->has('log_remarks'))
                                         <div class="fv-plugins-message-container invalid-feedback">
                                             <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>

@@ -51,7 +51,7 @@ class EmployeeProfileController extends Controller
             // filter consultants out
             $data->where(function ($q) {
                 $q->whereNull('employee_type_id')
-                    ->orWhere('employee_type_id', '!=', 6);
+                    ->orWhere('employee_type_id', '=', config('constant.FULL_TIME_EMPLOYEE'));
             });
 
             $data = $data->get();

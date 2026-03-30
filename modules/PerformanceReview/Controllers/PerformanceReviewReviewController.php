@@ -22,7 +22,8 @@ class PerformanceReviewReviewController extends Controller
         protected PerformanceReviewLog $performanceReviewLog,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
         protected UserRepository $user
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -50,11 +51,11 @@ class PerformanceReviewReviewController extends Controller
                     return $performanceReview->getReviewToDate();
                 })
                 ->addColumn('status', function ($performanceReview) {
-                    return '<span class="'.$performanceReview->getStatusClass().'">'.$performanceReview->getStatus().'</span>';
+                    return '<span class="' . $performanceReview->getStatusClass() . '">' . $performanceReview->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($performanceReview) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
-                    $btn .= route('performance.review.create', [$performanceReview->id]).'" rel="tooltip" title="Review Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
+                    $btn .= route('performance.review.create', [$performanceReview->id]) . '" rel="tooltip" title="Review Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
 
                     return $btn;
                 })
@@ -73,14 +74,6 @@ class PerformanceReviewReviewController extends Controller
 
         $record = [
             'performanceReview' => $performanceReview,
-            'groupBQuestions' => $this->performanceReviewQuestion->where('group', 'B')->orderBy('position')->get(),
-            'groupDQuestions' => $this->performanceReviewQuestion->where('group', 'D')->orderBy('position')->get(),
-            'groupEQuestions' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position')->get(),
-            'groupFQuestions' => $this->performanceReviewQuestion->where('group', 'F')->orderBy('position')->get(),
-            'groupGQuestions' => $this->performanceReviewQuestion->where('group', 'G')->orderBy('position')->get(),
-            'groupHQuestions' => $this->performanceReviewQuestion->where('group', 'H')->orderBy('position')->get(),
-            'groupIQuestions' => $this->performanceReviewQuestion->where('group', 'I')->orderBy('position')->get(),
-            'groupJQuestions' => $this->performanceReviewQuestion->where('group', 'J')->orderBy('position')->get(),
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
         ];
@@ -120,6 +113,8 @@ class PerformanceReviewReviewController extends Controller
                 'nextLineManagerExists' => $nextLineManagerExists,
                 'receivers' => $receivers,
                 'authUser' => auth()->user(),
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
             ];
 
             return view('PerformanceReview::Review.AnnualPerformanceReview.create', $record, $array);
@@ -136,11 +131,14 @@ class PerformanceReviewReviewController extends Controller
 
             $array = [
                 'keygoals' => $keyGoalReview->keyGoals,
+                'keyGoalReview' => $keyGoalReview,
                 'professionalDevelopmentPlanQuestion' => $professionalDevelopmentPlanQuestion,
                 'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
                 'nextLineManagerExists' => $nextLineManagerExists,
                 'receivers' => $receivers,
                 'newKeyGoals' => $performanceReview->keyGoals()->where('type', 'current')->get(),
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
             ];
 
             return view('PerformanceReview::Review.MidTermPerformanceReview.create', $record, $array);
@@ -165,9 +163,11 @@ class PerformanceReviewReviewController extends Controller
         $this->authorize('review', $performanceReview);
 
         // ED Approval
-        if (($authUser->employee->designation_id == 9 || $authUser->can('approve-performance-review')) &&
+        if (
+            ($authUser->employee->designation_id == 9 || $authUser->can('approve-performance-review')) &&
             $request->status_id == config('constant.APPROVED_STATUS') &&
-            $performanceReview->review_type_id == config('constant.ANNUAL_REVIEW')) {
+            $performanceReview->review_type_id == config('constant.ANNUAL_REVIEW')
+        ) {
             $inputs = $request->validated();
             $inputs['approver_id'] = $authUser->id;
             $inputs['user_id'] = auth()->id();

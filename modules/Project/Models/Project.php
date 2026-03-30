@@ -24,6 +24,7 @@ class Project extends Model
         'team_lead_id',
         'focal_person_id',
         'activated_at',
+        'show_pms_dashboard',
     ];
 
     protected $dates = [
@@ -123,5 +124,15 @@ class Project extends Model
     public function getActiveStatus()
     {
         return $this->activated_at ? 'Active' : 'Inactive';
+    }
+
+    public function getFocalPersonNameAttribute()
+    {
+        return $this->focalPerson ? $this->focalPerson->getFullName() : '';
+    }
+
+    public function getTeamLeadNameAttribute()
+    {
+        return $this->teamLead ? $this->teamLead->getFullName() : '';
     }
 }

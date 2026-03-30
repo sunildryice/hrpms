@@ -88,7 +88,7 @@ class ProjectController
     public function create()
     {
         $authUser = auth()->user();
-        $users = $this->userRepository->pluck('full_name', 'id');
+        $users = $this->userRepository->getActiveUsers();
         $project = Project::with('members')->getModel();
         $stages = $this->activityStageRepository->all();
         return view('Project::Project.create', compact('authUser', 'users', 'stages'));
@@ -110,16 +110,15 @@ class ProjectController
     public function show($id)
     {
         $project = $this->projectRepository->find($id);
-        $users = $this->userRepository->pluck('full_name', 'id');
         $stages = $this->activityStageRepository->all();
         $projectActivity = $project->activities;
         $authUser = auth()->user();
-        return view('Project::Project.show', compact('project', 'users', 'stages', 'authUser', 'projectActivity'));
+        return view('Project::Project.show', compact('project', 'stages', 'authUser', 'projectActivity'));
     }
 
     public function dashboard(Request $request, $id)
     {
-        $users = $this->userRepository->pluck('full_name', 'id');
+        $users = $this->userRepository->getActiveUsers();
         $project = $this->projectRepository->find($id);
 
         $fromDate = $request->query('from_date');
@@ -186,7 +185,7 @@ class ProjectController
     public function edit($id)
     {
         $project = $this->projectRepository->with(['members', 'stages'])->find($id);
-        $users = $this->userRepository->pluck('full_name', 'id');
+        $users = $this->userRepository->getActiveUsers();
         $stages = $this->activityStageRepository->all();
         return view('Project::Project.edit', compact('project', 'users', 'stages'));
     }
@@ -197,6 +196,7 @@ class ProjectController
         $inputs = $request->validated();
         $inputs['updated_by'] = $authUser->id;
         $inputs['activated_at'] = $request->active ? date('Y-m-d H:i:s') : null;
+        $inputs['show_pms_dashboard'] = $request->has('show_pms_dashboard') ? 1 : 0;
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

@@ -3,12 +3,14 @@
 use Modules\PerformanceReview\Controllers\PerformanceReviewAnswerController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewApproveController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewAssistantController;
+use Modules\PerformanceReview\Controllers\PerformanceReviewChallengeController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewController;
+use Modules\PerformanceReview\Controllers\PerformanceReviewCoreCompetencyController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewKeyGoalController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewRecommendController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewReviewController;
 
-Route::middleware(['web', 'auth', 'logger'])->group(function() {
+Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('performance', [PerformanceReviewController::class, 'index'])->name('performance.index');
     Route::get('performance/employee', [PerformanceReviewController::class, 'employeeIndex'])->name('performance.employee.index');
@@ -22,6 +24,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function() {
     Route::any('performance/{id}/destroy', [PerformanceReviewController::class, 'destroy'])->name('performance.destroy');
     Route::get('performance/{id}/fill', [PerformanceReviewController::class, 'fill'])->name('performance.fill');
     Route::any('performance/{id}/submit', [PerformanceReviewController::class, 'submit'])->name('performance.submit');
+    Route::post('performance/employee/comments', [PerformanceReviewController::class, 'storeEmployeeComments'])->name('performance.employee.comments.store');
+    Route::post('performance/manager/result', [PerformanceReviewController::class, 'storeManagerResultComments'])->name('performance.manager.result.store');
 
 
     Route::post('performance/answer', [PerformanceReviewAnswerController::class, 'store'])->name('performance.answer.store');
@@ -42,7 +46,11 @@ Route::middleware(['web', 'auth', 'logger'])->group(function() {
     Route::post('performance/keygoal/delete', [PerformanceReviewKeyGoalController::class, 'destroy'])->name('performance.keygoal.destroy');
 
     Route::post('performance/{id}/keygoals/save', [PerformanceReviewKeyGoalController::class, 'saveDraft'])->name('performance.keygoals.save-draft');
+    Route::post('performance/devplan/save', [PerformanceReviewKeyGoalController::class, 'updateDevPlan'])->name('performance.devplan.update');
 
+    Route::post('performance/challenge/store', [PerformanceReviewChallengeController::class, 'store'])->name('performance.challenge.store');
+
+    Route::post('performance/core-competency/store', [PerformanceReviewCoreCompetencyController::class, 'store'])->name('performance.corecompetency.store');
 
     Route::get('performance/review', [PerformanceReviewReviewController::class, 'index'])->name('performance.review.index');
     Route::post('performance/review', [PerformanceReviewReviewController::class, 'store'])->name('performance.review.store');

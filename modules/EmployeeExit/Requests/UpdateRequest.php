@@ -25,7 +25,7 @@ class UpdateRequest extends FormRequest
     {
         return [
             'last_duty_date'=>'required|date',
-            'resignation_date'=>'required|date',
+            'resignation_date'=>'nullable|date',
             'btn'=>'nullable'
         ];
     }

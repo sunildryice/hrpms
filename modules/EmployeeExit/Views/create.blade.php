@@ -34,7 +34,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="form-label required-label">Resignation Date</label>
+                    <label for="" class="form-label">Resignation Date</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -52,7 +52,7 @@
             <div class="col-lg-9">
                 <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                        name="is_insurance" checked>
+                        name="is_insurance">
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>

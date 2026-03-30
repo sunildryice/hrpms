@@ -26,7 +26,7 @@ class StoreRequest extends FormRequest
         return [
             'employee_id'=>'required',
             'last_duty_date'=>'required|date',
-            'resignation_date'=>'required|date',
+            'resignation_date'=>'nullable|date',
             'is_insurance'=>'nullable',
         ];
     }

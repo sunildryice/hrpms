@@ -79,10 +79,10 @@
                                             <tr>
                                                 <th style="width: 8%">{{ __('label.date') }}</th>
                                                 <th style="width: 15%">{{ __('label.activity') }}</th>
-                                                <th style="width: 15%">Planned Activities</th>
+                                                <th style="width: 20%">Planned Activities</th>
                                                 <th style="width: 22%" class="wrap-text">Comprehensive Activity Description
                                                 </th>
-                                                <th style="width: 20%">{{ __('label.status') }}</th>
+                                                <th style="width: 15%">{{ __('label.status') }}</th>
                                                 <th style="width: 20%">{{ __('label.remarks') }}</th>
                                             </tr>
                                         </thead>
@@ -100,7 +100,7 @@
                                                 @endphp
 
                                                 <tr>
-                                                    <td class="text-nowrap">{{ $formattedDate }}</td>
+                                                    <td>{{ $formattedDate }}</td>
                                                     <td class="wrap-text">{{ $itinerary?->activity?->title }}</td>
                                                     <td class="wrap-text">{{ $itinerary?->planned_activities }}</td>
                                                     <td class="wrap-text">

@@ -24,6 +24,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::any('performance/{id}/destroy', [PerformanceReviewController::class, 'destroy'])->name('performance.destroy');
     Route::get('performance/{id}/fill', [PerformanceReviewController::class, 'fill'])->name('performance.fill');
     Route::any('performance/{id}/submit', [PerformanceReviewController::class, 'submit'])->name('performance.submit');
+    Route::post('performance/employee/comments', [PerformanceReviewController::class, 'storeEmployeeComments'])->name('performance.employee.comments.store');
+    Route::post('performance/manager/result', [PerformanceReviewController::class, 'storeManagerResultComments'])->name('performance.manager.result.store');
 
 
     Route::post('performance/answer', [PerformanceReviewAnswerController::class, 'store'])->name('performance.answer.store');

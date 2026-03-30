@@ -35,83 +35,7 @@
     <section>
 
         <!-- A. Employee and Line Manager Details -->
-        <div id="employeeAndSupervisorDetails" class="mb-3">
-            <div class="card">
-                <div class="card-header fw-bold">
-                    <span class="card-title">
-                        <span class="fw-bold">A.</span> Employee and Line Manager Details
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Employee Name</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getEmployeeName() }}</span></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Employee Title</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getEmployeeTitle() }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Line Manager Name</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getSupervisorName() }}</span></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Line Manager Title</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getSupervisorTitle() }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Date of Joining</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->employee->getFirstJoinedDate() }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">In Current Position Since</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getJoinedDate() }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="mb-2 row">
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Review period from:</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getReviewFromDate() }}</span></div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Review period to:</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getReviewToDate() }}</span></div>
-                            </div>
-                        </div>
-                        <div class="mt-3 col-lg-6">
-                            <div class="row">
-                                <div class="col-lg-4"><span class="fw-bold">Deadline:</span></div>
-                                <div class="col-lg-6"><span>{{ $performanceReview->getDeadlineDate() }}</span></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @include('PerformanceReview::Partials.employeeDetails')
 
         <!-- B. Key Goals Review -->
         <div id="keyGoalsReview" class="mb-3">
@@ -122,41 +46,35 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <div class="card">
-                        <div class="card-header fw-bold">Annual Review (Employee Input)</div>
-                        <div class="card-body">
-                            <table class="table table-bordered" id="keyGoalTable">
-                                <thead>
-                                    <tr>
-                                        <th rowspan="2" style="width: 18%">Objective</th>
-                                        <th rowspan="2" style="width: 15%">Output / Deliverable</th>
-                                        <th rowspan="2" style="width: 22%">Major Activities</th>
-                                        <th colspan="2">Achievement against output / deliverable</th>
-                                    </tr>
-                                    <tr>
-                                        <th style="width: 15%">Status</th>
-                                        <th style="width: 25%">Remarks / Comments</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($keygoals as $keygoal)
-                                        <tr>
-                                            <td>{{ $keygoal->title }}</td>
-                                            <td>{{ $keygoal->output_deliverables }}</td>
-                                            <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
-                                            <td>
-                                                <span
-                                                    class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
-                                                    {{ $keygoal->status?->label() ?? 'Not Set' }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <table class="table table-bordered" id="keyGoalTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 18%">Objective</th>
+                                <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 22%">Major Activities</th>
+                                <th colspan="2">Achievement against output / deliverable</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 15%">Status</th>
+                                <th style="width: 25%">Remarks / Comments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($keygoals as $keygoal)
+                                <tr>
+                                    <td>{{ $keygoal->title }}</td>
+                                    <td>{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
+                                            {{ $keygoal->status?->label() ?? 'Not Set' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -222,8 +140,20 @@
                                 <tr>
                                     <td>{{ $comp->competency }}</td>
                                     <td>
+                                        @php
+                                            $ratings = [
+                                                1 => '1 - Poor',
+                                                2 => '2 - Fair',
+                                                3 => '3 - Good',
+                                                4 => '4 - Very Good',
+                                                5 => '5 - Excellent',
+                                            ];
+                                        @endphp
+
                                         @if ($comp->rating)
-                                            <span class="badge bg-primary">{{ $comp->rating }}</span>
+                                            <span class="badge bg-primary">
+                                                {{ $ratings[$comp->rating] ?? $comp->rating }}
+                                            </span>
                                         @else
                                             —
                                         @endif
@@ -274,103 +204,21 @@
             </div>
         </div>
 
-        <!-- H. Employee Comments -->
+        <!-- F. Employee Comments -->
         <div id="employeeComments" class="mb-3">
-            @foreach ($groupHQuestions as $question)
-                <div class="card mb-3">
-                    <div class="card-header fw-bold">
-                        <span class="fw-bold">H.</span> {{ $question->question }}
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-header fw-bold bg-light">Mid-Term Review</div>
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $midTermReview->getAnswer($question->id) ?: '—' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-md-{{ $midTermReview ? '6' : '12' }}">
-                                <div class="card h-100">
-                                    <div class="card-header fw-bold bg-light">Annual Review</div>
-                                    <div class="card-body">
-                                        <p class="mb-0">{{ $performanceReview->getAnswer($question->id) ?: '—' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">F.</span>
+                        Employee Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
                     </div>
                 </div>
-            @endforeach
-        </div>
-
-        <!-- I. Supervisor Comments (if available) -->
-        <div id="supervisorComments" class="mb-3">
-            @foreach ($groupIQuestions as $question)
-                <div class="card mb-3">
-                    <div class="card-header fw-bold">
-                        <span class="fw-bold">I.</span> {{ $question->question }}
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-header fw-bold bg-light">Mid-Term Review</div>
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $midTermReview->getAnswer($question->id) ?: '—' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-md-{{ $midTermReview ? '6' : '12' }}">
-                                <div class="card h-100">
-                                    <div class="card-header fw-bold bg-light">Annual Review</div>
-                                    <div class="card-body">
-                                        <p class="mb-0">{{ $performanceReview->getAnswer($question->id) ?: '—' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-
-        <!-- J. Acknowledgements -->
-        <div id="acknowledgements" class="mb-3">
-            @foreach ($groupJQuestions as $question)
-                <div class="card mb-3">
-                    <div class="card-header fw-bold">
-                        <span class="fw-bold">J.</span> {{ $question->question }}
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @if ($midTermReview)
-                                <div class="col-md-6">
-                                    <div class="card h-100">
-                                        <div class="card-header fw-bold bg-light">Mid-Term Review</div>
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $midTermReview->getAnswer($question->id) ?: '—' }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-md-{{ $midTermReview ? '6' : '12' }}">
-                                <div class="card h-100">
-                                    <div class="card-header fw-bold bg-light">Annual Review</div>
-                                    <div class="card-body">
-                                        <p class="mb-0">{{ $performanceReview->getAnswer($question->id) ?: '—' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+            </div>
         </div>
 
     </section>

@@ -39,14 +39,19 @@ class TimeSheet extends Model
             ->latest();
     }
 
-    public function requester()
-    {
-        return $this->belongsTo(User::class, 'requester_id')->withDefault();
-    }
-
     public function approver()
     {
         return $this->belongsTo(User::class, 'approver_id')->withDefault();
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(TimeSheetLog::class, 'timesheet_id');
+    }
+
+    public function requester()
+    {
+        return $this->belongsTo(User::class, 'requester_id')->withDefault();
     }
 
     public function status()
@@ -92,10 +97,5 @@ class TimeSheet extends Model
     public function isApproved(): bool
     {
         return $this->status_id === config('constant.APPROVED_STATUS');
-    }
-
-    public function logs()
-    {
-        return $this->hasMany(TimeSheetLog::class, 'timesheet_id');
     }
 }

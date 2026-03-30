@@ -20,9 +20,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('dryice:reconcile-employee-yearly-leave-earned-balance')->dailyAt('01:20');
         $schedule->command('dryice:update:attendance:working:hour')->dailyAt('01:30');
         $schedule->command('dryice:make:workplan')->weekly();
+        $schedule->command('dryice:import:attendance')->dailyAt('09:06');
+        $schedule->command('dryice:import:attendance')->dailyAt('10:06');
         $schedule->command('dryice:import:attendance')->hourlyAt(16);
         $schedule->command('dryice:import:attendance')->hourlyAt(46);
-        $schedule->command('timesheets:generate')->dailyAt('02:00');
+        $schedule->command('dryice:generate:timesheets')->dailyAt('02:00');
+        $schedule->command('dryice:auto:submit:timesheet')->dailyAt('09:30');
     }
 
     /**

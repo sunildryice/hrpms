@@ -11,7 +11,7 @@ use Modules\Project\Repositories\TimeSheetRepository;
 
 class GenerateTimesheet extends Command
 {
-    protected $signature = 'timesheets:generate';
+    protected $signature = 'dryice:generate:timesheets';
 
     protected $description = 'Create one timesheet per month for the current year for every user (status_id=1)';
 

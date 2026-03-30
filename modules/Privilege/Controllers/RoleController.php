@@ -44,6 +44,8 @@ class RoleController extends Controller
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
+                    $btn .= route('privilege.roles.view', $row->id) . '"><i class="bi-eye"></i></a>&emsp;';
+                    $btn .= '<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('privilege.roles.edit', $row->id) . '"><i class="bi-pencil-square"></i></a>';
                     return $btn;
                 })->addColumn('updated_at', function ($row) {

@@ -45,13 +45,13 @@
                                     },
                                 },
                             },
-                            resignation_date: {
-                                validators: {
-                                    notEmpty: {
-                                        message: 'Resignation Date is required',
-                                    },
-                                },
-                            },
+                            // resignation_date: {
+                            //     validators: {
+                            //         notEmpty: {
+                            //             message: 'Resignation Date is required',
+                            //         },
+                            //     },
+                            // },
 
                         },
                         plugins: {

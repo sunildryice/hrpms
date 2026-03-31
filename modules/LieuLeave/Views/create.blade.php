@@ -3,6 +3,7 @@
 @section('title', 'Create Lieu Leave Request')
 
 @section('page_js')
+
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#lieu-leave-requests-index').addClass('active');

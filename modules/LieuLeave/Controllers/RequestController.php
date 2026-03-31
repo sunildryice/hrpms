@@ -128,15 +128,12 @@ class RequestController extends Controller
         $substitutes = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
         });
-        $month = Carbon::now();
-        $availableOffDayWorkDates = $this->lieuLeaveBalance->getOffDayWorkAvailableDates($authUser->id, $month)->toArray();
 
 
         return view('LieuLeave::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
             'substitutes' => $substitutes,
-            'availableOffDayWorkDates' => $availableOffDayWorkDates,
         ]);
     }
 

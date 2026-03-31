@@ -81,7 +81,6 @@ class ApproveController extends Controller
 
             $authUser = auth()->user();
 
-
             if ($lieuLeaveRequest->status_id == config('constant.APPROVED_STATUS')) {
                 $lieuLeaveRequest->requester->notify(new LieuLeaveRequestApproved($lieuLeaveRequest));
                 $message = 'Lieu leave request approved successfully.';

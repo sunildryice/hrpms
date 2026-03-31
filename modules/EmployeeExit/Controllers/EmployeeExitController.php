@@ -100,7 +100,7 @@ class EmployeeExitController extends Controller
     public function create()
     {
         $authUser = auth()->user();
-        $employees = $this->employees->getActiveEmployees();
+        $employees = $this->employees->activeEmployees();
         $employeeId = array('0' => $authUser->employee_id);
         $employeeIds = $this->exitHandOverNote->select(['employee_id'])->pluck('employee_id')->toArray();
         $employeeIds = array_merge($employeeId, $employeeIds);

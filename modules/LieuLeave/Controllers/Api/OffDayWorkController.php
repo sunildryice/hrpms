@@ -23,20 +23,27 @@ class OffDayWorkController extends Controller
     public function index(Request $request, $date)
     {
         $leaveDate = Carbon::parse($date);
-        $userId = auth()->user()->id;
+        $user = auth()->user();
         $startDate = $leaveDate->copy()->subMonthNoOverflow();
-        $checkLieuLeaveApplied = $this->lieuLeaveBalance->checkLieuRequestOnLeaveMonthByDate($userId, $leaveDate);
-
+        $checkLieuLeaveApplied = $this->lieuLeaveBalance->checkLieuRequestOnLeaveMonthByDate($user->id, $leaveDate);
         $lieuLeaveAvailableDates = [];
         if(!$checkLieuLeaveApplied) {
             $offDayWorkDates = $this->offDayWorks->select('date')
-                ->where('requester_id', $userId)
+                ->where('requester_id', $user->id)
                 ->whereBetween('date', [$startDate, $leaveDate])
                 ->whereStatusId(config('constant.APPROVED_STATUS'))
                 ->pluck('date')->toArray();
 
+            $validOffDayWorkDates = [];
+            foreach ($offDayWorkDates as $offDayWorkDate) {
+                $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($user->employee_id, $offDayWorkDate);
+                if($attendanceDetail) {
+                    ($attendanceDetail->checkin || $attendanceDetail->checkout) ? array_push($validOffDayWorkDates, $offDayWorkDate) : '';
+                }
+            }
+
             $lieuLeaveAvailableDates = $this->lieuLeaveBalance->select(['earned_date'])
-                ->where('user_id', $userId)
+                ->where('user_id', $user->id)
                 ->whereNull('lieu_leave_request_id')
                 ->whereIn('earned_date', $offDayWorkDates)
                 ->pluck('earned_date')->toArray();

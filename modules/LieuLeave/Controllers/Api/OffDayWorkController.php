@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
 use Modules\EmployeeAttendance\Repositories\AttendanceRepository;
 use Modules\LieuLeave\Repositories\LieuLeaveBalanceRepository;
+use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 
 class OffDayWorkController extends Controller
 {
@@ -15,38 +16,35 @@ class OffDayWorkController extends Controller
         protected LieuLeaveBalanceRepository $lieuLeaveBalance,
         protected AttendanceDetailRepository $attendanceDetails,
         protected AttendanceRepository $attendance,
+        protected OffdayWorkRepository $offDayWorks,
     ) {}
 
 
     public function index(Request $request, $date)
     {
         $leaveDate = Carbon::parse($date);
+        $userId = auth()->user()->id;
+        $startDate = $leaveDate->copy()->subMonthNoOverflow();
+        $checkLieuLeaveApplied = $this->lieuLeaveBalance->checkLieuRequestOnLeaveMonthByDate($userId, $leaveDate);
 
-        $userId = auth()->id();
+        $lieuLeaveAvailableDates = [];
+        if(!$checkLieuLeaveApplied) {
+            $offDayWorkDates = $this->offDayWorks->select('date')
+                ->where('requester_id', $userId)
+                ->whereBetween('date', [$startDate, $leaveDate])
+                ->whereStatusId(config('constant.APPROVED_STATUS'))
+                ->pluck('date')->toArray();
 
-        $presentDates = $this->getPresentDates($request, $leaveDate->year, $leaveDate->month);
-
-        $availableOffDayWorkDates= $this->lieuLeaveBalance->getOffDayWorkAvailable(
-            $userId,
-            $leaveDate->copy()->subMonth(),
-        )->pluck('off_day_work_date');
-
-
-        $availableOffDayWorkDates = $availableOffDayWorkDates->filter(function ($offDayWorkDate) use ($presentDates) {
-            return in_array(
-                Carbon::parse($offDayWorkDate)->format('Y-m-d'),
-                array_map(function ($date) {
-                    return Carbon::parse($date)->format('Y-m-d');
-                }, $presentDates)
-            );
-        });
-
-
-
+            $lieuLeaveAvailableDates = $this->lieuLeaveBalance->select(['earned_date'])
+                ->where('user_id', $userId)
+                ->whereNull('lieu_leave_request_id')
+                ->whereIn('earned_date', $offDayWorkDates)
+                ->pluck('earned_date')->toArray();
+        }
         return response()->json([
             'status' => 'success',
             'data' => [
-                'available_off_day_work_dates' => $availableOffDayWorkDates,
+                'available_off_day_work_dates' => $lieuLeaveAvailableDates,
             ],
         ]);
     }

@@ -103,4 +103,19 @@ class LieuLeaveBalanceRepository extends Repository
             ->whereNull('llb.lieu_leave_request_id')
             ->pluck('off_day_work_date', 'llb.id');
     }
+
+    public function checkLieuRequestOnLeaveMonthByDate($userId, $leaveDate)
+    {
+        $start = $leaveDate->copy()->startOfMonth();
+        $end   = $leaveDate->copy()->endOfMonth();
+
+        return $this->lieuLeaveRequest->where('requester_id', '=', $userId)
+            ->whereIn('status_id', [
+                config('constant.APPROVED_STATUS'),
+                config('constant.SUBMITTED_STATUS'),
+            ])
+            ->whereDate('start_date', '<=', $end)
+            ->whereDate('end_date', '>=', $start)
+            ->count();
+    }
 }

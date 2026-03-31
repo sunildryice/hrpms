@@ -289,8 +289,27 @@
             const planId = $row.data('id');
 
             if (planId) {
-                $row.remove();
-                updateDevPlanButtons();
+
+                $.ajax({
+                    url: "{{ route('performance.devplan.destroy') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        devPlanId: planId
+                    },
+                    success: function(res) {
+                        if (res.type === 'success') {
+                            $row.remove();
+                            updateDevPlanButtons();
+                            toastr.success('Development plan removed');
+                        } else {
+                            toastr.error('Failed to delete');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Server error');
+                    }
+                });
             } else {
                 $row.remove();
                 updateDevPlanButtons();

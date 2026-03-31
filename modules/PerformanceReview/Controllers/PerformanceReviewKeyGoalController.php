@@ -8,18 +8,21 @@ use Illuminate\Support\Facades\DB;
 use Modules\PerformanceReview\Models\PerformanceProfessionalDevelopmentPlan;
 use Modules\PerformanceReview\Models\PerformanceReviewAnswer;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
+use Modules\PerformanceReview\Repositories\PerformanceProfessionalDevelopmentPlanRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewKeyGoalRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 
 class PerformanceReviewKeyGoalController extends Controller
 {
     public function __construct(
-        PerformanceReviewRepository $performanceReview,
-        PerformanceReviewKeyGoalRepository $performanceReviewKeyGoal,
+        protected PerformanceReviewRepository $performanceReview,
+        protected PerformanceReviewKeyGoalRepository $performanceReviewKeyGoal,
+        protected PerformanceProfessionalDevelopmentPlanRepository $devPlans,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
     ) {
         $this->performanceReview = $performanceReview;
         $this->performanceReviewKeyGoal = $performanceReviewKeyGoal;
+        $this->devPlans = $devPlans;
         $this->performanceReviewQuestion = $performanceReviewQuestion;
     }
 
@@ -373,6 +376,16 @@ class PerformanceReviewKeyGoalController extends Controller
                 'type' => 'error',
                 'message' => 'Failed to update activities.'
             ], 500);
+        }
+    }
+
+     public function destroyDevPlan(Request $request)
+    {
+        $flag = $this->devPlans->destroy($request->devPlanId);
+        if ($flag) {
+            return response()->json(['type' => 'success', 'message' => 'Development plan deleted.'], 200);
+        } else {
+            return response()->json(['type' => 'error', 'message' => 'Development plan could not be deleted.'], 422);
         }
     }
 }

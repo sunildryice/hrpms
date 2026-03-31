@@ -25,7 +25,6 @@ use Modules\Master\Repositories\EmployeeTypeRepository;
 use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\EducationLevelRepository;
 use Modules\Master\Repositories\FamilyRelationRepository;
-use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
 
 class ConsultantController extends Controller
 {
@@ -46,7 +45,6 @@ class ConsultantController extends Controller
         protected LocalLevelRepository $localLevels,
         protected MaritalStatusRepository $maritalStatus,
         protected OfficeRepository $offices,
-        protected PayrollFiscalYearRepository $payrollFiscalYears,
         protected ProvinceRepository $provinces,
         protected RoleRepository $roles,
         protected EmployeeTypeRepository $employeeTypes
@@ -185,7 +183,6 @@ class ConsultantController extends Controller
             ->withLocalLevels($this->localLevels->orderby('local_level_name', 'asc')->get())
             ->withMaritalStatus($this->maritalStatus->get())
             ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
-            ->withPayrollFiscalYears($this->payrollFiscalYears->get())
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)

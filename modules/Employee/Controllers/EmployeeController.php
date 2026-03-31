@@ -27,7 +27,6 @@ use Modules\Master\Repositories\MaritalStatusRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\ProvinceRepository;
 use Modules\Master\Repositories\SocialMediaAccountRepository;
-use Modules\Payroll\Repositories\PayrollFiscalYearRepository;
 use Modules\Privilege\Repositories\RoleRepository;
 
 class EmployeeController extends Controller
@@ -52,7 +51,6 @@ class EmployeeController extends Controller
         protected LocalLevelRepository $localLevels,
         protected MaritalStatusRepository $maritalStatus,
         protected OfficeRepository $offices,
-        protected PayrollFiscalYearRepository $payrollFiscalYears,
         protected ProvinceRepository $provinces,
         protected RoleRepository $roles,
         protected SocialMediaAccountRepository $socialMediaAccounts,
@@ -248,7 +246,6 @@ class EmployeeController extends Controller
             ->withLocalLevels($this->localLevels->orderby('local_level_name', 'asc')->get())
             ->withMaritalStatus($this->maritalStatus->get())
             ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
-            ->withPayrollFiscalYears($this->payrollFiscalYears->get())
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)

@@ -223,7 +223,7 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                endDate: '{!! date('Y-m-d') !!}',
+                // endDate: '{!! date('Y-m-d') !!}',
             });
 
             $('.step-item').click(function() {

@@ -26,10 +26,11 @@ class OffDayWorkController extends Controller
 
         $presentDates = $this->getPresentDates($request, $leaveDate->year, $leaveDate->month);
 
-        $availableOffDayWorkDates = $this->lieuLeaveBalance->getOffDayWorkAvailableDates(
+        $availableOffDayWorkDates= $this->lieuLeaveBalance->getOffDayWorkAvailable(
             $userId,
             $leaveDate->copy()->subMonth(),
-        );
+        )->pluck('off_day_work_date');
+
 
         $availableOffDayWorkDates = $availableOffDayWorkDates->filter(function ($offDayWorkDate) use ($presentDates) {
             return in_array(
@@ -39,6 +40,7 @@ class OffDayWorkController extends Controller
                 }, $presentDates)
             );
         });
+
 
 
         return response()->json([
@@ -55,7 +57,7 @@ class OffDayWorkController extends Controller
             auth()->user()->employee_id,
             $year,
             $month,
-        )->load([
+        )?->load([
             'attendanceDetails' => function ($q) {
                 $q->whereNotNull('checkin')
                     ->whereNotNull('checkout');

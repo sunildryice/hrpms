@@ -67,6 +67,8 @@ class LieuLeaveBalanceRepository extends Repository
 
     public function countLieuLeaveBalances(int $userId, $expiryDate): int
     {
+    
+
         return $this->model
             ->where('user_id', $userId)
             ->where('expires_at', '>', $expiryDate->toDateString())
@@ -80,9 +82,9 @@ class LieuLeaveBalanceRepository extends Repository
             ->select('llb.off_day_work_id', 'ofw.date as off_day_work_date')
             ->from($this->model->getTable() . ' as llb')
             ->join('off_day_works as ofw', 'llb.off_day_work_id', '=', 'ofw.id')
-            ->where('user_id', $userId)
-            ->where('earned_date', '>=', $previousMonthDate->toDateString())
-            ->whereNull('lieu_leave_request_id')
+            ->where('llb.user_id', $userId)
+            ->where('llb.earned_date', '>=', $previousMonthDate->toDateString())
+            ->whereNull('llb.lieu_leave_request_id')
             ;
     }
 

@@ -6,6 +6,7 @@ use App\Repositories\Repository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\LieuLeave\Models\LieuLeaveBalance;
+use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 
 class LieuLeaveBalanceRepository extends Repository
 {
@@ -13,6 +14,7 @@ class LieuLeaveBalanceRepository extends Repository
     public function __construct(
         protected LieuLeaveBalance $lieuLeaveBalance,
         protected LieuLeaveRequestRepository $lieuLeaveRequest,
+        protected OffDayWorkRepository $offDayWorkRepository,
     ) {
         $this->model = $lieuLeaveBalance;
     }
@@ -29,8 +31,10 @@ class LieuLeaveBalanceRepository extends Repository
 
     public function addBalance($userId, $offDayWorkId)
     {
+        
+       $offDayWOrk= $this->offDayWorkRepository->find($offDayWorkId);
 
-        $earnedDate = Carbon::now();
+        $earnedDate = Carbon::parse($offDayWOrk->date);
         $expiresAt  = $earnedDate->copy()->addDays(30);
         $earnedMonth = $earnedDate->copy()->startOfMonth();
 

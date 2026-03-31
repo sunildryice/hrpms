@@ -103,13 +103,13 @@
                         },
                     },
                 },
-                payroll_fiscal_year_id: {
-                    validators: {
-                        notEmpty: {
-                            message: 'FY is required',
-                        },
-                    },
-                },
+                // payroll_fiscal_year_id: {
+                //     validators: {
+                //         notEmpty: {
+                //             message: 'FY is required',
+                //         },
+                //     },
+                // },
                 paid_date: {
                     validators: {
                         notEmpty: {

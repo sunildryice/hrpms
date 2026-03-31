@@ -183,7 +183,6 @@ class ConsultantController extends Controller
             ->withLocalLevels($this->localLevels->orderby('local_level_name', 'asc')->get())
             ->withMaritalStatus($this->maritalStatus->get())
             ->withOffices($this->offices->select(['*'])->whereNotNull('activated_at')->get())
-            ->withPayrollFiscalYears($this->payrollFiscalYears->get())
             ->withProvinces($this->provinces->get())
             ->withRoles($this->roles->where('id', '<>', 1)->orderby('role', 'asc')->get())
             ->withSupervisors($supervisors)

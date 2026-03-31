@@ -44,6 +44,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('performance/keygoal/supervisor/get', [PerformanceReviewKeyGoalController::class, 'getKeyGoalsSupervisor'])->name('performance.keygoal.supervisor.get');
     Route::post('performance/employee/current/keygoal/get', [PerformanceReviewKeyGoalController::class, 'getEmployeeCurrentKeyGoals'])->name('performance.employee.current.keygoal.get');
     Route::post('performance/keygoal/delete', [PerformanceReviewKeyGoalController::class, 'destroy'])->name('performance.keygoal.destroy');
+    Route::post('performance/devplan/delete', [PerformanceReviewKeyGoalController::class, 'destroyDevPlan'])->name('performance.devplan.destroy');
 
     Route::post('performance/{id}/keygoals/save', [PerformanceReviewKeyGoalController::class, 'saveDraft'])->name('performance.keygoals.save-draft');
     Route::post('performance/devplan/save', [PerformanceReviewKeyGoalController::class, 'updateDevPlan'])->name('performance.devplan.update');

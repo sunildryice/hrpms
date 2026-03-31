@@ -167,12 +167,12 @@
         });
 
         // KEY GOALS (B) 
-
         function buildKeyGoalRow(idx, title = '', output_deliverables = '', id = null) {
             const isExisting = id !== null;
             return `
             <tr class="keygoal-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
                 <td class="col-objective">
+                    <input type="hidden" name="keygoals[${idx}][id]" value="${id ?? ''}">
                     <input type="text" class="form-control" 
                            name="keygoals[${idx}][title]" 
                            value="${title.replace(/"/g, '&quot;')}" 
@@ -251,6 +251,7 @@
             <tr class="devplan-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
                 <td class="sn">${idx + 1}</td>
                 <td class="col-plan">
+                    <input type="hidden" name="devplans[${idx}][id]" value="${id ?? ''}">
                     <input type="text" class="form-control" 
                            name="devplans[${idx}][plan]" 
                            value="${plan.replace(/"/g, '&quot;')}" 
@@ -288,8 +289,27 @@
             const planId = $row.data('id');
 
             if (planId) {
-                $row.remove();
-                updateDevPlanButtons();
+
+                $.ajax({
+                    url: "{{ route('performance.devplan.destroy') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        devPlanId: planId
+                    },
+                    success: function(res) {
+                        if (res.type === 'success') {
+                            $row.remove();
+                            updateDevPlanButtons();
+                            toastr.success('Development plan removed');
+                        } else {
+                            toastr.error('Failed to delete');
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Server error');
+                    }
+                });
             } else {
                 $row.remove();
                 updateDevPlanButtons();
@@ -401,6 +421,8 @@
                                 <tr class="keygoal-row" data-row-index="{{ $index }}"
                                     data-id="{{ $kg->id }}">
                                     <td class="col-objective">
+                                        <input type="hidden" name="keygoals[{{ $index }}][id]"
+                                            value="{{ $kg->id }}">
                                         <input type="text" class="form-control"
                                             name="keygoals[{{ $index }}][title]"
                                             value="{{ old('keygoals.' . $index . '.title', $kg->title) }}"
@@ -478,6 +500,8 @@
                                     <td class="sn">{{ $loop->iteration }}</td>
 
                                     <td class="col-plan">
+                                        <input type="hidden" name="devplans[{{ $index }}][id]"
+                                            value="{{ $plan->id ?? '' }}">
                                         <input type="text" class="form-control"
                                             name="devplans[{{ $index }}][plan]"
                                             value="{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}"

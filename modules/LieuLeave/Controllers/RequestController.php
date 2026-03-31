@@ -4,6 +4,7 @@ namespace Modules\LieuLeave\Controllers;
 
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Employee\Repositories\EmployeeRepository;
@@ -95,7 +96,7 @@ class RequestController extends Controller
 
                     $authUser = auth()->user();
                     $btn = '<a href="' . route('lieu.leave.requests.show', $row->id) . '" class="btn btn-sm btn-primary">
-                    <i class="bi bi-eye"></i> 
+                    <i class="bi bi-eye"></i>
                     </a>';
 
                     if ($authUser->can('update', $row)) {
@@ -120,17 +121,30 @@ class RequestController extends Controller
     public function create()
     {
         $authUser = auth()->user();
-
         $projects = $this->projects->pluck('title', 'id');
-        $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
-
+        $supervisors = $this->users->getSupervisor($authUser);
         $activeStaffs = $this->employees->getActiveEmployees();
         $substitutes = $activeStaffs->reject(function ($staff, $key) use ($authUser) {
             return $staff->id == $authUser->employee_id;
         });
 
+        $lieuLeaveRequests = $this->lieuLeaveRequests->select(['id','start_date'])
+            ->where('requester_id', '=', $authUser->id)
+            ->get();
+        $disableDates = [];
+        foreach($lieuLeaveRequests as $lieuLeaveRequest){
+
+            $start = Carbon::create($lieuLeaveRequest->start_date)->startOfMonth();
+            $end = Carbon::create($lieuLeaveRequest->start_date)->endOfMonth();
+
+            $period = CarbonPeriod::create($start, '1 day', $end);
+            foreach ($period as $day) {
+                $disableDates[] = $day->toDateString();
+            }
+        }
 
         return view('LieuLeave::create', [
+            'disableDates' => $disableDates,
             'projects' => $projects,
             'supervisors' => $supervisors,
             'substitutes' => $substitutes,

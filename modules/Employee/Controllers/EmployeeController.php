@@ -103,10 +103,6 @@ class EmployeeController extends Controller
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
                         $btn .= route('employees.edit', $employee->id) . '" rel="tooltip" title="Edit Employee"><i class="bi-pencil-square"></i></a>';
                     }
-                    //                    if ($authUser->can('payroll')) {
-//                        $btn .= '&emsp;<a class="btn btn-success btn-sm" href="';
-//                        $btn .= route('employees.payments.masters.index', $employee->id) . '" rel="tooltip" title="Payment Masters"><i class="bi bi-cash-coin"></i></a>';
-//                    }
                     return $btn;
                 })->rawColumns(['action', 'position'])
                 ->make(true);

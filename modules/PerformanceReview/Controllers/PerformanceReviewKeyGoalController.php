@@ -8,18 +8,21 @@ use Illuminate\Support\Facades\DB;
 use Modules\PerformanceReview\Models\PerformanceProfessionalDevelopmentPlan;
 use Modules\PerformanceReview\Models\PerformanceReviewAnswer;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
+use Modules\PerformanceReview\Repositories\PerformanceProfessionalDevelopmentPlanRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewKeyGoalRepository;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 
 class PerformanceReviewKeyGoalController extends Controller
 {
     public function __construct(
-        PerformanceReviewRepository $performanceReview,
-        PerformanceReviewKeyGoalRepository $performanceReviewKeyGoal,
+        protected PerformanceReviewRepository $performanceReview,
+        protected PerformanceReviewKeyGoalRepository $performanceReviewKeyGoal,
+        protected PerformanceProfessionalDevelopmentPlanRepository $devPlans,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
     ) {
         $this->performanceReview = $performanceReview;
         $this->performanceReviewKeyGoal = $performanceReviewKeyGoal;
+        $this->devPlans = $devPlans;
         $this->performanceReviewQuestion = $performanceReviewQuestion;
     }
 
@@ -256,7 +259,6 @@ class PerformanceReviewKeyGoalController extends Controller
     {
         $performanceReview = $this->performanceReview->findOrFail($id);
 
-        //  Validate input
         $request->validate([
             'keygoals' => 'required|array|min:1',
             'keygoals.*.title' => 'required|string|max:255',
@@ -264,57 +266,83 @@ class PerformanceReviewKeyGoalController extends Controller
 
             'devplans' => 'required|array|min:1',
             'devplans.*.plan' => 'required|string|max:500',
-            'devplans.*.activity' => 'nullable|string|max:1000',
         ]);
 
         DB::beginTransaction();
 
         try {
-            //  Delete old development plans
-            PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
-                ->delete();
+            // KEY GOALS 
+            $submittedKeyGoalIds = [];
 
-            //  Insert new development plans
-            foreach ($request->devplans as $item) {
-                PerformanceProfessionalDevelopmentPlan::create([
-                    'performance_review_id' => $performanceReview->id,
-                    'objective' => trim($item['plan']),
-                    'activity' => trim($item['activity'] ?? null),
-                    'created_by' => auth()->id(),
-                    'updated_by' => auth()->id(),
-                ]);
-            }
-
-            //  Delete old key goals
-            $this->performanceReviewKeyGoal
-                ->where('performance_review_id', '=', $performanceReview->id)
-                ->where('type', 'current')
-                ->delete();
-
-            foreach ($request->keygoals as $item) {
-                $this->performanceReviewKeyGoal->create([
+            foreach ($request->keygoals as $index => $item) {
+                $keyGoalData = [
                     'performance_review_id' => $performanceReview->id,
                     'title' => trim($item['title']),
                     'output_deliverables' => trim($item['output_deliverables']),
                     'type' => 'current',
-                    'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
-                ]);
+                ];
+
+                if (!empty($item['id'])) {
+                    $keyGoal = $this->performanceReviewKeyGoal->find($item['id']);
+                    if ($keyGoal && $keyGoal->performance_review_id == $performanceReview->id) {
+                        $keyGoal->update($keyGoalData);
+                        $submittedKeyGoalIds[] = $keyGoal->id;
+                    }
+                } else {
+                    $keyGoalData['created_by'] = auth()->id();
+                    $newGoal = $this->performanceReviewKeyGoal->create($keyGoalData);
+                    $submittedKeyGoalIds[] = $newGoal->id;
+                }
             }
+
+            // Delete key goals that were removed from UI
+            $this->performanceReviewKeyGoal
+                ->where('performance_review_id', '=', $performanceReview->id)
+                ->where('type', 'current')
+                ->whereNotIn('id', $submittedKeyGoalIds)
+                ->delete();
+
+            // DEVELOPMENT PLANS 
+            $submittedDevPlanIds = [];
+
+            foreach ($request->devplans as $item) {
+                $devPlanData = [
+                    'performance_review_id' => $performanceReview->id,
+                    'objective' => trim($item['plan'] ?? ''),
+                    'updated_by' => auth()->id(),
+                ];
+
+                if (!empty($item['id'])) {
+                    $plan = PerformanceProfessionalDevelopmentPlan::find($item['id']);
+                    if ($plan && $plan->performance_review_id == $performanceReview->id) {
+                        $plan->update($devPlanData);
+                        $submittedDevPlanIds[] = $plan->id;
+                    }
+                } else {
+                    $devPlanData['created_by'] = auth()->id();
+                    $newPlan = PerformanceProfessionalDevelopmentPlan::create($devPlanData);
+                    $submittedDevPlanIds[] = $newPlan->id;
+                }
+            }
+
+            // Delete dev plans that were removed
+            PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
+                ->whereNotIn('id', $submittedDevPlanIds)
+                ->delete();
 
             DB::commit();
 
             return response()->json([
                 'type' => 'success',
-                'message' => 'Saved successfully',
+                'message' => 'Draft saved successfully',
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'type' => 'error',
-                'message' => 'Failed to save',
+                'message' => 'Failed to save draft: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -348,6 +376,16 @@ class PerformanceReviewKeyGoalController extends Controller
                 'type' => 'error',
                 'message' => 'Failed to update activities.'
             ], 500);
+        }
+    }
+
+     public function destroyDevPlan(Request $request)
+    {
+        $flag = $this->devPlans->destroy($request->devPlanId);
+        if ($flag) {
+            return response()->json(['type' => 'success', 'message' => 'Development plan deleted.'], 200);
+        } else {
+            return response()->json(['type' => 'error', 'message' => 'Development plan could not be deleted.'], 422);
         }
     }
 }

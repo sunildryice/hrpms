@@ -5,7 +5,7 @@
 @section('page_js')
 
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#navbarVerticalMenu').find('#lieu-leave-requests-index').addClass('active');
 
             $('#project_id, #send_to').addClass('select2').select2({
@@ -22,49 +22,28 @@
             let monthAvailability = {};
 
             let LeaveDate = new Date();
+            let disabledDates = @json($disableDates);
             checkLeavesForMonth(LeaveDate.toISOString().split('T')[0].substring(0, 7));
 
             $('[name="leave_date"]').datepicker({
-                    language: 'en-GB',
-                    autoHide: true,
-                    format: 'yyyy-mm-dd',
-                    startDate: LeaveDate,
-                    filter: function(date) {
-                        const monthKey = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2,
-                            '0');
-
-                        // If API says NOT available → disable date
-                        if (monthAvailability[monthKey] === false) {
-                            return false;
-                        }
-
-                        return true;
-                    }
-
-                })
-                .on('click', function(e) {
-                    let currentMonthInDatePicker = $('li[data-view="month current"]').text();
-                    let dateFormatCurrentDatePicker = convertMonthYearToDate(currentMonthInDatePicker, 20);
-
-                    checkLeavesForMonth(dateFormatCurrentDatePicker);
-                }).
-            on('change', function() {
-                if (window.fv) {
-                    // fv.revalidateField('leave_date');
-                    let leaveDate = $(this).val();
-                    checkAvailableStatus(leaveDate);
-                    fetchOffDayWorksforLieuLeave(leaveDate);
-                }
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                startDate: LeaveDate,
+            }).on('change', function () {
+                let leaveDate = $(this).val();
+                checkAvailableStatus(leaveDate);
+                fetchOffDayWorksforLieuLeave(leaveDate);
             });
 
             function fetchOffDayWorksforLieuLeave(date) {
                 const url = "{{ route('api.lieu.leave.offdaywork.user', ':date') }}".replace(':date', date || '');
 
-                const successCallback = function(response) {
+                const successCallback = function (response) {
                     availableDates = response.data.available_off_day_work_dates;
                 };
 
-                const errorCallback = function(error) {
+                const errorCallback = function (error) {
                     console.error(error);
                 };
 
@@ -89,13 +68,13 @@
             function checkAvailableStatus(month) {
                 const url = "{{ route('api.lieu.leave.check.status', ':month') }}".replace(':month', month);
 
-                const successCallback = function(response) {
+                const successCallback = function (response) {
                     if (response.status === 'success') {
                         $('#balance').val(response.data.available_balance_status);
                     }
                 };
 
-                const errorCallback = function(error) {
+                const errorCallback = function (error) {
                     console.error(error);
                 };
 
@@ -105,7 +84,7 @@
             function checkLeavesForMonth(month) {
                 const url = "{{ route('api.lieu.leave.check.status', ':month') }}".replace(':month', month);
 
-                const successCallback = function(response) {
+                const successCallback = function (response) {
                     if (response.status === 'success') {
                         let balanceStatus = response.data.available_balance_status;
                         // Extract YYYY-MM from month
@@ -120,7 +99,7 @@
                     }
                 };
 
-                const errorCallback = function(error) {
+                const errorCallback = function (error) {
                     console.error(error);
                 };
 
@@ -172,10 +151,10 @@
             }
 
             // Revalidate selects on change
-            $(form).on('change', '#project_id', function() {
+            $(form).on('change', '#project_id', function () {
                 fv.revalidateField('project_id');
             });
-            $(form).on('change', '#send_to', function() {
+            $(form).on('change', '#send_to', function () {
                 fv.revalidateField('send_to');
             });
 
@@ -210,7 +189,7 @@
     <div class="card shadow-sm border rounded">
         <div class="card-body">
             <form action="{{ route('lieu.leave.requests.store') }}" id="lieuLeaveRequestAddForm" method="POST"
-                autocomplete="off">
+                  autocomplete="off">
                 @csrf
                 <div class="row">
                     <div class="mb-3 col-2">
@@ -218,12 +197,12 @@
                     </div>
                     <div class="mb-3 col-8">
                         <input type="text" class="form-control" id="leave_date" name="leave_date" readonly
-                            value="{{ old('leave_date') }}" required>
+                               value="{{ old('leave_date') }}" required>
                     </div>
 
                     <div class="mb-3 col-2">
                         <input type="text" class="form-control" id="balance" name="balance"
-                            value="{{ old('balance', '') }}" required readonly>
+                               value="{{ old('balance', '') }}" required readonly>
                     </div>
                 </div>
                 <div class="row">
@@ -232,7 +211,7 @@
                     </div>
                     <div class="mb-3 col-10">
                         <input type="text" class="form-control date" id="off_day_work_date" readonly
-                            name="off_day_work_date" value="{{ old('off_day_work_date') }}" required>
+                               name="off_day_work_date" value="{{ old('off_day_work_date') }}" required>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -240,10 +219,10 @@
                         <label for="reason" class="form-label required-label">Reason</label>
                     </div>
                     <div class="col-lg-10">
-                        <textarea class="form-control" id="reason" name="reason" rows="3" required>{{ old('reason') }}</textarea>
+                        <textarea class="form-control" id="reason" name="reason" rows="3"
+                                  required>{{ old('reason') }}</textarea>
                     </div>
                 </div>
-
                 <div class="mb-3 row">
                     <div class="col-lg-2">
                         <div class="d-flex align-items-start h-100">
@@ -252,7 +231,7 @@
                     </div>
                     <div class="col-lg-10">
                         <select name="substitutes[]" class="select2 @if ($errors->has('substitutes')) is-invalid @endif"
-                            data-width="100%" multiple>
+                                data-width="100%" multiple>
                             <option value="">Select substitutes</option>
                             @foreach ($substitutes as $staff)
                                 <option value="{{ $staff->id }}"
@@ -279,12 +258,14 @@
                     <div class="col-lg-10">
                         <select class="form-control" id="send_to" name="send_to" required>
                             <option value="">Select Approver</option>
-                            @foreach ($supervisors as $id => $fullName)
-                                <option value="{{ $id }}"
-                                    @if (old('send_to')) {{ old('send_to') == $id ? 'selected' : '' }}
-                                @else
-                                    {{ $supervisors->count() == 1 ? 'selected' : '' }} @endif>
-                                    {{ $fullName }}
+                            @foreach ($supervisors as $supervisor)
+                                <option value="{{ $supervisor->id }}"
+                                @if (old('send_to'))
+                                    {{ old('send_to') == $supervisor->id ? 'selected' : '' }}
+                                    @else
+                                    {{ $supervisors->count() == 1 ? 'selected' : '' }}
+                                    @endif>
+                                    {{ $supervisor->getFullName() }}
                                 </option>
                             @endforeach
                         </select>

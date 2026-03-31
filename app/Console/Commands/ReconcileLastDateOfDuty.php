@@ -28,8 +28,8 @@ class ReconcileLastDateOfDuty extends Command
      * @param ExitHandOverNoteRepository $exitHandovers
      */
     public function __construct(
-        EmployeeRepository   $employees,
-        ExitHandOverNoteRepository  $exitHandovers
+        EmployeeRepository         $employees,
+        ExitHandOverNoteRepository $exitHandovers
     )
     {
         parent::__construct();
@@ -47,14 +47,25 @@ class ReconcileLastDateOfDuty extends Command
         $this->info('Getting all employee exit handovers.');
         $employeeExits = $this->exitHandovers->with(['employee'])->get();
 
-        foreach($employeeExits as $exit) {
-            if(!$exit->employee->last_working_date){
+        foreach ($employeeExits as $exit) {
+            if (!$exit->employee->last_working_date) {
                 $exit->employee->update([
                     'last_working_date' => $exit->last_duty_date
                 ]);
-                $this->info('Last working date of employee '. $exit->employee->getFullName() .' is updated.');
+                $this->info('Last working date of employee ' . $exit->employee->getFullName() . ' is updated.');
             }
         }
         $this->info('Setting all employee last date of duty of exit employee.');
+
+        $employees = $this->employees->select(['*'])
+            ->whereDate('last_working_date', '<', now())
+            ->whereNotNull('activated_at')
+            ->get();
+        foreach ($employees as $employee) {
+            $employee->update(['activated_at' => NULL]);
+            $employee->user->update(['activated_at' => NULL]);
+
+            $this->info('Employee ' . $employee->getFullName() . ' is deactivated.');
+        }
     }
 }

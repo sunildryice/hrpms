@@ -35,12 +35,12 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'payroll_fiscal_year_id'=>[
-                'required',
-                Rule::unique('employee_insurance')->where(function($query) {
-                    $query->where('employee_id', '=', $this->employee);
-                }),
-            ],
+            // 'payroll_fiscal_year_id'=>[
+            //     'required',
+            //     Rule::unique('employee_insurance')->where(function($query) {
+            //         $query->where('employee_id', '=', $this->employee);
+            //     }),
+            // ],
             'amount'=>'required|numeric',
             'paid_date'=>'required|date',
             'insurer'=>'required',
@@ -50,8 +50,8 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'payroll_fiscal_year_id.required'=>'FY is required.',
-            'payroll_fiscal_year_id.unique'=>'Selected FY is already taken.',
+            // 'payroll_fiscal_year_id.required'=>'FY is required.',
+            // 'payroll_fiscal_year_id.unique'=>'Selected FY is already taken.',
         ];
     }
 }

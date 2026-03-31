@@ -71,14 +71,6 @@ class PerformanceReviewApproveController extends Controller
 
         $record = [
             'performanceReview' => $performanceReview,
-            'groupBQuestions' => $this->performanceReviewQuestion->where('group', 'B')->orderBy('position')->get(),
-            'groupDQuestions' => $this->performanceReviewQuestion->where('group', 'D')->orderBy('position')->get(),
-            'groupEQuestions' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position')->get(),
-            'groupFQuestions' => $this->performanceReviewQuestion->where('group', 'F')->orderBy('position')->get(),
-            'groupGQuestions' => $this->performanceReviewQuestion->where('group', 'G')->orderBy('position')->get(),
-            'groupHQuestions' => $this->performanceReviewQuestion->where('group', 'H')->orderBy('position')->get(),
-            'groupIQuestions' => $this->performanceReviewQuestion->where('group', 'I')->orderBy('position')->get(),
-            'groupJQuestions' => $this->performanceReviewQuestion->where('group', 'J')->orderBy('position')->get(),
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
         ];
@@ -100,17 +92,11 @@ class PerformanceReviewApproveController extends Controller
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
 
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
-
             return view('PerformanceReview::Approve.AnnualPerformanceReview.create', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
                 'keygoals' => $keygoals,
                 'performanceReview' => $performanceReview,
-                'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
             ]);
@@ -121,17 +107,12 @@ class PerformanceReviewApproveController extends Controller
                 ->where('employee_id', $performanceReview->employee_id)
                 ->first();
             $keygoals = $keyGoalReview->keyGoals;
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
             return view('PerformanceReview::Approve.MidTermPerformanceReview.create', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
                 'keygoals' => $keygoals,
                 'performanceReview' => $performanceReview,
-                'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
             ]);

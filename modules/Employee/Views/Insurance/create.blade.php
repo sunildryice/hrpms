@@ -39,28 +39,6 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="validationdob" class="form-label required-label">FY</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select class="form-control @if($errors->has('payroll_fiscal_year_id')) is-invalid @endif"
-                        name="payroll_fiscal_year_id">
-                    <option value="">Select FY</option>
-                    @foreach($payrollFiscalYears as $payrollFiscalYear)
-                        <option value="{{ $payrollFiscalYear->id }}" @if(old('payroll_fiscal_year_id') == $payrollFiscalYear->id) selected @endif>{{ $payrollFiscalYear->title }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('payroll_fiscal_year_id'))
-                    <div class="fv-plugins-message-container invalid-feedback">
-                        <div data-field="payroll_fiscal_year_id">{!! $errors->first('payroll_fiscal_year_id') !!}</div>
-                    </div>
-                @endif
-            </div>
-        </div>
-
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
                     <label for="Fdname" class="form-label required-label">Paid Date</label>
                 </div>
             </div>

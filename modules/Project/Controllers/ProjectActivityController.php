@@ -155,7 +155,7 @@ class ProjectActivityController extends Controller
         $notIsCompleted = $projectActivity->status != ActivityStatus::Completed->value;
         $isTheme = $projectActivity->activity_level == ActivityLevel::Theme->value;
 
-        if (Gate::allows('manage-project-activity-on-certain-time', $projectActivity->project) && ($notIsNoRequired && $notIsCompleted && !$isTheme)) {
+        if ($notIsNoRequired && $notIsCompleted && !$isTheme) {
             return true;
         }
 

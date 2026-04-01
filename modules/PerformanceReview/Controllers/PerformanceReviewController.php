@@ -210,14 +210,6 @@ class PerformanceReviewController extends Controller
 
         $record = array(
             'performanceReview' => $performanceReview,
-            'groupBQuestions' => $this->performanceReviewQuestion->where('group', 'B')->orderBy('position')->get(),
-            'groupDQuestions' => $this->performanceReviewQuestion->where('group', 'D')->orderBy('position')->get(),
-            'groupEQuestions' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position')->get(),
-            'groupFQuestions' => $this->performanceReviewQuestion->where('group', 'F')->orderBy('position')->get(),
-            'groupGQuestions' => $this->performanceReviewQuestion->where('group', 'G')->orderBy('position')->get(),
-            'groupHQuestions' => $this->performanceReviewQuestion->where('group', 'H')->orderBy('position')->get(),
-            'groupIQuestions' => $this->performanceReviewQuestion->where('group', 'I')->orderBy('position')->get(),
-            'groupJQuestions' => $this->performanceReviewQuestion->where('group', 'J')->orderBy('position')->get(),
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
         );
@@ -243,11 +235,6 @@ class PerformanceReviewController extends Controller
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
 
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
-
             return view('PerformanceReview::AnnualPerformanceReview.show', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
@@ -270,10 +257,6 @@ class PerformanceReviewController extends Controller
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
             return view('PerformanceReview::MidTermPerformanceReview.show', [
                 ...$record,
@@ -301,14 +284,6 @@ class PerformanceReviewController extends Controller
 
         $record = array(
             'performanceReview' => $performanceReview,
-            'groupBQuestions' => $this->performanceReviewQuestion->where('group', 'B')->orderBy('position')->get(),
-            'groupDQuestions' => $this->performanceReviewQuestion->where('group', 'D')->orderBy('position')->get(),
-            'groupEQuestions' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position')->get(),
-            'groupFQuestions' => $this->performanceReviewQuestion->where('group', 'F')->orderBy('position')->get(),
-            'groupGQuestions' => $this->performanceReviewQuestion->where('group', 'G')->orderBy('position')->get(),
-            'groupHQuestions' => $this->performanceReviewQuestion->where('group', 'H')->orderBy('position')->get(),
-            'groupIQuestions' => $this->performanceReviewQuestion->where('group', 'I')->orderBy('position')->get(),
-            'groupJQuestions' => $this->performanceReviewQuestion->where('group', 'J')->orderBy('position')->get(),
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
         );
@@ -336,12 +311,6 @@ class PerformanceReviewController extends Controller
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
 
-
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
-
             return view('PerformanceReview::AnnualPerformanceReview.print', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
@@ -362,10 +331,6 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
             return view('PerformanceReview::MidTermPerformanceReview.print', [
                 ...$record,
@@ -394,14 +359,6 @@ class PerformanceReviewController extends Controller
 
         $record = array(
             'performanceReview' => $performanceReview,
-            'groupBQuestions' => $this->performanceReviewQuestion->where('group', 'B')->orderBy('position')->get(),
-            'groupDQuestions' => $this->performanceReviewQuestion->where('group', 'D')->orderBy('position')->get(),
-            'groupEQuestions' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position')->get(),
-            'groupFQuestions' => $this->performanceReviewQuestion->where('group', 'F')->orderBy('position')->get(),
-            'groupGQuestions' => $this->performanceReviewQuestion->where('group', 'G')->orderBy('position')->get(),
-            'groupHQuestions' => $this->performanceReviewQuestion->where('group', 'H')->orderBy('position')->get(),
-            'groupIQuestions' => $this->performanceReviewQuestion->where('group', 'I')->orderBy('position')->get(),
-            'groupJQuestions' => $this->performanceReviewQuestion->where('group', 'J')->orderBy('position')->get(),
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
         );
@@ -426,11 +383,6 @@ class PerformanceReviewController extends Controller
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
 
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
-
             return view('PerformanceReview::Employee.AnnualPerformanceReview.show', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
@@ -452,10 +404,6 @@ class PerformanceReviewController extends Controller
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
-            $professionalDevelopmentPlanQuestion = $this->performanceReviewQuestion->where('group', 'E')
-                ->orderBy('position', 'desc')
-                ->first();
-            $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
 
             return view('PerformanceReview::Employee.MidTermPerformanceReview.show', [
                 ...$record,

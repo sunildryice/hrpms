@@ -187,7 +187,6 @@ class RequestController extends Controller
 
             if ($inputs['btn'] === 'submit') {
 
-
                 $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $lieuLeaveRequest = $this->lieuLeaveRequests->create($inputs);
@@ -207,6 +206,7 @@ class RequestController extends Controller
                 $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])
                     ->where('earned_date', $inputs['off_day_work_date'])
                     ->first();
+                
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
 

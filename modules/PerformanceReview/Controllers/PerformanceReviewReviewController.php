@@ -203,6 +203,7 @@ class PerformanceReviewReviewController extends Controller
                 if ($performanceReview->status_id == config('constant.APPROVED_STATUS')) {
                     $message = 'Performance Review is successfully approved.';
                     $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
+                    $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
                 } elseif ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
                     $message = 'Performance Review is successfully returned.';
                     $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));

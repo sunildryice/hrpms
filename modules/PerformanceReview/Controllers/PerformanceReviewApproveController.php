@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\PerformanceReview\Models\PerformanceReviewLog;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
 use Modules\PerformanceReview\Notifications\PerformanceReviewApproved;
+use Modules\PerformanceReview\Notifications\PerformanceReviewExternalReview;
 use Modules\PerformanceReview\Notifications\PerformanceReviewReturned;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Modules\PerformanceReview\Requests\PerformanceReviewApprove\StoreRequest;
@@ -147,6 +148,7 @@ class PerformanceReviewApproveController extends Controller
             } else {
                 $message = 'Performance Review is successfully approved.';
                 $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
+                $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
             }
 
             return redirect()->route('performance.approve.index')->withSuccessMessage($message);

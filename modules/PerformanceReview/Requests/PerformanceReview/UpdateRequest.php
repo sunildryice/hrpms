@@ -27,7 +27,8 @@ class UpdateRequest extends FormRequest
         return [
             'review_from'       => 'required|date',
             'review_to'         => 'required|date|after:review_from',
-            'deadline_date'     => 'required'
+            'deadline_date'     => 'required',
+            'external_reviewer_id' => 'nullable|exists:users,id',
         ];
     }
 

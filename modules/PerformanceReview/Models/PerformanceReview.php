@@ -111,9 +111,9 @@ class PerformanceReview extends Model
         return $this->belongsTo(User::class, 'reviewer_id')->withDefault();
     }
 
-    public function recommender()
+    public function externalReviewer()
     {
-        return $this->belongsTo(User::class, 'recommender_id')->withDefault();
+        return $this->belongsTo(User::class, 'external_reviewer_id')->withDefault();
     }
 
     public function status()
@@ -323,9 +323,9 @@ class PerformanceReview extends Model
         return $this->fiscalYear->getFiscalYear();
     }
 
-    public function getRecommenderName()
+    public function getExternalReviewerName()
     {
-        return $this->recommender->getFullName();
+        return $this->externalReviewer->getFullName();
     }
 
     public function getApproverName()

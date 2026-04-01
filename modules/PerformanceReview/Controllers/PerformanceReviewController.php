@@ -166,6 +166,10 @@ class PerformanceReviewController extends Controller
                 $inputs['employee_id'] = $employee->id;
                 $inputs['requester_id'] = $employee->user->id;
 
+                if (!in_array($inputs['review_type_id'], [1, 2])) {
+                    $inputs['external_reviewer_id'] = null;
+                }
+
                 $performanceReview = $this->performanceReview->where('employee_id', '=', $inputs['employee_id'])
                     ->where('fiscal_year_id', '=', $inputs['fiscal_year_id'])
                     ->where('review_type_id', '=', $inputs['review_type_id'])
@@ -183,6 +187,10 @@ class PerformanceReviewController extends Controller
         } else {
             $employee = $this->employee->find($inputs['employee_id']);
             $inputs['requester_id'] = $employee->user->id;
+
+            if (!in_array($inputs['review_type_id'], [1, 2])) {
+                $inputs['external_reviewer_id'] = null;
+            }
 
             $performanceReview = $this->performanceReview->where('employee_id', '=', $inputs['employee_id'])
                 ->where('fiscal_year_id', '=', $inputs['fiscal_year_id'])
@@ -425,10 +433,11 @@ class PerformanceReviewController extends Controller
     public function edit($performanceReview)
     {
         $performanceReview = $this->performanceReview->find($performanceReview);
-
         $this->authorize('edit', $performanceReview);
 
-        return view('PerformanceReview::edit')->withPerformanceReview($performanceReview);
+        $employees = $this->employee->getActiveEmployees();
+
+        return view('PerformanceReview::edit', compact('performanceReview', 'employees'));
     }
 
     public function update(UpdateRequest $request, $performanceReview)
@@ -436,6 +445,9 @@ class PerformanceReviewController extends Controller
         $inputs = $request->validated();
         $performanceReview = $this->performanceReview->find($performanceReview);
         $this->authorize('edit', $performanceReview);
+        if (!in_array($performanceReview->review_type_id, [1, 2])) {
+            $inputs['external_reviewer_id'] = null;
+        }
         $performanceReview->update($inputs);
         return redirect()->route('performance.index')->withSuccessMessage('Performance review successfully updated.');
     }

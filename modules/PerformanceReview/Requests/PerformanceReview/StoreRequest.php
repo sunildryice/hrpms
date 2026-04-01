@@ -24,37 +24,41 @@ class StoreRequest extends FormRequest
      */
     public function rules(Request $request)
     {
+        $baseRules = [
+            'review_type_id'    => 'required',
+            'review_from' => 'required|date',
+            'review_to' => 'required|date|after:review_from',
+            'deadline_date' => 'required|date',
+             'fiscal_year_id'    => 'required',
+        ];
+
         if ($request->employee_all == 'on') {
-            return [
-                'employee_id'       => 'nullable',
-                'employee_all'      => 'required',
-                'review_type_id'    => 'required',
-                'review_from'       => 'required|date',
-                'review_to'         => 'required|date|after:review_from',
-                'deadline_date'     => 'required',
-                'fiscal_year_id'    => 'required',
-            ];
+            $baseRules['employee_id'] = 'nullable';
+            $baseRules['employee_all'] = 'required';
         } else {
-            return [
-                'employee_id'       => 'required',
-                'employee_all'      => 'nullable',
-                'review_type_id'    => 'required',
-                'review_from'       => 'required|date',
-                'review_to'         => 'required|date|after:review_from',
-                'deadline_date'     => 'required',
-                'fiscal_year_id'    => 'required'
-            ];
+            $baseRules['employee_id'] = 'required|exists:employees,id';
+            $baseRules['employee_all'] = 'nullable';
         }
+
+        // External Reviewer is required only for Annual (1) and Mid-Term (2) Review
+        if (in_array($request->review_type_id, [1, 2])) {
+            $baseRules['external_reviewer_id'] = 'required|exists:users,id';
+        } else {
+            $baseRules['external_reviewer_id'] = 'nullable|exists:users,id';
+        }
+
+        return $baseRules;
     }
 
     public function messages()
     {
         return [
-            'employee_id.required'  => 'Please select an employee or check all employees.',
+            'employee_id.required' => 'Please select an employee or check all employees.',
             'employee_all.required' => 'Please select an employee or check all employees.',
-            'review_from.required'  => '\'Review From\' date is required.',
-            'review_to.required'    => '\'Review To\' date is required.',
-            'fiscal_year_id'        => 'Fical year is required.'
+            'external_reviewer_id.required'=> 'External Reviewer is required.',
+            'review_from.required' => '\'Review From\' date is required.',
+            'review_to.required' => '\'Review To\' date is required.',
+            'fiscal_year_id' => 'Fical year is required.'
         ];
     }
 
@@ -66,11 +70,12 @@ class StoreRequest extends FormRequest
     public function attributes()
     {
         return [
-            'employee_id'       => 'Employee Name',
-            'review_type_id'    => 'Review Type',
-            'review_from'       => 'Review From date',
-            'review_to'         => 'Review To date',
-            'fiscal_year_id'    => 'Fiscal Year',
+            'employee_id' => 'Employee Name',
+            'review_type_id' => 'Review Type',
+            'review_from' => 'Review From date',
+            'review_to' => 'Review To date',
+            'fiscal_year_id' => 'Fiscal Year',
         ];
     }
 }
+

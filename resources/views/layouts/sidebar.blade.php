@@ -447,17 +447,17 @@
                                         ({{ $reviewPerCount }})</a>
                                 @endif
 
-                                @if ($authUser->can('recommend-performance-review'))
-                                    <a class="nav-link" id="performance-recommend-index"
-                                       href="{{ route('performance.recommend.index') }}">Recommend Performance
-                                        ({{ $recommendPerCount }})</a>
-                                @endif
-
                                 @if ($authUser->can('approve-performance-review'))
                                     <a class="nav-link" id="performance-approve-index"
                                        href="{{ route('performance.approve.index') }}">Approve Performance
                                         ({{ $approvePerCount }})</a>
                                 @endif
+
+                                {{-- @if ($authUser->can('external-review-performance-review')) --}}
+                                    <a class="nav-link" id="performance-external-review-index"
+                                       href="">360 Feedback
+                                        ({{ $externalReviewPerCount }})</a>
+                                {{-- @endif --}}
                             </div>
                         </div>
                     @endif

@@ -278,8 +278,8 @@ class SideBarComposer
             ->where('reviewer_id', '=', $authUser->id)
             ->count();
 
-        $recommendPerCount = $this->performanceReviews->where('status_id', '=', config('constant.VERIFIED_STATUS'))
-            ->where('recommender_id', '=', $authUser->id)
+        $externalReviewPerCount = $this->performanceReviews->where('status_id', '=', config('constant.APPROVED_STATUS'))
+            ->where('external_reviewer_id', '=', $authUser->id)
             ->count();
 
         $approvePerCount = $this->performanceReviews->where('status_id', '=', config('constant.RECOMMENDED_STATUS'))
@@ -362,7 +362,7 @@ class SideBarComposer
             ->withReceiveGoodRequestCount($receiveGoodRequestCount)
             ->withReviewTravelClaimCount($reviewTravelClaimCount)
             ->withReviewPerCount($reviewPerCount)
-            ->withRecommendPerCount($recommendPerCount)
+            ->withExternalReviewPerCount($externalReviewPerCount)
             ->withVerifyAttendanceCount($verifyAttendanceCount)
             ->withVerifyEmployeeRequisitionCount($verifyEmployeeRequisitionCount)
             ->withVerifyMaintenanceCount($verifyMaintenanceCount)

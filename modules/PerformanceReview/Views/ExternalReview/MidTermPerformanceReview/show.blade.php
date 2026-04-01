@@ -5,7 +5,7 @@
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#navbarVerticalMenu').find('#performance-review-index').addClass('active');
+            $('#navbarVerticalMenu').find('#performance-external-review-index').addClass('active');
 
             // GROUP H - External Reviewer Comments
             $('#groupHForm').on('submit', function(e) {
@@ -80,11 +80,11 @@
     </div>
 
     <section>
-        <!-- Employee Details -->
+        <!-- A. Employee and Line Manager Details -->
         @include('PerformanceReview::Partials.employeeDetails')
 
-        <!-- All other sections: Key Goals, Dev Plan, Core Competencies, Challenges, etc. -->
-        {{-- @include('PerformanceReview::Partials.showFormDetails') --}}
+        <!-- B, C, D, E, F G Forms Deatils-->
+        @include('PerformanceReview::Partials.showFormDetails')
     </section>
 
     <!-- Process Logs -->

@@ -45,13 +45,13 @@ class PerformanceReviewExternalReviewController extends Controller
                     return $performanceReview->getReviewToDate();
                 })
                 ->addColumn('status', function ($performanceReview) {
-                    return '<span class="' . $performanceReview->getStatusClass() . '">' . 
-                           $performanceReview->getStatus() . '</span>';
+                    return '<span class="' . $performanceReview->getStatusClass() . '">' .
+                        $performanceReview->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($performanceReview) {
-                    $btn = '<a class="btn btn-sm btn-outline-primary" href="' . 
-                           route('performance.external-review.show', $performanceReview->id) . 
-                           '" rel="tooltip" title="View 360 Feedback"><i class="bi bi-eye"></i></a>';
+                    $btn = '<a class="btn btn-sm btn-outline-primary" href="' .
+                        route('performance.external-review.show', $performanceReview->id) .
+                        '" rel="tooltip" title="View 360 Feedback"><i class="bi bi-eye"></i></a>';
 
                     return $btn;
                 })
@@ -64,23 +64,69 @@ class PerformanceReviewExternalReviewController extends Controller
 
     public function show($id)
     {
-        $performanceReview = PerformanceReview::with([
-            'employee.latestTenure',
-            'fiscalYear',
-            'status',
-            'reviewType',
-            'keyGoals',
-            'challenges',
-            'coreCompetencies',
-            'developmentPlans',
-            'logs.createdBy'
-        ])->findOrFail($id);
+        $performanceReview = $this->performanceReview->find($id);
 
-        // if ($performanceReview->external_reviewer_id != auth()->id() && 
-        //     !auth()->user()->can('manage-performance-review')) {
-        //     abort(403);
-        // }
+        $this->authorize('view', $performanceReview);
 
-        return view('PerformanceReview::ExternalReview.AnnualPerformanceReview.show', compact('performanceReview'));
+        $record = array(
+            'performanceReview' => $performanceReview,
+            'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
+            'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
+        );
+
+        if ($performanceReview->getReviewType() == 'Annual Review') {
+
+            $midTermReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
+                ->where('review_type_id', '=', 2) //For mid-term review
+                ->where('employee_id', $performanceReview->employee_id)
+                ->first();
+
+            $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
+                ->where('review_type_id', '=', 3) //For key-goal review
+                ->where('employee_id', $performanceReview->employee_id)
+                ->first();
+
+            if (is_null($keyGoalReview)) {
+                return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
+            }
+
+            $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            if ($midTermReview) {
+                $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
+            }
+
+            return view('PerformanceReview::ExternalReview.AnnualPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'midTermReview' => $midTermReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
+        } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
+            $keyGoalReview = $this->performanceReview->where('fiscal_year_id', '=', $performanceReview->fiscal_year_id)
+                ->where('review_type_id', '=', 3)
+                ->where('employee_id', $performanceReview->employee_id)
+                ->first();
+
+            if (is_null($keyGoalReview)) {
+                return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
+            }
+
+            $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
+
+            return view('PerformanceReview::ExternalReview.MidTermPerformanceReview.show', [
+                ...$record,
+                'keyGoalReview' => $keyGoalReview,
+                'keygoals' => $keygoals,
+                'performanceReview' => $performanceReview,
+                'challenges' => $performanceReview->challenges,
+                'coreCompetencies' => $performanceReview->coreCompetencies,
+            ]);
+
+        } 
     }
 }

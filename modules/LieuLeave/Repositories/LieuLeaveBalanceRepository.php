@@ -6,6 +6,7 @@ use App\Repositories\Repository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\LieuLeave\Models\LieuLeaveBalance;
+use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 
 class LieuLeaveBalanceRepository extends Repository
 {
@@ -13,6 +14,7 @@ class LieuLeaveBalanceRepository extends Repository
     public function __construct(
         protected LieuLeaveBalance $lieuLeaveBalance,
         protected LieuLeaveRequestRepository $lieuLeaveRequest,
+        protected OffDayWorkRepository $offDayWorkRepository,
     ) {
         $this->model = $lieuLeaveBalance;
     }
@@ -29,8 +31,10 @@ class LieuLeaveBalanceRepository extends Repository
 
     public function addBalance($userId, $offDayWorkId)
     {
+        
+       $offDayWOrk= $this->offDayWorkRepository->find($offDayWorkId);
 
-        $earnedDate = Carbon::now();
+        $earnedDate = Carbon::parse($offDayWOrk->date);
         $expiresAt  = $earnedDate->copy()->addDays(30);
         $earnedMonth = $earnedDate->copy()->startOfMonth();
 
@@ -63,6 +67,8 @@ class LieuLeaveBalanceRepository extends Repository
 
     public function countLieuLeaveBalances(int $userId, $expiryDate): int
     {
+    
+
         return $this->model
             ->where('user_id', $userId)
             ->where('expires_at', '>', $expiryDate->toDateString())
@@ -76,9 +82,9 @@ class LieuLeaveBalanceRepository extends Repository
             ->select('llb.off_day_work_id', 'ofw.date as off_day_work_date')
             ->from($this->model->getTable() . ' as llb')
             ->join('off_day_works as ofw', 'llb.off_day_work_id', '=', 'ofw.id')
-            ->where('user_id', $userId)
-            ->where('earned_date', '>=', $previousMonthDate->toDateString())
-            ->whereNull('lieu_leave_request_id')
+            ->where('llb.user_id', $userId)
+            ->where('llb.earned_date', '>=', $previousMonthDate->toDateString())
+            ->whereNull('llb.lieu_leave_request_id')
             ;
     }
 

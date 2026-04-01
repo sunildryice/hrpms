@@ -11,35 +11,34 @@
             $('#groupHForm').on('submit', function(e) {
                 e.preventDefault();
 
-                let result = $('#result').val().trim();
-                let comments = $('#comments').val().trim();
+                let external_reviewer_comments = $('#external_reviewer_comments').val().trim();
 
-                if (!result || !comments) {
-                    toastr.error('Please provide both Result and Comments before saving.',
+                if (!external_reviewer_comments) {
+                    toastr.error('Please provide External Reviewer Comments before saving.',
                         'Validation Error');
                     return;
                 }
 
                 $.ajax({
                     type: 'POST',
+                    url: "{{ route('performance.external-review.store') }}",
                     data: {
                         _token: "{{ csrf_token() }}",
                         performance_review_id: "{{ $performanceReview->id }}",
-                        result: result,
-                        comments: comments
+                        external_reviewer_comments: external_reviewer_comments
                     },
                     success: function(response) {
                         if (response.type === 'success') {
-                            toastr.success('Result and Comments saved successfully!',
+                            toastr.success('Reviewer comments saved successfully!',
                                 'Success');
                         } else {
                             toastr.error(response.message ||
-                                'Failed to save result and comments.');
+                                'Failed to save comments.');
                         }
                     },
                     error: function(xhr) {
                         console.error(xhr);
-                        toastr.error('Something went wrong while saving result and comments.');
+                        toastr.error('Something went wrong while saving reviewer comments.');
                     }
                 });
             });
@@ -85,6 +84,33 @@
 
         <!-- B, C, D, E, F G Forms Deatils-->
         @include('PerformanceReview::Partials.showFormDetails')
+
+        <!-- H. External Reviwer Comments -->
+        <div id="externalReviewerComments" class="mb-3">
+            <form id="groupHForm" method="POST">
+                @csrf
+                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                <div class="card">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">H.</span> Reviewer Comments
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <textarea name="external_reviewer_comments" id="external_reviewer_comments" class="form-control" rows="4"
+                                placeholder="Provide detailed comments and feedback...">{{ old('external_reviewer_comments', $performanceReview->external_reviewer_comments ?? '') }}</textarea>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-sm btn-outline-primary" id="save-result-comments">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </section>
 
     <!-- Process Logs -->

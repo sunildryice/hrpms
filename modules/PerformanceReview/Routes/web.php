@@ -74,4 +74,5 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('performance/external-review', [PerformanceReviewExternalReviewController::class, 'index'])->name('performance.external-review.index');
     Route::get('performance/external-review/{id}/show', [PerformanceReviewExternalReviewController::class, 'show'])->name('performance.external-review.show');
+    Route::post('performance/external-review', [PerformanceReviewExternalReviewController::class, 'storeExternalReviewerComments'])->name('performance.external-review.store');
 });

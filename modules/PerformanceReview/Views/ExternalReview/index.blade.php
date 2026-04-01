@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', '360 Feedback (External Review)')
+@section('title', '360 Feedback')
 
 @section('page_js')
     <script type="text/javascript">

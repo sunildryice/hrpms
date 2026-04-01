@@ -127,6 +127,25 @@ class PerformanceReviewExternalReviewController extends Controller
                 'coreCompetencies' => $performanceReview->coreCompetencies,
             ]);
 
-        } 
+        }
+    }
+
+    public function storeExternalReviewerComments(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'external_reviewer_comments' => 'required|string',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $performanceReview->update([
+            'external_reviewer_comments' => $request->external_reviewer_comments,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'External review comments saved successfully.'
+        ]);
     }
 }

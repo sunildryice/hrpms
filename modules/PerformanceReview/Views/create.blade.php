@@ -28,25 +28,33 @@
                 $('#employee_id').val(oldEmpId).trigger("change");
             }
 
-            // Show/Hide External Reviewer based on Review Type
-            $('#review_type_id').on('change', function() {
-                const reviewTypeId = parseInt($(this).val() || 0);
+            // External Reviewer toggle and validation Logic 
+            function toggleExternalReviewer() {
+                const reviewTypeId = parseInt($('#review_type_id').val() || 0);
 
                 if (reviewTypeId === 1 || reviewTypeId === 2) {
-                    $('#external_reviewer_row').fadeIn(200);
-                    $('#external_reviewer_id').prop('required', true);
+                    $('#external_reviewer_row').fadeIn(100);
+                    fv.addField('external_reviewer_id', {
+                        validators: {
+                            notEmpty: {
+                                message: 'External Reviewer is required'
+                            }
+                        }
+                    });
                 } else {
-                    $('#external_reviewer_row').fadeOut(200);
-                    $('#external_reviewer_id').prop('required', false).val('');
+                    $('#external_reviewer_row').fadeOut(100);
+                    $('#external_reviewer_id').val('');
+                    fv.removeField('external_reviewer_id');
                 }
+            }
+
+            $('#review_type_id').on('change', function() {
+                toggleExternalReviewer();
             });
 
-            // Trigger on page load
-            $(function() {
-                if ($('#review_type_id').val()) {
-                    $('#review_type_id').trigger('change');
-                }
-            });
+            if ($('#review_type_id').val()) {
+                toggleExternalReviewer();
+            }
 
             const form = document.getElementById('performanceReviewAddForm');
             const fv = FormValidation.formValidation(form, {

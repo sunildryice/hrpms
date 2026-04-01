@@ -6,6 +6,7 @@ use Modules\PerformanceReview\Controllers\PerformanceReviewAssistantController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewChallengeController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewCoreCompetencyController;
+use Modules\PerformanceReview\Controllers\PerformanceReviewExternalReviewController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewKeyGoalController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewRecommendController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewReviewController;
@@ -70,4 +71,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('performance/reviews/assistant', [PerformanceReviewAssistantController::class, 'index'])->name('performance.reviews.assistant.index');
 
     Route::get('performance/reviews/{per}/previous/show', [PerformanceReviewController::class, 'showPrevious'])->name('performance.previous.show');
+
+    Route::get('performance/external-review', [PerformanceReviewExternalReviewController::class, 'index'])->name('performance.external-review.index');
+    Route::get('performance/external-review/{id}/show', [PerformanceReviewExternalReviewController::class, 'show'])->name('performance.external-review.show');
 });

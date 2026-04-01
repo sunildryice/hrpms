@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\PerformanceReview\Models\PerformanceReviewLog;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
 use Modules\PerformanceReview\Notifications\PerformanceReviewApproved;
+use Modules\PerformanceReview\Notifications\PerformanceReviewExternalReview;
 use Modules\PerformanceReview\Notifications\PerformanceReviewRecommended;
 use Modules\PerformanceReview\Notifications\PerformanceReviewReturned;
 use Modules\PerformanceReview\Notifications\PerformanceReviewVerified;
@@ -178,6 +179,7 @@ class PerformanceReviewReviewController extends Controller
                 if ($performanceReview->status_id == config('constant.APPROVED_STATUS')) {
                     $message = 'Performance Review is successfully approved.';
                     $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
+                    $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
                 } elseif ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
                     $message = 'Performance Review is successfully returned.';
                     $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));

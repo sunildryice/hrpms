@@ -269,16 +269,29 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <th style="width: 20%">Result</th>
+                                <th style="width: 5%">Result</th>
                                 <td>{{ $performanceReview->result ?: '—' }}</td>
                             </tr>
                             <tr>
-                                <th style="width: 20%">Comments</th>
+                                <th style="width: 5%">Comments</th>
                                 <td>{{ $performanceReview->comments ?: '—' }}</td>
                             </tr>
                         </tbody>
                     </table>
 
+                    <!-- H. External Reviewer Comments -->
+                     <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2">H. EXTERNAL REVIEWER COMMENTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <table class="table mb-4 border">
                         <tbody>
@@ -296,9 +309,9 @@
                                 <td>{{ $performanceReview->logs->where('status_id', config('constant.VERIFIED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
                             </tr>
-                            <tr>
+                            {{-- <tr>
                                 <th scope="row">Next Line Manager:</th>
-                                <td>{{ $performanceReview->getRecommenderName() }}</td>
+                                <td>{{ $performanceReview->getExternalReviewerName() }}</td>
                                 <th scope="row">Date:</th>
                                 <td>{{ $performanceReview->logs->where('status_id', config('constant.RECOMMENDED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
@@ -309,7 +322,7 @@
                                 <th scope="row">Date:</th>
                                 <td>{{ $performanceReview->logs->where('status_id', config('constant.APPROVED_STATUS'))->last()?->created_at?->format('Y-m-d') }}
                                 </td>
-                            </tr>
+                            </tr> --}}
                         </tbody>
                     </table>
                 </div>

@@ -454,7 +454,7 @@
                                         ({{ $approvePerCount }})</a>
                                 @endif
 
-                                @if ($authUser->can('external-reviewer-performance-review'))
+                                @if ($externalReviewPerCount > 0)
                                     <a class="nav-link" id="performance-external-review-index"
                                         href="{{ route('performance.external-review.index') }}">360 Feedback
                                         ({{ $externalReviewPerCount }})</a>

@@ -7,15 +7,24 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#performance-external-review-index').addClass('active');
 
-            // GROUP H - External Reviewer Comments
-            $('#groupHForm').on('submit', function(e) {
-                e.preventDefault();
+            // Save Draft
+            $('#save-external-comments').on('click', function() {
+                saveExternalComments(false);
+            });
 
-                let external_reviewer_comments = $('#external_reviewer_comments').val().trim();
+            // Submit & Close
+            window.submitExternalReview = function() {
+                // if (confirm('Are you sure you want to submit this review? This will close the 360 feedback and change status to Closed.')) {
+                //     saveExternalComments(true);
+                // }
+                saveExternalComments(true);
+            };
 
-                if (!external_reviewer_comments) {
-                    toastr.error('Please provide External Reviewer Comments before saving.',
-                        'Validation Error');
+            function saveExternalComments(isSubmit) {
+                let comments = $('#external_reviewer_comments').val().trim();
+
+                if (!comments) {
+                    toastr.error('Please provide Reviewer Comments before saving.', 'Validation Error');
                     return;
                 }
 
@@ -25,23 +34,29 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         performance_review_id: "{{ $performanceReview->id }}",
-                        external_reviewer_comments: external_reviewer_comments
+                        external_reviewer_comments: comments,
+                        is_submit: isSubmit ? 1 : 0
                     },
                     success: function(response) {
                         if (response.type === 'success') {
-                            toastr.success('Reviewer comments saved successfully!',
-                                'Success');
+                            toastr.success(response.message, 'Success');
+
+                            if (isSubmit) {
+                                setTimeout(() => {
+                                    window.location.href =
+                                        "{{ route('performance.external-review.index') }}";
+                                }, 1500);
+                            }
                         } else {
-                            toastr.error(response.message ||
-                                'Failed to save comments.');
+                            toastr.error(response.message || 'Failed to save comments.');
                         }
                     },
                     error: function(xhr) {
                         console.error(xhr);
-                        toastr.error('Something went wrong while saving reviewer comments.');
+                        toastr.error('Something went wrong. Please try again.');
                     }
                 });
-            });
+            }
 
         });
     </script>
@@ -289,31 +304,47 @@
             </div>
         </div>
 
-        <!-- H. External Reviwer Comments -->
+        <!-- H. External Reviewer Comments -->
         <div id="externalReviewerComments" class="mb-3">
-            <form id="groupHForm" method="POST">
-                @csrf
-                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+            @if ($performanceReview->status_id != config('constant.CLOSED_STATUS'))
+                <form id="groupHForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
 
-                <div class="card">
-                    <div class="card-header fw-bold">
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            <span class="card-title">
+                                <span class="fw-bold">H.</span> Reviewer Comments
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <textarea name="external_reviewer_comments" id="external_reviewer_comments" class="form-control" rows="4"
+                                    placeholder="Provide detailed comments and feedback...">{{ old('external_reviewer_comments', $performanceReview->external_reviewer_comments ?? '') }}</textarea>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-2"
+                                id="save-external-comments">Save</button>
+                            <button type="button" class="btn btn-sm btn-success" id="submit-external-review"
+                                onclick="submitExternalReview()">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            @else
+                <div class="card border-success">
+                    <div class="card-header fw-bold bg-light">
                         <span class="card-title">
                             <span class="fw-bold">H.</span> Reviewer Comments
                         </span>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <textarea name="external_reviewer_comments" id="external_reviewer_comments" class="form-control" rows="4"
-                                placeholder="Provide detailed comments and feedback...">{{ old('external_reviewer_comments', $performanceReview->external_reviewer_comments ?? '') }}</textarea>
+                        <div class="col-md-12' }}">
+                            <p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p>
                         </div>
                     </div>
-                    <div class="card-footer text-end">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" id="save-result-comments">
-                            Save
-                        </button>
-                    </div>
                 </div>
-            </form>
+            @endif
         </div>
 
     </section>

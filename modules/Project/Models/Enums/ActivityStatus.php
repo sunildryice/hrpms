@@ -14,7 +14,7 @@ enum ActivityStatus: string
         return match ($this) {
             ActivityStatus::NotStarted => 'Not Started',
             ActivityStatus::UnderProgress => 'Under Progress',
-            ActivityStatus::NoRequired => 'No Longer Required',
+            ActivityStatus::NoRequired => 'Not Required',
             ActivityStatus::Completed => 'Completed',
         };
     }

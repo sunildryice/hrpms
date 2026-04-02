@@ -71,7 +71,7 @@
                                 <th>Completed</th>
                                 <th>Under Progress</th>
                                 <th>Not Started</th>
-                                <th>No Longer Req.</th>
+                                <th>Not Required</th>
                             </tr>
                         </thead>
                         <tbody>

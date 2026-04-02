@@ -81,7 +81,7 @@
                         show: true
                     },
                 },
-                labels: ['Completed', 'Under Progress', 'Not Started', 'No Longer Required'],
+                labels: ['Completed', 'Under Progress', 'Not Started', 'Not Required'],
                 colors: [Completed, UnderProgress, NotStarted, NoLongerRequired],
                 responsive: [{
                     breakpoint: 480,
@@ -215,7 +215,7 @@
 
             <div class="col-md-3">
                 <div class="stat-card stat-card-nr">
-                    <small class="text-capitalize">No longer required</small>
+                    <small class="text-capitalize">Not required</small>
                     <h3 class="mb-1">{{ $statusDistribution['no_required'] }}</h3>
                     <span class="badge rounded-pill mt-1">{{ $percentages['no_required'] }}%</span>
                 </div>

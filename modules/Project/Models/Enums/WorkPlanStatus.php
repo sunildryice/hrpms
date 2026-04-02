@@ -14,9 +14,9 @@ enum WorkPlanStatus: string
     {
         return match ($this) {
             WorkPlanStatus::NotStarted => 'Not Started',
-            WorkPlanStatus::PartiallyCompleted => 'Partially Completed',
+            WorkPlanStatus::PartiallyCompleted => 'Ongoing',
             WorkPlanStatus::Completed => 'Completed',
-            WorkPlanStatus::NoRequired => 'No Required',
+            WorkPlanStatus::NoRequired => 'Not Required',
         };
     }
 

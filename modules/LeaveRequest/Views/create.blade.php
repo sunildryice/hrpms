@@ -15,6 +15,30 @@
         var holidays = '{!! str_replace('&quot;', '', json_encode($holidays)) !!}';
         let leaveModes = (JSON.parse('{!! json_encode($leaveModes->map->only(['id', 'title', 'hours'])) !!}'));
 
+        let disabledDates = [];
+
+        function fetchHolidaysForLeave() {
+            const url = "{{ route('api.leave.holidays.index') }}";
+            ajaxNativeSubmit(url, 'GET', {}, 'json', function(response) {
+                // disabledDates = [
+                //     ...(response.holidays ? Object.keys(response.holidays) : []),
+                //     ...(response.weekends || [])
+                // ];
+                disabledDates = response.disabled_dates ||
+                    Object.keys(response.holidays || {});
+            }, function(error) {
+                console.error(error);
+            });
+        }
+
+        function formatDateObj(date) {
+            const d = new Date(date);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
 
         $('.submit-btn').attr('disabled', false)
 
@@ -341,10 +365,15 @@
                 fv.revalidateField('approver_id');
             });
 
+            fetchHolidaysForLeave();
             $('[name="start_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+                filter: function(date) {
+                    const formatted = formatDateObj(date);
+                    return !disabledDates.includes(formatted);
+                }
             }).on('change', function(e) {
                 fv.revalidateField('start_date');
                 fv.revalidateField('end_date');
@@ -356,6 +385,10 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+                filter: function(date) {
+                    const formatted = formatDateObj(date);
+                    return !disabledDates.includes(formatted);
+                }
             }).on('change', function(e) {
                 fv.revalidateField('start_date');
                 fv.revalidateField('end_date');

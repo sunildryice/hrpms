@@ -4,31 +4,27 @@ namespace Modules\PerformanceReview\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\PerformanceReview\Models\PerformanceReviewLog;
-use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
-use Modules\PerformanceReview\Notifications\PerformanceReviewApproved;
-use Modules\PerformanceReview\Notifications\PerformanceReviewExternalReview;
-use Modules\PerformanceReview\Notifications\PerformanceReviewReturned;
+use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
-use Modules\PerformanceReview\Requests\PerformanceReviewApprove\StoreRequest;
 use Yajra\DataTables\DataTables;
 
-class PerformanceReviewApproveController extends Controller
+class PerformanceReviewExternalReviewController extends Controller
 {
     public function __construct(
-        protected PerformanceReviewRepository $performanceReview,
-        protected PerformanceReviewLog $performanceReviewLog,
-        protected PerformanceReviewQuestion $performanceReviewQuestion
+        protected PerformanceReviewRepository $performanceReview
     ) {
     }
 
     public function index(Request $request)
     {
         $authUser = auth()->user();
+
         if ($request->ajax()) {
             $data = $this->performanceReview
-                ->where('status_id', '=', config('constant.RECOMMENDED_STATUS'))
-                ->where('approver_id', '=', $authUser->id)
+                ->where('external_reviewer_id', '=', $authUser->id)
+                ->whereIn('review_type_id', [1, 2]) // Only Annual & Mid-Term
+                ->with(['employee', 'fiscalYear', 'status', 'reviewType'])
+                ->orderBy('created_at', 'desc')
                 ->get();
 
             return DataTables::of($data)
@@ -49,11 +45,13 @@ class PerformanceReviewApproveController extends Controller
                     return $performanceReview->getReviewToDate();
                 })
                 ->addColumn('status', function ($performanceReview) {
-                    return '<span class="' . $performanceReview->getStatusClass() . '">' . $performanceReview->getStatus() . '</span>';
+                    return '<span class="' . $performanceReview->getStatusClass() . '">' .
+                        $performanceReview->getStatus() . '</span>';
                 })
                 ->addColumn('action', function ($performanceReview) {
-                    $btn = '<a class="btn btn-sm btn-outline-primary" href="';
-                    $btn .= route('performance.approve.create', [$performanceReview->id]) . '" rel="tooltip" title="Fill/Approve Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
+                    $btn = '<a class="btn btn-sm btn-outline-primary" href="' .
+                        route('performance.external-review.show', $performanceReview->id) .
+                        '" rel="tooltip" title="View 360 Feedback"><i class="bi bi-eye"></i></a>';
 
                     return $btn;
                 })
@@ -61,20 +59,20 @@ class PerformanceReviewApproveController extends Controller
                 ->make(true);
         }
 
-        return view('PerformanceReview::Approve.index');
+        return view('PerformanceReview::ExternalReview.index');
     }
 
-    public function create(Request $request, $id)
+    public function show($id)
     {
         $performanceReview = $this->performanceReview->find($id);
 
-        $this->authorize('approve', $performanceReview);
+        $this->authorize('view', $performanceReview);
 
-        $record = [
+        $record = array(
             'performanceReview' => $performanceReview,
             'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
             'futureKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'future'),
-        ];
+        );
 
         if ($performanceReview->getReviewType() == 'Annual Review') {
 
@@ -88,14 +86,19 @@ class PerformanceReviewApproveController extends Controller
                 ->where('employee_id', $performanceReview->employee_id)
                 ->first();
 
+            if (is_null($keyGoalReview)) {
+                return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
+            }
+
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
 
-            return view('PerformanceReview::Approve.AnnualPerformanceReview.create', [
+            return view('PerformanceReview::ExternalReview.AnnualPerformanceReview.show', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
+                'midTermReview' => $midTermReview,
                 'keygoals' => $keygoals,
                 'performanceReview' => $performanceReview,
                 'challenges' => $performanceReview->challenges,
@@ -107,9 +110,15 @@ class PerformanceReviewApproveController extends Controller
                 ->where('review_type_id', '=', 3)
                 ->where('employee_id', $performanceReview->employee_id)
                 ->first();
-            $keygoals = $keyGoalReview->keyGoals;
 
-            return view('PerformanceReview::Approve.MidTermPerformanceReview.create', [
+            if (is_null($keyGoalReview)) {
+                return redirect()->back()->withWarningMessage('Key-Goals not set yet.');
+            }
+
+            $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
+
+            return view('PerformanceReview::ExternalReview.MidTermPerformanceReview.show', [
                 ...$record,
                 'keyGoalReview' => $keyGoalReview,
                 'keygoals' => $keygoals,
@@ -118,42 +127,25 @@ class PerformanceReviewApproveController extends Controller
                 'coreCompetencies' => $performanceReview->coreCompetencies,
             ]);
 
-        } else {
-            return view('PerformanceReview::Approve.KeyGoalsReview.create', [
-                'performanceReview' => $performanceReview,
-                'professionalDevelopmentPlanQuestion' => $this->performanceReviewQuestion->where('group', 'E')->orderBy('position', 'desc')->first(),
-                'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
-            ]);
         }
     }
 
-    public function store(StoreRequest $request)
+    public function storeExternalReviewerComments(Request $request)
     {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'external_reviewer_comments' => 'required|string',
+        ]);
+
         $performanceReview = $this->performanceReview->find($request->performance_review_id);
 
-        $this->authorize('approve', $performanceReview);
+        $performanceReview->update([
+            'external_reviewer_comments' => $request->external_reviewer_comments,
+        ]);
 
-        $inputs = $request->validated();
-
-        $inputs['user_id'] = auth()->id();
-        $inputs['original_user_id'] = session()->has('original_user') ? session()->get('original_user') : null;
-
-        $performanceReview = $this->performanceReview->approve($request->performance_review_id, $inputs);
-
-        if ($performanceReview) {
-            $message = '';
-            if ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
-                $message = 'Performance Review is successfully returned.';
-                $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));
-            } else {
-                $message = 'Performance Review is successfully approved.';
-                $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
-                $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
-            }
-
-            return redirect()->route('performance.approve.index')->withSuccessMessage($message);
-        }
-
-        return redirect()->back()->withInput()->withWarningMessage('Performance review could not be approved.');
+        return response()->json([
+            'type' => 'success',
+            'message' => 'External review comments saved successfully.'
+        ]);
     }
 }

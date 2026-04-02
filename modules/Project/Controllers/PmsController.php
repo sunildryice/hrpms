@@ -108,7 +108,7 @@ class PmsController
             ['name' => 'Completed', 'data' => []],
             ['name' => 'Under Progress', 'data' => []],
             ['name' => 'Not Started', 'data' => []],
-            ['name' => 'No Required', 'data' => []],
+            ['name' => 'Not Required', 'data' => []],
             ['name' => 'No Activities', 'data' => []],
         ];
 

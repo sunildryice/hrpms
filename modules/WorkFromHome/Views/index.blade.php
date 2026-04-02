@@ -128,7 +128,7 @@
             </div>
             <div class="add-info justify-content-end">
                 <a href="{{ route('wfh.requests.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi-plus"></i> New Work From Home Request
+                    <i class="bi-plus"></i> New Request
                 </a>
             </div>
         </div>

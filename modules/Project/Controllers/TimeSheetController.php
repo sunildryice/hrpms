@@ -15,6 +15,7 @@ use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Requests\TimeSheet\StoreRequest;
 use Modules\Project\Requests\TimeSheet\UpdateRequest;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 class TimeSheetController extends Controller
 {
@@ -36,8 +37,10 @@ class TimeSheetController extends Controller
                 ->select('project_activity_timesheet.*')
                 ->with(['project', 'activity'])
                 ->where('created_by', $authUser->id)
-                ->orderBy('timesheet_date', 'desc')
-                ->orderBy('project_id', 'asc')
+//                ->orderBy('timesheet_date', 'desc')
+                ->orderBy(DB::raw('DATE(timesheet_date)'), 'desc')
+//                ->orderBy(DB::raw('MONTH(timesheet_date)'), 'desc')
+//                ->orderBy(DB::raw('Da(timesheet_date)'), 'desc')
                 ->get()
                 ->map(function ($row) use ($authUser) {
                     $monthly = TimeSheet::where('requester_id', $authUser->id)
@@ -48,7 +51,6 @@ class TimeSheetController extends Controller
                     $row->monthly_status_id = $monthly ? $monthly->status_id : null;
                     return $row;
                 });
-
 
             return DataTables::of($data)
                 ->addIndexColumn()

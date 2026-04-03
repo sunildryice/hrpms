@@ -15,20 +15,20 @@
 
 @section('page_js')
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#navbarVerticalMenu').find('#timesheets-index').addClass('active');
-
 
             var oTable = $('#TimeSheetTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('timesheet.index') }}",
-                order: [[0, 'desc']],
-                columns: [{
+                columns: [
+                    {
+                        orderable: false,
                         data: 'timesheet_date_display',
                         name: 'timesheet_date_display',
-                        render: function(data, type, row, meta) {
+                        render: function (data, type, row, meta) {
                             // Hide duplicate dates except for the first row in each group
                             if (type === 'display') {
                                 var api = meta.settings;
@@ -77,7 +77,7 @@
                 rowGroup: {
                     dataSrc: 'timesheet_date'
                 },
-                drawCallback: function(settings) {
+                drawCallback: function (settings) {
                     var api = this.api();
                     var rows = api.rows({
                         page: 'current'
@@ -87,7 +87,7 @@
                     var dateColumnIndex = 0; // DATE column is first
                     api.column(dateColumnIndex, {
                         page: 'current'
-                    }).data().each(function(date, i) {
+                    }).data().each(function (date, i) {
                         if (lastDate === date) {
                             $(rows).eq(i).find('td').eq(dateColumnIndex).remove();
                             rowspan++;
@@ -111,12 +111,12 @@
             });
 
 
-            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+            $(document).on('click', '.open-timesheet-modal-form', function (e) {
                 e.preventDefault();
                 $('#timeSheetModal').find('.modal-content').html('');
                 $('#timeSheetModal').modal('show')
                     .find('.modal-content')
-                    .load($(this).attr('href') || $(this).data('href'), function(response, status) {
+                    .load($(this).attr('href') || $(this).data('href'), function (response, status) {
                         if (status === 'error') {
                             toastr.error('Could not load form');
                             return;
@@ -145,7 +145,7 @@
             });
 
             // handle create/edit form submission via AJAX
-            $(document).on('submit', '#TimeSheetForm', function(e) {
+            $(document).on('submit', '#TimeSheetForm', function (e) {
                 e.preventDefault();
                 var form = this;
                 var url = $(form).attr('action');
@@ -153,18 +153,18 @@
                 var formData = new FormData(form);
 
                 // send regardless of PUT override (server handles method override)
-                ajaxSubmitFormData(url, method, formData, function(response) {
+                ajaxSubmitFormData(url, method, formData, function (response) {
                     $('#timeSheetModal').modal('hide');
                     toastr.success(response.message || 'Saved successfully');
                     oTable.ajax.reload();
                 });
             });
 
-            $('#TimeSheetTable').on('click', '.delete-record', function(e) {
+            $('#TimeSheetTable').on('click', '.delete-record', function (e) {
                 e.preventDefault();
                 $object = $(this);
                 var $url = $object.attr('data-href');
-                var successCallback = function(response) {
+                var successCallback = function (response) {
                     toastr.success(response.message, 'Success', {
                         timeOut: 5000
                     });
@@ -184,7 +184,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
-                                    class="text-decoration-none text-dark">Home</a></li>
+                                                           class="text-decoration-none text-dark">Home</a></li>
                             {{-- <li class="breadcrumb-item"><a href="#" class="text-decoration-none">HR</a></li> --}}
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>
@@ -193,7 +193,7 @@
                 </div>
                 <div class="add-info justify-content-end">
                     <a href="{{ route('timesheet.create') }}" class="btn btn-primary btn-sm" rel="tooltip"
-                        title="Add TimeSheet">
+                       title="Add TimeSheet">
                         <i class="bi-plus"></i> Add New
                     </a>
                 </div>
@@ -207,15 +207,15 @@
                 <div class="table-responsive">
                     <table class="table table-bordered" id="TimeSheetTable">
                         <thead class="bg-light">
-                            <tr>
-                                <th>{{ __('label.date') }}</th>
-                                <th>{{ __('label.project') }}</th>
-                                <th class="wrap-text">{{ __('label.activity') }}</th>
-                                <th>Hours Spent</th>
-                                <th class="wrap-text">{{ __('label.description') }}</th>
-                                <th>{{ __('label.attachment') }}</th>
-                                <th>{{ __('label.action') }}</th>
-                            </tr>
+                        <tr>
+                            <th>{{ __('label.date') }}</th>
+                            <th>{{ __('label.project') }}</th>
+                            <th class="wrap-text">{{ __('label.activity') }}</th>
+                            <th>Hours Spent</th>
+                            <th class="wrap-text">{{ __('label.description') }}</th>
+                            <th>{{ __('label.attachment') }}</th>
+                            <th>{{ __('label.action') }}</th>
+                        </tr>
                         </thead>
                         <tbody>
                         </tbody>

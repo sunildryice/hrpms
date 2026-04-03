@@ -55,7 +55,9 @@ class TravelAuthorization extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['request_date'];
+    protected $casts = [
+        'request_date' => 'date',
+    ];
 
     /**
      * Get the approved log for the travel request.

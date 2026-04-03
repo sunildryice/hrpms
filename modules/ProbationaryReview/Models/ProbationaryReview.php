@@ -67,7 +67,10 @@ class ProbationaryReview extends Model
      * @var array
      */
     protected $hidden = [];
-    protected $dates = ['date', 'next_probation_complete_date'];
+    protected $casts = [
+        'date' => 'date',
+        'next_probation_complete_date' => 'date',
+    ];
 
 
     /**

@@ -57,9 +57,9 @@ class LocalTravelItinerary extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['travel_date'];
-    protected $casts = [
+        protected $casts = [
         'names_of_travelers' => 'array',
+        'travel_date' => 'date',
     ];
 
     /**

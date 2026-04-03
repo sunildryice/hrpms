@@ -42,13 +42,13 @@ class PerformanceReview extends Model
 
     protected $hidden = [];
 
-    protected $dates = [
-        'review_from',
-        'review_to',
-        'deadline_date',
-        'goal_setting_date',
-        'mid_term_per_date',
-        'final_per_date',
+    protected $casts = [
+        'review_from' => 'date',
+        'review_to' => 'date',
+        'deadline_date' => 'date',
+        'goal_setting_date' => 'date',
+        'mid_term_per_date' => 'date',
+        'final_per_date' => 'date',
     ];
 
     public function answers()

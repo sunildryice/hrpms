@@ -21,12 +21,10 @@ class LieuLeaveBalance extends Model
         'expires_at',
     ];
 
-    protected $dates = [
-        // 'earned_date',
-        'earned_month',
-        'expires_at',
-        'created_at',
-        'updated_at',
+    protected $casts = [
+        'earned_date' => 'date',
+        'earned_month' => 'date',
+        'expires_at' => 'datetime',
     ];
 
     public function user()

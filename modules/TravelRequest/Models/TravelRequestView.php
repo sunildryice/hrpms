@@ -32,7 +32,10 @@ class TravelRequestView extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['departure_date', 'return_date'];
+    protected $casts = [
+        'departure_date' => 'date',
+        'return_date' => 'date',
+    ];
 
     public function getDepartureDate()
     {

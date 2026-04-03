@@ -60,7 +60,11 @@ class LeaveRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['start_date', 'end_date', 'request_date'];
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'request_date' => 'date',
+    ];
 
     /**
      * Get the approved log for the leave request.

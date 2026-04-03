@@ -17,8 +17,8 @@ class ProjectActivityExtension extends Model
         'updated_by',
     ];
 
-    protected $dates = [
-        'extended_completion_date',
+    protected $casts = [
+        'extended_completion_date' => 'date',
     ];
 
     public function project()

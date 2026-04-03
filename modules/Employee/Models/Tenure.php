@@ -51,7 +51,11 @@ class Tenure extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['joined_date', 'to_date', 'contract_end_date'];
+    protected $casts = [
+        'joined_date' => 'date',
+        'to_date' => 'date',
+        'contract_end_date' => 'date',
+    ];
 
     /**
      * Get the employee of the tenure.

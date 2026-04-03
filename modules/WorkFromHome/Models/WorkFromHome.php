@@ -39,13 +39,11 @@ class WorkFromHome extends Model
 
     protected $casts = [
         'deliverables' => 'array',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'request_date' => 'date',
     ];
 
-    protected $dates = [
-        'start_date',
-        'end_date',
-        'request_date',
-    ];
 
 
     public function getProjectNames(): array
@@ -113,7 +111,7 @@ class WorkFromHome extends Model
     {
         return $this->hasMany(WorkFromHomeDay::class, 'work_from_home_id', 'id');
     }
-    
+
 
 
     public function status()

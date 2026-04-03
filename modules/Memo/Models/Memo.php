@@ -57,7 +57,10 @@ class Memo extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['memo_date', 'submitted_at'];
+    protected $casts = [
+        'memo_date' => 'date',
+        'submitted_at' => 'datetime',
+    ];
 
     /**
      * Get the approved log for the purchase request.

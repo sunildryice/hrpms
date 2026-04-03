@@ -53,7 +53,11 @@ class FamilyDetail extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['date_of_birth', 'emergency_contact_at', 'nominee_at'];
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'emergency_contact_at' => 'datetime',
+        'nominee_at' => 'datetime',
+    ];
 
     /**
      * Get the employee of the family detail.

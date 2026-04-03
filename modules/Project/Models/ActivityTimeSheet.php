@@ -22,8 +22,8 @@ class ActivityTimeSheet extends Model
         'created_by',
         'updated_by',
     ];
-    protected $dates = [
-        'timesheet_date',
+    protected $casts = [
+        'timesheet_date' => 'date',
     ];
 
     public function project()

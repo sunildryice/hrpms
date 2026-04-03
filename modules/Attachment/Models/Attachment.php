@@ -46,7 +46,7 @@ class Attachment extends Model
      *
      * @var array
      */
-    protected $dates = [];
+    
 
     /**
      * Get the parent attachable model

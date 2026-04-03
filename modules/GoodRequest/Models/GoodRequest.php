@@ -56,7 +56,10 @@ class GoodRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['received_at', 'handover_date'];
+    protected $casts = [
+        'received_at' => 'datetime',
+        'handover_date' => 'date',
+    ];
 
     /**
      * Get the approver of a good

@@ -89,7 +89,10 @@ class VehicleRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['start_datetime', 'end_datetime'];
+    protected $casts = [
+        'start_datetime' => 'datetime',
+        'end_datetime' => 'datetime',
+    ];
 
     /**
      * Get the accountCode of the vehicle request.

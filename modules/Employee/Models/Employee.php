@@ -86,15 +86,13 @@ class Employee extends Model
      */
     protected $hidden = [];
 
-    protected $dates = [
-        'joined_date',
-        'probation_completion_date',
-        'last_working_date',
-        'activated_at',
-    ];
 
     protected $casts = [
         'vehicle_license_category' => 'array',
+        'joined_date' => 'date',
+        'probation_completion_date' => 'date',
+        'last_working_date' => 'date',
+        'activated_at' => 'datetime',
     ];
 
     /**

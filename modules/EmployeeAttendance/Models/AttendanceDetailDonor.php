@@ -29,7 +29,7 @@ class AttendanceDetailDonor extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    protected $dates = ['created_at', 'updated_at'];
+    
 
     public function attendanceDetail()
     {

@@ -62,7 +62,11 @@ class LeaveEncash extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['request_date', 'pay_date', 'paid_at'];
+    protected $casts = [
+        'request_date' => 'date',
+        'pay_date' => 'date',
+        'paid_at' => 'datetime',
+    ];
 
     /**
      * Get the approved log for the leave encash.

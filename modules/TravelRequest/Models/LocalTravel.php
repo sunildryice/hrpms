@@ -57,7 +57,10 @@ class LocalTravel extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['pay_date', 'paid_at'];
+    protected $casts = [
+        'pay_date' => 'date',
+        'paid_at' => 'datetime',
+    ];
 
     /**
      * Get the approved log for the local travel.

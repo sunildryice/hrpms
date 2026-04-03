@@ -41,7 +41,9 @@ class TravelAuthorizationItinerary extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['travel_date'];
+    protected $casts = [
+        'travel_date' => 'date',
+    ];
 
    public function travelAuthorization()
     {

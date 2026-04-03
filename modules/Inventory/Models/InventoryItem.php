@@ -77,7 +77,10 @@ class InventoryItem extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['purchase_date', 'expiry_date'];
+    protected $casts = [
+        'purchase_date' => 'date',
+        'expiry_date' => 'date',
+    ];
 
     /**
      * Get the activityCode of the inventory item

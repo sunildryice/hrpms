@@ -27,7 +27,7 @@ class StaffClearanceLog extends Model
 
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     public function staffClearance()
     {

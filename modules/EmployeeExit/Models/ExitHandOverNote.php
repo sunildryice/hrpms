@@ -53,7 +53,10 @@ class ExitHandOverNote extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['last_duty_date', 'resignation_date'];
+    protected $casts = [
+        'last_duty_date' => 'date',
+        'resignation_date' => 'date',
+    ];
 
     public function handoverProjects()
     {

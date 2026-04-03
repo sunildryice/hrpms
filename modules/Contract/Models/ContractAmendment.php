@@ -43,7 +43,9 @@ class ContractAmendment extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['expiry_date'];
+    protected $casts = [
+        'expiry_date' => 'date',
+    ];
 
     public function contract()
     {

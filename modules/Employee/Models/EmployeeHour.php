@@ -47,11 +47,12 @@ class EmployeeHour extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['start_date', 'end_date'];
 
     protected $casts = [
         'start_time' => 'string',
         'end_time' => 'string',
+        'start_date' => 'date',
+        'end_date' => 'date',
     ];
 
     /**

@@ -32,7 +32,7 @@ class PerformanceReviewKeyGoal extends Model
 
     protected $hidden = [];
 
-    protected $dates = ['created_at', 'updated_at'];
+    
     protected $casts = [
         'status' => KeyGoalStatus::class,
     ];

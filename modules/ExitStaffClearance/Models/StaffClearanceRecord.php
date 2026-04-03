@@ -29,7 +29,9 @@ class StaffClearanceRecord extends Model
 
     protected $hidden = [];
 
-    protected $dates = ['cleared_at'];
+    protected $casts = [
+        'cleared_at' => 'datetime',
+    ];
 
     public function performanceReview()
     {

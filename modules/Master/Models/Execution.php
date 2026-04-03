@@ -22,8 +22,8 @@ class Execution extends Model
         'activated_at'
     ];
 
-    protected $dates = [
-        'activated_at'
+    protected $casts = [
+        'activated_at' => 'datetime',
     ];
 
     public function createdBy()

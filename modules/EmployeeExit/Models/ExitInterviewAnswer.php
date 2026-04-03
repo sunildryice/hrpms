@@ -45,7 +45,10 @@ class ExitInterviewAnswer extends Model
      */
     protected $hidden = ['created_at','updated_at'];
 
-    protected $dates = ['required_date', 'request_date'];
+    protected $casts = [
+        'required_date' => 'date',
+        'request_date' => 'date',
+    ];
 
      public function exitQuestionsAnswer()
      {

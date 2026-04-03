@@ -26,7 +26,7 @@ class PerformanceReviewAnswer extends Model
 
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     public function performanceReview()
     {

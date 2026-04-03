@@ -27,10 +27,10 @@ class Project extends Model
         'show_pms_dashboard',
     ];
 
-    protected $dates = [
-        'start_date',
-        'completion_date',
-        'activated_at',
+    protected $casts = [
+        'start_date' => 'date',
+        'completion_date' => 'date',
+        'activated_at' => 'datetime',
     ];
 
     public function members()

@@ -58,7 +58,9 @@ class GoodRequestAsset extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['assigned_on'];
+    protected $casts = [
+        'assigned_on' => 'date',
+    ];
 
     /**
      * Get the approver of a good request asset

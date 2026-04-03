@@ -35,11 +35,11 @@ class StaffClearance extends Model
 
     protected $hidden = [];
 
-    protected $dates = [
-        'verified_at',
-        'approved_at',
-        'endorsed_at',
-        'certified_at',
+    protected $casts = [
+        'verified_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'endorsed_at' => 'datetime',
+        'certified_at' => 'datetime',
     ];
 
     public function records()

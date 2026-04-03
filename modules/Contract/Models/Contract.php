@@ -53,7 +53,11 @@ class Contract extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['contract_date', 'effective_date', 'expiry_date'];
+    protected $casts = [
+        'contract_date' => 'date',
+        'effective_date' => 'date',
+        'expiry_date' => 'date',
+    ];
 
     public function supplier()
     {

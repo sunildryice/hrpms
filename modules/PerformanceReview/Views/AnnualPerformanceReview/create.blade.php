@@ -9,6 +9,7 @@
         let isGroupDFormSaved = false;
         let isGroupEFormSaved = false;
         let isGroupFFormSaved = false;
+        let isGroupGFormSaved = false;
 
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
@@ -142,7 +143,7 @@
                         output);
                 });
 
-                isGroupBFormSaved = true; 
+                isGroupBFormSaved = true;
                 toastr.success('Key Goals saved successfully', 'Success', {
                     timeOut: 1000
                 });
@@ -415,6 +416,35 @@
                 });
             });
 
+            // Employee Self Rating
+            $('#groupGForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let rating = $('#employee_overall_rating').val();
+                if (!rating) {
+                    toastr.error('Please select your overall rating.', 'Validation Error');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.employee.overall-rating.store') }}",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.type === 'success') {
+                            toastr.success('Your overall rating has been saved successfully!',
+                                'Success');
+                        } else {
+                            toastr.error(response.message || 'Failed to save rating.');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Something went wrong while saving your rating.');
+                        console.error(xhr);
+                    }
+                });
+            });
+
             getKeyGoalsEmployee();
             getKeyGoalsSupervisor();
         });
@@ -593,6 +623,7 @@
             let isGroupDFormSaved = true;
             let isGroupEFormSaved = true;
             let isGroupFFormSaved = true;
+            let isGroupGFormSaved = true;
 
             // B. Key Goals Review
             $('#keyGoalTable tbody tr').each(function() {
@@ -650,8 +681,18 @@
                 $('#employee_comments').removeClass('is-invalid');
             }
 
+            // G. Employee Overall Rating
+            const employeeOverallRating = $('#employee_overall_rating').val();
+            if (!employeeOverallRating) {
+                 isGroupGFormSaved = false;
+                $('#employee_overall_rating').addClass('is-invalid');
+                toastr.error('Please select Employee Overall Rating (Section G) before submitting.', 'Validation Error');
+            } else {
+                $('#employee_overall_rating').removeClass('is-invalid');
+            }
+
             if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
-                isGroupEFormSaved && isGroupFFormSaved) {
+                isGroupEFormSaved && isGroupFFormSaved && isGroupGFormSaved) {
 
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {

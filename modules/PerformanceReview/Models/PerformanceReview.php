@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
 use Modules\Master\Models\Status;
+use Modules\PerformanceReview\Models\Enums\PerformanceOverallRating;
 use Modules\PerformanceReview\Models\PerformanceReviewCoreCompetency;
 use Modules\Privilege\Models\User;
 
@@ -51,6 +52,11 @@ class PerformanceReview extends Model
         'goal_setting_date',
         'mid_term_per_date',
         'final_per_date',
+    ];
+
+    protected $casts = [
+        'employee_overall_rating' => PerformanceOverallRating::class,
+        'line_manager_overall_rating' => PerformanceOverallRating::class,
     ];
 
     public function answers()
@@ -338,6 +344,16 @@ class PerformanceReview extends Model
     public function getDeadlineDate()
     {
         return $this->deadline_date?->toFormattedDateString();
+    }
+
+    public function getEmployeeOverallRatingLabel(): ?string
+    {
+        return $this->employee_overall_rating?->label();
+    }
+
+    public function getLineManagerOverallRatingLabel(): ?string
+    {
+        return $this->line_manager_overall_rating?->label();
     }
 
     public function midtermReviewRequired()

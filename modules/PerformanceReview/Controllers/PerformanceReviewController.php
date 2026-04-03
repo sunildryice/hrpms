@@ -632,4 +632,53 @@ class PerformanceReviewController extends Controller
             'message' => 'Result and Comments saved successfully.'
         ]);
     }
+
+
+    /**
+     * Store Employee's Overall Rating
+     */
+    public function storeEmployeeOverallRating(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'employee_overall_rating' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('employeeFill', $performanceReview);
+
+        $performanceReview->update([
+            'employee_overall_rating' => $request->employee_overall_rating,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Employee overall rating saved successfully.'
+        ]);
+    }
+
+    /**
+     * Store Line Manager's Overall Rating
+     */
+    public function storeManagerOverallRating(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'line_manager_overall_rating' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('review', $performanceReview);   
+
+        $performanceReview->update([
+            'line_manager_overall_rating' => $request->line_manager_overall_rating,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Line Manager overall rating saved successfully.'
+        ]);
+    }
 }

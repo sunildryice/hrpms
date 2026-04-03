@@ -282,12 +282,12 @@
     </div>
 </div>
 
-<!-- E. Challenges / Difficulties -->
+<!-- E. Challenges -->
 <div id="challengesSection" class="mb-3">
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges / Difficulties
+                <span class="fw-bold">E.</span> Challenges
             </span>
         </div>
 
@@ -299,8 +299,8 @@
                 <table class="table table-bordered" id="challenges-table">
                     <thead>
                         <tr>
-                            <th style="width: 45%">Challenge / Difficulty Faced</th>
-                            <th style="width: 45%">Result / Outcome</th>
+                            <th style="width: 45%">Challenges</th>
+                            <th style="width: 45%">Action taken to address challenge</th>
                             <th style="width: 10%" class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -360,27 +360,66 @@
     </div>
 </div>
 
-<!-- F. Employee Comments -->
-<div id="employeeComments" class="mb-3">
-    <form id="groupFForm" method="POST">
-        @csrf
-        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+<div class="row">
 
-        <div class="card">
-            <div class="card-header fw-bold">
-                <span class="card-title">
-                    <span class="fw-bold">F.</span>
-                    Employee Comments
-                </span>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <textarea name="employee_comments" id="employee_comments" class="form-control" rows="8">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
+    <!-- F. Employee Comments -->
+    <div id="employeeComments" class="mb-3 col-lg-8">
+        <form id="groupFForm" method="POST">
+            @csrf
+            <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">F.</span>
+                        Employee Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <textarea name="employee_comments" id="employee_comments" class="form-control" rows="3">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
                 </div>
             </div>
-            <div class="card-footer text-end">
-                <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
+
+    <!-- G. Overall Performance Rating -->
+    <div id="overallRatingSection" class="mb-3 col-lg-4">
+        <form id="groupGForm" method="POST">
+            @csrf
+            <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">G.</span> Employee Overall Performance Rating
+                    </span>
+                </div>
+                <div class="card-body">
+
+                    <div class="form-group mb-3">
+                        <select name="employee_overall_rating" id="employee_overall_rating"
+                            class="form-select select2">
+                            <option value="">Select Rating</option>
+                            @foreach (\Modules\PerformanceReview\Models\Enums\PerformanceOverallRating::cases() as $rating)
+                                <option value="{{ $rating->value }}"
+                                    {{ $performanceReview->employee_overall_rating?->value === $rating->value ? 'selected' : '' }}>
+                                    {{ $rating->label() }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        Save
+                    </button>
+                </div>
+        </form>
+    </div>
+
 </div>

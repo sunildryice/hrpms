@@ -23,6 +23,7 @@ class PerformanceReviewExternalReviewController extends Controller
         if ($request->ajax()) {
             $data = $this->performanceReview
                 ->where('external_reviewer_id', '=', $authUser->id)
+                ->where('status_id', '=', config('constant.APPROVED_STATUS'))
                 ->whereIn('review_type_id', [1, 2]) // Only Annual & Mid-Term
                 ->with(['employee', 'fiscalYear', 'status', 'reviewType'])
                 ->orderBy('created_at', 'desc')

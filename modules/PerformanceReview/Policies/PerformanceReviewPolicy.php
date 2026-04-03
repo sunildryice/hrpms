@@ -65,7 +65,7 @@ class PerformanceReviewPolicy
 
     public function print(User $user, PerformanceReview $performanceReview)
     {
-        return ($performanceReview->status_id == config('constant.APPROVED_STATUS')) &&
+        return ($performanceReview->status_id == config('constant.APPROVED_STATUS') || $performanceReview->status_id == config('constant.CLOSED_STATUS')) &&
         $user->can('manage-performance-review');
     }
 

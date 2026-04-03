@@ -37,7 +37,7 @@
         <!-- A. Employee and Line Manager Details -->
         @include('PerformanceReview::Partials.employeeDetails')
 
-        <!-- B, C, D, E, F G Forms Deatils-->
+        <!-- B, C, D, E, F, G, H, I, J Forms Deatils-->
         @include('PerformanceReview::Partials.showFormDetails')
 
     </section>

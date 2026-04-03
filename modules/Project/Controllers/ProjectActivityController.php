@@ -26,14 +26,16 @@ class ProjectActivityController extends Controller
 
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    ) {
+    )
+    {
     }
+
     public function index(Request $request, Project $project)
     {
         $authUser = auth()->user();
         $data = $this->projectActivity
             ->where('project_id', '=', $project->id)
-            ->with(['parent', 'stage'])
+            ->with(['parent', 'stage', 'timesheets', 'children'])
             ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id) || $authUser->employee?->employee_code == 62, function ($query) {
                 // Focal Person or Team Lead can see all activities
                 return $query;
@@ -107,13 +109,13 @@ class ProjectActivityController extends Controller
                         $btn .= '<i class="bi bi-eye"></i></a>';
                     }
 
-                    if (Gate::allows('manage-project-activity-on-certain-time', $row->project) && ($row->status != ActivityStatus::NoRequired->value && $row->status != ActivityStatus::Completed->value && Gate::allows('project-is-ongoing', $row->project))) {
+                    if ($authUser->can('update', $row)) {
                         $btn .= ' <a class="btn btn-outline-primary btn-sm open-project-activity-modal-form " href="';
                         $btn .= route('project-activity.edit', $row->id) . '" rel="tooltip" title="Edit Project Activity">';
                         $btn .= '<i class="bi bi-pencil-square"></i></a>';
 
 
-                        if ($row->children->isEmpty()) {
+                        if ($authUser->can('delete', $row)) {
                             $btn .= ' <button class="btn btn-outline-danger btn-sm delete-project-activity delete-record"
                 data-href="';
                             $btn .= route('project-activity.destroy', $row->id) . '"
@@ -259,7 +261,7 @@ class ProjectActivityController extends Controller
 
 
         $statusEnum = ActivityStatus::tryFrom($data['status']) ?? ActivityStatus::NotStarted;
-        $remarks = trim((string) ($data['remarks'] ?? ''));
+        $remarks = trim((string)($data['remarks'] ?? ''));
         $statusDate = $request->input('status_date') ?? now();
         $documents = $data['documents'] ?? [];
 

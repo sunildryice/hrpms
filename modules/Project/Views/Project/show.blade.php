@@ -73,7 +73,8 @@
                 bPaginate: true,
                 bInfo: true,
                 scrollX: true,
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -793,7 +794,8 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity</span>
                         <div class="justify-content-end d-flex gap-2">
-                            @if (Gate::allows('manage-project-activity-on-certain-time', $project) && Gate::allows('project-is-active', $project))
+                            @if ((Gate::allows('manage-project-activity-on-certain-time', $project) || Gate::allows('manage-project-activity-project-admin',$project))
+                                && Gate::allows('project-is-active', $project))
                                 @can('project-is-ongoing', $project)
                                     <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
                                         href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
@@ -805,7 +807,7 @@
                                         class="bi bi-download"></i> Export Activity</a>
                                 <a class="btn btn-secondary btn-sm text-capitalize"
                                     href="{{ route('project-activity.export.data', $project->id) }}" target="_blank">
-                                    <i class="bi bi-download"></i> Export 
+                                    <i class="bi bi-download"></i> Export
                                 </a>
                                 @can('project-is-ongoing', $project)
                                     <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
@@ -843,6 +845,5 @@
 
     {{-- Activity Status Reason/Remarks Modal --}}
     @include('Project::Project.partials.activity-status-modal')
-
 
 @endsection

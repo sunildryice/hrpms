@@ -794,7 +794,8 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity</span>
                         <div class="justify-content-end d-flex gap-2">
-                            @if (Gate::allows('manage-project-activity-on-certain-time', $project) && Gate::allows('project-is-active', $project))
+                            @if ((Gate::allows('manage-project-activity-on-certain-time', $project) || Gate::allows('manage-project-activity-project-admin',$project))
+                                && Gate::allows('project-is-active', $project))
                                 @can('project-is-ongoing', $project)
                                     <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
                                         href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">

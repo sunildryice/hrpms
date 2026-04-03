@@ -283,12 +283,28 @@
             </div>
         </div>
 
-        <!-- G. Line Manager Result and Comments -->
+        <!-- G. Employee Overall Rating -->
+        <div id="employeeOverallRating" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">G.</span> Employee Overall Rating
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- H. Line Manager Result and Comments -->
         <div id="managerResultComments" class="mb-3">
             <div class="card mb-3">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">G.</span> Result and Comments
+                        <span class="fw-bold">H.</span> Result and Comments
                     </span>
                 </div>
                 <div class="card-body">
@@ -304,17 +320,33 @@
             </div>
         </div>
 
-        <!-- H. External Reviewer Comments -->
+        <!-- I. Line Manager Overall Rating -->
+        <div id="managerOverallRating" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">I.</span> Line Manager Overall Rating
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->getLineManagerOverallRatingLabel() ?? '—' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- J. External Reviewer Comments -->
         <div id="externalReviewerComments" class="mb-3">
             @if ($performanceReview->status_id != config('constant.CLOSED_STATUS'))
-                <form id="groupHForm" method="POST">
+                <form id="groupJForm" method="POST">
                     @csrf
                     <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
 
                     <div class="card">
                         <div class="card-header fw-bold">
                             <span class="card-title">
-                                <span class="fw-bold">H.</span> Reviewer Comments
+                                <span class="fw-bold">J.</span> Reviewer Comments
                             </span>
                         </div>
                         <div class="card-body">

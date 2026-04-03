@@ -161,7 +161,6 @@ class ClaimController extends Controller
             ->whereIn('employee_id', [$latestTenure->supervisor_id])
             ->first();
         $inputs['agree_at'] = $request->agree ? date('Y-m-d H:i:s') : null;
-        // $inputs['approver_id'] = $inputs['recommender_id'] = $supervisor->id;
         $inputs['recommender_id'] = $inputs['approver_id'];
         $travelClaim = $this->travelClaim->update($travelClaim->id, $inputs);
         if ($travelClaim) {

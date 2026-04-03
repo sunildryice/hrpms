@@ -195,8 +195,7 @@
                         <tbody>
                             @forelse ($coreCompetencies ?? collect() as $comp)
                                 <tr>
-                                    <td>{{ $comp->competency }}</td>
-                                    <td>@php
+                                    @php
                                         $ratings = [
                                             1 => '1 - Poor',
                                             2 => '2 - Fair',
@@ -205,12 +204,8 @@
                                             5 => '5 - Excellent',
                                         ];
                                     @endphp
-                                        @if ($comp->rating)
-                                            <span>{{ $ratings[$comp->rating] ?? $comp->rating }}</span>
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
+                                    <td>{{ $comp->competency }}</td>
+                                    <td> @if ($comp->rating) <span>{{ $ratings[$comp->rating] ?? $comp->rating }}</span> @else — @endif</td>
                                     <td>{{ $comp->example ?? '—' }}</td>
                                 </tr>
                             @empty
@@ -255,18 +250,30 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2">
-                                    <p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p>
-                                </td>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->employee_comments ?: '—' }}</p></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <!-- G. Line Manager Result and Comments -->
+                    <!-- G. Employee Overall Rating -->
                     <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="2">G. RESULT AND COMMENTS</th>
+                                <th scope="col" colspan="2">G. EMPLOYEE OVERALL RATING</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—'  }}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- H. Line Manager Result and Comments -->
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2">H. RESULT AND COMMENTS</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -281,18 +288,30 @@
                         </tbody>
                     </table>
 
-                    <!-- H. External Reviewer Comments -->
+                   <!-- I. Line Manager Overall Rating -->
                     <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="2">H. EXTERNAL REVIEWER COMMENTS</th>
+                                <th scope="col" colspan="2">I. LINE MANAGER OVERALL RATING</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2">
-                                    <p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p>
-                                </td>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->getLineManagerOverallRatingLabel() ?? '—'  }}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- J. External Reviewer Comments -->
+                    <table class="table border mb-4">
+                        <thead>
+                            <tr>
+                                <th scope="col" colspan="2">J. EXTERNAL REVIEWER COMMENTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p></td>
                             </tr>
                         </tbody>
                     </table>

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Modules\Grn\Repositories\GrnRepository;
 use Modules\Inventory\Models\InventoryItem;
 use Modules\Inventory\Requests\StoreRequest;
 use Modules\Inventory\Requests\UpdateRequest;
@@ -34,7 +33,6 @@ class InventoryItemController extends Controller
         protected DistributionTypeRepository $distributionTypes,
         protected DonorCodeRepository $donorCodes,
         protected ExecutionRepository $executions,
-        protected GrnRepository $grns,
         protected InventoryItemRepository $inventoryItems,
         protected ItemRepository $items,
         protected SupplierRepository $suppliers,

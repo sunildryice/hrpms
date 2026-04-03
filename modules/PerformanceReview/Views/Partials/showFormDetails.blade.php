@@ -134,20 +134,20 @@
     </div>
 </div>
 
-<!-- E. Challenges / Difficulties -->
+<!-- E. Challenges -->
 <div id="challengesSection" class="mb-3">
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges / Difficulties
+                <span class="fw-bold">E.</span> Challenges 
             </span>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th style="width: 45%">Challenge / Difficulty Faced</th>
-                        <th style="width: 45%">Result / Outcome</th>
+                        <th style="width: 45%">Challenges</th>
+                        <th style="width: 45%">Action taken to address challenge</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -184,12 +184,28 @@
     </div>
 </div>
 
-<!-- G. Line Manager Result and Comments -->
+<!-- G. Employee Overall Rating -->
+<div id="employeeOverallRating" class="mb-3">
+    <div class="card mb-3">
+        <div class="card-header fw-bold">
+            <span class="card-title">
+                <span class="fw-bold">G.</span> Employee Overall Rating
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="col-md-12' }}">
+                <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- H. Line Manager Result and Comments -->
 <div id="managerResultComments" class="mb-3">
     <div class="card mb-3">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">G.</span> Result and Comments
+                <span class="fw-bold">H.</span> Result and Comments
             </span>
         </div>
         <div class="card-body">
@@ -205,12 +221,28 @@
     </div>
 </div>
 
-<!-- H. External Reviewer Comments -->
+<!-- I. Line Manager Overall Rating -->
+<div id="managerOverallRating" class="mb-3">
+    <div class="card mb-3">
+        <div class="card-header fw-bold">
+            <span class="card-title">
+                <span class="fw-bold">I.</span> Line Manager Overall Rating
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="col-md-12' }}">
+                <p class="mb-0">{{ $performanceReview->getLineManagerOverallRatingLabel() ?? '—' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- J. External Reviewer Comments -->
 <div id="externalReviewerComments" class="mb-3">
     <div class="card mb-3">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">H.</span>
+                <span class="fw-bold">J.</span>
                 External Reviewer Comments
             </span>
         </div>

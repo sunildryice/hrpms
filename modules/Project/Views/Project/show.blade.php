@@ -73,7 +73,8 @@
                 bPaginate: true,
                 bInfo: true,
                 scrollX: true,
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -805,7 +806,7 @@
                                         class="bi bi-download"></i> Export Activity</a>
                                 <a class="btn btn-secondary btn-sm text-capitalize"
                                     href="{{ route('project-activity.export.data', $project->id) }}" target="_blank">
-                                    <i class="bi bi-download"></i> Export 
+                                    <i class="bi bi-download"></i> Export
                                 </a>
                                 @can('project-is-ongoing', $project)
                                     <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
@@ -843,6 +844,5 @@
 
     {{-- Activity Status Reason/Remarks Modal --}}
     @include('Project::Project.partials.activity-status-modal')
-
 
 @endsection

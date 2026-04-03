@@ -52,9 +52,6 @@ class PerformanceReview extends Model
         'goal_setting_date' => 'date',
         'mid_term_per_date' => 'date',
         'final_per_date' => 'date',
-    ];
-
-    protected $casts = [
         'employee_overall_rating' => PerformanceOverallRating::class,
         'line_manager_overall_rating' => PerformanceOverallRating::class,
     ];

@@ -33,6 +33,8 @@ class PerformanceReview extends Model
         'external_reviewer_comments',
         'result',
         'comments',
+        'employee_overall_rating',
+        'line_manager_overall_rating',
         'goal_setting_date',
         'mid_term_per_date',
         'final_per_date',

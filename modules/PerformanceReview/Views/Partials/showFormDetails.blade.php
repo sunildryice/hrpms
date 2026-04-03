@@ -134,20 +134,20 @@
     </div>
 </div>
 
-<!-- E. Challenges / Difficulties -->
+<!-- E. Challenges -->
 <div id="challengesSection" class="mb-3">
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges / Difficulties
+                <span class="fw-bold">E.</span> Challenges 
             </span>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th style="width: 45%">Challenge / Difficulty Faced</th>
-                        <th style="width: 45%">Result / Outcome</th>
+                        <th style="width: 45%">Challenges</th>
+                        <th style="width: 45%">Action taken to address challenge</th>
                     </tr>
                 </thead>
                 <tbody>

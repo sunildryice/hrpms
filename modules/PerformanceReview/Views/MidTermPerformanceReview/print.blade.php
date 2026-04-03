@@ -290,8 +290,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2">
-                                    <p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p>
+                                <td colspan="2"><p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p>
                                 </td>
                             </tr>
                         </tbody>

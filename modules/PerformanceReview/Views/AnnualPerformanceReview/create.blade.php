@@ -416,7 +416,7 @@
                 });
             });
 
-            // Employee Self Rating
+            // Group G - Employee Self Rating
             $('#groupGForm').on('submit', function(e) {
                 e.preventDefault();
 

@@ -148,10 +148,47 @@
 
         });
 
+        // Group I - Line Manager Overall Performance Rating
+        $('#groupIForm').on('submit', function(e) {
+            e.preventDefault();
+
+            let rating = $('#line_manager_overall_rating').val();
+
+            if (!rating) {
+                toastr.error('Please select an overall performance rating before saving.',
+                    'Validation Error');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('performance.manager.overall-rating.store') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: "{{ $performanceReview->id }}",
+                    line_manager_overall_rating: rating
+                },
+                success: function(response) {
+                    if (response.type === 'success') {
+                        toastr.success('Line Manager Overall Rating saved successfully!',
+                            'Success');
+                    } else {
+                        toastr.error(response.message ||
+                            'Failed to save Line Manager Overall Rating.');
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Something went wrong while saving Line Manager Overall Rating.');
+                }
+            });
+        });
+
         // SUBMIT VALIDATION
         function validate() {
             let isGroupBValid = true;
             let isGroupGValid = true;
+            let isGroupIValid = true;
 
             $('#keyGoalTable tbody tr').each(function() {
                 const supervisorComment = $(this).find('.description-supervisor').val().trim();
@@ -165,6 +202,7 @@
 
             const resultVal = $('#result').val().trim();
             const commentsVal = $('#comments').val().trim();
+            const lineManagerRating = $('#line_manager_overall_rating').val().trim();
 
             if (!resultVal || !commentsVal) {
                 isGroupGValid = false;
@@ -173,10 +211,23 @@
                 $('#result, #comments').removeClass('is-invalid');
             }
 
+            if (!lineManagerRating) {
+                isGroupIValid = false;
+            }
+
             if (isGroupBValid && isGroupGValid) {
                 $('#performanceReviewProcessForm').submit();
             } else {
                 toastr.warning('Please fill and save all required sections (B and G) before submitting.',
+                    'Validation Warning', {
+                        timeOut: 3000
+                    });
+            }
+
+            if (isGroupIValid) {
+                $('#groupIForm').submit();
+            } else {
+                toastr.warning('Please select and save Line Manager Overall Rating (Group I).',
                     'Validation Warning', {
                         timeOut: 3000
                     });
@@ -450,6 +501,57 @@
                     </div>
                 </div>
             </form>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">H.</span> Employee Overall Rating
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12' }}">
+                            <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <form id="groupIForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            <span class="card-title">
+                                <span class="fw-bold">I.</span> Line Manager Overall Performance Rating
+                            </span>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="form-group mb-3">
+                                <select name="line_manager_overall_rating" id="line_manager_overall_rating"
+                                    class="form-select select2">
+                                    <option value="">Select Rating</option>
+                                    @foreach (\Modules\PerformanceReview\Models\Enums\PerformanceOverallRating::cases() as $rating)
+                                        <option value="{{ $rating->value }}"
+                                            {{ $performanceReview->line_manager_overall_rating?->value === $rating->value ? 'selected' : '' }}>
+                                            {{ $rating->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Save
+                            </button>
+                        </div>
+                </form>
+            </div>
         </div>
 
     </section>

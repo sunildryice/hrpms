@@ -43,15 +43,51 @@ class AutoSubmitTimesheet extends Command
      */
     public function handle()
     {
-        $employees = $this->employees->select(['*'])->whereDate('last_working_date', '<', now())->get();
+        $employees = $this->employees->select(['*'])
+            ->whereNotNull('last_working_date')
+            ->whereDate('last_working_date', '<', now())
+            ->get();
         foreach ($employees as $employee) {
-            $this->info('Timesheet submission for ' . $employee->getFullName() .' started.');
-            $lineManagerId = $employee->supervisor->user->id;
-            $timesheets = $this->timesheets->select(['*'])
-                ->whereRequesterId($employee->user->id)
-                ->whereIn('status_id', [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')])
-                ->get();
-            foreach ($timesheets as $timesheet) {
+            $this->info('Timesheet submission for ' . $employee->getFullName() . ' started.');
+            $lineManagerId = $employee->supervisor ? $employee->supervisor->user->id : NULL;
+            if ($lineManagerId) {
+                $timesheets = $this->timesheets->select(['*'])
+                    ->whereRequesterId($employee->user->id)
+                    ->whereIn('status_id', [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')])
+                    ->get();
+                foreach ($timesheets as $timesheet) {
+                    $timesheet->update([
+                        'approver_id' => $lineManagerId,
+                        'status_id' => config('constant.SUBMITTED_STATUS'),
+                        'updated_by' => $timesheet->requester->id,
+                        'updated_at' => now(),
+                    ]);
+
+                    $timesheet->logs()->create([
+                        'user_id' => $timesheet->requester->id,
+                        'log_remarks' => 'Timesheet submitted for approval.',
+                        'status_id' => config('constant.SUBMITTED_STATUS'),
+                    ]);
+
+                    if ($timesheet->approver) {
+                        $timesheet->approver->notify(new TimeSheetSubmitted($timesheet));
+                    }
+                }
+            }
+            $this->info('Timesheet submitted for ' . $employee->getFullName());
+        }
+
+        $timesheets = $this->timesheets->select(['*'])
+            ->where('end_date', '<', now()->subDay(3))
+            ->whereIn('status_id', [config('constant.CREATED_STATUS')])
+            ->get();
+        $this->info($timesheets->count() . ' timesheets are being auto submitted.');
+
+        foreach ($timesheets as $timesheet) {
+            $lineManagerId = $timesheet->requester->employee->supervisor ? $timesheet->requester->employee->supervisor->user->id : NULL;
+
+            if ($lineManagerId) {
+                $this->info('Timesheet submission for ' . $timesheet->requester->getFullName() . ' started.');
                 $timesheet->update([
                     'approver_id' => $lineManagerId,
                     'status_id' => config('constant.SUBMITTED_STATUS'),
@@ -62,14 +98,14 @@ class AutoSubmitTimesheet extends Command
                 $timesheet->logs()->create([
                     'user_id' => $timesheet->requester->id,
                     'log_remarks' => 'Timesheet submitted for approval.',
-                    'status_id' =>  config('constant.SUBMITTED_STATUS'),
+                    'status_id' => config('constant.SUBMITTED_STATUS'),
                 ]);
 
                 if ($timesheet->approver) {
                     $timesheet->approver->notify(new TimeSheetSubmitted($timesheet));
                 }
             }
-            $this->info('Timesheet submitted for ' . $employee->getFullName());
         }
+        $this->info('Timesheets are auto submitted.');
     }
 }

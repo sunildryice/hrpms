@@ -514,8 +514,8 @@
 
                                         <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
                                             <small>
-                                                {{ $label }} for {{ $workFromHome->getWorkFromHomeDuration() }}
-                                                Day{{ $workFromHome->getWorkFromHomeDuration() > 1 ? 's' : '' }}
+                                                @php $duration = max($workFromHome->getWorkFromHomeDuration(), 0); @endphp
+                                                {{ $label }} for {{ $duration }} Day{{ $duration > 1 ? 's' : '' }}
                                             </small>
 
                                             <small>
@@ -546,8 +546,8 @@
                                         </div>
 
                                         <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
-                                            <small>{{ $label }} for {{ $upcomingWorkFromHome->getWorkFromHomeDuration() }}
-                                                Day{{ $upcomingWorkFromHome->getWorkFromHomeDuration() > 1 ? 's' : '' }}</small> 
+                                            @php $duration = max($upcomingWorkFromHome->getWorkFromHomeDuration(), 0); @endphp
+                                            <small>{{ $label }} for {{ $duration }} Day{{ $duration > 1 ? 's' : '' }}</small> 
                                             <small>
                                                 {{ $upcomingWorkFromHome->getStartDate() }} -
                                                 {{ $upcomingWorkFromHome->getEndDate() }}

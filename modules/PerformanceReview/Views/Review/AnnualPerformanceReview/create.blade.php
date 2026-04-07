@@ -2,6 +2,16 @@
 
 @section('title', 'Annual Performance Review Form')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -302,17 +312,17 @@
                             <tbody id="keygoal-body">
                                 @foreach ($keygoals as $keygoal)
                                     <tr data-keygoal-id="{{ $keygoal->id }}">
-                                        <td>{{ $keygoal->title }}</td>
-                                        <td>{{ $keygoal->output_deliverables }}</td>
-                                        <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->title }}</td>
+                                        <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                        <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                         <td>
                                             <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                                 {{ $keygoal->status?->label() ?? 'Not Set' }}
                                             </span>
                                         </td>
-                                        <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
                                         <td>
-                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="1">{{ $keygoal->description_supervisor ?? '' }}</textarea>
+                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="2">{{ $keygoal->description_supervisor ?? '' }}</textarea>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -354,8 +364,8 @@
                                 @foreach ($devPlans as $index => $plan)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $plan->objective }}</td>
-                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $plan->objective }}</td>
+                                        <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -385,7 +395,7 @@
                         <tbody>
                             @forelse ($coreCompetencies ?? collect() as $comp)
                                 <tr>
-                                    <td>{{ $comp->competency }}</td>
+                                    <td class="wrap-text">{{ $comp->competency }}</td>
                                     <td>
                                         @php
                                             $ratings = [
@@ -405,7 +415,7 @@
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $comp->example ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -423,7 +433,7 @@
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">E.</span> Challenges 
+                        <span class="fw-bold">E.</span> Challenges
                     </span>
                 </div>
                 <div class="card-body">
@@ -437,8 +447,8 @@
                         <tbody>
                             @forelse ($challenges ?? collect() as $challenge)
                                 <tr>
-                                    <td>{{ $challenge->challenge }}</td>
-                                    <td>{{ $challenge->result }}</td>
+                                    <td class="wrap-text">{{ $challenge->challenge }}</td>
+                                    <td class="wrap-text">{{ $challenge->result }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -477,18 +487,24 @@
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title">
-                            <span class="fw-bold">G.</span> Result and Comments
+                            <span class="fw-bold">G.</span> Manager Assessment
                         </span>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Result</label>
+                            <span class="text-muted small mb-2">(Please describe key results or
+                                responsibilities in your line managee's ToRs, s/he was able to deliver on in the last one
+                                year)</span>
                             <textarea name="result" id="result" class="form-control" rows="4"
                                 placeholder="Summarize the overall performance result...">{{ old('result', $performanceReview->result ?? '') }}</textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Comments</label>
+                            <label class="form-label fw-bold">Comments / Areas to Improve</label>
+                            <span class="text-muted small mb-2">(Please describe key results and/or
+                                responsibilities your direct report fell short of achieving in the last one year. What could
+                                your line managee have done to achieve better results?)</span>
                             <textarea name="comments" id="comments" class="form-control" rows="4"
                                 placeholder="Provide detailed comments and feedback...">{{ old('comments', $performanceReview->comments ?? '') }}</textarea>
                         </div>

@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Payroll\Models\PayrollFiscalYear;
+use Illuminate\Support\Facades\DB;
+use Modules\Master\Models\NepaliFiscalYear;
 
 class PayrollFiscalYearSeeder extends Seeder
 {
@@ -14,20 +15,25 @@ class PayrollFiscalYearSeeder extends Seeder
      */
     public function run()
     {
-        $year = new PayrollFiscalYear();
-        $year->create([
-            'id'=>1,
-            'title' => '2079/80',
-            'start_date' => '2022-07-01',
-            'end_date' => '2023-06-30',
-            'activated_at' => date('Y-m-d H:i:s'),
-        ]);
-        $year->create([
-            'id'=>2,
-            'title' => '2080/81',
-            'start_date' => '2023-07-01',
-            'end_date' => '2024-06-30',
-            'activated_at' => NULL,
-        ]);
+        $year = new NepaliFiscalYear();
+        $year->updateOrCreate(
+            ['id' => 1],
+            [
+                'title' => '2082/83',
+                'start_date' => '2025-07-17',
+                'end_date' => '2026-07-16',
+                'activated_at' => now(),
+            ]
+        );
+
+        $year->updateOrCreate(
+            ['id' => 2],
+            [
+                'title' => '2083/84',
+                'start_date' => '2026-07-17',
+                'end_date' => '2027-07-16',
+                'activated_at' => null,
+            ]
+        );
     }
 }

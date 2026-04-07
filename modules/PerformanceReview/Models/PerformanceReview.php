@@ -6,7 +6,7 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
-use Modules\Master\Models\FiscalYear;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\Master\Models\Status;
 use Modules\PerformanceReview\Models\Enums\PerformanceOverallRating;
 use Modules\PerformanceReview\Models\PerformanceReviewCoreCompetency;
@@ -73,7 +73,7 @@ class PerformanceReview extends Model
 
     public function fiscalYear()
     {
-        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
+        return $this->belongsTo(NepaliFiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
     public function keyGoals()

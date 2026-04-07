@@ -273,7 +273,7 @@
                     <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col" colspan="2">H. RESULT AND COMMENTS</th>
+                                <th scope="col" colspan="2">H. Manager Assessment</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -282,7 +282,7 @@
                                 <td>{{ $performanceReview->result ?: '—' }}</td>
                             </tr>
                             <tr>
-                                <th style="width: 5%">Comments</th>
+                                <th style="width: 5%">Comments / Areas to Improve</th>
                                 <td>{{ $performanceReview->comments ?: '—' }}</td>
                             </tr>
                         </tbody>

@@ -136,7 +136,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label for="log_remarks" class="form-label required-label">Remarks </label>
+                                        <label for="log_remarks" class="form-label">Remarks </label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">

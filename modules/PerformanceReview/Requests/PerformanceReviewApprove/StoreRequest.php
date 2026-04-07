@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id'     => 'required',
-            'log_remarks'   => 'required',
+            'log_remarks'   => 'nullable',
         ];
     }
 
@@ -33,7 +33,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'status_id.required'    => 'Status is required.',
-            'log_remarks.required'  => 'Remarks is required.'
+            // 'log_remarks.required'  => 'Remarks is required.'
         ];
     }
 

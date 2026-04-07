@@ -2,6 +2,17 @@
 
 @section('title', '360 Feedback - ' . $performanceReview->getReviewType())
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -122,16 +133,16 @@
                         <tbody>
                             @foreach ($keygoals as $keygoal)
                                 <tr>
-                                    <td>{{ $keygoal->title }}</td>
-                                    <td>{{ $keygoal->output_deliverables }}</td>
-                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->title }}</td>
+                                    <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                    <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                     <td>
                                         <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                             {{ $keygoal->status?->label() ?? 'Not Set' }}
                                         </span>
                                     </td>
-                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                                    <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->description_supervisor ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -168,8 +179,8 @@
                                 @foreach ($devPlans as $index => $plan)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $plan->objective }}</td>
-                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $plan->objective }}</td>
+                                        <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -199,7 +210,7 @@
                         <tbody>
                             @forelse ($coreCompetencies ?? collect() as $comp)
                                 <tr>
-                                    <td>{{ $comp->competency }}</td>
+                                    <td class="wrap-text">{{ $comp->competency }}</td>
                                     <td>
                                         @php
                                             $ratings = [
@@ -219,7 +230,7 @@
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $comp->example ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -251,8 +262,8 @@
                         <tbody>
                             @forelse ($challenges ?? collect() as $challenge)
                                 <tr>
-                                    <td>{{ $challenge->challenge }}</td>
-                                    <td>{{ $challenge->result }}</td>
+                                    <td class="wrap-text">{{ $challenge->challenge }}</td>
+                                    <td class="wrap-text">{{ $challenge->result }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -303,7 +314,7 @@
             <div class="card mb-3">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">H.</span> Result and Comments
+                        <span class="fw-bold">H.</span> Manager Assessment
                     </span>
                 </div>
                 <div class="card-body">
@@ -312,7 +323,7 @@
                         <p class="mb-0">{{ $performanceReview->result ?: '—' }}</p>
                     </div>
                     <div class="col-md-12">
-                        <label class="form-label fw-bold">Comments</label>
+                        <label class="form-label fw-bold">Comments / Areas to Improve</label>
                         <p class="mb-0">{{ $performanceReview->comments ?: '—' }}</p>
                     </div>
                 </div>

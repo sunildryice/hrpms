@@ -147,7 +147,7 @@ class PerformanceReviewController extends Controller
 
         $employees = $this->employee->getActiveEmployees();
         $reviewTypes = $this->performanceReviewType->orderBy('id', 'desc')->get();
-        $fiscalYears = $this->nepaliFiscalYear->orderBy('id', 'asc')->get();
+        $fiscalYears = $this->nepaliFiscalYear->whereNotNull('activated_at')->orderBy('id', 'asc')->get();
         $currentFiscalYearId = $this->nepaliFiscalYear->getCurrentFiscalYearId();
 
         return view('PerformanceReview::create', compact('employees', 'reviewTypes', 'fiscalYears', 'currentFiscalYearId'));

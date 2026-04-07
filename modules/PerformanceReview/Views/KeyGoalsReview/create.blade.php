@@ -465,12 +465,12 @@
                         </tbody>
                     </table>
 
-                    <div class="mt-3">
+                    {{-- <div class="mt-3">
                         <a class="text-decoration-none"
                             href="{{ route('performance.previous.show', $performanceReview->id) }}" target="_blank">
                             View previous Key Goals <i class="bi bi-arrow-up-right-square"></i>
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
         </div>

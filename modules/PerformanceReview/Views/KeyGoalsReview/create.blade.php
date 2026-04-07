@@ -79,7 +79,7 @@
 
                 // Validate Professional Development Plan (C)
                 $('#devplan-body .devplan-row').each(function() {
-                    const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
+                    const plan = $(this).find('textarea[name*="\\[plan\\]"]').val()?.trim();
 
                     if (!plan) {
                         isValid = false;
@@ -127,14 +127,14 @@
 
                 // Validation 
                 $('#keygoals-body .keygoal-row').each(function() {
-                    const title = $(this).find('input[name*="\\[title\\]"]').val()?.trim();
-                    const deliverables = $(this).find('input[name*="\\[output_deliverables\\]"]')
+                    const title = $(this).find('textarea[name*="\\[title\\]"]').val()?.trim();
+                    const deliverables = $(this).find('textarea[name*="\\[output_deliverables\\]"]')
                         .val()?.trim();
                     if (!title || !deliverables) isValid = false;
                 });
 
                 $('#devplan-body .devplan-row').each(function() {
-                    const plan = $(this).find('input[name*="\\[plan\\]"]').val()?.trim();
+                    const plan = $(this).find('textarea[name*="\\[plan\\]"]').val()?.trim();
                     if (!plan) isValid = false;
                 });
 
@@ -175,14 +175,14 @@
                         <input type="hidden" name="keygoals[${idx}][id]" value="${id ?? ''}">
                         <textarea class="form-control" 
                                   name="keygoals[${idx}][title]" 
-                                  rows="3"
+                                  rows="2"
                                   placeholder="Objective" 
                                   required>${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </td>
                     <td class="col-output">
                         <textarea class="form-control" 
                                   name="keygoals[${idx}][output_deliverables]" 
-                                  rows="3"
+                                  rows="2"
                                   placeholder="Output / Deliverable" 
                                   required>${output_deliverables.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                     </td>
@@ -254,10 +254,11 @@
                 <td class="sn">${idx + 1}</td>
                 <td class="col-plan">
                     <input type="hidden" name="devplans[${idx}][id]" value="${id ?? ''}">
-                    <input type="text" class="form-control" 
-                           name="devplans[${idx}][plan]" 
-                           value="${plan.replace(/"/g, '&quot;')}" 
-                           placeholder="Development plan" required>
+                    <textarea class="form-control" 
+                       name="devplans[${idx}][plan]" 
+                       rows="2"
+                       placeholder="Development plan" 
+                       required>${plan.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                 </td>
                 <td class="col-action">
                     <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row" title="Add new plan">
@@ -425,18 +426,10 @@
                                     <td class="col-objective">
                                         <input type="hidden" name="keygoals[{{ $index }}][id]"
                                             value="{{ $kg->id }}">
-                                        {{-- <input type="text" class="form-control"
-                                            name="keygoals[{{ $index }}][title]"
-                                            value="{{ old('keygoals.' . $index . '.title', $kg->title) }}"
-                                            placeholder="Objective" required> --}}
                                         <textarea class="form-control" name="keygoals[{{ $index }}][title]" rows="2" placeholder="Objective"
                                             required>{{ old('keygoals.' . $index . '.title', $kg->title) }}</textarea>
                                     </td>
                                     <td class="col-output">
-                                        {{-- <input type="text" class="form-control"
-                                            name="keygoals[{{ $index }}][output_deliverables]"
-                                            value="{{ old('keygoals.' . $index . '.output_deliverables', $kg->output_deliverables ?? '') }}"
-                                            placeholder="Output / Deliverable" required> --}}
                                         <textarea class="form-control" name="keygoals[{{ $index }}][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required>{{ old('keygoals.' . $index . '.output_deliverables', $kg->output_deliverables ?? '') }}</textarea>
                                     </td>
@@ -452,16 +445,11 @@
                             @empty
                                 <tr class="keygoal-row" data-row-index="0">
                                     <td class="col-objective">
-                                        {{-- <input type="text" class="form-control" name="keygoals[0][title]"
-                                            placeholder="Objective" required> --}}
                                         <textarea class="form-control" name="keygoals[0][title]" rows="2" placeholder="Objective" required></textarea>
                                     </td>
                                     <td class="col-output">
                                         <textarea class="form-control" name="keygoals[0][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required></textarea>
-                                        {{-- <input type="text" class="form-control"
-                                            name="keygoals[0][output_deliverables]" placeholder="Output / Deliverable"
-                                            required> --}}
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row">
@@ -511,10 +499,9 @@
                                     <td class="col-plan">
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id ?? '' }}">
-                                        <input type="text" class="form-control"
-                                            name="devplans[{{ $index }}][plan]"
-                                            value="{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}"
-                                            placeholder="Development plan" required>
+                                        <textarea class="form-control" name="devplans[{{ $index }}][plan]" rows="2"
+                                            placeholder="Development plan" required>{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}
+                                        </textarea>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">
@@ -529,8 +516,7 @@
                                 <tr class="devplan-row" data-row-index="0">
                                     <td class="sn">1</td>
                                     <td class="col-plan">
-                                        <input type="text" class="form-control" name="devplans[0][plan]"
-                                            placeholder="Development plan" required>
+                                        <textarea class="form-control" name="devplans[0][plan]" rows="2" placeholder="Development plan" required></textarea>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row">

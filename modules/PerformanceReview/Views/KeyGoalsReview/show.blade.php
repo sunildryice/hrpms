@@ -4,6 +4,17 @@
 
 @section('page_css')
     <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
+@section('page_css')
+    <style>
         #keygoals-table th,
         #keygoals-table td,
         #devplan-table th,
@@ -222,10 +233,10 @@
                         <tbody id="keygoals-body">
                             @forelse ($currentKeyGoals as $kg)
                                 <tr class="keygoal-row readonly">
-                                    <td class="col-objective readonly-cell">
+                                    <td class="col-objective readonly-cell wrap-text">
                                         {{ $kg->title }}
                                     </td>
-                                    <td class="col-output readonly-cell">
+                                    <td class="col-output readonly-cell wrap-text">
                                         {{ $kg->output_deliverables ?? '—' }}
                                     </td>
                                 </tr>
@@ -269,7 +280,7 @@
                                 @foreach ($devPlans as $plan)
                                     <tr class="devplan-row readonly">
                                         <td class="sn">{{ $loop->iteration }}</td>
-                                        <td class="col-plan readonly-cell">
+                                        <td class="col-plan readonly-cell wrap-text">
                                             {{ $plan->objective }}
                                         </td>
                                     </tr>

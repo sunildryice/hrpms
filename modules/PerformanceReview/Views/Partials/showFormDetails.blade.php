@@ -111,7 +111,7 @@
                 <tbody>
                     @forelse ($coreCompetencies ?? collect() as $comp)
                         <tr>
-                            <td>{{ $comp->competency }}</td>
+                            <td class="wrap-text">{{ $comp->competency }}</td>
                             <td>
                                 @php
                                     $ratings = [
@@ -131,7 +131,7 @@
                                     —
                                 @endif
                             </td>
-                            <td>{{ $comp->example ?? '—' }}</td>
+                            <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -163,8 +163,8 @@
                 <tbody>
                     @forelse ($challenges ?? collect() as $challenge)
                         <tr>
-                            <td>{{ $challenge->challenge }}</td>
-                            <td>{{ $challenge->result }}</td>
+                            <td class="wrap-text">{{ $challenge->challenge }}</td>
+                            <td class="wrap-text">{{ $challenge->result }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -215,7 +215,7 @@
     <div class="card mb-3">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">H.</span> Result and Comments
+                <span class="fw-bold">H.</span> Manager Assessment
             </span>
         </div>
         <div class="card-body">
@@ -224,7 +224,7 @@
                 <p class="mb-0">{{ $performanceReview->result ?: '—' }}</p>
             </div>
             <div class="col-md-12">
-                <label class="form-label fw-bold">Comments</label>
+                <label class="form-label fw-bold">Comments / Areas to Improve</label>
                 <p class="mb-0">{{ $performanceReview->comments ?: '—' }}</p>
             </div>
         </div>

@@ -1,3 +1,14 @@
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 <!-- B. Key Goals Review -->
 <div id="keyGoalsReview" class="mb-3">
     <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
@@ -29,8 +40,8 @@
                     <tbody>
                         @foreach ($keygoals as $keygoal)
                             <tr data-keygoal-id="{{ $keygoal->id }}">
-                                <td>{{ $keygoal->title }}</td>
-                                <td>{{ $keygoal->output_deliverables }}</td>
+                                <td class="wrap-text">{{ $keygoal->title }}</td>
+                                <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
@@ -70,11 +81,11 @@
                     <tbody id="keygoal-body">
                         @foreach ($newKeyGoals as $keygoal)
                             <tr>
-                                <td>
+                                <td class="wrap-text">
                                     <span style="width: 100%">{{ $keygoal->title }}
                                     </span>
                                 </td>
-                                <td>{{ $keygoal->output_deliverables }}</td>
+                                <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
@@ -149,11 +160,11 @@
                             @foreach ($devPlans as $index => $plan)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td class="readonly-cell">
+                                    <td class="readonly-cell wrap-text">
                                         {{ $plan->objective }}
                                     </td>
                                     <td>
-                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="1"
+                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="2"
                                             data-id="{{ $plan->id }}" placeholder="Enter activities...">{{ $plan->activity ?? '' }}</textarea>
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id }}">

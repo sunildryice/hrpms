@@ -5,6 +5,7 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
@@ -24,7 +25,8 @@ class PerformanceReviewController extends Controller
         protected PerformanceReviewRepository $performanceReview,
         protected PerformanceReviewType $performanceReviewType,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
-        protected FiscalYearRepository $fiscalYear
+        protected FiscalYearRepository $fiscalYear,
+        protected NepaliFiscalYear $nepaliFiscalYear
     ) {
     }
 
@@ -145,8 +147,8 @@ class PerformanceReviewController extends Controller
 
         $employees = $this->employee->getActiveEmployees();
         $reviewTypes = $this->performanceReviewType->orderBy('id', 'desc')->get();
-        $fiscalYears = $this->fiscalYear->getFiscalYears();
-        $currentFiscalYearId = $this->fiscalYear->getCurrentFiscalYearId();
+        $fiscalYears = $this->nepaliFiscalYear->orderBy('id', 'asc')->get();
+        $currentFiscalYearId = $this->nepaliFiscalYear->getCurrentFiscalYearId();
 
         return view('PerformanceReview::create', compact('employees', 'reviewTypes', 'fiscalYears', 'currentFiscalYearId'));
     }

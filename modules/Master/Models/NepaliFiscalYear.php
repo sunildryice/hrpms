@@ -47,4 +47,10 @@ class NepaliFiscalYear extends Model
         return $this->title;
     }
 
+    public function getCurrentFiscalYearId()
+    {
+        return $this->where('start_date', '<=', date('Y-m-d'))
+            ->where('end_date', '>=', date('Y-m-d'))
+            ->first()->id;
+    }
 }

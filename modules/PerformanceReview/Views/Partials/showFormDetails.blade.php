@@ -1,3 +1,13 @@
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
 <!-- B. Key Goals Review -->
 <div id="keyGoalsReview" class="mb-3">
     <div class="card">
@@ -24,16 +34,16 @@
                 <tbody>
                     @foreach ($keygoals as $keygoal)
                         <tr>
-                            <td>{{ $keygoal->title }}</td>
-                            <td>{{ $keygoal->output_deliverables }}</td>
-                            <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->title }}</td>
+                            <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                            <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                             <td>
                                 <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                     {{ $keygoal->status?->label() ?? 'Not Set' }}
                                 </span>
                             </td>
-                            <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                            <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->description_supervisor ?? '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -70,8 +80,8 @@
                         @foreach ($devPlans as $index => $plan)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $plan->objective }}</td>
-                                <td>{{ $plan->activity ?? '—' }}</td>
+                                <td class="wrap-text">{{ $plan->objective }}</td>
+                                <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -139,7 +149,7 @@
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges 
+                <span class="fw-bold">E.</span> Challenges
             </span>
         </div>
         <div class="card-body">

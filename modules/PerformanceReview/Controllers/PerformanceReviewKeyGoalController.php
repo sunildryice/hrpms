@@ -261,8 +261,8 @@ class PerformanceReviewKeyGoalController extends Controller
 
         $request->validate([
             'keygoals' => 'required|array|min:1',
-            'keygoals.*.title' => 'required|string|max:255',
-            'keygoals.*.output_deliverables' => 'required|string|max:255',
+            'keygoals.*.title' => 'required|string',
+            'keygoals.*.output_deliverables' => 'required|string',
 
             'devplans' => 'required|array|min:1',
             'devplans.*.plan' => 'required|string|max:500',

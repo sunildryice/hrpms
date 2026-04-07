@@ -15,7 +15,8 @@ class PayrollFiscalYearSeeder extends Seeder
      */
     public function run()
     {
-        NepaliFiscalYear::updateOrCreate(
+        $year = new NepaliFiscalYear();
+        $year->updateOrCreate(
             ['id' => 1],
             [
                 'title' => '2082/83',
@@ -25,7 +26,7 @@ class PayrollFiscalYearSeeder extends Seeder
             ]
         );
 
-        NepaliFiscalYear::updateOrCreate(
+        $year->updateOrCreate(
             ['id' => 2],
             [
                 'title' => '2083/84',

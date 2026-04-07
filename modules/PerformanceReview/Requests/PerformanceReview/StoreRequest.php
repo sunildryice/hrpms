@@ -42,7 +42,7 @@ class StoreRequest extends FormRequest
 
         // External Reviewer is required only for Annual (1) and Mid-Term (2) Review
         if (in_array($request->review_type_id, [1, 2])) {
-            $baseRules['external_reviewer_id'] = 'required|exists:users,id';
+            $baseRules['external_reviewer_id'] = 'nullable|exists:users,id';
         } else {
             $baseRules['external_reviewer_id'] = 'nullable|exists:users,id';
         }
@@ -55,7 +55,6 @@ class StoreRequest extends FormRequest
         return [
             'employee_id.required' => 'Please select an employee or check all employees.',
             'employee_all.required' => 'Please select an employee or check all employees.',
-            'external_reviewer_id.required'=> 'External Reviewer is required.',
             'review_from.required' => '\'Review From\' date is required.',
             'review_to.required' => '\'Review To\' date is required.',
             'fiscal_year_id' => 'Fical year is required.'

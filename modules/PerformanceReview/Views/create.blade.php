@@ -34,13 +34,13 @@
 
                 if (reviewTypeId === 1 || reviewTypeId === 2) {
                     $('#external_reviewer_row').fadeIn(100);
-                    fv.addField('external_reviewer_id', {
-                        validators: {
-                            notEmpty: {
-                                message: 'External Reviewer is required'
-                            }
-                        }
-                    });
+                    // fv.addField('external_reviewer_id', {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'External Reviewer is required'
+                    //         }
+                    //     }
+                    // });
                 } else {
                     $('#external_reviewer_row').fadeOut(100);
                     $('#external_reviewer_id').val('');
@@ -238,7 +238,7 @@
                     {{-- External Reviewer Dropdown - Shown only for Annual (1) and Mid-Term (2) Review --}}
                     <div class="row mb-2" id="external_reviewer_row" style="display: none;">
                         <div class="col-lg-3">
-                            <label for="external_reviewer_id" class="required-label">External Reviewer</label>
+                            <label for="external_reviewer_id">External Reviewer</label>
                         </div>
                         <div class="col-lg-3">
                             <select class="select2 form-control" name="external_reviewer_id" id="external_reviewer_id">

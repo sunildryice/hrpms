@@ -265,7 +265,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'keygoals.*.output_deliverables' => 'required|string',
 
             'devplans' => 'required|array|min:1',
-            'devplans.*.plan' => 'required|string|max:500',
+            'devplans.*.plan' => 'required|string',
         ]);
 
         DB::beginTransaction();
@@ -351,7 +351,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $request->validate([
             'devplans' => 'required|array',
             'devplans.*.id' => 'required|integer|exists:performance_professional_development_plans,id',
-            'devplans.*.activity' => 'nullable|string|max:1000',
+            'devplans.*.activity' => 'nullable|string|max:1500',
         ]);
 
         try {

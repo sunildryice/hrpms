@@ -43,7 +43,7 @@
                                 <td class="wrap-text">{{ $keygoal->title }}</td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -57,7 +57,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                             </tr>
                         @endforeach
@@ -87,7 +87,7 @@
                                 </td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -101,7 +101,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
@@ -164,7 +164,7 @@
                                         {{ $plan->objective }}
                                     </td>
                                     <td>
-                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="2"
+                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="3"
                                             data-id="{{ $plan->id }}" placeholder="Enter activities...">{{ $plan->activity ?? '' }}</textarea>
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id }}">
@@ -321,13 +321,13 @@
                             <tr class="challenge-row" data-row-index="{{ $index }}"
                                 data-id="{{ $challenge->id }}">
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="2">{{ $challenge->challenge }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="3">{{ $challenge->challenge }}</textarea>
                                     <input type="hidden" name="challenges[{{ $index }}][id]"
                                         value="{{ $challenge->id }}">
                                 </td>
 
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="2">{{ $challenge->result }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="3">{{ $challenge->result }}</textarea>
                                 </td>
 
                                 <td class="text-center">
@@ -342,10 +342,10 @@
                         @empty
                             <tr class="challenge-row" data-row-index="0">
                                 <td>
-                                    <textarea name="challenges[0][challenge]" class="form-control" rows="2"></textarea>
+                                    <textarea name="challenges[0][challenge]" class="form-control" rows="3"></textarea>
                                 </td>
                                 <td>
-                                    <textarea name="challenges[0][result]" class="form-control" rows="2"></textarea>
+                                    <textarea name="challenges[0][result]" class="form-control" rows="3"></textarea>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">

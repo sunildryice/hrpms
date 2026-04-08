@@ -34,9 +34,9 @@ class PerformanceReviewRepository extends Repository
                 'log_remarks'   => 'Performance review created.',
                 'status_id'     => config('constant.CREATED_STATUS')
             ]);
-            if($inputs['review_type_id'] == config('constant.KEY_GOALS_REVIEW')) {
-                $this->createKeyGoalsandDevelopmentPlans($performanceReview->id);
-            }
+            // if($inputs['review_type_id'] == config('constant.KEY_GOALS_REVIEW')) {
+            //     $this->createKeyGoalsandDevelopmentPlans($performanceReview->id);
+            // }
             DB::commit();
             return $performanceReview;
         } catch (QueryException $e) {
@@ -65,6 +65,9 @@ class PerformanceReviewRepository extends Repository
         try {
             $performanceReview = $this->model->findOrFail($id);
             $performanceReview->logs()->delete();
+            $performanceReview->challenges()->delete();
+            $performanceReview->coreCompetencies()->delete();
+            $performanceReview->developmentPlans()->delete();
             $performanceReview->answers()->delete();
             $performanceReview->keyGoals()->delete();
             $performanceReview->delete();

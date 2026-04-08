@@ -311,11 +311,11 @@
                 return `
                 <tr class="challenge-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
                     <td>
-                        <textarea name="challenges[${idx}][challenge]" class="form-control" rows="2">${challenge}</textarea>
+                        <textarea name="challenges[${idx}][challenge]" class="form-control" rows="3">${challenge}</textarea>
                         <input type="hidden" name="challenges[${idx}][id]" value="${id ?? ''}">
                     </td>
                     <td>
-                        <textarea name="challenges[${idx}][result]" class="form-control" rows="2">${result}</textarea>
+                        <textarea name="challenges[${idx}][result]" class="form-control" rows="3">${result}</textarea>
                     </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">

@@ -322,7 +322,7 @@
                                         </td>
                                         <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
                                         <td>
-                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="2">{{ $keygoal->description_supervisor ?? '' }}</textarea>
+                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="3">{{ $keygoal->description_supervisor ?? '' }}</textarea>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -679,7 +679,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label for="log_remarks" class="form-label required-label">Remarks </label>
+                                        <label for="log_remarks" class="form-label">Remarks </label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">

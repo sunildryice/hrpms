@@ -139,6 +139,24 @@
                 fv.revalidateField('review_to');
             });
 
+            $('#fiscal_year_id').on('change', function() {
+                const selected = $(this).find('option:selected');
+                const start = selected.data('start');
+                const end = selected.data('end');
+
+                if (start && end) {
+                    $('[name="review_from"]').datepicker('setStartDate', start);
+                    $('[name="review_from"]').datepicker('setEndDate', end);
+
+                    $('[name="review_to"]').datepicker('setStartDate', start);
+                    $('[name="review_to"]').datepicker('setEndDate', end);
+                }
+            });
+
+            if ($('#fiscal_year_id').val()) {
+                $('#fiscal_year_id').trigger('change');
+            }
+
             $('[name="deadline_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
@@ -271,7 +289,8 @@
                             <select class="form-control" name="fiscal_year_id" id="fiscal_year_id">
                                 <option value="" selected>Select fiscal year</option>
                                 @foreach ($fiscalYears as $fiscalYear)
-                                    <option value="{{ $fiscalYear->id }}"
+                                    <option value="{{ $fiscalYear->id }}" data-start="{{ $fiscalYear->start_date }}"
+                                        data-end="{{ $fiscalYear->end_date }}"
                                         {{ old('fiscal_year_id') ? ($fiscalYear->id == old('fiscal_year_id') ? 'selected' : '') : ($currentFiscalYearId == $fiscalYear->id ? 'selected' : '') }}>
                                         {{ $fiscalYear->title }}
                                     </option>

@@ -177,10 +177,23 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 $parentTitle = strtolower(trim($item['parent_title']));
                 $parentKey = $parentTitle . '|null';
 
-                $parentId = ProjectActivity::where('project_id', $this->project->id)
-                    ->whereRaw('LOWER(TRIM(title)) = ?', [$parentTitle])
-                    ->orderByDesc('id')
-                    ->value('id');
+                // $parentId = ProjectActivity::where('project_id', $this->project->id)
+                //     ->whereRaw('LOWER(TRIM(title)) = ?', [$parentTitle])
+                //     ->orderByDesc('id')
+                //     ->value('id');
+
+                $parentId = null;
+
+                if (isset($existingMap[$parentKey])) {
+                    $parentId = $existingMap[$parentKey];
+                } else {
+                    foreach ($existingMap as $key => $id) {
+                        if (str_starts_with($key, $parentTitle . '|')) {
+                            $parentId = $id;
+                            break;
+                        }
+                    }
+                }
 
                 if (!$parentId)
                     continue;

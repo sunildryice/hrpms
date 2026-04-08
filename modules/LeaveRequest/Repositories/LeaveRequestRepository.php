@@ -426,4 +426,27 @@ class LeaveRequestRepository extends Repository
             ->whereDate('end_date', '>=', $date)
             ->exists();
     }
+    public function getApprovedLeaveWithMode(int $employeeId, string $date): ?string
+    {
+        $leaveDay = LeaveRequestDay::whereHas('leaveRequest', function ($q) use ($employeeId) {
+            $q->where('requester_id', $employeeId)
+                ->where('status_id', config('constant.APPROVED_STATUS'));
+        })
+            ->where('leave_date', $date)
+            ->where('leave_duration', '>', 0)
+            ->with('leaveMode')
+            ->first();
+
+        if (!$leaveDay) {
+            return null;
+        }
+
+        $mode = $leaveDay->leaveMode?->title;
+
+        if ($mode === 'Full Day') {
+            return 'On Leave';
+        }
+
+        return "On Leave ({$mode})";
+    }
 }

@@ -24,8 +24,8 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
     protected array $userCache = [];
     protected array $errors = [];
     protected int $rowNumber = 1;
-    protected array $activityIdsByTitle = []; 
-    protected array $rowToInstanceIndex = []; 
+    protected array $activityIdsByTitle = [];
+    protected array $rowToInstanceIndex = [];
 
     public function __construct($project)
     {
@@ -53,9 +53,9 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
 
     public function collection(Collection $rows)
     {
-        $activitiesToInsert = [];
-        $parentAssignments = [];   
-        $memberAssignments = [];   
+        $activitiesToUpsert = [];
+        $parentAssignments = [];
+        $memberAssignments = [];
 
         foreach ($rows as $row) {
             $this->rowNumber++;
@@ -64,150 +64,170 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
                 continue;
             }
 
-            $title = $this->getValue($row, ['activity_name', 'activity name', 'activity-name']);
+            $title = trim($this->getValue($row, ['activity_name', 'activity name', 'activity-name']) ?? '');
             if (!$title) {
                 continue;
             }
 
-            $title = trim($title);
             $titleKey = strtolower($title);
-
-            $stageName   = $this->getValue($row, ['stage_name', 'stage-name']);
-            $membersStr  = $this->getValue($row, ['members']);
-            $parentTitle = $this->getValue($row, ['parent_activity', 'parent-activity']);
-            $statusStr   = $this->getValue($row, ['activity_status', 'status']);
-            $levelRaw    = $this->getValue($row, ['activity_level']);
-            $startRaw    = $this->getValue($row, ['start_date']);
-            $endRaw      = $this->getValue($row, ['end_date']);
+            $stageName = $this->getValue($row, ['stage_name', 'stage-name']);
+            $membersStr = $this->getValue($row, ['members']);
+            $parentTitle = trim($this->getValue($row, ['parent_activity', 'parent-activity']) ?? '');
+            $statusStr = $this->getValue($row, ['activity_status', 'status']);
+            $levelRaw = $this->getValue($row, ['activity_level']);
+            $startRaw = $this->getValue($row, ['start_date']);
+            $endRaw = $this->getValue($row, ['end_date']);
 
             $startDate = $this->parseDate($startRaw);
-            $endDate   = $this->parseDate($endRaw);
+            $endDate = $this->parseDate($endRaw);
 
-            $stageId = null;
-            if ($stageName) {
-                $stageKey = strtolower(trim($stageName));
-                $stageId = $this->stageCache[$stageKey] ?? null;
-                if (!$stageId) {
-                    $this->addError('stage_name', "Invalid stage: {$stageName}");
-                    continue;
-                }
-            }
+            $stageId = $stageName ? ($this->stageCache[strtolower(trim($stageName))] ?? null) : null;
 
-             $data = [
-                'project_id'        => $this->project->id,
-                'title'             => $title,
+            $data = [
+                'project_id' => $this->project->id,
+                'title' => $title,
                 'activity_stage_id' => $stageId,
-                'activity_level'    => $this->normalizeLevel($levelRaw),
-                'start_date'        => $startDate,
-                'completion_date'   => $endDate,
-                'status'            => $this->parseStatus($statusStr)->value,
-                'updated_by'        => auth()->id() ?? 1,
-                'updated_at'        => now(),
+                'activity_level' => $this->normalizeLevel($levelRaw),
+                'start_date' => $startDate,
+                'completion_date' => $endDate,
+                'status' => $this->parseStatus($statusStr)->value,
+                'updated_by' => auth()->id() ?? 1,
+                'updated_at' => now(),
             ];
 
-            $data['created_by'] = auth()->id() ?? 1;
-            $data['created_at'] = now();
+            // Store the row for later processing 
+            $index = count($activitiesToUpsert);
 
-            $activitiesToInsert[] = $data;
+            $activitiesToUpsert[$index] = [
+                'data' => $data,
+                'parent_title' => $parentTitle,
+                'title' => $title,
+                'title_key' => $titleKey,
+            ];
 
-            $instanceIndex = ($this->rowToInstanceIndex[$titleKey] ?? 0);
-            $this->rowToInstanceIndex[$titleKey] = $instanceIndex + 1;
-
-            if (!empty($parentTitle)) {
+            // Record parent and member assignments by index
+            if ($parentTitle) {
                 $parentAssignments[] = [
-                    'title_key'      => $titleKey,
-                    'instance_index' => $instanceIndex,
-                    'parent_key'     => strtolower(trim($parentTitle)),
-                    'row'            => $this->rowNumber,
+                    'index' => $index,
+                    'parent_key' => strtolower(trim($parentTitle)),
                 ];
             }
 
-            if (!empty($membersStr)) {
+            if ($membersStr) {
                 $memberAssignments[] = [
-                    'title_key'      => $titleKey,
-                    'instance_index' => $instanceIndex,
-                    'user_ids'       => $this->parseMembers($membersStr),
-                    'row'            => $this->rowNumber,
+                    'index' => $index,
+                    'user_ids' => $this->parseMembers($membersStr),
                 ];
             }
         }
 
+        // Error checking
         if (!empty($this->errors)) {
             $validator = Validator::make([], []);
             foreach ($this->errors as $error) {
-                $validator->errors()->add(
-                    "row_{$error['row']}.{$error['field']}",
-                    $error['message']
-                );
+                $validator->errors()->add("row_{$error['row']}.{$error['field']}", $error['message']);
             }
             throw new ValidationException($validator);
         }
 
-        DB::transaction(function () use ($activitiesToInsert, $parentAssignments, $memberAssignments) {
-            if (empty($activitiesToInsert)) {
-                return;
+        DB::transaction(function () use ($activitiesToUpsert, $memberAssignments) {
+
+            // Load existing activities
+            $existingActivities = ProjectActivity::where('project_id', $this->project->id)
+                ->get(['id', 'title', 'parent_id']);
+
+            $existingMap = [];
+
+            foreach ($existingActivities as $act) {
+                $key = strtolower(trim($act->title)) . '|' . ($act->parent_id ?? 'null');
+                $existingMap[$key] = $act->id;
             }
 
-            // Insert all new activities
-            ProjectActivity::insert($activitiesToInsert);
+            // Track all resolved IDs
+            $resolvedIds = [];
 
-            // Fetch the newly inserted records, ordered by id (insertion order)
-            $inserted = ProjectActivity::where('project_id', $this->project->id)
-                ->where('created_at', '>=', now()->subMinute()) 
-                ->orderBy('id', 'asc')
-                ->get(['id', 'title', 'created_at']);
+            foreach ($activitiesToUpsert as $index => $item) {
 
-            $newIdsByTitle = $inserted->groupBy(function ($item) {
-                return strtolower(trim($item->title));
-            })->map(fn($group) => $group->pluck('id')->toArray());
+                if (!empty($item['parent_title']))
+                    continue;
 
-            // Merge with existing
-            foreach ($newIdsByTitle as $titleKey => $newIds) {
-                $existing = $this->activityIdsByTitle[$titleKey] ?? [];
-                $this->activityIdsByTitle[$titleKey] = array_merge($existing, $newIds);
-            }
+                $data = $item['data'];
+                $data['parent_id'] = null;
 
-            foreach ($parentAssignments as $assign) {
-                $titleKey = $assign['title_key'];
-                $idx = $assign['instance_index'];
-                $parentKey = $assign['parent_key'];
+                $key = strtolower($data['title']) . '|null';
 
-                $childIds = $this->activityIdsByTitle[$titleKey] ?? [];
-                $childId = $childIds[$idx] ?? null;
-
-                $parentIds = $this->activityIdsByTitle[$parentKey] ?? [];
-                // Take the last (most recent) parent with that title
-                $parentId = !empty($parentIds) ? end($parentIds) : null;
-
-                if ($childId && $parentId && $childId !== $parentId) {
-                    ProjectActivity::where('id', $childId)
-                        ->update(['parent_id' => $parentId]);
+                if (isset($existingMap[$key])) {
+                    // UPDATE
+                    $activity = ProjectActivity::find($existingMap[$key]);
+                    $activity->update($data);
+                } else {
+                    // CREATE
+                    $activity = ProjectActivity::create($data);
+                    $existingMap[$key] = $activity->id;
                 }
+
+                $resolvedIds[$index] = $activity->id;
+            }
+
+            foreach ($activitiesToUpsert as $index => $item) {
+
+                if (empty($item['parent_title']))
+                    continue;
+
+                $parentTitle = strtolower(trim($item['parent_title']));
+                $parentKey = $parentTitle . '|null';
+
+                // $parentId = ProjectActivity::where('project_id', $this->project->id)
+                //     ->whereRaw('LOWER(TRIM(title)) = ?', [$parentTitle])
+                //     ->orderByDesc('id')
+                //     ->value('id');
+
+                $parentId = null;
+
+                if (isset($existingMap[$parentKey])) {
+                    $parentId = $existingMap[$parentKey];
+                } else {
+                    foreach ($existingMap as $key => $id) {
+                        if (str_starts_with($key, $parentTitle . '|')) {
+                            $parentId = $id;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$parentId)
+                    continue;
+
+                $data = $item['data'];
+                $data['parent_id'] = $parentId;
+
+                $key = strtolower($data['title']) . '|' . $parentId;
+
+                if (isset($existingMap[$key])) {
+                    // UPDATE
+                    $activity = ProjectActivity::find($existingMap[$key]);
+                    $activity->update($data);
+                } else {
+                    // CREATE
+                    $activity = ProjectActivity::create($data);
+                    $existingMap[$key] = $activity->id;
+                }
+
+                $resolvedIds[$index] = $activity->id;
             }
 
             foreach ($memberAssignments as $assign) {
-                $titleKey = $assign['title_key'];
-                $idx = $assign['instance_index'];
-                $userIds = $assign['user_ids'];
 
-                $childIds = $this->activityIdsByTitle[$titleKey] ?? [];
-                $activityId = $childIds[$idx] ?? null;
+                $activityId = $resolvedIds[$assign['index']] ?? null;
 
-                if (!$activityId || empty($userIds)) {
+                if (!$activityId)
                     continue;
-                }
 
-                DB::table('project_activity_members')
-                    ->where('activity_id', $activityId)
-                    ->delete();
+                $activity = ProjectActivity::find($activityId);
 
-                $insertRows = collect($userIds)->map(fn($uid) => [
-                    'activity_id' => $activityId,
-                    'user_id'     => $uid,
-                ])->toArray();
-
-                if (!empty($insertRows)) {
-                    DB::table('project_activity_members')->insert($insertRows);
+                if ($activity && !empty($assign['user_ids'])) {
+                    // $activity->members()->sync($assign['user_ids']);
+                    $activity->members()->syncWithoutDetaching($assign['user_ids']);
                 }
             }
         });
@@ -229,7 +249,8 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
         $userIds = [];
         foreach ($names as $name) {
             $clean = strtolower(trim(preg_replace('/\s+/', ' ', $name)));
-            if (!$clean) continue;
+            if (!$clean)
+                continue;
             if (isset($this->userCache[$clean])) {
                 $userIds[] = $this->userCache[$clean];
             }
@@ -251,7 +272,8 @@ class ActivityImport implements ToCollection, WithHeadingRow, WithBatchInserts, 
 
     private function parseDate($value): ?Carbon
     {
-        if (empty($value)) return null;
+        if (empty($value))
+            return null;
         if (is_numeric($value)) {
             try {
                 return Carbon::instance(PhpDate::excelToDateTimeObject($value));

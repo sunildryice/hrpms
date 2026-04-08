@@ -117,10 +117,10 @@ class PmsController
         $maxDate = null;
 
         foreach ($projects as $idx => $project) {
-
             $code = $project->short_name ?: 'P' . ($idx + 1);
             $projectNames[] = $code;
 
+            // overall min/max for x-axis
             if ($project->start_date) {
                 $minDate = $minDate ? min($minDate, $project->start_date) : $project->start_date;
             }
@@ -128,116 +128,106 @@ class PmsController
                 $maxDate = $maxDate ? max($maxDate, $project->completion_date) : $project->completion_date;
             }
 
-            $total = max(1, $project->total_activities);
+            $start = $project->start_date ? Carbon::parse($project->start_date) : now()->subYears(2);
+            $end = $project->completion_date ? Carbon::parse($project->completion_date) : now()->addYears(2);
+
+            $totalActivities = max(1, $project->total_activities);
 
             $completed = $project->completed_count;
             $under = $project->under_progress_count;
             $notStarted = $project->not_started_count;
-            $noRequired = $project->no_required_count;
+            $notRequired = $project->no_required_count;
 
-            $hasAnyActivity = ($completed + $under + $notStarted + $noRequired) > 0;
-
-            $start = $project->start_date
-                ? Carbon::parse($project->start_date)
-                : now()->subYears(3);
-
-            $end = $project->completion_date
-                ? Carbon::parse($project->completion_date)
-                : now()->addYears(3);
-
-            $totalDuration = $end->diffInSeconds($start) ?: 1;
+            $hasAnyActivity = ($completed + $under + $notStarted + $notRequired) > 0;
 
             if (!$hasAnyActivity) {
                 $seriesTimeline[4]['data'][] = [
                     'x' => $code,
-                    'y' => [
-                        $start->timestamp * 1000,
-                        $end->timestamp * 1000
-                    ],
+                    'y' => [$start->timestamp * 1000, $end->timestamp * 1000],
                     'meta' => [
                         'title' => $project->title,
                         'status' => 'no_activities',
-                        'percentage' => 100.0
+                        'percentage' => 100.0,
+                        'counts' => ['total' => 0]
                     ]
                 ];
                 continue;
             }
 
-            $completedPct = ($completed / $total) * 100;
-            $underPct = ($under / $total) * 100;
-            $notStartedPct = ($notStarted / $total) * 100;
-            $noRequiredPct = ($noRequired / $total) * 100;
+            // Calculate percentages
+            $pctCompleted = round(($completed / $totalActivities) * 100, 1);
+            $pctUnder = round(($under / $totalActivities) * 100, 1);
+            $pctNotStarted = round(($notStarted / $totalActivities) * 100, 1);
+            $pctNotRequired = round(($notRequired / $totalActivities) * 100, 1);
 
-            $percentages = [
-                'completed' => $completedPct,
-                'under_progress' => $underPct,
-                'not_started' => $notStartedPct,
-                'no_required' => $noRequiredPct,
+            $sumPct = $pctCompleted + $pctUnder + $pctNotStarted + $pctNotRequired;
+            if ($sumPct != 100) {
+                $pctCompleted += (100 - $sumPct); 
+            }
+
+            $totalDurationMs = $end->timestamp * 1000 - $start->timestamp * 1000;
+
+            $currentStartMs = $start->timestamp * 1000;
+
+            $segments = [
+                ['status' => 'completed', 'pct' => $pctCompleted, 'seriesIndex' => 0],
+                ['status' => 'under_progress', 'pct' => $pctUnder, 'seriesIndex' => 1],
+                ['status' => 'not_started', 'pct' => $pctNotStarted, 'seriesIndex' => 2],
+                ['status' => 'no_required', 'pct' => $pctNotRequired, 'seriesIndex' => 3],
             ];
 
-            $currentStart = $start->copy();
-            $accumulatedSeconds = 0;
-            $keys = ['completed', 'under_progress', 'not_started', 'no_required'];
-
-            foreach ($keys as $i => $key) {
-                $pct = $percentages[$key];
-                if ($pct <= 0)
+            foreach ($segments as $seg) {
+                if ($seg['pct'] <= 0)
                     continue;
 
-                if ($i === count($keys) - 1) {
-                    $segmentEnd = $end->copy();
-                } else {
-                    $segmentSeconds = ($pct / 100) * $totalDuration;
-                    $accumulatedSeconds += $segmentSeconds;
-                    $segmentEnd = $start->copy()->addSeconds($accumulatedSeconds);
-                }
+                $segmentDurationMs = ($seg['pct'] / 100) * $totalDurationMs;
+                $segmentEndMs = $currentStartMs + $segmentDurationMs;
 
-                $seriesIndex = match ($key) {
-                    'completed' => 0,
-                    'under_progress' => 1,
-                    'not_started' => 2,
-                    'no_required' => 3,
-                };
-
-                $seriesTimeline[$seriesIndex]['data'][] = [
+                $seriesTimeline[$seg['seriesIndex']]['data'][] = [
                     'x' => $code,
-                    'y' => [
-                        $currentStart->timestamp * 1000,
-                        $segmentEnd->timestamp * 1000
-                    ],
+                    'y' => [$currentStartMs, $segmentEndMs],
                     'meta' => [
                         'title' => $project->title,
-                        'status' => $key,
-                        'percentage' => round($pct, 1),
+                        'status' => $seg['status'],
+                        'percentage' => $seg['pct'],
                         'counts' => [
-                            'total' => (int) $total,
+                            'total' => (int) $totalActivities,
                             'completed' => (int) $completed,
                             'under_progress' => (int) $under,
                             'not_started' => (int) $notStarted,
-                            'no_required' => (int) $noRequired,
+                            'no_required' => (int) $notRequired,
                         ]
                     ]
                 ];
 
-                $currentStart = $segmentEnd;
+                $currentStartMs = $segmentEndMs;
             }
         }
 
         // Timeline range
-        if ($startDateFilter || $endDateFilter) {
-            // $minYear = $startDateFilter
-            //     ? Carbon::parse($startDateFilter)->subMonths(6)->startOfMonth()
-            //     : ($minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3));
+        
+        // if ($startDateFilter || $endDateFilter) {
+        //     // $minYear = $startDateFilter
+        //     //     ? Carbon::parse($startDateFilter)->subMonths(6)->startOfMonth()
+        //     //     : ($minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3));
 
-            // $maxYear = $endDateFilter
-            //     ? Carbon::parse($endDateFilter)->addMonths(6)->endOfMonth()
-            //     : ($maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3));
+        //     // $maxYear = $endDateFilter
+        //     //     ? Carbon::parse($endDateFilter)->addMonths(6)->endOfMonth()
+        //     //     : ($maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3));
 
-            $minYear = Carbon::parse($startDateFilter)->subMonths(1)->startOfDay();
-            $maxYear = Carbon::parse($endDateFilter)->addMonths(1)->endOfDay();
+        //     $minYear = Carbon::parse($startDateFilter)->subMonths(1)->startOfDay();
+        //     $maxYear = Carbon::parse($endDateFilter)->addMonths(1)->endOfDay();
+        // } else {
+        //     $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3);
+        //     $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
+        // }
+
+        if ($startDateFilter && $endDateFilter) {
+            $minYear = Carbon::parse($startDateFilter)->startOfDay();
+            $maxYear = Carbon::parse($endDateFilter)->endOfDay();
         } else {
-            $minYear = $minDate ? Carbon::parse($minDate)->subYear()->startOfYear() : now()->subYears(3);
-            $maxYear = $maxDate ? Carbon::parse($maxDate)->addYear()->endOfYear() : now()->addYears(3);
+            $minYear = $minDate ? Carbon::parse($minDate)->subMonths(6) : now()->subYears(3);
+            $maxYear = $maxDate ? Carbon::parse($maxDate)->addMonths(6) : now()->addYears(3);
         }
 
         if ($isPMLT) {

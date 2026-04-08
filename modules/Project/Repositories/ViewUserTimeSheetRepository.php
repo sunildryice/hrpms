@@ -64,9 +64,15 @@ class ViewUserTimeSheetRepository extends Repository
         $user = $this->user->find($employeeId);
         $officeId = $user->employee->latestTenure?->office->id;
 
-        if ($this->leaveRequests->isEmployeeOnApprovedLeave($employeeId, $date)) {
-            return '<span class="text-warning fw-bold">On Leave</span>';
+        $leaveDisplay = $this->leaveRequests->getApprovedLeaveWithMode($employeeId, $date);
+
+        if ($leaveDisplay) {
+            return '<span class="text-warning fw-bold">' . $leaveDisplay . '</span>';
         }
+
+        // if ($this->leaveRequests->isEmployeeOnApprovedLeave($employeeId, $date)) {
+        //     return '<span class="text-warning fw-bold">On Leave</span>';
+        // }
 
         if ($this->lieuLeaveRequests->isEmployeeOnApprovedLieuLeave($employeeId, $date)) {
             return '<span class="text-purple fw-bold">On Lieu Leave</span>';

@@ -152,6 +152,7 @@
                             <tr>
                                 <th>Objective</th>
                                 <th>Output / Deliverable</th>
+                                <th>Project</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -159,6 +160,7 @@
                                 <tr>
                                     <td>{{ $keygoal->title ?? '-' }}</td>
                                     <td>{{ $keygoal->output_deliverables ?? '-' }}</td>
+                                    <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>

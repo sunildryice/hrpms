@@ -29,6 +29,7 @@
                         <tr>
                             <th rowspan="2" style="width: 18%">Objective</th>
                             <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                            <th rowspan="2" style="width: 10%">Project</th>
                             <th rowspan="2" style="width: 22%">Major Activities</th>
                             <th colspan="2">Achievement against output / deliverable</th>
                         </tr>
@@ -42,6 +43,7 @@
                             <tr data-keygoal-id="{{ $keygoal->id }}">
                                 <td class="wrap-text">{{ $keygoal->title }}</td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}</td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
@@ -69,6 +71,7 @@
                         <tr>
                             <th rowspan="2" style="width: 18%">(Additional Objective)</th>
                             <th rowspan="2" style="width: 15%">(Additional Output / Deliverable)</th>
+                            <th rowspan="2" style="width: 10%">(Additional Project)</th>
                             <th rowspan="2" style="width: 22%">Major Activities</th>
                             <th colspan="2">Achievement against output / deliverable</th>
                             <th rowspan="2" style="width: 22%">Action</th>
@@ -86,6 +89,7 @@
                                     </span>
                                 </td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}</td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>

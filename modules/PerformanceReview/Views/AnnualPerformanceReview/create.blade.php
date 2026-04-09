@@ -15,6 +15,14 @@
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
 
+            $('#keyGoalModal').on('shown.bs.modal', function() {
+                $('#project_id').select2({
+                    dropdownAutoWidth: true,
+                    width: '100%',
+                    dropdownParent: $('#keyGoalModal')
+                });
+            });
+
             // KEY GOAL ADD BUTTON 
             $('#add-key-goal').click(function(e) {
                 e.preventDefault();
@@ -34,10 +42,12 @@
                 let row = $(this).closest('tr');
                 let title = row.find('td:first-child span').first().text().trim();
                 let output = row.find('td:nth-child(2)').text().trim();
+                let projectId = row.data('project-id') || '';
 
                 $('#key_goal_id').val(id);
                 $('#title').val(title);
                 $('#output_deliverables').val(output);
+                $('#project_id').val(projectId);
 
                 $('#keyGoalModalTitle').text('Edit Key Goal');
                 $('#keyGoalModal').modal('show');
@@ -75,6 +85,7 @@
                     performance_review_id: performanceReview.id,
                     title: $('#title').val().trim(),
                     output_deliverables: $('#output_deliverables').val().trim(),
+                    project_id: $('#project_id').val() || null,
                     type: 'current'
                 };
 
@@ -684,7 +695,7 @@
             // G. Employee Overall Rating
             const employeeOverallRating = $('#employee_overall_rating').val();
             if (!employeeOverallRating) {
-                 isGroupGFormSaved = false;
+                isGroupGFormSaved = false;
                 $('#employee_overall_rating').addClass('is-invalid');
                 toastr.error('Please select Employee Overall Rating (Section G) before submitting.', 'Validation Error');
             } else {

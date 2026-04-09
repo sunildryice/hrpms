@@ -42,12 +42,13 @@
                 let row = $(this).closest('tr');
                 let title = row.find('td:first-child span').first().text().trim();
                 let output = row.find('td:nth-child(2)').text().trim();
-                let projectId = row.data('project-id') || '';
+                // let projectId = row.data('project-id') || '';
+                let projectId = $(this).data('project-id');
 
                 $('#key_goal_id').val(id);
                 $('#title').val(title);
                 $('#output_deliverables').val(output);
-                $('#project_id').val(projectId);
+                $('#project_id').val(projectId).trigger('change');
 
                 $('#keyGoalModalTitle').text('Edit Key Goal');
                 $('#keyGoalModal').modal('show');

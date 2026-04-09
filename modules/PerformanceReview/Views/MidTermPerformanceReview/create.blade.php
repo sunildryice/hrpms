@@ -45,15 +45,13 @@
                 let outputEl = row.find('td:nth-child(2) input[id^="keygoal_employee_"], td:nth-child(2)')
                     .first();
                 let output = outputEl.is('input') ? outputEl.val() : outputEl.text().trim();
-                let projectEl = row.find('td:nth-child(3) input[id^="keygoal_project_"], td:nth-child(3)')
-                    .first();
-                let projectId = projectEl.is('input') ? projectEl.val() : projectEl.text().trim();
+                let projectId = $(this).data('project-id');
 
 
                 $('#key_goal_id').val(id);
                 $('#title').val(title);
                 $('#output_deliverables').val(output);
-                $('#project_id').val(projectId);
+                 $('#project_id').val(projectId).trigger('change');
 
                 $('#keyGoalModalTitle').text('Edit Key Goal');
 

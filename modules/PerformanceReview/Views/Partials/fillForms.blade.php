@@ -43,7 +43,8 @@
                             <tr data-keygoal-id="{{ $keygoal->id }}">
                                 <td class="wrap-text">{{ $keygoal->title }}</td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
-                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
+                                </td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
@@ -83,13 +84,14 @@
                     </thead>
                     <tbody id="keygoal-body">
                         @foreach ($newKeyGoals as $keygoal)
-                            <tr>
+                            <tr data-id="{{ $keygoal->id }}" data-project-id="{{ $keygoal->project_id }}">
                                 <td class="wrap-text">
                                     <span style="width: 100%">{{ $keygoal->title }}
                                     </span>
                                 </td>
                                 <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
-                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
+                                </td>
                                 <td>
                                     <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
@@ -111,8 +113,11 @@
                                     <div class="d-flex gap-1">
                                         <a class="edit-key-goal btn btn-outline-primary btn-sm" href="#"
                                             data-href="{{ route('performance.keygoal.update') }}"
-                                            data-title="{{ $keygoal->title }}" data-id="{{ $keygoal->id }}"u><i
-                                                class="bi bi-pencil-square"></i></a>
+                                            data-title="{{ $keygoal->title }}"
+                                            data-output="{{ $keygoal->output_deliverables }}"
+                                            data-project-id="{{ $keygoal->project_id }}"
+                                            data-id="{{ $keygoal->id }}">
+                                            <i class="bi bi-pencil-square"></i></a>
                                         <a class="delete-key-goal btn btn-outline-danger btn-sm" href="#"
                                             data-href="{{ route('performance.keygoal.destroy') }}"
                                             data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>

@@ -261,7 +261,7 @@
         };
 
         const updateStatusRemarksValidator = (status, message) => {
-            const requireRemarks = status === 'completed' || status === 'no_required';
+            const requireRemarks = status === 'no_required';
             if (requireRemarks) {
                 ensureRemarksValidator(message);
             } else {
@@ -333,19 +333,25 @@
                 $activityStatusValue.val(newStatus);
 
                 $('#activityStatusModalLabel').text(title);
+                // $('#activityStatusMessageLabel')
+                //     .text(label)
+                //     .toggleClass('required-label', newStatus !== 'under_progress');
                 $('#activityStatusMessageLabel')
                     .text(label)
-                    .toggleClass('required-label', newStatus !== 'under_progress');
+                    .toggleClass('required-label', newStatus === 'no_required');
                 $('#activityStatusDateLabel').text(dateLabel);
                 const messagePlaceholder = newStatus === 'completed' ?
-                    'Please provide remarks...' :
+                    'Please provide remarks (optional)...' :
                     newStatus === 'no_required' ?
                     'Please provide a reason...' :
                     'Add remarks or notes...';
                 $activityStatusMessage.attr('placeholder', messagePlaceholder);
-                const remarksValidationMessage = newStatus === 'completed' ?
-                    'Remarks are required for completed activities.' :
-                    'Reason is required for not required status.';
+                // const remarksValidationMessage = newStatus === 'completed' ?
+                //     'Remarks are required for completed activities.' :
+                //     'Reason is required for not required status.';
+                const remarksValidationMessage = newStatus === 'no_required' ?
+                    'Reason is required for not required status.' :
+                    '';
 
                 const today = new Date();
                 const formattedDate = today.toISOString().split('T')[0];

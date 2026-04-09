@@ -21,12 +21,11 @@ class WorkPlanDetailController extends Controller
 {
 
     public function __construct(
-        protected ProjectRepository         $projects,
+        protected ProjectRepository $projects,
         protected ProjectActivityRepository $projectActivities,
-        protected WorkPlanRepository        $workPlans,
-        protected WorkPlanDetailRepository  $workPlanDetails
-    )
-    {
+        protected WorkPlanRepository $workPlans,
+        protected WorkPlanDetailRepository $workPlanDetails
+    ) {
     }
 
     public function index(Request $request, WorkPlan $workPlan)
@@ -37,7 +36,7 @@ class WorkPlanDetailController extends Controller
 
         if ($request->ajax()) {
             $query = $this->workPlanDetails->with('members')
-                ->where('work_plan_id',$workPlan->id);
+                ->where('work_plan_id', $workPlan->id);
 
             return DataTables::of($query)
                 ->addIndexColumn()
@@ -79,7 +78,8 @@ class WorkPlanDetailController extends Controller
                     return $badges;
                 })
                 ->addColumn('action', function ($detailRow) use ($isEditable) {
-                    if (!$isEditable) return '';
+                    if (!$isEditable)
+                        return '';
                     $btn = '';
 
                     $btn .= '<a href="' . route('work-plan.edit', $detailRow->id) . '" class="btn btn-sm btn-outline-primary edit-work-plan" data-id="' . $detailRow->id . '">
@@ -241,7 +241,7 @@ class WorkPlanDetailController extends Controller
         ]);
 
         $statusEnum = WorkPlanStatus::tryFrom($data['status']) ?? WorkPlanStatus::NotStarted;
-        $reason = trim((string)($data['reason'] ?? ''));
+        $reason = trim((string) ($data['reason'] ?? ''));
 
         if (in_array($statusEnum, [WorkPlanStatus::NoRequired]) && blank($reason)) {
             return response()->json(['message' => 'Reason is required.'], 422);
@@ -256,11 +256,19 @@ class WorkPlanDetailController extends Controller
         try {
             DB::beginTransaction();
 
-            $this->workPlans->updateDetail($id, [
+            $updateData = [
                 'status' => $data['status'],
-                'reason' => $reason ?: null,
-            ]);
+            ];
 
+            if ($statusEnum !== WorkPlanStatus::Completed || !blank($reason)) {
+                $updateData['reason'] = $reason ?: null;
+            }
+            $this->workPlans->updateDetail($id, $updateData);
+
+            // $this->workPlans->updateDetail($id, [
+            //     'status' => $data['status'],
+            //     'reason' => $reason ?: null,
+            // ]);
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();

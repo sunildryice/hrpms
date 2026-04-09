@@ -23,6 +23,7 @@
                         <th rowspan="2" style="width: 10%">Objective</th>
                         <th rowspan="2" style="width: 15%">Output / Deliverable</th>
                         <th rowspan="2" style="width: 15%">Major Activities</th>
+                        <th rowspan="2" style="width: 10%">Project</th>
                         <th colspan="2">Achievement against output / deliverable</th>
                         <th rowspan="2" style="width: 22%">Line Manager Comments</th>
                     </tr>
@@ -37,6 +38,7 @@
                             <td class="wrap-text">{{ $keygoal->title }}</td>
                             <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
                             <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                            <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
                             <td>
                                 <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                     {{ $keygoal->status?->label() ?? 'Not Set' }}

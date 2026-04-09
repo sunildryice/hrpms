@@ -255,4 +255,111 @@ class PmsController
             'endDateFilter'
         ));
     }
+
+    public function pieDashboard(Request $request)
+    {
+        $authUser = auth()->user()->load('roles');
+        $isPMLT = $authUser->roles->contains('role', 'PMLT');
+
+        $projectIds = $request->query('project_ids', []);
+        $startDateFilter = $request->query('start_date');
+        $endDateFilter = $request->query('end_date');
+
+        $query = $this->projects->getModel()
+            ->whereNotNull('activated_at')
+            ->where('show_pms_dashboard', true);
+
+        if (!$isPMLT) {
+            $query->where(function ($q) use ($authUser) {
+                $q->where('focal_person_id', $authUser->id)
+                    ->orWhere('team_lead_id', $authUser->id)
+                    ->orWhereHas('members', function ($sq) use ($authUser) {
+                        $sq->where('user_id', $authUser->id);
+                    });
+            });
+        }
+
+        $query->withCount([
+            'activities as completed_count' => function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->where('status', ActivityStatus::Completed)
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                if ($startDateFilter && $endDateFilter) {
+                    $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                }
+            },
+            'activities as under_progress_count' => function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->where('status', ActivityStatus::UnderProgress)
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                if ($startDateFilter && $endDateFilter) {
+                    $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                }
+            },
+            'activities as not_started_count' => function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->where('status', ActivityStatus::NotStarted)
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                if ($startDateFilter && $endDateFilter) {
+                    $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                }
+            },
+            'activities as no_required_count' => function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->where('status', ActivityStatus::NoRequired)
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+                if ($startDateFilter && $endDateFilter) {
+                    $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                }
+            },
+            'activities as total_activities' => function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->where('activity_level', '!=', ActivityLevel::Theme->value);
+                if ($startDateFilter && $endDateFilter) {
+                    $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter]);
+                }
+            },
+        ]);
+
+        if (!empty($projectIds)) {
+            $query->whereIn('id', $projectIds);
+        }
+
+        if ($startDateFilter && $endDateFilter) {
+            $query->whereHas('activities', function ($q) use ($startDateFilter, $endDateFilter) {
+                $q->whereBetween('completion_date', [$startDateFilter, $endDateFilter])
+                    ->where('activity_level', '!=', ActivityLevel::Theme->value);
+            });
+        }
+
+        $projects = $query->orderBy('title')->get();
+
+        if ($isPMLT) {
+            $allProjects = $this->projects->getModel()
+                ->whereNotNull('activated_at')
+                ->where('show_pms_dashboard', true)
+                ->orderBy('title')
+                ->get();
+        } else {
+            $allProjects = $this->projects->getAssignedProjects($authUser)
+                ->filter(fn($p) => $p->show_pms_dashboard)
+                ->sortBy('title')
+                ->values();
+        }
+
+        $projectsData = $projects->map(fn($p) => [
+            'id'             => $p->id,
+            'title'          => $p->title,
+            'short_name'     => $p->short_name ?: $p->title,
+            'completed'      => (int) $p->completed_count,
+            'under_progress' => (int) $p->under_progress_count,
+            'not_started'    => (int) $p->not_started_count,
+            'not_required'   => (int) $p->no_required_count,
+            'total'          => (int) $p->total_activities,
+        ])->values();
+
+        return view('Project::Project.pieDashboard', compact(
+            'projects',
+            'projectsData',
+            'allProjects',
+            'projectIds',
+            'startDateFilter',
+            'endDateFilter'
+        ));
+    }
 }

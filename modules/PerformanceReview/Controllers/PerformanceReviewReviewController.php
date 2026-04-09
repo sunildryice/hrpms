@@ -97,6 +97,7 @@ class PerformanceReviewReviewController extends Controller
                 ->where('employee_id', $performanceReview->employee_id)
                 ->first();
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -129,9 +130,11 @@ class PerformanceReviewReviewController extends Controller
                 ->orderBy('position', 'desc')
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
+            $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
 
             $array = [
-                'keygoals' => $keyGoalReview->keyGoals,
+                'keygoals' => $keygoals,
                 'keyGoalReview' => $keyGoalReview,
                 'professionalDevelopmentPlanQuestion' => $professionalDevelopmentPlanQuestion,
                 'professionalDevelopmentPlan' => $professionalDevelopmentPlan,

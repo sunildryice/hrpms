@@ -16,7 +16,7 @@
                 <span class="fw-bold">B.</span> Key Goals Review
             </span>
         </div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-bordered" id="keyGoalTable">
                 <thead>
                     <tr>

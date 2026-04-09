@@ -26,8 +26,7 @@ class ProjectActivityController extends Controller
 
     public function __construct(
         protected ProjectActivityRepository $projectActivity
-    )
-    {
+    ) {
     }
 
     public function index(Request $request, Project $project)
@@ -146,7 +145,14 @@ class ProjectActivityController extends Controller
 
     public function checkSelectDisableStatus($row, $status)
     {
-        return ($status->value == ActivityStatus::Completed->value && $row->status != ActivityStatus::UnderProgress->value) ? 'disabled' : '';
+        if ($status->value === ActivityStatus::Completed->value) {
+            return ($row->status !== ActivityStatus::UnderProgress->value
+                && $row->status !== ActivityStatus::NotStarted->value)
+                ? 'disabled'
+                : '';
+        }
+        return '';
+        // return ($status->value == ActivityStatus::Completed->value && $row->status != ActivityStatus::UnderProgress->value) ? 'disabled' : '';
     }
 
     public function checkStatusDisplay(ProjectActivity $projectActivity)
@@ -261,7 +267,7 @@ class ProjectActivityController extends Controller
 
 
         $statusEnum = ActivityStatus::tryFrom($data['status']) ?? ActivityStatus::NotStarted;
-        $remarks = trim((string)($data['remarks'] ?? ''));
+        $remarks = trim((string) ($data['remarks'] ?? ''));
         $statusDate = $request->input('status_date') ?? now();
         $documents = $data['documents'] ?? [];
 
@@ -330,7 +336,7 @@ class ProjectActivityController extends Controller
 
     protected function statusRequiresRemarks(ActivityStatus $status): bool
     {
-        return in_array($status, [ActivityStatus::Completed, ActivityStatus::NoRequired], true);
+        return in_array($status, [ActivityStatus::NoRequired], true);
     }
 
     /**

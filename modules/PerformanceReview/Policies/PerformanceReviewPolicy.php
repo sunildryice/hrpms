@@ -88,6 +88,11 @@ class PerformanceReviewPolicy
 //        }
     }
 
+    public function externalReviewView(User $user, PerformanceReview $performanceReview)
+    {
+        return $user->id == $performanceReview->external_reviewer_id || $user->can('manage-performance-review');
+    }
+
     public function managePerformance(User $user, PerformanceReview $performanceReview)
     {
         return $user->can('manage-performance-review');

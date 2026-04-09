@@ -317,8 +317,8 @@
                                     <tr data-keygoal-id="{{ $keygoal->id }}">
                                         <td class="wrap-text">{{ $keygoal->title }}</td>
                                         <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
-                                        <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                         <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                         <td>
                                             <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                                 {{ $keygoal->status?->label() ?? 'Not Set' }}

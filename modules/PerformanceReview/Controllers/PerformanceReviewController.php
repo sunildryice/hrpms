@@ -243,6 +243,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -319,6 +320,7 @@ class PerformanceReviewController extends Controller
             // }
             //
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -343,6 +345,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
 
             return view('PerformanceReview::MidTermPerformanceReview.print', [
                 ...$record,
@@ -391,6 +394,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -499,6 +503,7 @@ class PerformanceReviewController extends Controller
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
+            $projects = $this->projects->getActiveProjects();
 
             return view('PerformanceReview::AnnualPerformanceReview.create', [
                 ...$record,
@@ -509,6 +514,7 @@ class PerformanceReviewController extends Controller
                 'performanceReview' => $performanceReview,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
+                'projects' => $projects,
             ]);
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
 
@@ -523,6 +529,7 @@ class PerformanceReviewController extends Controller
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             $newKeyGoals = $performanceReview->keyGoals()->where('type', 'current')->get();
+            $projects = $this->projects->getActiveProjects();
 
             return view('PerformanceReview::MidTermPerformanceReview.create', [
                 ...$record,
@@ -532,6 +539,7 @@ class PerformanceReviewController extends Controller
                 'performanceReview' => $performanceReview,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
+                'projects' => $projects,
             ]);
         } else {
             $existingDevPlans = $performanceReview->developmentPlans;

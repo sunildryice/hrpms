@@ -68,7 +68,7 @@ class PerformanceReviewExternalReviewController extends Controller
     {
         $performanceReview = $this->performanceReview->find($id);
 
-        $this->authorize('view', $performanceReview);
+        $this->authorize('externalReviewView', $performanceReview);
 
         $record = array(
             'performanceReview' => $performanceReview,
@@ -93,6 +93,7 @@ class PerformanceReviewExternalReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }

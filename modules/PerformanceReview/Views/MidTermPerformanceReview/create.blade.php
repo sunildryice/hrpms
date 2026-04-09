@@ -15,6 +15,14 @@
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
 
+            $('#keyGoalModal').on('shown.bs.modal', function() {
+                $('#project_id').select2({
+                    dropdownAutoWidth: true,
+                    width: '100%',
+                    dropdownParent: $('#keyGoalModal')
+                });
+            });
+
             // KEY GOAL ADD BUTTON 
             $('#add-key-goal').click(function(e) {
                 e.preventDefault();
@@ -37,10 +45,13 @@
                 let outputEl = row.find('td:nth-child(2) input[id^="keygoal_employee_"], td:nth-child(2)')
                     .first();
                 let output = outputEl.is('input') ? outputEl.val() : outputEl.text().trim();
+                let projectId = $(this).data('project-id');
+
 
                 $('#key_goal_id').val(id);
                 $('#title').val(title);
                 $('#output_deliverables').val(output);
+                 $('#project_id').val(projectId).trigger('change');
 
                 $('#keyGoalModalTitle').text('Edit Key Goal');
 
@@ -77,6 +88,7 @@
                     performance_review_id: performanceReview.id,
                     title: $('#title').val(),
                     output_deliverables: $('#output_deliverables').val(),
+                    project_id: $('#project_id').val() || null,
                     type: 'current'
                 };
 

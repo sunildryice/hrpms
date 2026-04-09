@@ -35,6 +35,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::delete('/projects/{id}/delete', [ProjectController::class, 'destroy'])->name('project.destroy');
 
     Route::get('/pms/dashboard', [PmsController::class, 'dashboard'])->name('pms.dashboard');
+    Route::get('/pms/pie-dashboard', [PmsController::class, 'pieDashboard'])->name('pms.pie-dashboard');
 
     Route::get('assigned/activities', [ActivityController::class, 'index'])->name('assigned.activities.index');
 

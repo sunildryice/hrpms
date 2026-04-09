@@ -470,6 +470,11 @@
                             <i class="bi bi-bar-chart-line nav-icon"></i>
                             <span class="nav-link-title">PMS Dashboard</span>
                         </a>
+                        <a class="nav-link" href="{{ route('pms.pie-dashboard') }}" role="button"
+                           data-bs-toggle="tooltip" data-bs-placement="right" title="PMS Pie Dashboard">
+                            <i class="bi bi-bar-chart-line nav-icon"></i>
+                            <span class="nav-link-title">PMS Dashboard (Pie)</span>
+                        </a>
                     </div>
 
                     <div class="nav-item">

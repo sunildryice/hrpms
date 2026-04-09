@@ -15,6 +15,7 @@ use Modules\PerformanceReview\Notifications\PerformanceReviewSubmitted;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Modules\PerformanceReview\Requests\PerformanceReview\StoreRequest;
 use Modules\PerformanceReview\Requests\PerformanceReview\UpdateRequest;
+use Modules\Project\Repositories\ProjectRepository;
 use Yajra\DataTables\DataTables;
 
 class PerformanceReviewController extends Controller
@@ -25,6 +26,7 @@ class PerformanceReviewController extends Controller
         protected PerformanceReviewRepository $performanceReview,
         protected PerformanceReviewType $performanceReviewType,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
+        protected ProjectRepository $projects,
         protected FiscalYearRepository $fiscalYear,
         protected NepaliFiscalYear $nepaliFiscalYear
     ) {
@@ -533,10 +535,12 @@ class PerformanceReviewController extends Controller
             ]);
         } else {
             $existingDevPlans = $performanceReview->developmentPlans;
+            $projects = $this->projects->getActiveProjects();
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,
                 'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
                 'existingDevPlans' => $existingDevPlans,
+                'projects' => $projects,
             ]);
         }
     }

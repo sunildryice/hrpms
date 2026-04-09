@@ -27,6 +27,10 @@
             width: 45%;
         }
 
+        .col-project {
+            width: 25%;
+        }
+
         .col-plan {
             width: 90%;
         }
@@ -167,34 +171,49 @@
         });
 
         // KEY GOALS (B) 
-        function buildKeyGoalRow(idx, title = '', output_deliverables = '', id = null) {
+        function buildKeyGoalRow(idx, title = '', output_deliverables = '', project_id = null, id = null) {
             const isExisting = id !== null;
+
+            let projectOptions = `<option value="">Select Project</option>`;
+
+            @foreach ($projects as $project)
+                projectOptions += `<option value="{{ $project->id }}" 
+                    ${project_id == {{ $project->id }} ? 'selected' : ''}>
+                    {{ addslashes($project->short_name ?? $project->title) }}
+                </option>`;
+            @endforeach
+
             return `
-                <tr class="keygoal-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
-                    <td class="col-objective">
-                        <input type="hidden" name="keygoals[${idx}][id]" value="${id ?? ''}">
-                        <textarea class="form-control" 
-                                  name="keygoals[${idx}][title]" 
-                                  rows="2"
-                                  placeholder="Objective" 
-                                  required>${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </td>
-                    <td class="col-output">
-                        <textarea class="form-control" 
-                                  name="keygoals[${idx}][output_deliverables]" 
-                                  rows="2"
-                                  placeholder="Output / Deliverable" 
-                                  required>${output_deliverables.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                    </td>
-                    <td class="col-action">
-                        <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row" title="Add new row">
-                            <i class="bi bi-plus"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm remove-keygoal-row" title="Remove this row">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>`;
+            <tr class="keygoal-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
+                <td class="col-objective">
+                    <input type="hidden" name="keygoals[${idx}][id]" value="${id ?? ''}">
+                    <textarea class="form-control" 
+                              name="keygoals[${idx}][title]" 
+                              rows="2"
+                              placeholder="Objective" 
+                              required>${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                </td>
+                <td class="col-output">
+                    <textarea class="form-control" 
+                              name="keygoals[${idx}][output_deliverables]" 
+                              rows="2"
+                              placeholder="Output / Deliverable" 
+                              required>${output_deliverables.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                </td>
+                <td class="col-project">
+                    <select class="form-select select2" name="keygoals[${idx}][project_id]">
+                        ${projectOptions}
+                    </select>
+                </td>
+                <td class="col-action">
+                    <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row" title="Add new row">
+                        <i class="bi bi-plus"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-sm remove-keygoal-row" title="Remove this row">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
         }
 
         function updateKeyGoalButtons() {
@@ -210,6 +229,7 @@
             keyGoalRowIndex++;
             const $newRow = $(buildKeyGoalRow(keyGoalRowIndex));
             $('#keygoals-body').append($newRow);
+            $newRow.find('.select2').select2();
             updateKeyGoalButtons();
         });
 
@@ -416,6 +436,7 @@
                             <tr>
                                 <th class="col-objective">Objective</th>
                                 <th class="col-output">Output / Deliverable</th>
+                                <th class="col-project">Project</th>
                                 <th class="col-action">Action</th>
                             </tr>
                         </thead>
@@ -432,6 +453,18 @@
                                     <td class="col-output">
                                         <textarea class="form-control" name="keygoals[{{ $index }}][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required>{{ old('keygoals.' . $index . '.output_deliverables', $kg->output_deliverables ?? '') }}</textarea>
+                                    </td>
+                                    <td class="col-project">
+                                        <select class="form-select select2"
+                                            name="keygoals[{{ $index }}][project_id]">
+                                            <option value="">Select Project</option>
+                                            @foreach ($projects as $project)
+                                                <option value="{{ $project->id }}"
+                                                    {{ old('keygoals.' . $index . '.project_id', $kg->project_id) == $project->id ? 'selected' : '' }}>
+                                                    {{ $project->short_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row">
@@ -450,6 +483,16 @@
                                     <td class="col-output">
                                         <textarea class="form-control" name="keygoals[0][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required></textarea>
+                                    </td>
+                                    <td class="col-project">
+                                        <select class="form-select select2" name="keygoals[0][project_id]">
+                                            <option value="">Select Project</option>
+                                            @foreach ($projects as $project)
+                                                <option value="{{ $project->id }}">
+                                                    {{ $project->short_name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                     <td class="col-action">
                                         <button type="button" class="btn btn-outline-primary btn-sm add-keygoal-row">

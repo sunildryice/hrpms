@@ -26,7 +26,9 @@
         .col-output {
             width: 45%;
         }
-
+        .col-project {
+            width: 25%;
+        }
         .col-plan {
             width: 90%;
         }
@@ -224,6 +226,7 @@
                             <tr>
                                 <th class="col-objective">Objective</th>
                                 <th class="col-output">Output / Deliverable</th>
+                                <th class="col-project">Project</th>
                             </tr>
                         </thead>
                         <tbody id="keygoals-body">
@@ -234,6 +237,9 @@
                                     </td>
                                     <td class="col-output readonly-cell wrap-text">
                                         {{ $kg->output_deliverables ?? '—' }}
+                                    </td>
+                                    <td class="col-project readonly-cell wrap-text">
+                                        {{ $kg->project ? $kg->project->short_name ?? $kg->project->title : '—' }}
                                     </td>
                                 </tr>
                             @empty

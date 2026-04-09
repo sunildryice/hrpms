@@ -263,6 +263,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'keygoals' => 'required|array|min:1',
             'keygoals.*.title' => 'required|string',
             'keygoals.*.output_deliverables' => 'required|string',
+            'keygoals.*.project_id' => 'nullable|integer|exists:projects,id',
 
             'devplans' => 'required|array|min:1',
             'devplans.*.plan' => 'required|string',
@@ -279,6 +280,7 @@ class PerformanceReviewKeyGoalController extends Controller
                     'performance_review_id' => $performanceReview->id,
                     'title' => trim($item['title']),
                     'output_deliverables' => trim($item['output_deliverables']),
+                    'project_id' => !empty($item['project_id']) ? $item['project_id'] : null,
                     'type' => 'current',
                     'updated_by' => auth()->id(),
                 ];
@@ -379,7 +381,7 @@ class PerformanceReviewKeyGoalController extends Controller
         }
     }
 
-     public function destroyDevPlan(Request $request)
+    public function destroyDevPlan(Request $request)
     {
         $flag = $this->devPlans->destroy($request->devPlanId);
         if ($flag) {

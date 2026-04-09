@@ -160,29 +160,42 @@
                  var status = $select.val();
                  var prev = $select.data('prev');
 
-                 if (status === 'no_required') {
+                 if (status === 'no_required' || status === 'partially_completed') {
                      currentStatusElement = $select;
                      currentStatusPreviousValue = prev;
 
-                     var isCompleted = status === 'completed';
-                     var labelText = isCompleted ? 'Remarks' : 'Reason';
+                     let title = '';
+                     let labelText = '';
+                     let isRequired = false;
+                     let placeholder = '';
+
+                     if (status === 'completed') {
+                         title = 'Mark As Completed';
+                         labelText = 'Remarks';
+                         isRequired = false; // Optional
+                         placeholder = 'Remarks (optional)';
+                     } else if (status === 'no_required') {
+                         title = 'Mark As No Required';
+                         labelText = 'Reason';
+                         isRequired = true; // Mandatory
+                         placeholder = 'Please provide a reason...';
+                     } else if (status === 'partially_completed') {
+                         title = 'Mark As Ongoing';
+                         labelText = 'Remarks';
+                         isRequired = false; // Optional
+                         placeholder = 'Please provide remarks...';
+                     }
+
+                     $('#statusReasonModalLabel').text(title);
 
                      $('#status-reason-label')
                          .text(labelText)
-                         .toggleClass('required-label', !isCompleted); 
-
-                     var placeholder = isCompleted ?
-                         'Remarks (optional)' :
-                         'Please provide a reason...';
-
-                     $('#statusReasonModalLabel').text(
-                         isCompleted ? 'Mark As Completed' : 'Mark As No Required'
-                     );
+                         .toggleClass('required-label', isRequired);
 
                      $('#status_reason')
                          .attr('placeholder', placeholder)
-                         .prop('required', !isCompleted) 
-                         .removeClass('is-invalid') 
+                         .prop('required', isRequired)
+                         .removeClass('is-invalid')
                          .val('');
 
                      $('#status_detail_id').val(id);

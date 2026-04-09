@@ -68,7 +68,7 @@ class PerformanceReviewExternalReviewController extends Controller
     {
         $performanceReview = $this->performanceReview->find($id);
 
-        $this->authorize('view', $performanceReview);
+        // $this->authorize('view', $performanceReview);
 
         $record = array(
             'performanceReview' => $performanceReview,

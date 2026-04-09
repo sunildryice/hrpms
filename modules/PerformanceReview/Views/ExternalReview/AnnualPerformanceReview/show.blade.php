@@ -116,12 +116,13 @@
                         <span class="fw-bold">B.</span> Key Goals Review
                     </span>
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered" id="keyGoalTable">
+                <div class="card-body table-responsive">
+                    <table class="table" id="keyGoalTable">
                         <thead>
                             <tr>
                                 <th rowspan="2" style="width: 10%">Objective</th>
                                 <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                <th rowspan="2" style="width: 10%">Project</th>
                                 <th rowspan="2" style="width: 15%">Major Activities</th>
                                 <th colspan="2">Achievement against output / deliverable</th>
                                 <th rowspan="2" style="width: 22%">Line Manager Comments</th>
@@ -136,6 +137,7 @@
                                 <tr>
                                     <td class="wrap-text">{{ $keygoal->title }}</td>
                                     <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                    <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
                                     <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                     <td>
                                         <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
@@ -168,7 +170,7 @@
                             No professional development plan has been added yet.
                         </div>
                     @else
-                        <table class="table table-bordered" id="devplan-table">
+                        <table class="table" id="devplan-table">
                             <thead>
                                 <tr>
                                     <th style="width: 5%">SN</th>

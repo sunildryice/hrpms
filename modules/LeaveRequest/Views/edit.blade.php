@@ -71,6 +71,72 @@
         var holidays = '{!! str_replace('&quot;', '', json_encode($holidays)) !!}';
         let leaveModes = (JSON.parse('{!! json_encode($leaveModes->map->only(['id', 'title', 'hours'])) !!}'));
 
+        var maternityLeaveId = parseInt('{{ config('constant.MATERNITY_LEAVE') }}');
+        var paternityLeaveId = parseInt('{{ config('constant.PATERNITY_LEAVE') }}');
+
+        const MATERNITY_LEAVE_DAYS = 98;
+        const PATERNITY_LEAVE_DAYS = 15;
+
+        let disabledDates = [];
+
+        function fetchHolidaysForLeave() {
+            const url = "{{ route('api.leave.holidays.index') }}";
+            ajaxNativeSubmit(url, 'GET', {}, 'json', function(response) {
+                // disabledDates = [
+                //     ...(response.holidays ? Object.keys(response.holidays) : []),
+                //     ...(response.weekends || [])
+                // ];
+                disabledDates = response.disabled_dates ||
+                    Object.keys(response.holidays || {});
+            }, function(error) {
+                console.error(error);
+            });
+        }
+
+        function formatDateObj(date) {
+            const d = new Date(date);
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        // Auto calculate End Date for Maternity & Paternity Leave
+        function autoCalculateEndDate(startDateInput) {
+            const form = $(startDateInput).closest('form');
+            const leaveTypeId = parseInt(form.find('[name="leave_type_id"]').val());
+            const startDateVal = $(startDateInput).val();
+            const endDateField = form.find('[name="end_date"]');
+
+            if (!startDateVal || !leaveTypeId) {
+                return;
+            }
+
+            const startDate = new Date(startDateVal);
+            if (isNaN(startDate.getTime())) {
+                return;
+            }
+
+            let daysToAdd = 0;
+
+            if (leaveTypeId === maternityLeaveId) {
+                daysToAdd = MATERNITY_LEAVE_DAYS;
+            } else if (leaveTypeId === paternityLeaveId) {
+                daysToAdd = PATERNITY_LEAVE_DAYS;
+            }
+
+            if (daysToAdd > 0) {
+                const endDate = new Date(startDate);
+                endDate.setDate(endDate.getDate() + daysToAdd - 1); // -1 because inclusive counting
+
+                const formattedEndDate = formatDateObj(endDate);
+                // Set end date
+                endDateField.val(formattedEndDate);
+                endDateField.datepicker('setDate', formattedEndDate);
+                endDateField.trigger('change');
+            }
+        }
+
         $('.submit-btn').attr('disabled', false);
 
         var getDateArray = function(start, end) {
@@ -314,7 +380,8 @@
                                     if (days <= 3 || sickLeaveId != leaveTypeId) {
                                         return true;
                                     }
-                                    const hasExisting = document.querySelector('input[name="has_existing_attachment"]') !== null;
+                                    const hasExisting = document.querySelector(
+                                        'input[name="has_existing_attachment"]') !== null;
                                     const hasNewFile = input.value !== '';
                                     return hasExisting || hasNewFile;
                                 }
@@ -360,6 +427,12 @@
                 var leaveTypeId = $element.val();
                 debugger;
 
+                // If maternity or paternity is selected and start date already exists → auto calculate
+                if ((leaveTypeId == maternityLeaveId || leaveTypeId == paternityLeaveId) &&
+                    $('[name="start_date"]').val()) {
+                    autoCalculateEndDate($('[name="start_date"]'));
+                }
+
                 if (leaveTypeId) {
                     var url = baseUrl + '/api/employee/' + employeeId + '/leaves/' + leaveTypeId + '/show';
                     var successCallback = function(response) {
@@ -389,14 +462,20 @@
             }).on('change', '[name="approver_id"]', function(e) {
                 fv.revalidateField('approver_id');
             });
+            fetchHolidaysForLeave();
             @if (!$leaveRequest->modification_leave_request_id)
                 $('[name="start_date"]').datepicker({
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
+                    filter: function(date) {
+                        const formatted = formatDateObj(date);
+                        return !disabledDates.includes(formatted);
+                    }
                 }).on('change', function(e) {
                     fv.revalidateField('start_date');
                     fv.revalidateField('end_date');
+                    autoCalculateEndDate(this);
                     generateLeaveTable(this);
                 });
 
@@ -404,6 +483,10 @@
                     language: 'en-GB',
                     autoHide: true,
                     format: 'yyyy-mm-dd',
+                    filter: function(date) {
+                        const formatted = formatDateObj(date);
+                        return !disabledDates.includes(formatted);
+                    }
                 }).on('change', function(e) {
                     fv.revalidateField('start_date');
                     fv.revalidateField('end_date');
@@ -686,7 +769,7 @@
                                             style="width: 80px;">
                                     </div>
                                 </a> --}}
-                                 <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="fs-5"
+                                <a href="{!! asset('storage/' . $leaveRequest->attachment) !!}" target="_blank" class="fs-5"
                                     title="View Attachment">
                                     <i class="bi bi-file-earmark-medical"></i>
                                 </a>

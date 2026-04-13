@@ -27,7 +27,7 @@ class PerformanceReviewLog extends Model
 
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     public function performanceReview()
     {

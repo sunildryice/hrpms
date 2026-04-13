@@ -6,8 +6,9 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Employee\Models\Employee;
-use Modules\Master\Models\FiscalYear;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\Master\Models\Status;
+use Modules\PerformanceReview\Models\Enums\PerformanceOverallRating;
 use Modules\PerformanceReview\Models\PerformanceReviewCoreCompetency;
 use Modules\Privilege\Models\User;
 
@@ -33,6 +34,8 @@ class PerformanceReview extends Model
         'external_reviewer_comments',
         'result',
         'comments',
+        'employee_overall_rating',
+        'line_manager_overall_rating',
         'goal_setting_date',
         'mid_term_per_date',
         'final_per_date',
@@ -42,13 +45,15 @@ class PerformanceReview extends Model
 
     protected $hidden = [];
 
-    protected $dates = [
-        'review_from',
-        'review_to',
-        'deadline_date',
-        'goal_setting_date',
-        'mid_term_per_date',
-        'final_per_date',
+    protected $casts = [
+        'review_from' => 'date',
+        'review_to' => 'date',
+        'deadline_date' => 'date',
+        'goal_setting_date' => 'date',
+        'mid_term_per_date' => 'date',
+        'final_per_date' => 'date',
+        'employee_overall_rating' => PerformanceOverallRating::class,
+        'line_manager_overall_rating' => PerformanceOverallRating::class,
     ];
 
     public function answers()
@@ -68,7 +73,7 @@ class PerformanceReview extends Model
 
     public function fiscalYear()
     {
-        return $this->belongsTo(FiscalYear::class, 'fiscal_year_id')->withDefault();
+        return $this->belongsTo(NepaliFiscalYear::class, 'fiscal_year_id')->withDefault();
     }
 
     public function keyGoals()
@@ -336,6 +341,16 @@ class PerformanceReview extends Model
     public function getDeadlineDate()
     {
         return $this->deadline_date?->toFormattedDateString();
+    }
+
+    public function getEmployeeOverallRatingLabel(): ?string
+    {
+        return $this->employee_overall_rating?->label();
+    }
+
+    public function getLineManagerOverallRatingLabel(): ?string
+    {
+        return $this->line_manager_overall_rating?->label();
     }
 
     public function midtermReviewRequired()

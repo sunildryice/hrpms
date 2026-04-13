@@ -2,6 +2,16 @@
 
 @section('title', 'Annual Performance Review Form')
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -148,10 +158,47 @@
 
         });
 
+        // Group I - Line Manager Overall Performance Rating
+        $('#groupIForm').on('submit', function(e) {
+            e.preventDefault();
+
+            let rating = $('#line_manager_overall_rating').val();
+
+            if (!rating) {
+                toastr.error('Please select an overall performance rating before saving.',
+                    'Validation Error');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('performance.manager.overall-rating.store') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: "{{ $performanceReview->id }}",
+                    line_manager_overall_rating: rating
+                },
+                success: function(response) {
+                    if (response.type === 'success') {
+                        toastr.success('Line Manager Overall Rating saved successfully!',
+                            'Success');
+                    } else {
+                        toastr.error(response.message ||
+                            'Failed to save Line Manager Overall Rating.');
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                    toastr.error('Something went wrong while saving Line Manager Overall Rating.');
+                }
+            });
+        });
+
         // SUBMIT VALIDATION
         function validate() {
             let isGroupBValid = true;
             let isGroupGValid = true;
+            let isGroupIValid = true;
 
             $('#keyGoalTable tbody tr').each(function() {
                 const supervisorComment = $(this).find('.description-supervisor').val().trim();
@@ -165,6 +212,7 @@
 
             const resultVal = $('#result').val().trim();
             const commentsVal = $('#comments').val().trim();
+            const lineManagerRating = $('#line_manager_overall_rating').val().trim();
 
             if (!resultVal || !commentsVal) {
                 isGroupGValid = false;
@@ -173,10 +221,23 @@
                 $('#result, #comments').removeClass('is-invalid');
             }
 
+            if (!lineManagerRating) {
+                isGroupIValid = false;
+            }
+
             if (isGroupBValid && isGroupGValid) {
                 $('#performanceReviewProcessForm').submit();
             } else {
                 toastr.warning('Please fill and save all required sections (B and G) before submitting.',
+                    'Validation Warning', {
+                        timeOut: 3000
+                    });
+            }
+
+            if (isGroupIValid) {
+                $('#groupIForm').submit();
+            } else {
+                toastr.warning('Please select and save Line Manager Overall Rating (Group I).',
                     'Validation Warning', {
                         timeOut: 3000
                     });
@@ -239,6 +300,7 @@
                                 <tr>
                                     <th rowspan="2" style="width: 10%">Objective</th>
                                     <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                                    <th rowspan="2" style="width: 10%">Project</th>
                                     <th rowspan="2" style="width: 15%">Major Activities</th>
                                     <th colspan="2">Achievement against output / deliverable</th>
                                     <th rowspan="2" style="width: 22%">Line Manager Comments</th>
@@ -251,17 +313,18 @@
                             <tbody id="keygoal-body">
                                 @foreach ($keygoals as $keygoal)
                                     <tr data-keygoal-id="{{ $keygoal->id }}">
-                                        <td>{{ $keygoal->title }}</td>
-                                        <td>{{ $keygoal->output_deliverables }}</td>
-                                        <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->title }}</td>
+                                        <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                        <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                         <td>
                                             <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                                 {{ $keygoal->status?->label() ?? 'Not Set' }}
                                             </span>
                                         </td>
-                                        <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
                                         <td>
-                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="1">{{ $keygoal->description_supervisor ?? '' }}</textarea>
+                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="3">{{ $keygoal->description_supervisor ?? '' }}</textarea>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -303,8 +366,8 @@
                                 @foreach ($devPlans as $index => $plan)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $plan->objective }}</td>
-                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $plan->objective }}</td>
+                                        <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -334,7 +397,7 @@
                         <tbody>
                             @forelse ($coreCompetencies ?? collect() as $comp)
                                 <tr>
-                                    <td>{{ $comp->competency }}</td>
+                                    <td class="wrap-text">{{ $comp->competency }}</td>
                                     <td>
                                         @php
                                             $ratings = [
@@ -354,7 +417,7 @@
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $comp->example ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -367,27 +430,27 @@
             </div>
         </div>
 
-        <!-- E. Challenges / Difficulties -->
+        <!-- E. Challenges -->
         <div id="challengesSection" class="mb-3">
             <div class="card">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">E.</span> Challenges / Difficulties
+                        <span class="fw-bold">E.</span> Challenges
                     </span>
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th style="width: 45%">Challenge / Difficulty Faced</th>
-                                <th style="width: 45%">Result / Outcome</th>
+                                <th style="width: 45%">Challenges</th>
+                                <th style="width: 45%">Action taken to address challenge</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($challenges ?? collect() as $challenge)
                                 <tr>
-                                    <td>{{ $challenge->challenge }}</td>
-                                    <td>{{ $challenge->result }}</td>
+                                    <td class="wrap-text">{{ $challenge->challenge }}</td>
+                                    <td class="wrap-text">{{ $challenge->result }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -426,18 +489,24 @@
                 <div class="card">
                     <div class="card-header fw-bold">
                         <span class="card-title">
-                            <span class="fw-bold">G.</span> Result and Comments
+                            <span class="fw-bold">G.</span> Manager Assessment
                         </span>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Result</label>
+                            <span class="text-muted small mb-2">(Please describe key results or
+                                responsibilities in your line managee's ToRs, s/he was able to deliver on in the last one
+                                year)</span>
                             <textarea name="result" id="result" class="form-control" rows="4"
                                 placeholder="Summarize the overall performance result...">{{ old('result', $performanceReview->result ?? '') }}</textarea>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Comments</label>
+                            <label class="form-label fw-bold">Comments / Areas to Improve</label>
+                            <span class="text-muted small mb-2">(Please describe key results and/or
+                                responsibilities your direct report fell short of achieving in the last one year. What could
+                                your line managee have done to achieve better results?)</span>
                             <textarea name="comments" id="comments" class="form-control" rows="4"
                                 placeholder="Provide detailed comments and feedback...">{{ old('comments', $performanceReview->comments ?? '') }}</textarea>
                         </div>
@@ -451,6 +520,56 @@
             </form>
         </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">
+                        <span class="card-title">
+                            <span class="fw-bold">H.</span> Employee Overall Rating
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-md-12' }}">
+                            <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <form id="groupIForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            <span class="card-title">
+                                <span class="fw-bold">I.</span> Line Manager Overall Performance Rating
+                            </span>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="form-group mb-3">
+                                <select name="line_manager_overall_rating" id="line_manager_overall_rating"
+                                    class="form-select select2">
+                                    <option value="">Select Rating</option>
+                                    @foreach (\Modules\PerformanceReview\Models\Enums\PerformanceOverallRating::cases() as $rating)
+                                        <option value="{{ $rating->value }}"
+                                            {{ $performanceReview->line_manager_overall_rating?->value === $rating->value ? 'selected' : '' }}>
+                                            {{ $rating->label() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                Save
+                            </button>
+                        </div>
+                </form>
+            </div>
+        </div>
     </section>
 
 
@@ -562,7 +681,7 @@
                             <div class="mb-2 row">
                                 <div class="col-lg-3">
                                     <div class="d-flex align-items-start h-100">
-                                        <label for="log_remarks" class="form-label required-label">Remarks </label>
+                                        <label for="log_remarks" class="form-label">Remarks </label>
                                     </div>
                                 </div>
                                 <div class="col-lg-9">

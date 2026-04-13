@@ -2,20 +2,40 @@
 
 @section('title', '360 Feedback - ' . $performanceReview->getReviewType())
 
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#performance-external-review-index').addClass('active');
 
-            // GROUP H - External Reviewer Comments
-            $('#groupHForm').on('submit', function(e) {
-                e.preventDefault();
+            // Save Draft
+            $('#save-external-comments').on('click', function() {
+                saveExternalComments(false);
+            });
 
-                let external_reviewer_comments = $('#external_reviewer_comments').val().trim();
+            // Submit & Close
+            window.submitExternalReview = function() {
+                // if (confirm('Are you sure you want to submit this review? This will close the 360 feedback and change status to Closed.')) {
+                //     saveExternalComments(true);
+                // }
+                saveExternalComments(true);
+            };
 
-                if (!external_reviewer_comments) {
-                    toastr.error('Please provide External Reviewer Comments before saving.',
-                        'Validation Error');
+            function saveExternalComments(isSubmit) {
+                let comments = $('#external_reviewer_comments').val().trim();
+
+                if (!comments) {
+                    toastr.error('Please provide Reviewer Comments before saving.', 'Validation Error');
                     return;
                 }
 
@@ -25,24 +45,29 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         performance_review_id: "{{ $performanceReview->id }}",
-                        external_reviewer_comments: external_reviewer_comments
+                        external_reviewer_comments: comments,
+                        is_submit: isSubmit ? 1 : 0
                     },
                     success: function(response) {
                         if (response.type === 'success') {
-                            toastr.success('Reviewer comments saved successfully!',
-                                'Success');
+                            toastr.success(response.message, 'Success');
+
+                            if (isSubmit) {
+                                setTimeout(() => {
+                                    window.location.href =
+                                        "{{ route('performance.external-review.index') }}";
+                                }, 1500);
+                            }
                         } else {
-                            toastr.error(response.message ||
-                                'Failed to save comments.');
+                            toastr.error(response.message || 'Failed to save comments.');
                         }
                     },
                     error: function(xhr) {
                         console.error(xhr);
-                        toastr.error('Something went wrong while saving reviewer comments.');
+                        toastr.error('Something went wrong. Please try again.');
                     }
                 });
-            });
-
+            }
         });
     </script>
 @endsection
@@ -108,16 +133,16 @@
                         <tbody>
                             @foreach ($keygoals as $keygoal)
                                 <tr>
-                                    <td>{{ $keygoal->title }}</td>
-                                    <td>{{ $keygoal->output_deliverables }}</td>
-                                    <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->title }}</td>
+                                    <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                    <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                     <td>
                                         <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                             {{ $keygoal->status?->label() ?? 'Not Set' }}
                                         </span>
                                     </td>
-                                    <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                                    <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $keygoal->description_supervisor ?? '—' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -154,8 +179,8 @@
                                 @foreach ($devPlans as $index => $plan)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $plan->objective }}</td>
-                                        <td>{{ $plan->activity ?? '—' }}</td>
+                                        <td class="wrap-text">{{ $plan->objective }}</td>
+                                        <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -185,7 +210,7 @@
                         <tbody>
                             @forelse ($coreCompetencies ?? collect() as $comp)
                                 <tr>
-                                    <td>{{ $comp->competency }}</td>
+                                    <td class="wrap-text">{{ $comp->competency }}</td>
                                     <td>
                                         @php
                                             $ratings = [
@@ -205,7 +230,7 @@
                                             —
                                         @endif
                                     </td>
-                                    <td>{{ $comp->example ?? '—' }}</td>
+                                    <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -237,8 +262,8 @@
                         <tbody>
                             @forelse ($challenges ?? collect() as $challenge)
                                 <tr>
-                                    <td>{{ $challenge->challenge }}</td>
-                                    <td>{{ $challenge->result }}</td>
+                                    <td class="wrap-text">{{ $challenge->challenge }}</td>
+                                    <td class="wrap-text">{{ $challenge->result }}</td>
                                 </tr>
                             @empty
                                 <tr>
@@ -268,12 +293,28 @@
             </div>
         </div>
 
-        <!-- G. Line Manager Result and Comments -->
+        <!-- G. Employee Overall Rating -->
+        <div id="employeeOverallRating" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">G.</span> Employee Overall Rating
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- H. Line Manager Result and Comments -->
         <div id="managerResultComments" class="mb-3">
             <div class="card mb-3">
                 <div class="card-header fw-bold">
                     <span class="card-title">
-                        <span class="fw-bold">G.</span> Result and Comments
+                        <span class="fw-bold">H.</span> Manager Assessment
                     </span>
                 </div>
                 <div class="card-body">
@@ -282,38 +323,70 @@
                         <p class="mb-0">{{ $performanceReview->result ?: '—' }}</p>
                     </div>
                     <div class="col-md-12">
-                        <label class="form-label fw-bold">Comments</label>
+                        <label class="form-label fw-bold">Comments / Areas to Improve</label>
                         <p class="mb-0">{{ $performanceReview->comments ?: '—' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- H. External Reviwer Comments -->
-        <div id="externalReviewerComments" class="mb-3">
-            <form id="groupHForm" method="POST">
-                @csrf
-                <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+        <!-- I. Line Manager Overall Rating -->
+        <div id="managerOverallRating" class="mb-3">
+            <div class="card mb-3">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">I.</span> Line Manager Overall Rating
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="col-md-12' }}">
+                        <p class="mb-0">{{ $performanceReview->getLineManagerOverallRatingLabel() ?? '—' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-header fw-bold">
+        <!-- J. External Reviewer Comments -->
+        <div id="externalReviewerComments" class="mb-3">
+            @if ($performanceReview->status_id != config('constant.CLOSED_STATUS'))
+                <form id="groupJForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+                    <div class="card">
+                        <div class="card-header fw-bold">
+                            <span class="card-title">
+                                <span class="fw-bold">J.</span> Reviewer Comments
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <textarea name="external_reviewer_comments" id="external_reviewer_comments" class="form-control" rows="4"
+                                    placeholder="Provide detailed comments and feedback...">{{ old('external_reviewer_comments', $performanceReview->external_reviewer_comments ?? '') }}</textarea>
+                            </div>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="button" class="btn btn-sm btn-outline-primary me-2"
+                                id="save-external-comments">Save</button>
+                            <button type="button" class="btn btn-sm btn-success" id="submit-external-review"
+                                onclick="submitExternalReview()">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            @else
+                <div class="card border-success">
+                    <div class="card-header fw-bold bg-light">
                         <span class="card-title">
                             <span class="fw-bold">H.</span> Reviewer Comments
                         </span>
                     </div>
                     <div class="card-body">
-                        <div class="mb-3">
-                            <textarea name="external_reviewer_comments" id="external_reviewer_comments" class="form-control" rows="4"
-                                placeholder="Provide detailed comments and feedback...">{{ old('external_reviewer_comments', $performanceReview->external_reviewer_comments ?? '') }}</textarea>
+                        <div class="col-md-12' }}">
+                            <p class="mb-0">{{ $performanceReview->external_reviewer_comments ?: '—' }}</p>
                         </div>
                     </div>
-                    <div class="card-footer text-end">
-                        <button type="submit" class="btn btn-sm btn-outline-primary" id="save-result-comments">
-                            Save
-                        </button>
-                    </div>
                 </div>
-            </form>
+            @endif
         </div>
     </section>
 

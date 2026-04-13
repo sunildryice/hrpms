@@ -97,6 +97,7 @@ class PerformanceReviewReviewController extends Controller
                 ->where('employee_id', $performanceReview->employee_id)
                 ->first();
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -129,9 +130,11 @@ class PerformanceReviewReviewController extends Controller
                 ->orderBy('position', 'desc')
                 ->first();
             $professionalDevelopmentPlan = $keyGoalReview->getAnswer($professionalDevelopmentPlanQuestion->id);
+            $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
 
             $array = [
-                'keygoals' => $keyGoalReview->keyGoals,
+                'keygoals' => $keygoals,
                 'keyGoalReview' => $keyGoalReview,
                 'professionalDevelopmentPlanQuestion' => $professionalDevelopmentPlanQuestion,
                 'professionalDevelopmentPlan' => $professionalDevelopmentPlan,
@@ -179,7 +182,9 @@ class PerformanceReviewReviewController extends Controller
                 if ($performanceReview->status_id == config('constant.APPROVED_STATUS')) {
                     $message = 'Performance Review is successfully approved.';
                     $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
-                    $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                    if ($performanceReview->external_reviewer_id) {
+                        $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                    }
                 } elseif ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
                     $message = 'Performance Review is successfully returned.';
                     $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));
@@ -203,7 +208,9 @@ class PerformanceReviewReviewController extends Controller
                 if ($performanceReview->status_id == config('constant.APPROVED_STATUS')) {
                     $message = 'Performance Review is successfully approved.';
                     $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
-                    $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                    if ($performanceReview->review_type_id == config('constant.MID_TERM_REVIEW') && $performanceReview->external_reviewer_id) {
+                        $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                    }
                 } elseif ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
                     $message = 'Performance Review is successfully returned.';
                     $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));

@@ -36,7 +36,6 @@ class Sample extends Model
      *
      * @var array
      */
-    protected $dates = [];
-
+    
 
 }

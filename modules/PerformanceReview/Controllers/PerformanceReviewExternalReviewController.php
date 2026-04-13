@@ -5,6 +5,7 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\PerformanceReview\Models\PerformanceReview;
+use Modules\PerformanceReview\Notifications\PerformanceReviewExternalReviewSubmitted;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Yajra\DataTables\DataTables;
 
@@ -22,6 +23,7 @@ class PerformanceReviewExternalReviewController extends Controller
         if ($request->ajax()) {
             $data = $this->performanceReview
                 ->where('external_reviewer_id', '=', $authUser->id)
+                ->where('status_id', '=', config('constant.APPROVED_STATUS'))
                 ->whereIn('review_type_id', [1, 2]) // Only Annual & Mid-Term
                 ->with(['employee', 'fiscalYear', 'status', 'reviewType'])
                 ->orderBy('created_at', 'desc')
@@ -66,7 +68,7 @@ class PerformanceReviewExternalReviewController extends Controller
     {
         $performanceReview = $this->performanceReview->find($id);
 
-        $this->authorize('view', $performanceReview);
+        $this->authorize('externalReviewView', $performanceReview);
 
         $record = array(
             'performanceReview' => $performanceReview,
@@ -91,6 +93,7 @@ class PerformanceReviewExternalReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -139,13 +142,40 @@ class PerformanceReviewExternalReviewController extends Controller
 
         $performanceReview = $this->performanceReview->find($request->performance_review_id);
 
-        $performanceReview->update([
+        $data = [
             'external_reviewer_comments' => $request->external_reviewer_comments,
-        ]);
+        ];
+
+        $isSubmit = $request->boolean('is_submit');
+        if ($isSubmit) {
+            $data['status_id'] = config('constant.CLOSED_STATUS');
+        }
+
+        $performanceReview->update($data);
+
+        if ($isSubmit) {
+            $performanceReview->logs()->create([
+                'user_id' => auth()->id(),
+                'original_user_id' => session()->has('original_user')
+                    ? session()->get('original_user')
+                    : null,
+                'log_remarks' => '360 Feedback submitted and review closed.',
+                'status_id' => config('constant.CLOSED_STATUS'),
+            ]);
+            if ($performanceReview->requester) {
+                $performanceReview->requester->notify(new PerformanceReviewExternalReviewSubmitted($performanceReview));
+            }
+
+            if ($performanceReview->reviewer) {
+                $performanceReview->reviewer->notify(new PerformanceReviewExternalReviewSubmitted($performanceReview));
+            }
+        }
+
+        $message = $isSubmit ? 'Review submitted and closed successfully.' : 'Reviewer comments saved successfully.';
 
         return response()->json([
             'type' => 'success',
-            'message' => 'External review comments saved successfully.'
+            'message' => $message
         ]);
     }
 }

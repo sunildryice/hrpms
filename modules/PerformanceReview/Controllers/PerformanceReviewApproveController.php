@@ -148,7 +148,9 @@ class PerformanceReviewApproveController extends Controller
             } else {
                 $message = 'Performance Review is successfully approved.';
                 $performanceReview->requester->notify(new PerformanceReviewApproved($performanceReview));
-                $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                if($performanceReview->external_reviewer_id) {
+                    $performanceReview->externalReviewer->notify(new PerformanceReviewExternalReview($performanceReview));
+                }
             }
 
             return redirect()->route('performance.approve.index')->withSuccessMessage($message);

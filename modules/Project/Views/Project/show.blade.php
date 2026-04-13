@@ -55,7 +55,7 @@
 @section('page_js')
 
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function(e) {
+        document.addEventListener('DOMContentLoaded', function (e) {
             $('#navbarVerticalMenu').find('#project-index').addClass('active');
 
             var oTable = $('#projectActivityTable').DataTable({
@@ -63,7 +63,7 @@
                 serverSide: true,
                 ajax: {
                     url: "{{ route('project-activity.index', $project->id) }}",
-                    data: function(d) {
+                    data: function (d) {
                         d.from_date = "{{ request('from_date') }}";
                         d.to_date = "{{ request('to_date') }}";
                     }
@@ -73,7 +73,8 @@
                 bPaginate: true,
                 bInfo: true,
                 scrollX: true,
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
                         orderable: false,
@@ -88,13 +89,13 @@
                         name: 'activity_level'
                     },
                     {
-                        data: 'title',
-                        name: 'title',
+                        data: 'parent',
+                        name: 'parent',
                         className: 'wrap-text'
                     },
                     {
-                        data: 'parent',
-                        name: 'parent',
+                        data: 'title',
+                        name: 'title',
                         className: 'wrap-text'
                     },
                     {
@@ -118,11 +119,11 @@
                 ],
             });
 
-            $('#projectActivityTable').on('click', '.delete-record', function(e) {
+            $('#projectActivityTable').on('click', '.delete-record', function (e) {
                 e.preventDefault();
                 $object = $(this);
                 var $url = $object.attr('data-href');
-                var successCallback = function(response) {
+                var successCallback = function (response) {
                     toastr.success(response.message, 'Success', {
                         timeOut: 5000
                     });
@@ -131,12 +132,12 @@
                 ajaxDeleteSweetAlert($url, successCallback);
             });
 
-            $(document).on('click', '.open-project-activity-modal-form', function(e) {
+            $(document).on('click', '.open-project-activity-modal-form', function (e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function () {
                     const form = document.getElementById('ProjectActivityCreateForm');
-                    $(form).find(".select2").each(function() {
+                    $(form).find(".select2").each(function () {
                         $(this)
                             .wrap("<div class=\"position-relative\"></div>")
                             .select2({
@@ -197,7 +198,7 @@
                                 validators: {
                                     callback: {
                                         message: 'Please select at least one member.',
-                                        callback: function(input) {
+                                        callback: function (input) {
                                             const level = $activityLevelSelect.val();
                                             if (level === 'theme') return true;
                                             return $membersSelect.val() &&
@@ -217,11 +218,11 @@
                                 validating: 'bi bi-arrow-repeat',
                             }),
                         },
-                    }).on('core.form.valid', function() {
+                    }).on('core.form.valid', function () {
                         const $url = fv.form.action;
                         const formData = new FormData(form);
 
-                        const successCallback = function(response) {
+                        const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
                             oTable.ajax.reload();
@@ -231,7 +232,7 @@
                     });
 
                     const activityLevelSelect = form.querySelector('[name="activity_level"]');
-                    activityLevelSelect.addEventListener('change', function(e) {
+                    activityLevelSelect.addEventListener('change', function (e) {
                         const level = e.target.value;
                         // Enable/disable validators based on the selected level
                         fv.enableValidator('activity_stage_id', 'notEmpty', level ===
@@ -422,7 +423,7 @@
                         if (!allowedParentLevel) {
                             return;
                         }
-                        let filtered = $(allParentOptions).filter(function() {
+                        let filtered = $(allParentOptions).filter(function () {
                             const $opt = $(this);
                             if (!$opt.val()) return false;
                             return $opt.data('level') === allowedParentLevel;
@@ -487,7 +488,7 @@
                         }
                     }
 
-                    $activityLevelSelect.on('change', function() {
+                    $activityLevelSelect.on('change', function () {
                         const level = $(this).val();
                         toggleFieldsBasedOnLevel(level);
                     });
@@ -516,16 +517,16 @@
                     setDateRange(defaultMinDate, defaultMaxDate);
                     updateRangeFromParent();
 
-                    $parentSelect.on('change', function() {
+                    $parentSelect.on('change', function () {
                         updateRangeFromParent();
                         updateEndMinFromStart();
                         updateStageFromParent();
                     });
 
-                    $startInput.on('change', function() {
+                    $startInput.on('change', function () {
                         updateEndMinFromStart();
                     });
-                    $activityLevelSelect.on('change', function() {
+                    $activityLevelSelect.on('change', function () {
                         const level = $(this).val();
                         toggleFieldsBasedOnLevel(level);
                         updateStageFromParent();
@@ -534,11 +535,11 @@
                 });
             });
 
-            $(document).on('click', '.open-import-modal-form', function(e) {
+            $(document).on('click', '.open-import-modal-form', function (e) {
                 e.preventDefault();
                 document.querySelector(".preloader").style.display = "block";
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function () {
                     document.querySelector(".preloader").style.display = "none";
                     const form = document.getElementById('activityImportForm');
                     const fv = FormValidation.formValidation(form, {
@@ -566,12 +567,12 @@
                                 validating: 'bi bi-arrow-repeat',
                             }),
                         },
-                    }).on('core.form.valid', function(event) {
+                    }).on('core.form.valid', function (event) {
                         const $url = fv.form.action;
                         const $form = fv.form;
                         const data = new FormData($form);
 
-                        const successCallback = function(response) {
+                        const successCallback = function (response) {
 
                             $('#openModal').modal('hide');
                             toastr.success(response.message, 'Success', {
@@ -580,7 +581,7 @@
                             $('#projectActivityTable').DataTable().ajax.reload();
                         };
                         document.querySelector(".preloader").style.display = "block";
-                        ajaxSubmitFormData($url, 'POST', data, function(response) {
+                        ajaxSubmitFormData($url, 'POST', data, function (response) {
                             successCallback(response);
                             document.querySelector(".preloader").style.display =
                                 "none";
@@ -589,10 +590,10 @@
                 });
             });
 
-            $(document).on('click', '.open-timesheet-modal-form', function(e) {
+            $(document).on('click', '.open-timesheet-modal-form', function (e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function () {
                     const form = document.getElementById('ProjectActivityTimeSheetForm');
 
                     const fv = FormValidation.formValidation(form, {
@@ -626,11 +627,11 @@
                                 validating: 'bi bi-arrow-repeat',
                             }),
                         },
-                    }).on('core.form.valid', function() {
+                    }).on('core.form.valid', function () {
                         const $url = fv.form.action;
                         const formData = new FormData(form);
 
-                        const successCallback = function(response) {
+                        const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
                             oTable.ajax.reload();
@@ -648,7 +649,7 @@
                         endDate: new Date(),
                         todayHighlight: true,
                         todayBtn: true
-                    }).on('change', function(e) {
+                    }).on('change', function (e) {
                         fv.revalidateField('timesheet_date');
                     });
 
@@ -661,10 +662,10 @@
                 });
             });
 
-            $(document).on('click', '.open-project-activity-extension-modal-form', function(e) {
+            $(document).on('click', '.open-project-activity-extension-modal-form', function (e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function () {
                     const form = document.getElementById('ProjectActivityExtensionForm');
 
                     const fv = FormValidation.formValidation(form, {
@@ -698,11 +699,11 @@
                                 validating: 'bi bi-arrow-repeat',
                             }),
                         },
-                    }).on('core.form.valid', function() {
+                    }).on('core.form.valid', function () {
                         const $url = fv.form.action;
                         const formData = new FormData(form);
 
-                        const successCallback = function(response) {
+                        const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
                             oTable.ajax.reload();
@@ -719,7 +720,7 @@
                         zIndex: 2048,
                         startDate: new Date(
                             '{{ $projectActivity->min('completion_date') ?? '' }}'),
-                    }).on('change', function(e) {
+                    }).on('change', function (e) {
                         fv.revalidateField('extended_completion_date');
                     });
                 });
@@ -732,7 +733,7 @@
             const activityOtherDetailsModal = activityOtherDetailsModalElement ?
                 new bootstrap.Modal(activityOtherDetailsModalElement) : null;
 
-            $(document).on('click', '.open-other-details-modal', function(e) {
+            $(document).on('click', '.open-other-details-modal', function (e) {
                 e.preventDefault();
 
                 if (!activityOtherDetailsModal || !activityOtherDetailsModalContent) {
@@ -741,10 +742,10 @@
                 }
 
                 let url = $(this).data('url');
-                $.get(url, function(data) {
+                $.get(url, function (data) {
                     $(activityOtherDetailsModalContent).find('.modal-body').html(data);
                     activityOtherDetailsModal.show();
-                }).fail(function() {
+                }).fail(function () {
                     toastr.error('Failed to load details.', 'Error');
                 });
             });
@@ -769,7 +770,7 @@
                         </li>
                         <li class="breadcrumb-item">
                             <a href="{{ route('project.dashboard', ['id' => $project->id]) }}"
-                                class="text-decoration-none text-dark">
+                               class="text-decoration-none text-dark">
                                 {{ $project->short_name }}
                             </a>
                         </li>
@@ -793,23 +794,25 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold">Project Activity</span>
                         <div class="justify-content-end d-flex gap-2">
-                            @if (Gate::allows('manage-project-activity-on-certain-time', $project) && Gate::allows('project-is-active', $project))
+                            @if ((Gate::allows('manage-project-activity-on-certain-time', $project) || Gate::allows('manage-project-activity-project-admin',$project))
+                                && Gate::allows('project-is-active', $project))
                                 @can('project-is-ongoing', $project)
                                     <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
-                                        href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
+                                            href="{{ route('project-activity.import.create', ['project' => $project->id]) }}">
                                         <i class="bi-plus"></i> Import Activity
                                     </button>
                                 @endcan
                                 <a class="btn btn-secondary btn-sm text-capitalize"
-                                    href="{{ route('project-activity.export.activities', $project) }}" target="_blank"><i
+                                   href="{{ route('project-activity.export.activities', $project) }}" target="_blank"><i
                                         class="bi bi-download"></i> Export Activity</a>
                                 <a class="btn btn-secondary btn-sm text-capitalize"
-                                    href="{{ route('project-activity.export.data', $project->id) }}" target="_blank">
-                                    <i class="bi bi-download"></i> Export 
+                                   href="{{ route('project-activity.export.data', $project->id) }}" target="_blank">
+                                    <i class="bi bi-download"></i> Export
                                 </a>
                                 @can('project-is-ongoing', $project)
-                                    <button data-toggle="modal" class="btn btn-primary btn-sm open-project-activity-modal-form"
-                                        href="{{ route('project-activity.create', ['project' => $project->id]) }}">
+                                    <button data-toggle="modal"
+                                            class="btn btn-primary btn-sm open-project-activity-modal-form"
+                                            href="{{ route('project-activity.create', ['project' => $project->id]) }}">
                                         <i class="bi-plus"></i> Add Project Activity
                                     </button>
                                 @endcan
@@ -821,17 +824,17 @@
                     <div class="table-responsive">
                         <table class="table table-bordered" id="projectActivityTable">
                             <thead class="thead-light">
-                                <tr>
-                                    <th>SN</th>
-                                    <th>Stage</th>
-                                    <th>Activity Level</th>
-                                    <th>Activity Name</th>
-                                    <th>Parent Activity</th>
-                                    <th>Start Date</th>
-                                    <th>Completion Date</th>
-                                    <th width="100">Status</th>
-                                    <th>Action</th>
-                                </tr>
+                            <tr>
+                                <th>SN</th>
+                                <th>Stage</th>
+                                <th>Activity Level</th>
+                                <th>Parent Activity</th>
+                                <th>Activity Name</th>
+                                <th>Start Date</th>
+                                <th>Completion Date</th>
+                                <th width="100">Status</th>
+                                <th>Action</th>
+                            </tr>
                             </thead>
                             <tbody id="tablebody"></tbody>
                         </table>
@@ -843,6 +846,5 @@
 
     {{-- Activity Status Reason/Remarks Modal --}}
     @include('Project::Project.partials.activity-status-modal')
-
 
 @endsection

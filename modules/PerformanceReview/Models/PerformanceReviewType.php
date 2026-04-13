@@ -19,7 +19,7 @@ class PerformanceReviewType extends Model
 
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     public function performanceReviews()
     {

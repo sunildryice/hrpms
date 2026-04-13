@@ -65,7 +65,7 @@ class PerformanceReviewPolicy
 
     public function print(User $user, PerformanceReview $performanceReview)
     {
-        return ($performanceReview->status_id == config('constant.APPROVED_STATUS')) &&
+        return ($performanceReview->status_id == config('constant.APPROVED_STATUS') || $performanceReview->status_id == config('constant.CLOSED_STATUS')) &&
         $user->can('manage-performance-review');
     }
 
@@ -86,6 +86,11 @@ class PerformanceReviewPolicy
 //        } else {
 //            return in_array($user->id, $supervisors);
 //        }
+    }
+
+    public function externalReviewView(User $user, PerformanceReview $performanceReview)
+    {
+        return $user->id == $performanceReview->external_reviewer_id || $user->can('manage-performance-review');
     }
 
     public function managePerformance(User $user, PerformanceReview $performanceReview)

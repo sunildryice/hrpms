@@ -52,8 +52,7 @@ class DispositionRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['disposition_date'];
-
+    
     protected $casts = [
         'disposition_date' => 'date:Y-m-d',
     ];

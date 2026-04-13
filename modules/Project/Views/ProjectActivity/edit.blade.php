@@ -81,7 +81,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" name="start_date"
-                    value="{{ old('start_date', $projectActivity->start_date->format('Y-m-d')) }}" class="form-control"
+                    value="{{ $projectActivity->start_date ? $projectActivity->start_date->format('Y-m-d') : "" }}" class="form-control"
                     placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
                 <div id="start-date-hint" class="form-text small text-muted mt-1"></div>
             </div>
@@ -95,7 +95,7 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" name="completion_date"
-                    value="{{ old('completion_date', $projectActivity->completion_date->format('Y-m-d')) }}"
+                    value="{{ $projectActivity->completion_date ? $projectActivity->completion_date->format('Y-m-d') : '' }}"
                     class="form-control" placeholder="yyyy-mm-dd" onfocus="this.blur()" autocomplete="off" />
                 <div id="end-date-hint" class="form-text small text-muted mt-1"></div>
             </div>

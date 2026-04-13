@@ -34,13 +34,13 @@
 
                 if (reviewTypeId === 1 || reviewTypeId === 2) {
                     $('#external_reviewer_row').fadeIn(100);
-                    fv.addField('external_reviewer_id', {
-                        validators: {
-                            notEmpty: {
-                                message: 'External Reviewer is required'
-                            }
-                        }
-                    });
+                    // fv.addField('external_reviewer_id', {
+                    //     validators: {
+                    //         notEmpty: {
+                    //             message: 'External Reviewer is required'
+                    //         }
+                    //     }
+                    // });
                 } else {
                     $('#external_reviewer_row').fadeOut(100);
                     $('#external_reviewer_id').val('');
@@ -138,6 +138,24 @@
                 fv.revalidateField('review_from');
                 fv.revalidateField('review_to');
             });
+
+            $('#fiscal_year_id').on('change', function() {
+                const selected = $(this).find('option:selected');
+                const start = selected.data('start');
+                const end = selected.data('end');
+
+                if (start && end) {
+                    $('[name="review_from"]').datepicker('setStartDate', start);
+                    $('[name="review_from"]').datepicker('setEndDate', end);
+
+                    $('[name="review_to"]').datepicker('setStartDate', start);
+                    $('[name="review_to"]').datepicker('setEndDate', end);
+                }
+            });
+
+            if ($('#fiscal_year_id').val()) {
+                $('#fiscal_year_id').trigger('change');
+            }
 
             $('[name="deadline_date"]').datepicker({
                 language: 'en-GB',
@@ -238,7 +256,7 @@
                     {{-- External Reviewer Dropdown - Shown only for Annual (1) and Mid-Term (2) Review --}}
                     <div class="row mb-2" id="external_reviewer_row" style="display: none;">
                         <div class="col-lg-3">
-                            <label for="external_reviewer_id" class="required-label">External Reviewer</label>
+                            <label for="external_reviewer_id">External Reviewer</label>
                         </div>
                         <div class="col-lg-3">
                             <select class="select2 form-control" name="external_reviewer_id" id="external_reviewer_id">
@@ -271,7 +289,8 @@
                             <select class="form-control" name="fiscal_year_id" id="fiscal_year_id">
                                 <option value="" selected>Select fiscal year</option>
                                 @foreach ($fiscalYears as $fiscalYear)
-                                    <option value="{{ $fiscalYear->id }}"
+                                    <option value="{{ $fiscalYear->id }}" data-start="{{ $fiscalYear->start_date }}"
+                                        data-end="{{ $fiscalYear->end_date }}"
                                         {{ old('fiscal_year_id') ? ($fiscalYear->id == old('fiscal_year_id') ? 'selected' : '') : ($currentFiscalYearId == $fiscalYear->id ? 'selected' : '') }}>
                                         {{ $fiscalYear->title }}
                                     </option>

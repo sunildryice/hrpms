@@ -28,7 +28,7 @@ class AttendanceLog extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    protected $dates = ['created_at', 'updated_at'];
+    
 
     public function attendance()
     {
@@ -54,7 +54,6 @@ class AttendanceLog extends Model
     {
         return $this->createdBy->employee->tenures()->where('created_at', '<=', $this->created_at)->latest()->first()->getDesignationName() ?? '';
     }
-
 
     public function originalUser()
     {

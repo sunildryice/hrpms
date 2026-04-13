@@ -1,3 +1,14 @@
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
+
 <!-- B. Key Goals Review -->
 <div id="keyGoalsReview" class="mb-3">
     <form action="{{ route('performance.keygoal.update') }}" method="POST" id="groupBForm">
@@ -18,6 +29,7 @@
                         <tr>
                             <th rowspan="2" style="width: 18%">Objective</th>
                             <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                            <th rowspan="2" style="width: 10%">Project</th>
                             <th rowspan="2" style="width: 22%">Major Activities</th>
                             <th colspan="2">Achievement against output / deliverable</th>
                         </tr>
@@ -29,10 +41,12 @@
                     <tbody>
                         @foreach ($keygoals as $keygoal)
                             <tr data-keygoal-id="{{ $keygoal->id }}">
-                                <td>{{ $keygoal->title }}</td>
-                                <td>{{ $keygoal->output_deliverables }}</td>
+                                <td class="wrap-text">{{ $keygoal->title }}</td>
+                                <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
+                                </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -46,7 +60,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                             </tr>
                         @endforeach
@@ -58,6 +72,7 @@
                         <tr>
                             <th rowspan="2" style="width: 18%">(Additional Objective)</th>
                             <th rowspan="2" style="width: 15%">(Additional Output / Deliverable)</th>
+                            <th rowspan="2" style="width: 10%">(Additional Project)</th>
                             <th rowspan="2" style="width: 22%">Major Activities</th>
                             <th colspan="2">Achievement against output / deliverable</th>
                             <th rowspan="2" style="width: 22%">Action</th>
@@ -69,14 +84,16 @@
                     </thead>
                     <tbody id="keygoal-body">
                         @foreach ($newKeyGoals as $keygoal)
-                            <tr>
-                                <td>
+                            <tr data-id="{{ $keygoal->id }}" data-project-id="{{ $keygoal->project_id }}">
+                                <td class="wrap-text">
                                     <span style="width: 100%">{{ $keygoal->title }}
                                     </span>
                                 </td>
-                                <td>{{ $keygoal->output_deliverables }}</td>
+                                <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                                <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
+                                </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="2">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -90,14 +107,17 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="2">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
                                         <a class="edit-key-goal btn btn-outline-primary btn-sm" href="#"
                                             data-href="{{ route('performance.keygoal.update') }}"
-                                            data-title="{{ $keygoal->title }}" data-id="{{ $keygoal->id }}"u><i
-                                                class="bi bi-pencil-square"></i></a>
+                                            data-title="{{ $keygoal->title }}"
+                                            data-output="{{ $keygoal->output_deliverables }}"
+                                            data-project-id="{{ $keygoal->project_id }}"
+                                            data-id="{{ $keygoal->id }}">
+                                            <i class="bi bi-pencil-square"></i></a>
                                         <a class="delete-key-goal btn btn-outline-danger btn-sm" href="#"
                                             data-href="{{ route('performance.keygoal.destroy') }}"
                                             data-id="{{ $keygoal->id }}"><i class="bi bi-trash"></i></a>
@@ -149,11 +169,11 @@
                             @foreach ($devPlans as $index => $plan)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td class="readonly-cell">
+                                    <td class="readonly-cell wrap-text">
                                         {{ $plan->objective }}
                                     </td>
                                     <td>
-                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="1"
+                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="3"
                                             data-id="{{ $plan->id }}" placeholder="Enter activities...">{{ $plan->activity ?? '' }}</textarea>
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id }}">
@@ -282,12 +302,12 @@
     </div>
 </div>
 
-<!-- E. Challenges / Difficulties -->
+<!-- E. Challenges -->
 <div id="challengesSection" class="mb-3">
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges / Difficulties
+                <span class="fw-bold">E.</span> Challenges
             </span>
         </div>
 
@@ -299,8 +319,8 @@
                 <table class="table table-bordered" id="challenges-table">
                     <thead>
                         <tr>
-                            <th style="width: 45%">Challenge / Difficulty Faced</th>
-                            <th style="width: 45%">Result / Outcome</th>
+                            <th style="width: 45%">Challenges</th>
+                            <th style="width: 45%">Action taken to address challenge</th>
                             <th style="width: 10%" class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -310,13 +330,13 @@
                             <tr class="challenge-row" data-row-index="{{ $index }}"
                                 data-id="{{ $challenge->id }}">
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="2">{{ $challenge->challenge }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="3">{{ $challenge->challenge }}</textarea>
                                     <input type="hidden" name="challenges[{{ $index }}][id]"
                                         value="{{ $challenge->id }}">
                                 </td>
 
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="2">{{ $challenge->result }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="3">{{ $challenge->result }}</textarea>
                                 </td>
 
                                 <td class="text-center">
@@ -331,10 +351,10 @@
                         @empty
                             <tr class="challenge-row" data-row-index="0">
                                 <td>
-                                    <textarea name="challenges[0][challenge]" class="form-control" rows="2"></textarea>
+                                    <textarea name="challenges[0][challenge]" class="form-control" rows="3"></textarea>
                                 </td>
                                 <td>
-                                    <textarea name="challenges[0][result]" class="form-control" rows="2"></textarea>
+                                    <textarea name="challenges[0][result]" class="form-control" rows="3"></textarea>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
@@ -360,27 +380,66 @@
     </div>
 </div>
 
-<!-- F. Employee Comments -->
-<div id="employeeComments" class="mb-3">
-    <form id="groupFForm" method="POST">
-        @csrf
-        <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+<div class="row">
 
-        <div class="card">
-            <div class="card-header fw-bold">
-                <span class="card-title">
-                    <span class="fw-bold">F.</span>
-                    Employee Comments
-                </span>
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <textarea name="employee_comments" id="employee_comments" class="form-control" rows="8">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
+    <!-- F. Employee Comments -->
+    <div id="employeeComments" class="mb-3 col-lg-8">
+        <form id="groupFForm" method="POST">
+            @csrf
+            <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">F.</span>
+                        Employee Comments
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <textarea name="employee_comments" id="employee_comments" class="form-control" rows="3">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
                 </div>
             </div>
-            <div class="card-footer text-end">
-                <button type="submit" class="btn btn-sm btn-outline-primary">Save</button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
+
+    <!-- G. Overall Performance Rating -->
+    <div id="overallRatingSection" class="mb-3 col-lg-4">
+        <form id="groupGForm" method="POST">
+            @csrf
+            <input type="hidden" name="performance_review_id" value="{{ $performanceReview->id }}">
+            <div class="card">
+                <div class="card-header fw-bold">
+                    <span class="card-title">
+                        <span class="fw-bold">G.</span> Employee Overall Performance Rating
+                    </span>
+                </div>
+                <div class="card-body">
+
+                    <div class="form-group mb-3">
+                        <select name="employee_overall_rating" id="employee_overall_rating"
+                            class="form-select select2">
+                            <option value="">Select Rating</option>
+                            @foreach (\Modules\PerformanceReview\Models\Enums\PerformanceOverallRating::cases() as $rating)
+                                <option value="{{ $rating->value }}"
+                                    {{ $performanceReview->employee_overall_rating?->value === $rating->value ? 'selected' : '' }}>
+                                    {{ $rating->label() }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        Save
+                    </button>
+                </div>
+        </form>
+    </div>
+
 </div>

@@ -49,7 +49,10 @@ class TravelAuthorizationEstimate extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['departure_date', 'arrival_date'];
+    protected $casts = [
+        'departure_date' => 'date',
+        'arrival_date' => 'date',
+    ];
 
     /**
      * Get the account code of travel request.

@@ -41,7 +41,9 @@ class Holiday extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['holiday_date'];
+    protected $casts = [
+        'holiday_date' => 'date',
+    ];
 
     public function createdBy()
     {

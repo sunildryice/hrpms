@@ -23,7 +23,9 @@ class StaffClearanceDepartment extends Model
 
     protected $hidden = [];
 
-    protected $dates = ['activated_at'];
+    protected $casts = [
+        'activated_at' => 'datetime',
+    ];
 
     public function parent()
     {

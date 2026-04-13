@@ -5,6 +5,7 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\PerformanceReview\Models\PerformanceReview;
 use Modules\PerformanceReview\Models\PerformanceReviewQuestion;
@@ -14,6 +15,7 @@ use Modules\PerformanceReview\Notifications\PerformanceReviewSubmitted;
 use Modules\PerformanceReview\Repositories\PerformanceReviewRepository;
 use Modules\PerformanceReview\Requests\PerformanceReview\StoreRequest;
 use Modules\PerformanceReview\Requests\PerformanceReview\UpdateRequest;
+use Modules\Project\Repositories\ProjectRepository;
 use Yajra\DataTables\DataTables;
 
 class PerformanceReviewController extends Controller
@@ -24,7 +26,9 @@ class PerformanceReviewController extends Controller
         protected PerformanceReviewRepository $performanceReview,
         protected PerformanceReviewType $performanceReviewType,
         protected PerformanceReviewQuestion $performanceReviewQuestion,
-        protected FiscalYearRepository $fiscalYear
+        protected ProjectRepository $projects,
+        protected FiscalYearRepository $fiscalYear,
+        protected NepaliFiscalYear $nepaliFiscalYear
     ) {
     }
 
@@ -145,8 +149,8 @@ class PerformanceReviewController extends Controller
 
         $employees = $this->employee->getActiveEmployees();
         $reviewTypes = $this->performanceReviewType->orderBy('id', 'desc')->get();
-        $fiscalYears = $this->fiscalYear->getFiscalYears();
-        $currentFiscalYearId = $this->fiscalYear->getCurrentFiscalYearId();
+        $fiscalYears = $this->nepaliFiscalYear->whereNotNull('activated_at')->orderBy('id', 'asc')->get();
+        $currentFiscalYearId = $this->nepaliFiscalYear->getCurrentFiscalYearId();
 
         return view('PerformanceReview::create', compact('employees', 'reviewTypes', 'fiscalYears', 'currentFiscalYearId'));
     }
@@ -239,6 +243,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -315,6 +320,7 @@ class PerformanceReviewController extends Controller
             // }
             //
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -339,6 +345,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
 
             return view('PerformanceReview::MidTermPerformanceReview.print', [
                 ...$record,
@@ -387,6 +394,7 @@ class PerformanceReviewController extends Controller
             }
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
+            $keygoals = $keygoals->concat($performanceReview->keyGoals()->where('type', 'current')->get());
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
@@ -495,6 +503,7 @@ class PerformanceReviewController extends Controller
             if ($midTermReview) {
                 $keygoals = $keygoals->concat($midTermReview->keyGoals()->where('type', 'current')->get());
             }
+            $projects = $this->projects->getActiveProjects();
 
             return view('PerformanceReview::AnnualPerformanceReview.create', [
                 ...$record,
@@ -505,6 +514,7 @@ class PerformanceReviewController extends Controller
                 'performanceReview' => $performanceReview,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
+                'projects' => $projects,
             ]);
         } elseif ($performanceReview->getReviewType() == 'Mid-Term Review') {
 
@@ -519,6 +529,7 @@ class PerformanceReviewController extends Controller
 
             $keygoals = $keyGoalReview->keyGoals->where('type', 'current');
             $newKeyGoals = $performanceReview->keyGoals()->where('type', 'current')->get();
+            $projects = $this->projects->getActiveProjects();
 
             return view('PerformanceReview::MidTermPerformanceReview.create', [
                 ...$record,
@@ -528,13 +539,16 @@ class PerformanceReviewController extends Controller
                 'performanceReview' => $performanceReview,
                 'challenges' => $performanceReview->challenges,
                 'coreCompetencies' => $performanceReview->coreCompetencies,
+                'projects' => $projects,
             ]);
         } else {
             $existingDevPlans = $performanceReview->developmentPlans;
+            $projects = $this->projects->getActiveProjects();
             return view('PerformanceReview::KeyGoalsReview.create', [
                 'performanceReview' => $performanceReview,
                 'currentKeyGoals' => $performanceReview->keyGoals->where('type', '=', 'current'),
                 'existingDevPlans' => $existingDevPlans,
+                'projects' => $projects,
             ]);
         }
     }
@@ -630,6 +644,55 @@ class PerformanceReviewController extends Controller
         return response()->json([
             'type' => 'success',
             'message' => 'Result and Comments saved successfully.'
+        ]);
+    }
+
+
+    /**
+     * Store Employee's Overall Rating
+     */
+    public function storeEmployeeOverallRating(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'employee_overall_rating' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('employeeFill', $performanceReview);
+
+        $performanceReview->update([
+            'employee_overall_rating' => $request->employee_overall_rating,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Employee overall rating saved successfully.'
+        ]);
+    }
+
+    /**
+     * Store Line Manager's Overall Rating
+     */
+    public function storeManagerOverallRating(Request $request)
+    {
+        $request->validate([
+            'performance_review_id' => 'required|exists:performance_reviews,id',
+            'line_manager_overall_rating' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $performanceReview = $this->performanceReview->find($request->performance_review_id);
+
+        $this->authorize('review', $performanceReview);   
+
+        $performanceReview->update([
+            'line_manager_overall_rating' => $request->line_manager_overall_rating,
+        ]);
+
+        return response()->json([
+            'type' => 'success',
+            'message' => 'Line Manager overall rating saved successfully.'
         ]);
     }
 }

@@ -42,7 +42,7 @@ class Attendance extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    protected $dates = ['created_at', 'updated_at'];
+    
 
     public function attendanceDetails()
     {
@@ -164,7 +164,6 @@ class Attendance extends Model
     {
         return $this->approver->employee->latestTenure->getDesignationName();
     }
-
 
     public function getYear()
     {

@@ -50,7 +50,9 @@ class TravelClaimExpense extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['expense_date'];
+    protected $casts = [
+        'expense_date' => 'date',
+    ];
 
     /**
      * Get the travel claim of the travel expenses.

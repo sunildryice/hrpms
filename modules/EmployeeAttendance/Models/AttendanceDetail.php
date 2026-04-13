@@ -35,12 +35,12 @@ class AttendanceDetail extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    protected $dates = ['attendance_date', 'created_at', 'updated_at'];
-
+    
     // Casting/Converting the columns into given data type
     protected $casts = [
         'checkin' => 'datetime',
-        'checkout' => 'datetime'
+        'checkout' => 'datetime',
+        'attendance_date' => 'date',
     ];
 
     public function office()

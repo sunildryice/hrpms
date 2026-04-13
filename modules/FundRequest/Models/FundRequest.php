@@ -63,7 +63,7 @@ class FundRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     /**
      * Get the approved log for the fund request.

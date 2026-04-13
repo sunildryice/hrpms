@@ -55,7 +55,7 @@ class GoodRequestItem extends Model
      */
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     /**
      * Get the activityCode of the distribution request item.

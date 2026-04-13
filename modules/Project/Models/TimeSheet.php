@@ -27,11 +27,7 @@ class TimeSheet extends Model
         'end_date' => 'date',
     ];
 
-    protected $dates = [
-        'start_date',
-        'end_date',
-    ];
-
+    
     public function approvedLog()
     {
         return $this->hasOne(TimeSheetLog::class, 'timesheet_id')

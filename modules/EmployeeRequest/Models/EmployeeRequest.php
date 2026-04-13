@@ -76,7 +76,7 @@ class EmployeeRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     /**
      * Get the account of the employee request.

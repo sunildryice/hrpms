@@ -50,8 +50,7 @@ class Leave extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['reported_date'];
-
+    
     protected $casts = ['reported_date' => 'date:Y-m-d'];
 
     /**

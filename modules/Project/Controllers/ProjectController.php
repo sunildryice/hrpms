@@ -16,10 +16,11 @@ use Modules\Project\Repositories\ActivityStageRepository;
 class ProjectController
 {
     public function __construct(
-        protected ProjectRepository $projectRepository,
-        protected UserRepository $userRepository,
+        protected ProjectRepository       $projectRepository,
+        protected UserRepository          $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    ) {
+    )
+    {
     }
 
     public function index(Request $request)
@@ -125,16 +126,39 @@ class ProjectController
         $toDate = $request->query('to_date');
 
         // Aggregate activities excluding theme level
-        $activitiesQuery = $project->activities()
-            ->where('activity_level', '!=', ActivityLevel::Theme->value);
+//        $activitiesQuery = $project->activities()
+//            ->where('activity_level', '!=', ActivityLevel::Theme->value);
+//
+//        if ($fromDate && $toDate) {
+//            $activitiesQuery->whereBetween('completion_date', [$fromDate, $toDate]);
+//        }
+//
+//        $statusCounts = $activitiesQuery
+//            ->selectRaw('status, COUNT(*) as count')
+//            ->groupBy('status')
+//            ->pluck('count', 'status')
+//            ->toArray();
 
+        $activitiesQuery = $project->activities()
+            ->select('status', \DB::raw('COUNT(*) as count'))
+            ->leftJoin('project_activity_extensions as pae', function ($join) {
+                $join->on('project_activities.id', '=', 'pae.activity_id')
+                    ->whereIn('pae.id', function ($query) {
+                        $query->select(\DB::raw('MAX(id)'))
+                            ->from('project_activity_extensions')
+                            ->groupBy('activity_id');
+                    });
+            })
+            ->whereNotNull('project_activities.project_id')
+            ->where('project_activities.activity_level', '!=', 'theme');
         if ($fromDate && $toDate) {
-            $activitiesQuery->whereBetween('completion_date', [$fromDate, $toDate]);
+            $activitiesQuery->whereBetween(
+                \DB::raw('COALESCE(pae.extended_completion_date, project_activities.completion_date)'),
+                [$fromDate, $toDate]
+            );
         }
 
-        $statusCounts = $activitiesQuery
-            ->selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
+        $statusCounts = $activitiesQuery->groupBy('status')
             ->pluck('count', 'status')
             ->toArray();
 
@@ -144,7 +168,6 @@ class ProjectController
             ActivityStatus::NotStarted->value => $statusCounts[ActivityStatus::NotStarted->value] ?? 0,
             ActivityStatus::NoRequired->value => $statusCounts[ActivityStatus::NoRequired->value] ?? 0,
         ];
-
         $totalActivities = array_sum($statusDistribution);
 
         // Calculate percentages (avoid division by zero)
@@ -163,7 +186,6 @@ class ProjectController
                 'no_required' => 0,
             ];
         }
-
         $completionRate = $percentages['completed'];
         $totalStages = $project->stages()->count();
         $totalMembers = $project->members()->count();

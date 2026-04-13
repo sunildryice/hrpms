@@ -33,11 +33,11 @@ class ProjectActivity extends Model
         'updated_by',
     ];
 
-    protected $dates = [
-        'start_date',
-        'completion_date',
-        'actual_start_date',
-        'actual_completion_date'
+    protected $casts = [
+        'start_date' => 'date',
+        'completion_date' => 'date',
+        'actual_start_date' => 'date',
+        'actual_completion_date' => 'date',
     ];
 
 

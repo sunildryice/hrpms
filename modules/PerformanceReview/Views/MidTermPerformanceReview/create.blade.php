@@ -9,10 +9,19 @@
         let isGroupDFormSaved = false;
         let isGroupEFormSaved = false;
         let isGroupFFormSaved = false;
+        let isGroupGFormSaved = false;
 
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
             const performanceReview = @json($performanceReview);
+
+            $('#keyGoalModal').on('shown.bs.modal', function() {
+                $('#project_id').select2({
+                    dropdownAutoWidth: true,
+                    width: '100%',
+                    dropdownParent: $('#keyGoalModal')
+                });
+            });
 
             // KEY GOAL ADD BUTTON 
             $('#add-key-goal').click(function(e) {
@@ -36,10 +45,13 @@
                 let outputEl = row.find('td:nth-child(2) input[id^="keygoal_employee_"], td:nth-child(2)')
                     .first();
                 let output = outputEl.is('input') ? outputEl.val() : outputEl.text().trim();
+                let projectId = $(this).data('project-id');
+
 
                 $('#key_goal_id').val(id);
                 $('#title').val(title);
                 $('#output_deliverables').val(output);
+                 $('#project_id').val(projectId).trigger('change');
 
                 $('#keyGoalModalTitle').text('Edit Key Goal');
 
@@ -76,6 +88,7 @@
                     performance_review_id: performanceReview.id,
                     title: $('#title').val(),
                     output_deliverables: $('#output_deliverables').val(),
+                    project_id: $('#project_id').val() || null,
                     type: 'current'
                 };
 
@@ -498,6 +511,35 @@
             });
         });
 
+        // Group G - Employee Self Rating
+        $('#groupGForm').on('submit', function(e) {
+            e.preventDefault();
+
+            let rating = $('#employee_overall_rating').val();
+            if (!rating) {
+                toastr.error('Please select your overall rating.', 'Validation Error');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ route('performance.employee.overall-rating.store') }}",
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.type === 'success') {
+                        toastr.success('Your overall rating has been saved successfully!',
+                            'Success');
+                    } else {
+                        toastr.error(response.message || 'Failed to save rating.');
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('Something went wrong while saving your rating.');
+                    console.error(xhr);
+                }
+            });
+        });
+
         function updateKeyGoal(keyGoalId, title = '', majorActivities = '', descriptionSupervisor = '',
             type = 'current', status = '', remarks = '', outputDeliverables = '') {
 
@@ -576,6 +618,7 @@
             let isGroupDFormSaved = true;
             let isGroupEFormSaved = true;
             let isGroupFFormSaved = true;
+            let isGroupGFormSaved = true;
 
             // B. Key Goals Review
             $('#keyGoalTable tbody tr').each(function() {
@@ -633,8 +676,18 @@
                 $('#employee_comments').removeClass('is-invalid');
             }
 
+            // G. Employee Overall Rating
+            const employeeOverallRating = $('#employee_overall_rating').val();
+            if (!employeeOverallRating) {
+                isGroupGFormSaved = false;
+                $('#employee_overall_rating').addClass('is-invalid');
+                toastr.error('Please select Employee Overall Rating (Section G) before submitting.', 'Validation Error');
+            } else {
+                $('#employee_overall_rating').removeClass('is-invalid');
+            }
+
             if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
-                isGroupEFormSaved && isGroupFFormSaved) {
+                isGroupEFormSaved && isGroupFFormSaved && isGroupGFormSaved) {
 
                 window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
             } else {

@@ -40,7 +40,9 @@ class MeetingHallBooking extends Model
         'updated_by',
     ];
 
-    protected $dates = ['meeting_date'];
+    protected $casts = [
+        'meeting_date' => 'date',
+    ];
 
     /**
      * The attributes excluded from the model's JSON form.

@@ -42,7 +42,9 @@ class Insurance extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['paid_date'];
+    protected $casts = [
+        'paid_date' => 'date',
+    ];
 
     /**
      * Get the employee of the address.

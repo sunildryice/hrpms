@@ -1,3 +1,13 @@
+@section('page_css')
+    <style>
+        .wrap-text {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 250px;
+            max-width: 400px;
+        }
+    </style>
+@endsection
 <!-- B. Key Goals Review -->
 <div id="keyGoalsReview" class="mb-3">
     <div class="card">
@@ -6,12 +16,13 @@
                 <span class="fw-bold">B.</span> Key Goals Review
             </span>
         </div>
-        <div class="card-body">
+        <div class="card-body table-responsive">
             <table class="table table-bordered" id="keyGoalTable">
                 <thead>
                     <tr>
                         <th rowspan="2" style="width: 10%">Objective</th>
                         <th rowspan="2" style="width: 15%">Output / Deliverable</th>
+                        <th rowspan="2" style="width: 10%">Project</th>
                         <th rowspan="2" style="width: 15%">Major Activities</th>
                         <th colspan="2">Achievement against output / deliverable</th>
                         <th rowspan="2" style="width: 22%">Line Manager Comments</th>
@@ -24,16 +35,17 @@
                 <tbody>
                     @foreach ($keygoals as $keygoal)
                         <tr>
-                            <td>{{ $keygoal->title }}</td>
-                            <td>{{ $keygoal->output_deliverables }}</td>
-                            <td>{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->title }}</td>
+                            <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                            <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                             <td>
                                 <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                     {{ $keygoal->status?->label() ?? 'Not Set' }}
                                 </span>
                             </td>
-                            <td>{{ $keygoal->remarks_employee ?? '—' }}</td>
-                            <td>{{ $keygoal->description_supervisor ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
+                            <td class="wrap-text">{{ $keygoal->description_supervisor ?? '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -70,8 +82,8 @@
                         @foreach ($devPlans as $index => $plan)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $plan->objective }}</td>
-                                <td>{{ $plan->activity ?? '—' }}</td>
+                                <td class="wrap-text">{{ $plan->objective }}</td>
+                                <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -101,7 +113,7 @@
                 <tbody>
                     @forelse ($coreCompetencies ?? collect() as $comp)
                         <tr>
-                            <td>{{ $comp->competency }}</td>
+                            <td class="wrap-text">{{ $comp->competency }}</td>
                             <td>
                                 @php
                                     $ratings = [
@@ -121,7 +133,7 @@
                                     —
                                 @endif
                             </td>
-                            <td>{{ $comp->example ?? '—' }}</td>
+                            <td class="wrap-text">{{ $comp->example ?? '—' }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -134,27 +146,27 @@
     </div>
 </div>
 
-<!-- E. Challenges / Difficulties -->
+<!-- E. Challenges -->
 <div id="challengesSection" class="mb-3">
     <div class="card">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">E.</span> Challenges / Difficulties
+                <span class="fw-bold">E.</span> Challenges
             </span>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th style="width: 45%">Challenge / Difficulty Faced</th>
-                        <th style="width: 45%">Result / Outcome</th>
+                        <th style="width: 45%">Challenges</th>
+                        <th style="width: 45%">Action taken to address challenge</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($challenges ?? collect() as $challenge)
                         <tr>
-                            <td>{{ $challenge->challenge }}</td>
-                            <td>{{ $challenge->result }}</td>
+                            <td class="wrap-text">{{ $challenge->challenge }}</td>
+                            <td class="wrap-text">{{ $challenge->result }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -184,12 +196,28 @@
     </div>
 </div>
 
-<!-- G. Line Manager Result and Comments -->
+<!-- G. Employee Overall Rating -->
+<div id="employeeOverallRating" class="mb-3">
+    <div class="card mb-3">
+        <div class="card-header fw-bold">
+            <span class="card-title">
+                <span class="fw-bold">G.</span> Employee Overall Rating
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="col-md-12' }}">
+                <p class="mb-0">{{ $performanceReview->getEmployeeOverallRatingLabel() ?? '—' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- H. Line Manager Result and Comments -->
 <div id="managerResultComments" class="mb-3">
     <div class="card mb-3">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">G.</span> Result and Comments
+                <span class="fw-bold">H.</span> Manager Assessment
             </span>
         </div>
         <div class="card-body">
@@ -198,19 +226,35 @@
                 <p class="mb-0">{{ $performanceReview->result ?: '—' }}</p>
             </div>
             <div class="col-md-12">
-                <label class="form-label fw-bold">Comments</label>
+                <label class="form-label fw-bold">Comments / Areas to Improve</label>
                 <p class="mb-0">{{ $performanceReview->comments ?: '—' }}</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- H. External Reviewer Comments -->
+<!-- I. Line Manager Overall Rating -->
+<div id="managerOverallRating" class="mb-3">
+    <div class="card mb-3">
+        <div class="card-header fw-bold">
+            <span class="card-title">
+                <span class="fw-bold">I.</span> Line Manager Overall Rating
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="col-md-12' }}">
+                <p class="mb-0">{{ $performanceReview->getLineManagerOverallRatingLabel() ?? '—' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- J. External Reviewer Comments -->
 <div id="externalReviewerComments" class="mb-3">
     <div class="card mb-3">
         <div class="card-header fw-bold">
             <span class="card-title">
-                <span class="fw-bold">H.</span>
+                <span class="fw-bold">J.</span>
                 External Reviewer Comments
             </span>
         </div>

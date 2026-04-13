@@ -42,7 +42,10 @@ class Training extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['period_from', 'period_to'];
+    protected $casts = [
+        'period_from' => 'date',
+        'period_to' => 'date',
+    ];
 
     /**
      * Get the employee of the family detail.

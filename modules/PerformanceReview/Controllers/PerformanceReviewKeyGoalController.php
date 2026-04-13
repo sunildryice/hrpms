@@ -32,6 +32,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'performance_review_id' => $request->performance_review_id,
             'title' => $request->title,
             'output_deliverables' => $request->output_deliverables,
+            'project_id' => $request->project_id,
             'description_employee' => $request->description_employee,
             'description_supervisor' => $request->description_supervisor,
             'type' => $request->type,
@@ -96,6 +97,8 @@ class PerformanceReviewKeyGoalController extends Controller
         $validated = $request->validate([
             'key_goal_id' => 'required|exists:performance_review_key_goals,id',
             'title' => 'nullable|string',
+            'output_deliverables' => 'nullable|string',
+            'project_id' => 'nullable|integer|exists:projects,id',
             'major_activities_employee' => 'nullable|string',
             'description_supervisor' => 'nullable|string',
             'description_supervisor_annual' => 'nullable|string',
@@ -113,6 +116,7 @@ class PerformanceReviewKeyGoalController extends Controller
             'description_supervisor' => $request->description_supervisor ?? $keyGoal->description_supervisor,
             'description_supervisor_annual' => $request->description_supervisor_annual ?? $keyGoal->description_supervisor_annual,
             'output_deliverables' => $request->output_deliverables ?? $keyGoal->output_deliverables,
+            'project_id' => $request->filled('project_id') ? $request->project_id : $keyGoal->project_id,
             'status' => $request->status ?? $keyGoal->status,
             'remarks_employee' => $request->remarks_employee ?? $keyGoal->remarks_employee,
             'type' => $request->type ?? $keyGoal->type,
@@ -261,11 +265,12 @@ class PerformanceReviewKeyGoalController extends Controller
 
         $request->validate([
             'keygoals' => 'required|array|min:1',
-            'keygoals.*.title' => 'required|string|max:255',
-            'keygoals.*.output_deliverables' => 'required|string|max:255',
+            'keygoals.*.title' => 'required|string',
+            'keygoals.*.output_deliverables' => 'required|string',
+            'keygoals.*.project_id' => 'nullable|integer|exists:projects,id',
 
             'devplans' => 'required|array|min:1',
-            'devplans.*.plan' => 'required|string|max:500',
+            'devplans.*.plan' => 'required|string',
         ]);
 
         DB::beginTransaction();
@@ -279,6 +284,7 @@ class PerformanceReviewKeyGoalController extends Controller
                     'performance_review_id' => $performanceReview->id,
                     'title' => trim($item['title']),
                     'output_deliverables' => trim($item['output_deliverables']),
+                    'project_id' => !empty($item['project_id']) ? $item['project_id'] : null,
                     'type' => 'current',
                     'updated_by' => auth()->id(),
                 ];
@@ -351,7 +357,7 @@ class PerformanceReviewKeyGoalController extends Controller
         $request->validate([
             'devplans' => 'required|array',
             'devplans.*.id' => 'required|integer|exists:performance_professional_development_plans,id',
-            'devplans.*.activity' => 'nullable|string|max:1000',
+            'devplans.*.activity' => 'nullable|string|max:1500',
         ]);
 
         try {
@@ -379,7 +385,7 @@ class PerformanceReviewKeyGoalController extends Controller
         }
     }
 
-     public function destroyDevPlan(Request $request)
+    public function destroyDevPlan(Request $request)
     {
         $flag = $this->devPlans->destroy($request->devPlanId);
         if ($flag) {

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\PerformanceReview\Models\Enums\KeyGoalStatus;
 use Modules\PerformanceReview\Models\PerformanceReview;
+use Modules\Project\Models\Project;
 
 class PerformanceReviewKeyGoal extends Model
 {
@@ -16,6 +17,7 @@ class PerformanceReviewKeyGoal extends Model
 
     protected $fillable = [
         'performance_review_id',
+        'project_id',
         'title',
         'output_deliverables',
         'major_activities_employee',
@@ -32,7 +34,7 @@ class PerformanceReviewKeyGoal extends Model
 
     protected $hidden = [];
 
-    protected $dates = ['created_at', 'updated_at'];
+
     protected $casts = [
         'status' => KeyGoalStatus::class,
     ];
@@ -41,6 +43,12 @@ class PerformanceReviewKeyGoal extends Model
     {
         return $this->belongsTo(PerformanceReview::class, 'performance_review_id');
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id');
+    }
+    
     public function getStatusLabelAttribute()
     {
         return $this->status?->label() ?? 'Not Set';

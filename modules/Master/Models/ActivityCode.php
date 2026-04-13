@@ -39,7 +39,9 @@ class ActivityCode extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['activated_at'];
+    protected $casts = [
+        'activated_at' => 'datetime',
+    ];
 
     /**
      * Get all account code that belong to the activity code.

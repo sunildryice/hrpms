@@ -39,13 +39,11 @@ class WorkFromHome extends Model
 
     protected $casts = [
         'deliverables' => 'array',
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'request_date' => 'date',
     ];
 
-    protected $dates = [
-        'start_date',
-        'end_date',
-        'request_date',
-    ];
 
 
     public function getProjectNames(): array
@@ -113,7 +111,7 @@ class WorkFromHome extends Model
     {
         return $this->hasMany(WorkFromHomeDay::class, 'work_from_home_id', 'id');
     }
-    
+
 
 
     public function status()
@@ -204,7 +202,13 @@ class WorkFromHome extends Model
 
     public function getWorkFromHomeDuration()
     {
-        return ($this->end_date && $this->start_date) ? $this->end_date->diffInDays($this->start_date) + 1 : 0;
+        if ($this->end_date && $this->start_date) {
+            $start = $this->start_date instanceof Carbon ? $this->start_date : Carbon::parse($this->start_date);
+            $end = $this->end_date instanceof Carbon ? $this->end_date : Carbon::parse($this->end_date);
+            $days = $start->diffInDays($end) + 1;
+            return max($days, 0);
+        }
+        return 0;
     }
 
     public function getTypeName()

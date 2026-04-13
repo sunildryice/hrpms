@@ -3,11 +3,10 @@
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class ValidateFileContent implements Rule
+class ValidateFileContent implements ValidationRule
 {
-    private ?string $errorMessage = null;
     private array $allowedMimes = [
         'application/pdf',
         'image/jpeg',
@@ -15,30 +14,13 @@ class ValidateFileContent implements Rule
     ];
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @return bool
+     * Run the validation rule.
      */
-    public function passes($attribute, $value): bool
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (!$this->isValidFileContent($value)) {
-            $this->errorMessage = 'The :attribute appears to be invalid or corrupted.';
-            return false;
+            $fail('The :attribute appears to be invalid or corrupted.');
         }
-
-        return true;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message(): string
-    {
-        return $this->errorMessage ?? 'The :attribute is invalid.';
     }
 
     private function isValidFileContent(mixed $file): bool

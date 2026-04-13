@@ -27,10 +27,10 @@ class Announcement extends Model
         'created_by'
     ];
 
-    protected $dates = [
-        'published_date',
-        'expiry_date',
-        'extended_date'
+    protected $casts = [
+        'published_date' => 'date',
+        'expiry_date' => 'date',
+        'extended_date' => 'date',
     ];
 
     protected $hidden = [];

@@ -79,10 +79,14 @@ class TravelRequest extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['departure_date', 'return_date', 'request_date', 'advance_requested_at', 'advance_received_at'];
 
     protected $casts = [
         'external_travelers' => 'array',
+        'departure_date' => 'date',
+        'return_date' => 'date',
+        'request_date' => 'date',
+        'advance_requested_at' => 'datetime',
+        'advance_received_at' => 'datetime',
     ];
     /**
      * Get the accompanying staff for travel request.

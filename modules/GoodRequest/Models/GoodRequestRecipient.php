@@ -38,7 +38,7 @@ class GoodRequestRecipient extends Model
      */
     protected $hidden = [];
 
-    protected $dates = [];
+    
 
     /**
      * Get the good request that owns good request item

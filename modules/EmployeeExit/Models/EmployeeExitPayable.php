@@ -58,7 +58,12 @@ class EmployeeExitPayable extends Model
      */
     protected $hidden = [];
 
-    protected $dates = ['festival_bonus_date_from', 'festival_bonus_date_to','salary_date_from', 'salary_date_to'];
+    protected $casts = [
+        'festival_bonus_date_from' => 'date',
+        'festival_bonus_date_to' => 'date',
+        'salary_date_from' => 'date',
+        'salary_date_to' => 'date',
+    ];
 
 
     /**

@@ -38,10 +38,7 @@ class OffDayWork extends Model
     protected $casts = [
         'date' => 'date',
         'deliverables' => 'array',
-    ];
-    protected $dates = [
-        'date',
-        'request_date',
+        'request_date' => 'date',
     ];
 
     public function requester()

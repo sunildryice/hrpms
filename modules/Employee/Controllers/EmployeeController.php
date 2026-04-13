@@ -142,6 +142,7 @@ class EmployeeController extends Controller
     public function store(StoreRequest $request)
     {
         $inputs = $request->validated();
+        $inputs['employee_type_id'] = config('constant.FULL_TIME_EMPLOYEE');
         $inputs['created_by'] = auth()->id();
         $inputs['activated_at'] = date('Y-m-d H:i:s');
         $employee = $this->employees->create($inputs);

@@ -431,7 +431,7 @@ class TravelRequest extends Model
      */
     public function getTotalDays()
     {
-        return $this->return_date ? $this->return_date->diffInDays($this->departure_date) + 1 : 1;
+        return $this->return_date ? $this->departure_date->diffInDays($this->return_date) + 1 : 1;
     }
 
     public function getTravelRequestNumber()

@@ -150,7 +150,7 @@ class ProjectController
                     });
             })
             ->whereNotNull('project_activities.project_id')
-            ->where('project_activities.activity_level', '!=', 'theme');
+            ->where('project_activities.activity_level', '!=', ActivityLevel::Theme->value);
         if ($fromDate && $toDate) {
             $activitiesQuery->whereBetween(
                 \DB::raw('COALESCE(pae.extended_completion_date, project_activities.completion_date)'),

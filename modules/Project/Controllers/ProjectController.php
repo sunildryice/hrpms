@@ -3,24 +3,32 @@
 namespace Modules\Project\Controllers;
 
 use Illuminate\Http\Request;
-use Modules\Project\Models\Project;
-use Yajra\DataTables\Facades\DataTables;
+use Modules\Master\Repositories\ApproachRepository;
+use Modules\Master\Repositories\DistrictRepository;
+use Modules\Master\Repositories\ProjectThemeRepository;
+use Modules\Master\Repositories\SectorRepository;
+use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Enums\ActivityStatus;
-use Modules\Privilege\Repositories\UserRepository;
-use Modules\Project\Requests\Project\StoreRequest;
-use Modules\Project\Repositories\ProjectRepository;
-use Modules\Project\Requests\Project\UpdateRequest;
+use Modules\Project\Models\Project;
 use Modules\Project\Repositories\ActivityStageRepository;
+use Modules\Project\Repositories\ProjectRepository;
+use Modules\Project\Requests\Project\StoreRequest;
+use Modules\Project\Requests\Project\UpdateRequest;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProjectController
 {
     public function __construct(
-        protected ProjectRepository       $projectRepository,
-        protected UserRepository          $userRepository,
         protected ActivityStageRepository $activityStageRepository,
-    )
-    {
+        protected ApproachRepository $approachRepository,
+        protected DistrictRepository $districts,
+        protected ProjectRepository $projectRepository,
+        protected ProjectThemeRepository $projectThemeRepository,
+        protected SectorRepository $sectorRepository,
+        protected UserRepository $userRepository,
+
+    ) {
     }
 
     public function index(Request $request)
@@ -92,7 +100,19 @@ class ProjectController
         $users = $this->userRepository->getActiveUsers();
         $project = Project::with('members')->getModel();
         $stages = $this->activityStageRepository->all();
-        return view('Project::Project.create', compact('authUser', 'users', 'stages'));
+        $projectThemes = $this->projectThemeRepository->getActive();
+        $approaches = $this->approachRepository->getActive();
+        $sectors = $this->sectorRepository->getActive();
+        $districts = $this->districts->getDistricts();
+        return view('Project::Project.create', compact(
+            'authUser',
+            'users',
+            'stages',
+            'projectThemes',
+            'approaches',
+            'sectors',
+            'districts'
+        ));
     }
 
     public function store(StoreRequest $request)
@@ -101,6 +121,8 @@ class ProjectController
         $inputs = $request->validated();
         $inputs['created_by'] = $authUser->id;
         $inputs['activated_at'] = date('Y-m-d H:i:s');
+        $inputs['approach_ids'] = $inputs['approach_ids'] ?? [];
+        $inputs['district_ids'] = $inputs['district_ids'] ?? [];
         $project = $this->projectRepository->create($inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
@@ -209,7 +231,19 @@ class ProjectController
         $project = $this->projectRepository->with(['members', 'stages'])->find($id);
         $users = $this->userRepository->getActiveUsers();
         $stages = $this->activityStageRepository->all();
-        return view('Project::Project.edit', compact('project', 'users', 'stages'));
+        $districts = $this->districts->getDistricts();
+        $projectThemes = $this->projectThemeRepository->getActive();
+        $approaches = $this->approachRepository->getActive();
+        $sectors = $this->sectorRepository->getActive();
+        return view('Project::Project.edit', compact(
+            'project',
+            'users',
+            'stages',
+            'districts',
+            'projectThemes',
+            'approaches',
+            'sectors'
+        ));
     }
 
     public function update($id, UpdateRequest $request)
@@ -219,6 +253,8 @@ class ProjectController
         $inputs['updated_by'] = $authUser->id;
         $inputs['activated_at'] = $request->active ? date('Y-m-d H:i:s') : null;
         $inputs['show_pms_dashboard'] = $request->has('show_pms_dashboard') ? 1 : 0;
+        $inputs['approach_ids'] = $inputs['approach_ids'] ?? [];
+        $inputs['district_ids'] = $inputs['district_ids'] ?? [];
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

@@ -114,16 +114,16 @@
                 }
             });
 
-            $('.select2').on('change', function() {
-                const fieldName = $(this).attr('name');
-                if (fieldName) {
-                    fv.revalidateField(fieldName);
-                }
-            });
+            // $('.select2').on('change', function() {
+            //     const fieldName = $(this).attr('name');
+            //     if (fieldName) {
+            //         fv.revalidateField(fieldName);
+            //     }
+            // });
 
-            $('.select2[multiple]').on('select2:select select2:unselect', function() {
-                fv.revalidateField($(this).attr('name'));
-            });
+            // $('.select2[multiple]').on('select2:select select2:unselect', function() {
+            //     fv.revalidateField($(this).attr('name'));
+            // });
 
             $('[data-toggle="datepicker"]').on('change', function() {
                 fv.revalidateField($(this).attr('name'));

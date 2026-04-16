@@ -29,32 +29,34 @@ class LeaveRequestExport implements Responsable, ShouldAutoSize, WithStyles, Wit
     private $fiscalYears;
     private $leaveRequests;
     private $leaveTypes;
+    private $status;
 
-    public function __construct($fiscalYear, $month, $office, $employee,private $requestDate)
+    public function __construct($fiscalYear, $month, $office, $employee, private $requestDate, $status = null)
     {
         $this->fiscalYear = $fiscalYear;
         $this->month = $month;
         $this->office = $office;
         $this->employee = $employee;
+        $this->status = $status;
         $this->fiscalYears = app(FiscalYearRepository::class);
         $this->leaveRequests = app(LeaveRequestRepository::class);
         $this->leaveTypes = app(LeaveTypeRepository::class);
     }
 
     /**
-    * It's required to define the fileName within
-    * the export class when making use of Responsable.
-    */
+     * It's required to define the fileName within
+     * the export class when making use of Responsable.
+     */
     private $fileName = 'leave_request_report.xlsx';
 
     /**
-    * Optional Writer Type
-    */
+     * Optional Writer Type
+     */
     private $writerType = Excel::XLSX;
 
     /**
-    * Optional headers
-    */
+     * Optional headers
+     */
     private $headers = [
         'Content-Type' => 'text/csv',
     ];
@@ -67,8 +69,8 @@ class LeaveRequestExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         $row_count = $sheet->getHighestDataRow(); // returns row count - int, eg: 1 or 2 or 3.
         $column_count = $sheet->getHighestDataColumn(); // returns last column - alphabet, eg: A or D or W.
         $start_cell = 'A1';
-        $end_cell = $column_count.$row_count;
-        return $start_cell.':'.$end_cell;   // returns cell range. example: 'A1:A7' or 'A1:W3'
+        $end_cell = $column_count . $row_count;
+        return $start_cell . ':' . $end_cell;   // returns cell range. example: 'A1:A7' or 'A1:W3'
     }
 
     public function styles(Worksheet $sheet)
@@ -92,8 +94,16 @@ class LeaveRequestExport implements Responsable, ShouldAutoSize, WithStyles, Wit
     {
         $fiscalYear = isset($this->fiscalYear) ? $this->fiscalYears->find($this->fiscalYear) : $this->fiscalYears->getCurrentFiscalYear();
 
+        $leaveStatusIds = [
+            config('constant.APPROVED_STATUS'),
+            config('constant.SUBMITTED_STATUS'),
+            config('constant.RETURNED_STATUS'),
+            config('constant.REJECTED_STATUS'),
+        ];
+
         $query = $this->leaveRequests->select(['*'])
-            ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            // ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->whereIn('status_id', $leaveStatusIds)
             ->whereYear('request_date', $fiscalYear->start_date);
         if ($this->month) {
             $query->whereMonth('request_date', $this->month);
@@ -108,6 +118,9 @@ class LeaveRequestExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         }
         if ($this->employee) {
             $query->where('requester_id', '=', $this->employee);
+        }
+        if ($this->status) {
+            $query->where('status_id', $this->status);
         }
         $leaveRequests = $query->orderBy('start_date', 'desc')->get();
 

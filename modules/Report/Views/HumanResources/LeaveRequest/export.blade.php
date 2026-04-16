@@ -13,6 +13,7 @@
         <th>End Date</th>
         <th>Request Date</th>
         <th>Request Days/Hours</th>
+        <th>Status</th>
     </tr>
     </thead>
     <tbody>
@@ -26,7 +27,8 @@
             <td>{{ $leaveRequest->getStartDate() }}</td>
             <td>{{ $leaveRequest->getEndDate() }}</td>
             <td>{{ $leaveRequest->getRequestDate() }}</td>
-            <td>{{ $leaveRequest->getLeaveDuration() . ' ' . $leaveRequest->leaveType->getLeaveBasis(); }}</td>
+            <td>{{ $leaveRequest->getLeaveDuration() . ' ' . $leaveRequest->leaveType->getLeaveBasis() }}</td>
+            <td>{{ $leaveRequest->getStatus() }}</td>
         </tr>
     @endforeach
     </tbody>

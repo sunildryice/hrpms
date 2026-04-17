@@ -40,7 +40,7 @@ class ExitInterviewFeedbackAnswer extends Model
      * @var array
      */
 
-    // protected $casts = [
+    protected $casts = [
         'required_date' => 'date',
         'request_date' => 'date',
     ];

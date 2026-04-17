@@ -121,6 +121,6 @@ class ExitHandOverNotePolicy
     public function update(User $user, ExitHandOverNote $exitHandOverNote)
     {
         return in_array($exitHandOverNote->status_id, [1, 2]) &&
-            in_array($user->id, [$exitHandOverNote->requester_id, $exitHandOverNote->created_by, $exitHandOverNote->employee->user->id]);
+            in_array($user->id, [$exitHandOverNote->requester_id, $exitHandOverNote->created_by, $exitHandOverNote->employee->user?->id]);
     }
 }

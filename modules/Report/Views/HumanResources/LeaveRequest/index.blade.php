@@ -45,7 +45,7 @@
             <div class="card-body">
                 <form action="{{ route('report.leave.requests.index') }}" method="get">
                     <div class="mb-4 row" style="align-items: flex-end">
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label class="form-label" for="fiscal_year">Year</label>
                             <select class="form-control" name="fiscal_year" id="fiscal_year">
                                 <option value="">Select Year</option>
@@ -56,7 +56,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <label class="form-label" for="month">Month</label>
                             <select class="form-control select2" name="month" id="month">
                                 <option value="">Select all</option>
@@ -68,7 +68,8 @@
                         </div>
                         <div class="col-md-2">
                             <label class="form-label" for="month">Date</label>
-                            <input type="text" class="form-control" name="request_date" id="request_date" value="{{$request_date}}" />
+                            <input type="text" class="form-control" name="request_date" id="request_date"
+                                value="{{ $request_date }}" />
                         </div>
                         <div class="col-md-2">
                             <label class="form-label" for="office">Office</label>
@@ -89,6 +90,17 @@
                                         <option value="{{ $employee->user->id }}" @selected($employee->user->id == request()->employee)>
                                             {{ $employee->getFullName() }}</option>
                                     @endif
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label" for="status">Status</label>
+                            <select class="form-control select2" name="status" id="status">
+                                <option value="">All Statuses</option>
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status->id }}" @selected($status->id == request()->status)>
+                                        {{ ucwords($status->title) }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
@@ -114,6 +126,7 @@
                                 <th>End Date</th>
                                 <th>Request Date</th>
                                 <th>Request Days/Hours</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -129,6 +142,10 @@
                                     <td>{{ $leaveRequest->getEndDate() }}</td>
                                     <td>{{ $leaveRequest->getRequestDate() }}</td>
                                     <td>{{ $leaveRequest->getLeaveDuration() . ' ' . $leaveRequest->leaveType->getLeaveBasis() }}
+                                        {{-- <td>{{ $leaveRequest->getStatus() }}</td> --}}
+                                    <td><span
+                                            class="badge {{ $leaveRequest->getStatusClass() }}">{{ $leaveRequest->getStatus() }}</span>
+                                    </td>
                                     </td>
                                 </tr>
                             @endforeach

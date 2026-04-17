@@ -127,7 +127,7 @@
                     toastr.success(response.message, 'Success', {
                         timeOut: 5000
                     });
-                    oTable.ajax.reload();
+                    oTable.ajax.reload(null, false);
                 }
                 ajaxDeleteSweetAlert($url, successCallback);
             });
@@ -225,7 +225,7 @@
                         const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
-                            oTable.ajax.reload();
+                            oTable.ajax.reload(null, false);
                         };
 
                         ajaxSubmitFormData($url, 'POST', formData, successCallback);
@@ -634,7 +634,7 @@
                         const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
-                            oTable.ajax.reload();
+                            oTable.ajax.reload(null, false);
                         };
 
                         ajaxSubmitFormData($url, 'POST', formData, successCallback);
@@ -706,7 +706,7 @@
                         const successCallback = function (response) {
                             $('#openModal').modal('hide');
                             toastr.success(response.message || 'Saved successfully');
-                            oTable.ajax.reload();
+                            oTable.ajax.reload(null, false);
                         };
 
                         ajaxSubmitFormData($url, 'POST', formData, successCallback);

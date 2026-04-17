@@ -28,6 +28,16 @@ class UpdateRequest extends FormRequest
             'team_lead_id' => 'required|exists:users,id',
             'stages' => 'required|array',
             'stages.*' => 'exists:lkup_activity_stages,id',
+
+            'primary_funder' => 'nullable|string|max:255',
+            'contracting_agency' => 'nullable|string|max:255',
+            'budget_usd' => 'nullable|numeric|min:0',
+            'district_ids' => 'nullable|array',
+            'district_ids.*' => 'exists:lkup_districts,id',
+            'project_theme_id' => 'nullable|exists:lkup_project_themes,id',
+            'approach_ids' => 'nullable|array',
+            'approach_ids.*' => 'exists:lkup_approaches,id',
+            'sector_id' => 'nullable|exists:lkup_sectors,id',
         ];
     }
 

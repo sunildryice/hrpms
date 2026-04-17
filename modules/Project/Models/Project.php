@@ -3,11 +3,15 @@
 namespace Modules\Project\Models;
 
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Modules\Privilege\Models\User;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Project\Models\ProjectActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Modules\Master\Models\Approach;
+use Modules\Master\Models\District;
+use Modules\Master\Models\ProjectTheme;
+use Modules\Master\Models\Sector;
+use Modules\Privilege\Models\User;
+use Modules\Project\Models\ProjectActivity;
 
 class Project extends Model
 {
@@ -25,12 +29,21 @@ class Project extends Model
         'focal_person_id',
         'activated_at',
         'show_pms_dashboard',
+        'primary_funder',
+        'contracting_agency',
+        'budget_usd',
+        'district_ids',
+        'project_theme_id',
+        'approach_ids',
+        'sector_id',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'completion_date' => 'date',
         'activated_at' => 'datetime',
+        'approach_ids' => 'array',
+        'district_ids' => 'array',
     ];
 
     public function members()
@@ -56,6 +69,30 @@ class Project extends Model
     public function isTeamLead($userId): bool
     {
         return $this->team_lead_id == $userId;
+    }
+    
+    public function getDistrictsAttribute()
+    {
+        if (empty($this->district_ids)) {
+            return collect();
+        }
+        return District::whereIn('id', $this->district_ids)->get();
+    }
+    public function projectTheme()
+    {
+        return $this->belongsTo(ProjectTheme::class, 'project_theme_id')->withDefault();
+    }
+
+    public function sector()
+    {
+        return $this->belongsTo(Sector::class, 'sector_id')->withDefault();
+    }
+    public function getApproachesAttribute()
+    {
+        if (empty($this->approach_ids)) {
+            return collect();
+        }
+        return Approach::whereIn('id', $this->approach_ids)->get();
     }
 
     public function isActivityMember($userId): bool

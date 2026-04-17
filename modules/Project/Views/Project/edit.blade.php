@@ -121,16 +121,16 @@
             });
 
             // Keep validation flow consistent with create view
-            $('.select2').on('change', function() {
-                const fieldName = $(this).attr('name');
-                if (fieldName) {
-                    fv.revalidateField(fieldName);
-                }
-            });
+            // $('.select2').on('change', function() {
+            //     const fieldName = $(this).attr('name');
+            //     if (fieldName) {
+            //         fv.revalidateField(fieldName);
+            //     }
+            // });
 
-            $('.select2[multiple]').on('select2:select select2:unselect', function() {
-                fv.revalidateField($(this).attr('name'));
-            });
+            // $('.select2[multiple]').on('select2:select select2:unselect', function() {
+            //     fv.revalidateField($(this).attr('name'));
+            // });
 
             $('[data-toggle="datepicker"]').on('change', function() {
                 fv.revalidateField($(this).attr('name'));
@@ -378,6 +378,176 @@
                                         <div data-field="stages">{!! $errors->first('stages') !!}</div>
                                     </div>
                                 @endif
+                            </div>
+                        </div>
+
+                        {{-- Primary Funder --}}
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Primary Funder</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control @error('primary_funder') is-invalid @enderror"
+                                    name="primary_funder"
+                                    value="{{ old('primary_funder', $project->primary_funder) }}" />
+                                @error('primary_funder')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="primary_funder">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Contracting Agency --}}
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Contracting Agency</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="text"
+                                    class="form-control @error('contracting_agency') is-invalid @enderror"
+                                    name="contracting_agency"
+                                    value="{{ old('contracting_agency', $project->contracting_agency) }}" />
+                                @error('contracting_agency')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="contracting_agency">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Working Area (District) — multi-select --}}
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Working Area (District)</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="district_ids[]"
+                                    class="select2 form-control @error('district_ids') is-invalid @enderror" multiple
+                                    data-placeholder="Select Districts" style="width: 100%">
+                                    @foreach ($districts as $district)
+                                        <option value="{{ $district->id }}"
+                                            @if (in_array($district->id, old('district_ids', $project->district_ids ?? []))) selected @endif>
+                                            {{ $district->district_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('district_ids')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="district_ids">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Budget (US$) --}}
+                        <div class="row mb-2">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Budget (US$)</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <input type="number" step="0.01" min="0"
+                                    class="form-control @error('budget_usd') is-invalid @enderror" name="budget_usd"
+                                    value="{{ old('budget_usd', $project->budget_usd) }}" placeholder="0.00" />
+                                @error('budget_usd')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="budget_usd">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Project Theme — single select --}}
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Project Theme</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="project_theme_id"
+                                    class="select2 form-control @error('project_theme_id') is-invalid @enderror"
+                                    data-width="100%">
+                                    <option value="">Select Project Theme</option>
+                                    @foreach ($projectThemes as $theme)
+                                        <option value="{{ $theme->id }}"
+                                            @if (old('project_theme_id', $project->project_theme_id) == $theme->id) selected @endif>
+                                            {{ $theme->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('project_theme_id')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="project_theme_id">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Approaches — multi-select --}}
+                        @php
+                            $selectedApproachIds = old('approach_ids', $project->approach_ids ?? []);
+                            $selectedApproachIds = is_array($selectedApproachIds)
+                                ? $selectedApproachIds
+                                : json_decode($selectedApproachIds, true);
+                        @endphp
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Approaches</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="approach_ids[]"
+                                    class="select2 form-control @error('approach_ids') is-invalid @enderror" multiple
+                                    data-placeholder="Select Approaches" style="width:100%">
+                                    @foreach ($approaches as $approach)
+                                        <option value="{{ $approach->id }}"
+                                            @if (in_array($approach->id, $selectedApproachIds)) selected @endif>
+                                            {{ $approach->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('approach_ids')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="approach_ids">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        {{-- Sector — single select --}}
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Sector</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="sector_id"
+                                    class="select2 form-control @error('sector_id') is-invalid @enderror"
+                                    data-width="100%">
+                                    <option value="">Select Sector</option>
+                                    @foreach ($sectors as $sector)
+                                        <option value="{{ $sector->id }}"
+                                            @if (old('sector_id', $project->sector_id) == $sector->id) selected @endif>
+                                            {{ $sector->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('sector_id')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="sector_id">{{ $message }}</div>
+                                    </div>
+                                @enderror
                             </div>
                         </div>
 

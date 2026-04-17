@@ -199,7 +199,7 @@
                                     <td class="col-status">{{ $p->getActiveStatus() }}</td>
                                     <td class="col-wrap">{{ $p->primary_funder ?: '-' }}</td>
                                     <td class="col-wrap">{{ $p->contracting_agency ?: '-' }}</td>
-                                    <td class="col-budget">{{ number_format($p->budget_usd, 2) }}</td>
+                                    <td class="col-budget">{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}</td>
                                     <td class="col-wrap">{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}
                                     </td>
                                     <td class="col-wrap">{{ $p->projectTheme->title ?? '-' }}</td>

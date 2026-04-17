@@ -42,7 +42,7 @@
                 <td>{{ $p->getActiveStatus() }}</td>
                 <td>{{ $p->primary_funder ?: '-' }}</td>
                 <td>{{ $p->contracting_agency ?: '-' }}</td>
-                <td>{{ number_format($p->budget_usd ?? 0, 2) }}</td>
+                <td>{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}</td>
                 <td>{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}</td>
                 <td>{{ $p->projectTheme->title ?? '-' }}</td>
                 <td>{{ $p->approaches->pluck('title')->join(', ') ?: '-' }}</td>

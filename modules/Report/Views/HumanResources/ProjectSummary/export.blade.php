@@ -37,16 +37,16 @@
                 <td>{{ $p->no_required_count ?? 0 }}</td>
                 <td>{{ $p->formatted_start_date ?: '-' }}</td>
                 <td>{{ $p->formatted_completion_date ?: '-' }}</td>
-                <td>{{ $p->team_lead_name ?: '-' }}</td>
-                <td>{{ $p->focal_person_name ?: '-' }}</td>
+                <td>{{ optional($p->teamLead)->full_name ?? '-' }}</td>
+                <td>{{ optional($p->focalPerson)->full_name ?? '-' }}</td>
                 <td>{{ $p->getActiveStatus() }}</td>
                 <td>{{ $p->primary_funder ?: '-' }}</td>
                 <td>{{ $p->contracting_agency ?: '-' }}</td>
                 <td>{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}</td>
                 <td>{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}</td>
-                <td>{{ $p->projectTheme->title ?? '-' }}</td>
+                <td>{{ optional($p->projectTheme)->title ?? '-' }}</td>
                 <td>{{ $p->approaches->pluck('title')->join(', ') ?: '-' }}</td>
-                <td>{{ $p->sector->title ?? '-' }}</td>
+                <td>{{ optional($p->sector)->title ?? '-' }}</td>
             </tr>
         @empty
             <tr>

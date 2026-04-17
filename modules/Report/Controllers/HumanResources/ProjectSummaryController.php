@@ -21,7 +21,7 @@ class ProjectSummaryController extends Controller
     {
 
         $query = Project::query()
-            ->whereNotNull('activated_at')
+            // ->whereNotNull('activated_at')
             ->with([
                 'teamLead:id,full_name',           
                 'focalPerson:id,full_name',       

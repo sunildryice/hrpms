@@ -54,7 +54,7 @@ class ProjectSummaryExport implements FromView, ShouldAutoSize, WithStyles, With
     public function view(): View
     {
         $query = Project::query()
-            ->whereNotNull('activated_at')
+            // ->whereNotNull('activated_at')
             ->withCount([
                 'activities as completed_count' => fn($q) => $q->where('status', ActivityStatus::Completed),
                 'activities as under_progress_count' => fn($q) => $q->where('status', ActivityStatus::UnderProgress),

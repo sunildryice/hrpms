@@ -2,6 +2,97 @@
 
 @section('title', 'Report : Project Summary')
 
+@section('page_css')
+    <style>
+        .dt-container {
+            position: relative;
+        }
+
+        .table-scroll-wrapper {
+            overflow-x: auto;
+            max-height: 620px;
+            /* Fixed height */
+            overflow-y: auto;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+        }
+
+        .table-scroll-wrapper table {
+            min-width: 1600px;
+            /* Prevent shrinking */
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        /* Sticky Header */
+        .table-scroll-wrapper thead th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #f8f9fa;
+            white-space: nowrap;
+            box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+            /* subtle shadow for separation */
+        }
+
+        /* Make header bolder when scrolling */
+        .table-scroll-wrapper thead {
+            background: #f8f9fa;
+        }
+
+        /* Column widths */
+        .col-sn {
+            min-width: 50px;
+            width: 50px;
+        }
+
+        .col-project {
+            min-width: 200px;
+            width: 200px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .col-count {
+            min-width: 80px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .col-date {
+            min-width: 110px;
+            width: 110px;
+            white-space: nowrap;
+        }
+
+        .col-person {
+            min-width: 130px;
+            width: 130px;
+            white-space: nowrap;
+        }
+
+        .col-status {
+            min-width: 110px;
+            width: 110px;
+            white-space: nowrap;
+        }
+
+        .col-wrap {
+            min-width: 160px;
+            width: 160px;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .col-budget {
+            min-width: 120px;
+            width: 120px;
+            text-align: right;
+            white-space: nowrap;
+        }
+    </style>
+@endsection
+
 @section('page_js')
     <script>
         $(document).ready(function() {
@@ -39,16 +130,16 @@
 
         <div class="card shadow-sm border rounded">
             <div class="card-body">
+                <!-- Filter Form -->
                 <form action="{{ route('report.project.summary.index') }}" method="GET">
                     <div class="row mb-4" style="align-items: flex-end;">
-                        <div class="col-md-2 col-lg-3">
+                        <div class="col-md-2 col-lg-6">
                             <label class="form-label">Projects</label>
                             <select name="projects[]" class="form-control select2" multiple="multiple">
                                 @foreach ($allProjects as $proj)
                                     <option value="{{ $proj->id }}"
                                         {{ in_array($proj->id, (array) old('projects', request('projects'))) ? 'selected' : '' }}>
-                                        {{-- {{ $proj->title }} --}}
-                                        {{ $proj->short_name ? $proj->short_name : '' }}
+                                        {{ $proj->short_name ?: $proj->title }}
                                     </option>
                                 @endforeach
                             </select>
@@ -61,41 +152,70 @@
                     </div>
                 </form>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
+                <!-- Fixed Height Scrollable Table -->
+                <div class="table-scroll-wrapper">
+                    <table class="table table-bordered table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>S.N.</th>
-                                <th>Project</th>
-                                <th>Activities</th>
-                                <th>Completed</th>
-                                <th>Under Progress</th>
-                                <th>Not Started</th>
-                                <th>Not Required</th>
+                                <th class="col-sn">S.N.</th>
+                                <th class="col-project">Project</th>
+                                <th class="col-count">Total</th>
+                                <th class="col-count">Completed</th>
+                                <th class="col-count">Under Progress</th>
+                                <th class="col-count">Not Started</th>
+                                <th class="col-count">Not Required</th>
+                                <th class="col-date">Start Date</th>
+                                <th class="col-date">Completion Date</th>
+                                <th class="col-person">Team Lead</th>
+                                <th class="col-person">Focal Person</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-wrap">Primary Funder</th>
+                                <th class="col-wrap">Contracting Agency</th>
+                                <th class="col-budget">Budget (USD)</th>
+                                <th class="col-wrap">Working Areas (Districts)</th>
+                                <th class="col-wrap">Project Theme</th>
+                                <th class="col-wrap">Approaches</th>
+                                <th class="col-wrap">Sector</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($projects as $index => $p)
                                 <tr>
                                     <td>{{ $projects->perPage() * ($projects->currentPage() - 1) + $index + 1 }}</td>
-                                    <td>
-                                        <a class="text-decoration-none"
-                                            href="{{ route('project.dashboard', $p->id) }}">{{ $p->title }}</a>
+                                    <td class="col-wrap">
+                                        <a class="text-decoration-none" href="{{ route('project.dashboard', $p->id) }}">
+                                            {{ $p->short_name }}
+                                        </a>
                                     </td>
-                                    <td>{{ $p->total_activities }}</td>
-                                    <td>{{ $p->completed_count }}</td>
-                                    <td>{{ $p->under_progress_count }}</td>
-                                    <td>{{ $p->not_started_count }}</td>
-                                    <td>{{ $p->no_required_count }}</td>
+                                    <td class="col-count">{{ $p->total_activities }}</td>
+                                    <td class="col-count">{{ $p->completed_count }}</td>
+                                    <td class="col-count">{{ $p->under_progress_count }}</td>
+                                    <td class="col-count">{{ $p->not_started_count }}</td>
+                                    <td class="col-count">{{ $p->no_required_count }}</td>
+                                    <td class="col-date">{{ $p->formatted_start_date ?: '-' }}</td>
+                                    <td class="col-date">{{ $p->formatted_completion_date ?: '-' }}</td>
+                                    <td class="col-person">{{ $p->team_lead_name ?: '-' }}</td>
+                                    <td class="col-person">{{ $p->focal_person_name ?: '-' }}</td>
+                                    <td class="col-status">{{ $p->getActiveStatus() }}</td>
+                                    <td class="col-wrap">{{ $p->primary_funder ?: '-' }}</td>
+                                    <td class="col-wrap">{{ $p->contracting_agency ?: '-' }}</td>
+                                    <td class="col-budget">{{ number_format($p->budget_usd, 2) }}</td>
+                                    <td class="col-wrap">{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}
+                                    </td>
+                                    <td class="col-wrap">{{ $p->projectTheme->title ?? '-' }}</td>
+                                    <td class="col-wrap">{{ $p->approaches->pluck('title')->join(', ') ?: '-' }}</td>
+                                    <td class="col-wrap">{{ $p->sector->title ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">No project summary records found.</td>
+                                    <td colspan="19" class="text-center py-4">No project summary records found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
+                </div>
 
+                <div class="mt-3">
                     {{ $projects->withQueryString()->links() }}
                 </div>
             </div>

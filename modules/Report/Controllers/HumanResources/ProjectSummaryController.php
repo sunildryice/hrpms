@@ -22,6 +22,12 @@ class ProjectSummaryController extends Controller
 
         $query = Project::query()
             ->whereNotNull('activated_at')
+            ->with([
+                'teamLead:id,full_name',           
+                'focalPerson:id,full_name',       
+                'projectTheme:id,title',
+                'sector:id,title',
+            ])
             ->withCount([
                 'activities as completed_count' => fn($q) => $q->where('status', ActivityStatus::Completed),
                 'activities as under_progress_count' => fn($q) => $q->where('status', ActivityStatus::UnderProgress),

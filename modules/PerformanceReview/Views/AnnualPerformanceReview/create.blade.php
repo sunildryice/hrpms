@@ -706,7 +706,88 @@
             if (isGroupBFormSaved && isGroupCFormSaved && isGroupDFormSaved &&
                 isGroupEFormSaved && isGroupFFormSaved && isGroupGFormSaved) {
 
-                window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
+                //  SAVE ALL FORMS BEFORE REDIRECTING 
+                let savePromises = [];
+
+                // Save B: Key Goals
+                let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
+                rows.each(function() {
+                    let row = $(this);
+                    let id = row.data('keygoal-id');
+                    if (!id || isNaN(id)) return;
+
+                    let majorActivities = row.find(`[name="major_activities_employee_${id}"]`).val() || '';
+                    let status = row.find(`[name="status_${id}"]`).val() || '';
+                    let remarks = row.find(`[name="remarks_employee_${id}"]`).val() || '';
+                    let title = row.find('td:first-child').text().trim() || '';
+                    let output = row.find('td:nth-child(2)').text().trim() || '';
+
+                    savePromises.push($.ajax({
+                        type: 'POST',
+                        url: "{{ route('performance.keygoal.update') }}",
+                        data: {
+                            '_token': "{{ csrf_token() }}",
+                            'key_goal_id': id,
+                            'title': title,
+                            'major_activities_employee': majorActivities,
+                            'description_supervisor_annual': '',
+                            'performance_review_id': "{{ $performanceReview->id }}",
+                            'type': 'current',
+                            'status': status,
+                            'remarks_employee': remarks,
+                            'output_deliverables': output
+                        }
+                    }));
+                });
+
+                // Save C: Dev Plan
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: $('#groupCForm').attr('action'),
+                    data: $('#groupCForm').serialize()
+                }));
+
+                // Save D: Core Competencies
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: $('#groupDForm').attr('action'),
+                    data: $('#groupDForm').serialize()
+                }));
+
+                // Save E: Challenges
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: $('#groupEForm').attr('action'),
+                    data: $('#groupEForm').serialize()
+                }));
+
+                // Save F: Employee Comments
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.employee.comments.store') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        performance_review_id: "{{ $performanceReview->id }}",
+                        employee_comments: employeeComments
+                    }
+                }));
+
+                // Save G: Overall Rating
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.employee.overall-rating.store') }}",
+                    data: $('#groupGForm').serialize()
+                }));
+
+                // Wait for all saves, then redirect
+                $.when(...savePromises)
+                    .done(function() {
+                        window.location.href = "{{ route('performance.submit', $performanceReview->id) }}";
+                    })
+                    .fail(function() {
+                        toastr.error('Some sections could not be saved. Please try again.', 'Error');
+                    });
+
             } else {
                 toastr.warning('Please save all sections properly before submitting.', 'Warning', {
                     timeOut: 2500

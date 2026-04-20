@@ -238,7 +238,8 @@ class PerformanceReviewReviewController extends Controller
                 if ($performanceReview->status_id == config('constant.RETURNED_STATUS')) {
                     $message = 'Performance Review is successfully returned.';
                     $performanceReview->requester->notify(new PerformanceReviewReturned($performanceReview));
-                } else {
+                } 
+                else {
                     $message = 'Performance Review is successfully reviewed.';
                     $performanceReview->recommender->notify(new PerformanceReviewVerified($performanceReview));
                 }

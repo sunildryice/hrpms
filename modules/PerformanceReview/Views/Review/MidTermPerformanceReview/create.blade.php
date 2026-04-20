@@ -201,6 +201,7 @@
             let isGroupGValid = true;
             let isGroupIValid = true;
 
+            // B. Key Goals Review
             $('#keyGoalTable tbody tr').each(function() {
                 const supervisorComment = $(this).find('.description-supervisor').val().trim();
                 if (!supervisorComment) {
@@ -211,38 +212,91 @@
                 }
             });
 
+            // G. Result and Comments
             const resultVal = $('#result').val().trim();
             const commentsVal = $('#comments').val().trim();
-            const lineManagerRating = $('#line_manager_overall_rating').val().trim();
-
             if (!resultVal || !commentsVal) {
                 isGroupGValid = false;
                 $('#result, #comments').addClass('is-invalid');
+                toastr.error('Please provide both Result and Comments (Section G) before submitting.', 'Validation Error');
             } else {
                 $('#result, #comments').removeClass('is-invalid');
             }
 
+            // I. Line Manager Overall Rating
+            const lineManagerRating = $('#line_manager_overall_rating').val();
             if (!lineManagerRating) {
                 isGroupIValid = false;
+                toastr.error('Please select Line Manager Overall Rating (Section I) before submitting.',
+                    'Validation Error');
             }
 
-            if (isGroupBValid && isGroupGValid) {
-                $('#performanceReviewProcessForm').submit();
-            } else {
-                toastr.warning('Please fill and save all required sections (B and G) before submitting.',
-                    'Validation Warning', {
-                        timeOut: 3000
-                    });
+            if (!isGroupBValid) {
+                toastr.error('Please fill Line Manager Comments for all key goals (Section B).', 'Validation Error');
             }
 
-            if (isGroupIValid) {
-                $('#groupIForm').submit();
-            } else {
-                toastr.warning('Please select and save Line Manager Overall Rating (Group I).',
-                    'Validation Warning', {
-                        timeOut: 3000
-                    });
+            if (!isGroupBValid || !isGroupGValid || !isGroupIValid) {
+                toastr.warning('Please fill all required sections before submitting.', 'Validation Warning', {
+                    timeOut: 3000
+                });
+                return;
             }
+
+            // SAVE ALL FORMS BEFORE SUBMITTING 
+            let savePromises = [];
+
+            // Save B: Key Goal supervisor comments
+            $('#keyGoalTable tbody tr').each(function() {
+                let row = $(this);
+                let keyGoalId = row.data('keygoal-id');
+                if (!keyGoalId) return;
+
+                let descriptionSupervisor = row.find('.description-supervisor').val().trim();
+
+                savePromises.push($.ajax({
+                    type: 'POST',
+                    url: "{{ route('performance.keygoal.update') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        key_goal_id: keyGoalId,
+                        performance_review_id: "{{ $performanceReview->id }}",
+                        description_supervisor: descriptionSupervisor,
+                        type: 'current'
+                    }
+                }));
+            });
+
+            // Save G: Result and Comments
+            savePromises.push($.ajax({
+                type: 'POST',
+                url: "{{ route('performance.manager.result.store') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: "{{ $performanceReview->id }}",
+                    result: resultVal,
+                    comments: commentsVal
+                }
+            }));
+
+            // Save I: Line Manager Overall Rating
+            savePromises.push($.ajax({
+                type: 'POST',
+                url: "{{ route('performance.manager.overall-rating.store') }}",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    performance_review_id: "{{ $performanceReview->id }}",
+                    line_manager_overall_rating: lineManagerRating
+                }
+            }));
+
+            // Wait for all saves, then submit the process form
+            $.when(...savePromises)
+                .done(function() {
+                    $('#performanceReviewProcessForm').submit();
+                })
+                .fail(function() {
+                    toastr.error('Some sections could not be saved. Please try again.', 'Error');
+                });
         }
     </script>
 @endsection
@@ -317,7 +371,7 @@
                                     <tr data-keygoal-id="{{ $keygoal->id }}">
                                         <td class="wrap-text">{{ $keygoal->title }}</td>
                                         <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
-                                        <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
+                                        <td>{{ $keygoal->project->short_name ?? ($keygoal->project->title ?? '—') }}</td>
                                         <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                                         <td>
                                             <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">

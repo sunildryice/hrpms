@@ -496,6 +496,13 @@
                                     @php
                                         $datePrinted = false;
                                         $projectGroups = $items->groupBy(fn($ts) => $ts->project_id ?? 0);
+
+                                        $reasonText = strip_tags($dayData['reason'] ?? '');
+                                        $isPartialLeave =
+                                            str_contains($reasonText, 'Second Half') ||
+                                            str_contains($reasonText, 'First Half');
+                                        $extraRowCount = $isPartialLeave ? 1 : 0;
+
                                     @endphp
 
                                     @foreach ($projectGroups as $projId => $projItems)
@@ -509,11 +516,11 @@
                                                     data-project-id="{{ $item->project_id ?? '' }}"
                                                     data-activity-id="{{ $item->activity_id ?? '' }}">
                                                     @if (!$datePrinted)
-                                                        <td rowspan="{{ $items->count() }}"
+                                                        <td rowspan="{{ $items->count() + $extraRowCount }}"
                                                             class="align-middle">
                                                             {{ $carbon->format('d, M Y') }}
                                                         </td>
-                                                        <td rowspan="{{ $items->count() }}"
+                                                        <td rowspan="{{ $items->count() + $extraRowCount }}"
                                                             class="align-middle">
                                                             {{ $carbon->format('l') }}
                                                         </td>
@@ -589,6 +596,14 @@
                                             @endforeach
                                         @endforeach
                                     @endforeach
+                                    {{-- NEW: append a partial-leave indicator row --}}
+                                    @if ($isPartialLeave)
+                                        <tr data-date-group="{{ $dateYmd }}">
+                                            <td colspan="4" class="text-center py-2">
+                                                {!! $dayData['reason'] !!}
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endif
                             @endforeach
                         </tbody>

@@ -43,7 +43,7 @@ class GoodRequestAssetPolicy
     public function handover(User $user, GoodRequestAsset $goodRequestAsset)
     {
         return in_array($goodRequestAsset->status, [config('constant.ASSET_ASSIGNED')]) &&
-            in_array($goodRequestAsset->handover_status_id, [0, config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]) &&
+            in_array($goodRequestAsset->handover_status_id, [10, config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]) &&
              $goodRequestAsset->asset->inventoryItem->category->inventoryType->title == 'Non Consumable';
     }
 }

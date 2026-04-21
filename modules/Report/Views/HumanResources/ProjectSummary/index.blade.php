@@ -130,10 +130,9 @@
 
         <div class="card shadow-sm border rounded">
             <div class="card-body">
-                <!-- Filter Form -->
                 <form action="{{ route('report.project.summary.index') }}" method="GET">
                     <div class="row mb-4" style="align-items: flex-end;">
-                        <div class="col-md-2 col-lg-6">
+                        {{-- <div class="col-md-2 col-lg-6">
                             <label class="form-label">Projects</label>
                             <select name="projects[]" class="form-control select2" multiple="multiple">
                                 @foreach ($allProjects as $proj)
@@ -143,16 +142,92 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </div> --}}
+
+                        <div class="col-md-2">
+                            <label class="form-label">Team Lead</label>
+                            <select name="team_lead_id" class="form-control select2">
+                                <option value=""> All Team Leads </option>
+                                @foreach ($teamLeads as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ request('team_lead_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->full_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Focal Person</label>
+                            <select name="focal_person_id" class="form-control select2">
+                                <option value=""> All Focal Persons </option>
+                                @foreach ($focalPersons as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ request('focal_person_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->full_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Project Theme</label>
+                            <select name="project_theme_id" class="form-control select2">
+                                <option value=""> All Themes </option>
+                                @foreach ($projectThemes as $theme)
+                                    <option value="{{ $theme->id }}"
+                                        {{ request('project_theme_id') == $theme->id ? 'selected' : '' }}>
+                                        {{ $theme->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Approach</label>
+                            <select name="approach_id" class="form-control select2">
+                                <option value=""> All Approaches </option>
+                                @foreach ($approaches as $approach)
+                                    <option value="{{ $approach->id }}"
+                                        {{ request('approach_id') == $approach->id ? 'selected' : '' }}>
+                                        {{ $approach->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <label class="form-label">District</label>
+                            <select name="district_id" class="form-control select2">
+                                <option value=""> All Districts </option>
+                                @foreach ($districts as $district)
+                                    <option value="{{ $district->id }}"
+                                        {{ request('district_id') == $district->id ? 'selected' : '' }}>
+                                        {{ $district->district_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-1">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-control select2">
+                                <option value=""> All Status </option>
+                                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active
+                                </option>
+                                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive
+                                </option>
+                            </select>
                         </div>
 
                         <div class="col-auto mt-4">
                             <button type="submit" class="btn btn-primary btn-sm me-2">Search</button>
-                            <a href="{{ route('report.project.summary.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                            <a href="{{ route('report.project.summary.index') }}"
+                                class="btn btn-secondary btn-sm">Reset</a>
                         </div>
                     </div>
                 </form>
 
-                <!-- Fixed Height Scrollable Table -->
                 <div class="table-scroll-wrapper">
                     <table class="table table-bordered table-hover mb-0">
                         <thead class="table-light">
@@ -194,12 +269,13 @@
                                     <td class="col-count">{{ $p->no_required_count }}</td>
                                     <td class="col-date">{{ $p->formatted_start_date ?: '-' }}</td>
                                     <td class="col-date">{{ $p->formatted_completion_date ?: '-' }}</td>
-                                    <td class="col-person">{{ $p->team_lead_name ?: '-' }}</td>
-                                    <td class="col-person">{{ $p->focal_person_name ?: '-' }}</td>
+                                    <td class="col-person">{{ $p->teamLead?->full_name ?? '-' }}</td>
+                                    <td class="col-person">{{ $p->focalPerson?->full_name ?? '-' }}</td>
                                     <td class="col-status">{{ $p->getActiveStatus() }}</td>
                                     <td class="col-wrap">{{ $p->primary_funder ?: '-' }}</td>
                                     <td class="col-wrap">{{ $p->contracting_agency ?: '-' }}</td>
-                                    <td class="col-budget">{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}</td>
+                                    <td class="col-budget">{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}
+                                    </td>
                                     <td class="col-wrap">{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}
                                     </td>
                                     <td class="col-wrap">{{ $p->projectTheme->title ?? '-' }}</td>

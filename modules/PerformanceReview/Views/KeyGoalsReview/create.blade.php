@@ -587,7 +587,7 @@
 
         @if ($performanceReview->status_id == config('constant.RETURNED_STATUS'))
             <div class="mt-4 border p-3 bg-light">
-                <strong style="text-decoration: underline">Remarks from Supervisor:</strong><br>
+                <strong style="text-decoration: underline">Remarks from Line Manager:</strong><br>
                 {{ $performanceReview->getLatestRemark() ?? 'No remarks' }}
             </div>
         @endif

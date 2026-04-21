@@ -175,7 +175,8 @@
                                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
                                         Submit
                                     </button>
-                                    <a href="{!! route('assets.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                                    <a href="{!! route('profile.show') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                                    {{-- <a href="{!! route('profile.assets.index') !!}" class="btn btn-danger btn-sm">Cancel</a> --}}
                                 </div>
                             </form>
                         </div>

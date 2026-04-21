@@ -101,9 +101,13 @@ class MonthlyTimeSheetController extends Controller
             $items = $groupedTimeSheets->get($dateKey, collect([]));
 
             // If empty → compute reason once here
+            // $reason = $items->isEmpty()
+            //     ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
+            //     : null;
+
             $reason = $items->isEmpty()
                 ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
-                : null;
+                : $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey);
 
             $allDates[$dateKey] = [
                 'items' => $items,

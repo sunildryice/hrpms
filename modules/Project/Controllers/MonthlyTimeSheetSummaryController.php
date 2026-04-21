@@ -132,9 +132,12 @@ class MonthlyTimeSheetSummaryController extends Controller
             $dateKey = $current->format('Y-m-d');
             $items = $grouped->get($dateKey, collect());
 
-            $reason = $items->isEmpty()
-                ? $this->viewUserTimeSheets->getAbsenceReason($employee->id, $dateKey)
-                : null;
+            // $reason = $items->isEmpty()
+            //     ? $this->viewUserTimeSheets->getAbsenceReason($employee->id, $dateKey)
+            //     : null;
+
+            $reason = $this->viewUserTimeSheets->getAbsenceReason($employee->id, $dateKey);
+
 
             $allDates[$dateKey] = [
                 'items' => $items,

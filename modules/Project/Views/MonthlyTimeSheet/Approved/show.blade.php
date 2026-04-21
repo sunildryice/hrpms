@@ -139,6 +139,12 @@
                                         $projectGroups = $itemsByDate->groupBy(
                                             fn($ts) => optional($ts->project)->id ?? 'unknown',
                                         );
+
+                                        $reasonText = strip_tags($dayData['reason'] ?? '');
+                                        $isPartialLeave =
+                                            str_contains($reasonText, 'First Half') ||
+                                            str_contains($reasonText, 'Second Half');
+                                        $extraRowCount = $isPartialLeave ? 1 : 0;
                                     @endphp
 
                                     @foreach ($projectGroups as $projectId => $projectItems)
@@ -172,11 +178,12 @@
 
                                                 <tr class="{{ implode(' ', $rowClasses) }}">
                                                     @if (!$datePrinted)
-                                                        <td rowspan="{{ $dateRowCount }}">{{ $sn++ }}</td>
-                                                        <td rowspan="{{ $dateRowCount }}">
+                                                        <td rowspan="{{ $dateRowCount + $extraRowCount }}">
+                                                            {{ $sn++ }}</td>
+                                                        <td rowspan="{{ $dateRowCount + $extraRowCount }}">
                                                             {{ $carbonDate->format('d, M Y') }}
                                                         </td>
-                                                        <td rowspan="{{ $dateRowCount }}">
+                                                        <td rowspan="{{ $dateRowCount + $extraRowCount }}">
                                                             {{ $carbonDate->format('l') }}
                                                         </td>
                                                         @php $datePrinted = true; @endphp
@@ -204,6 +211,13 @@
                                             @endforeach
                                         @endforeach
                                     @endforeach
+                                    @if ($isPartialLeave)
+                                        <tr>
+                                            <td colspan="4" class="text-center py-2">
+                                                {!! $dayData['reason'] !!}
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endif
                             @endforeach
                         </tbody>

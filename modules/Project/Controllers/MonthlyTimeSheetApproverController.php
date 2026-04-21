@@ -96,9 +96,10 @@ class MonthlyTimeSheetApproverController extends Controller
             $dateKey = $currentDate->format('Y-m-d');
             $items = $groupedTimeSheets->get($dateKey, collect([]));
 
-            $reason = $items->isEmpty()
-                ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
-                : null;
+            // $reason = $items->isEmpty()
+            //     ? $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey)
+            //     : null;
+            $reason = $this->viewUserTimeSheets->getAbsenceReason($employeeId, $dateKey);
 
             $allDates[$dateKey] = [
                 'items' => $items,

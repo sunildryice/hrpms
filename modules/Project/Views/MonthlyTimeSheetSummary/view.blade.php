@@ -109,6 +109,12 @@
                                         $projectGroups = $items->groupBy(
                                             fn($ts) => optional($ts->project)->id ?? 'unknown',
                                         );
+
+                                        $reasonText = strip_tags($day['reason'] ?? '');
+                                        $isPartialLeave =
+                                            str_contains($reasonText, 'First Half') ||
+                                            str_contains($reasonText, 'Second Half');
+                                        $extraRowCount = $isPartialLeave ? 1 : 0;
                                     @endphp
 
                                     @foreach ($projectGroups as $projId => $projItems)
@@ -126,9 +132,11 @@
                                             @foreach ($actItems as $entry)
                                                 <tr class="{{ !$datePrinted ? $dateClasses : '' }}">
                                                     @if (!$datePrinted)
-                                                        <td rowspan="{{ $dateRowspan }}" class="text-center align-middle">
+                                                        <td rowspan="{{ $dateRowspan + $extraRowCount }}"
+                                                            class="text-center align-middle">
                                                             {{ $sn++ }}</td>
-                                                        <td rowspan="{{ $dateRowspan }}" class="align-middle">
+                                                        <td rowspan="{{ $dateRowspan + $extraRowCount }}"
+                                                            class="align-middle">
                                                             {{ $carbonDate->format('d, M Y') }}
                                                         </td>
                                                         @php $datePrinted = true; @endphp
@@ -157,6 +165,13 @@
                                             @endforeach
                                         @endforeach
                                     @endforeach
+                                    @if ($isPartialLeave)
+                                        <tr>
+                                            <td colspan="4" class="text-center py-2">
+                                                {!! $day['reason'] !!}
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @endif
                             @empty
                                 <tr>

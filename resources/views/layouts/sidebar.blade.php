@@ -94,7 +94,7 @@
                                     <a class="nav-link" id="leave-requests-menu"
                                        href="{{ route('leave.requests.index') }}">Leave Requests</a>
                                     <a class="nav-link" id="involved-leave-requests-menu"
-                                       href="{{ route('involved.leave.requests.index') }}">Involved Leave Requests</a>
+                                       href="{{ route('involved.leave.requests.index') }}">Processed Leave Requests</a>
                                 @endif
                                 @if ($authUser->can('review-leave-request'))
                                     <a class="nav-link hs-rqst" id="review-leave-requests-menu"

@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Involved Leave Requests')
+@section('title', 'Processed Leave Requests')
 
 @section('page_js')
     <script type="text/javascript">

@@ -158,12 +158,31 @@
                         $('#btn-submit').prop('disabled', true).text('Saving & Submitting...');
                     },
                     success: function(res) {
-                        toastr.success('Saved! Submitting now...');
-                        window.location.href =
-                            "{{ route('performance.submit', $performanceReview->id) }}";
+                        if (res.type === 'success') {
+                            toastr.success('Data saved! Submitting...');
+                            setTimeout(function() {
+                                window.location.href =
+                                    "{{ route('performance.submit', $performanceReview->id) }}";
+                            }, 500);
+                        } else {
+                            toastr.error('Could not save data. Please try again.');
+                            $('#btn-submit').prop('disabled', false).text('Submit');
+                        }
                     },
                     error: function(xhr) {
-                        toastr.error('Failed to save. Please try again.');
+                        if (xhr.status === 419) {
+                            toastr.error(
+                                'Session expired. Please refresh the page and log in again.'
+                            );
+                        } else if (xhr.status === 422) {
+                            const errors = xhr.responseJSON?.errors;
+                            const firstError = errors ? Object.values(errors)[0][0] :
+                                'Validation failed.';
+                            toastr.error(firstError);
+                        } else {
+                            toastr.error(xhr.responseJSON?.message ||
+                                'Could not save. Please try again.');
+                        }
                         $('#btn-submit').prop('disabled', false).text('Submit');
                     }
                 });

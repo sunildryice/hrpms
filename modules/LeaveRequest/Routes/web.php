@@ -20,6 +20,7 @@ use Modules\LeaveRequest\Controllers\ReviewLeaveRequestController;
 use Modules\LeaveRequest\Controllers\ApprovedLeaveEncashController;
 use Modules\LeaveRequest\Controllers\ApproveLeaveRequestController;
 use Modules\LeaveRequest\Controllers\ApprovedLeaveRequestController;
+use Modules\LeaveRequest\Controllers\InvolvedLeaveRequestController;
 use Modules\LeaveRequest\Controllers\HrApproveLeaveRequestController;
 
 //Route::middleware(['web', 'auth', 'logger', 'can:manage-employee'])->group(function () {
@@ -35,6 +36,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::post('leave/requests/{leave}/amend', [LeaveRequestController::class, 'amend'])->name('leave.requests.amend.store');
 
         Route::get('approved/leave/requests', [ApprovedLeaveRequestController::class, 'index'])->name('approved.leave.requests.index');
+        Route::get('involved/leave/requests', [InvolvedLeaveRequestController::class, 'index'])->name('involved.leave.requests.index');
     });
     Route::get('leave/requests/{leave}/detail', [LeaveRequestController::class, 'detail'])->name('leave.requests.detail');
     Route::get('leave/requests/{leave}/print', [LeaveRequestController::class, 'printLeave'])->name('leave.requests.print');

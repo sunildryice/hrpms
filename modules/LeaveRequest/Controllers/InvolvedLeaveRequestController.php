@@ -7,7 +7,7 @@ use Modules\LeaveRequest\Repositories\LeaveRequestRepository;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 
-class ApprovedLeaveRequestController extends Controller
+class InvolvedLeaveRequestController extends Controller
 {
     private $leaveRequests;
     public function __construct(
@@ -20,7 +20,10 @@ class ApprovedLeaveRequestController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->leaveRequests->getApproved();
+            $data = $this->leaveRequests->with(['logs', 'leaveType', 'status', 'requester.employee'])
+                ->whereHas('logs', function ($q) use ($authUser) {
+                    $q->where('user_id', $authUser->id);
+                })->orderBy('created_at', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -43,12 +46,10 @@ class ApprovedLeaveRequestController extends Controller
                 })->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('leave.requests.detail', $row->id) . '" title="View Leave Request"><i class="bi bi-eye"></i></a>';
-                    $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
-                    $btn .= route('leave.requests.print', $row->id) . '" title="Print Leave Request"><i class="bi-printer"></i></a>';
                     return $btn;
                 })->rawColumns(['action', 'status'])
                 ->make(true);
         }
-        return view('LeaveRequest::Approved.index');
+        return view('LeaveRequest::Involved.index');
     }
 }

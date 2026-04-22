@@ -32,8 +32,7 @@ class LeaveRequestRepository extends Repository
 
         if ($currentOffice) {
             if ($currentOffice->office_type_id == config('constant.HEAD_OFFICE')) {
-                return $this->model
-                    ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+                return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
                     ->whereIn('office_id', $accessibleOfficeIds)
                     ->orWhere(function ($q) {
                         $q->whereNull('office_id');
@@ -43,10 +42,10 @@ class LeaveRequestRepository extends Repository
             }
         }
 
-        return $this->model
-            ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+        return $this->model->whereIn('status_id', [config('constant.APPROVED_STATUS')])
             ->whereIn('office_id', $accessibleOfficeIds)
-            ->orderBy('created_at', 'desc')->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     public function getLeaveRequestNumber($fiscalYear)

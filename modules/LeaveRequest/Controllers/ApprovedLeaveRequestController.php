@@ -18,8 +18,14 @@ class ApprovedLeaveRequestController extends Controller
 
     public function index(Request $request)
     {
+        $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->leaveRequests->getApproved();
+            $data = $this->leaveRequests->with(['logs'])
+                ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+                ->whereHas('logs', function ($q) use ($authUser) {
+                    $q->where('user_id', $authUser->id);
+                })->orderBy('created_at', 'desc');
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('leave_type', function ($row) {

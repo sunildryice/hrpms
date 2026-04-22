@@ -35,6 +35,9 @@ use Modules\TravelRequest\Controllers\TravelRequestApprovedController;
 use Modules\TravelRequest\Controllers\TravelRequestEstimateController;
 use Modules\TravelRequest\Controllers\TravelRequestItineraryController;
 use Modules\TravelRequest\Controllers\TravelRequestDayItineraryController;
+use Modules\TravelRequest\Controllers\InvolvedClaimController;
+use Modules\TravelRequest\Controllers\InvolvedLocalTravelController;
+use Modules\TravelRequest\Controllers\InvolvedTravelRequestController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::middleware('can:travel-request')->group(function () {
@@ -83,6 +86,8 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
         Route::post('travel/requests/{travel}/advance', [TravelRequestController::class, 'advance'])->name('travel.requests.advance.store');
         Route::get('travel/requests/{leave}/cancel', [TravelRequestController::class, 'cancelCreate'])->name('travel.requests.cancel.create');
         Route::post('travel/requests/{leave}/cancel', [TravelRequestController::class, 'cancel'])->name('travel.requests.cancel.store');
+
+        Route::get('involved/travel/requests', [InvolvedTravelRequestController::class, 'index'])->name('involved.travel.requests.index');
     });
     Route::get('travel/requests/{travelRequest}/view', [TravelRequestController::class, 'view'])->name('travel.requests.view');
     Route::get('travel/requests/{travelRequest}/itineraries', [TravelRequestItineraryController::class, 'index'])
@@ -134,6 +139,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::middleware('can:travel-request')->group(function () {
         Route::get('travel/claims', [ClaimController::class, 'index'])->name('travel.claims.index');
+        Route::get('involved/travel/claims', [InvolvedClaimController::class, 'index'])->name('involved.travel.claims.index');
         Route::post('travel/{travelRequestId}/claims', [ClaimController::class, 'store'])->name('travel.claims.store');
         Route::get('travel/claims/{claims}/edit', [ClaimController::class, 'edit'])->name('travel.claims.edit');
         Route::put('travel/claims/{claims}', [ClaimController::class, 'update'])->name('travel.claims.update');
@@ -193,6 +199,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::middleware('can:local-travel')->group(function () {
         Route::get('local/travel/reimbursements', [LocalTravelController::class, 'index'])->name('local.travel.reimbursements.index');
+        Route::get('involved/local/travel/reimbursements', [InvolvedLocalTravelController::class, 'index'])->name('involved.local.travel.reimbursements.index');
         Route::get('local/travel/reimbursements/create', [LocalTravelController::class, 'create'])->name('local.travel.reimbursements.create');
         Route::post('local/travel/reimbursements', [LocalTravelController::class, 'store'])->name('local.travel.reimbursements.store');
         Route::get('local/travel/reimbursements/{localTravel}/edit', [LocalTravelController::class, 'edit'])->name('local.travel.reimbursements.edit');

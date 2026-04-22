@@ -3,12 +3,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\OffDayWork\Controllers\ApproveController;
+use Modules\OffDayWork\Controllers\InvolvedController;
 use Modules\OffDayWork\Controllers\RequestController;
 use Modules\OffDayWork\Controllers\ApprovedController;
 use Modules\OffDayWork\Controllers\RejectedController;
 
 Route::middleware(['web', 'auth'])->prefix('offday-work')->group(function () {
     Route::get('requests', [RequestController::class, 'index'])->name('off.day.work.index');
+    Route::get('involved/requests', [InvolvedController::class, 'index'])->name('involved.off.day.work.index');
     Route::get('requests/create', [RequestController::class, 'create'])->name('off.day.work.create');
     Route::post('requests/store', [RequestController::class, 'store'])->name('off.day.work.store');
     Route::get('requests/{offDayWork}/edit', [RequestController::class, 'edit'])->name('off.day.work.edit');

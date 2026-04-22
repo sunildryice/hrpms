@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\WorkFromHome\Controllers\ApproveController;
+use Modules\WorkFromHome\Controllers\InvolvedController;
 use Modules\WorkFromHome\Controllers\RequestController;
 use Modules\WorkFromHome\Controllers\ApprovedController;
 use Modules\WorkFromHome\Controllers\RejectedController;
@@ -9,6 +10,7 @@ use Modules\WorkFromHome\Controllers\RejectedController;
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('wfh/requests', [RequestController::class, 'index'])->name('wfh.requests.index');
+    Route::get('involved/wfh/requests', [InvolvedController::class, 'index'])->name('involved.wfh.requests.index');
     Route::get('wfh/requests/create', [RequestController::class, 'create'])->name('wfh.requests.create');
     Route::post('wfh/requests', [RequestController::class, 'store'])->name('wfh.requests.store');
     Route::get('wfh/{id}/requests', [RequestController::class, 'show'])->name('wfh.requests.show');

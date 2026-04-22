@@ -132,6 +132,8 @@
 
                                 <a class="nav-link" id="wfh-requests-index"
                                    href="{{ route('wfh.requests.index') }}">Requests</a>
+                                <a class="nav-link" id="involved-wfh-requests-index"
+                                   href="{{ route('involved.wfh.requests.index') }}">Processed Requests</a>
 
                                 @if ($authUser->can('approve-work-from-home'))
                                     <a class="nav-link" id="wfh-requests-approve"
@@ -174,6 +176,10 @@
                                 <a class="nav-link" id="off-day-work-index"
                                    href="{{ route('off.day.work.index') }}">
                                     Requests
+                                </a>
+                                <a class="nav-link" id="involved-off-day-work-index"
+                                   href="{{ route('involved.off.day.work.index') }}">
+                                    Processed Requests
                                 </a>
                                 @if ($authUser->can('approve-off-day-work'))
                                     <a class="nav-link" id="approve-off-day-work-approve"
@@ -535,6 +541,9 @@
                                     <a class="nav-link" href="{{ route('local.travel.reimbursements.index') }}"
                                        id="local-travel-reimbursements-menu">
                                         Local Travel Reimbursements</a>
+                                    <a class="nav-link" href="{{ route('involved.local.travel.reimbursements.index') }}"
+                                       id="involved-local-travel-reimbursements-menu">
+                                        Processed Local Travel</a>
                                 @endif
                                 @if ($authUser->can('approve-local-travel'))
                                     <a class="nav-link"
@@ -575,10 +584,14 @@
                                 @if ($authUser->can('travel-request'))
                                     <a class="nav-link" href="{{ route('travel.requests.index') }}"
                                        id="travel-request-menu">Travel Requests</a>
+                                    <a class="nav-link" href="{{ route('involved.travel.requests.index') }}"
+                                       id="involved-travel-requests-menu">Processed Travel Requests</a>
                                     <a class="nav-link" href="{{ route('travel.reports.index') }}"
                                        id="travel-report-menu">Travel Reports</a>
                                     <a class="nav-link" href="{{ route('travel.claims.index') }}"
                                        id="travel-claims-menu">Travel Claim</a>
+                                    <a class="nav-link" href="{{ route('involved.travel.claims.index') }}"
+                                       id="involved-travel-claims-menu">Processed Travel Claims</a>
                                 @endif
                                 @if ($authUser->can('approve-travel-form'))
                                     <a class="nav-link" href="{{ route('approve.travel.requests.index') }}"
@@ -643,6 +656,8 @@
                                 @if ($authUser->can('vehicle-request'))
                                     <a class="nav-link" href="{{ route('vehicle.requests.index') }}"
                                        id="vehicle-requests-menu">Vehicle Requests</a>
+                                    <a class="nav-link" href="{{ route('involved.vehicle.requests.index') }}"
+                                       id="involved-vehicle-requests-menu">Processed Vehicle Requests</a>
                                 @endif
                                 @if ($authUser->can('approve-hire-vehicle-request'))
                                     <a class="nav-link" href="{{ route('approve.vehicle.requests.index') }}"

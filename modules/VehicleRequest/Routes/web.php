@@ -17,11 +17,13 @@ use Modules\VehicleRequest\Controllers\AssignController;
 use Modules\VehicleRequest\Controllers\CloseController;
 use Modules\VehicleRequest\Controllers\ClosedController;
 use Modules\VehicleRequest\Controllers\DriverVehicleRequestController;
+use Modules\VehicleRequest\Controllers\InvolvedController;
 use Modules\VehicleRequest\Controllers\VehicleRequestController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::middleware('can:vehicle-request')->group(function () {
         Route::get('vehicle/requests', [VehicleRequestController::class, 'index'])->name('vehicle.requests.index');
+        Route::get('involved/vehicle/requests', [InvolvedController::class, 'index'])->name('involved.vehicle.requests.index');
         Route::get('vehicle/requests/create', [VehicleRequestController::class, 'create'])->name('vehicle.requests.create');
         Route::post('vehicle/requests', [VehicleRequestController::class, 'store'])->name('vehicle.requests.store');
         Route::get('vehicle/requests/{vehicleRequest}/edit', [VehicleRequestController::class, 'edit'])->name('vehicle.requests.edit');

@@ -303,11 +303,13 @@ class PerformanceReviewKeyGoalController extends Controller
             }
 
             // Delete key goals that were removed from UI
-            $this->performanceReviewKeyGoal
-                ->where('performance_review_id', '=', $performanceReview->id)
-                ->where('type', 'current')
-                ->whereNotIn('id', $submittedKeyGoalIds)
-                ->delete();
+            if (!empty($submittedKeyGoalIds)) {
+                $this->performanceReviewKeyGoal
+                    ->where('performance_review_id', '=', $performanceReview->id)
+                    ->where('type', 'current')
+                    ->whereNotIn('id', $submittedKeyGoalIds)
+                    ->delete();
+            }
 
             // DEVELOPMENT PLANS 
             $submittedDevPlanIds = [];
@@ -333,9 +335,11 @@ class PerformanceReviewKeyGoalController extends Controller
             }
 
             // Delete dev plans that were removed
-            PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
-                ->whereNotIn('id', $submittedDevPlanIds)
-                ->delete();
+            if (!empty($submittedDevPlanIds)) {
+                PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
+                    ->whereNotIn('id', $submittedDevPlanIds)
+                    ->delete();
+            }
 
             DB::commit();
 

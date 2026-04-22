@@ -93,6 +93,8 @@
                                 @if ($authUser->can('leave-request'))
                                     <a class="nav-link" id="leave-requests-menu"
                                        href="{{ route('leave.requests.index') }}">Leave Requests</a>
+                                    <a class="nav-link" id="involved-leave-requests-menu"
+                                       href="{{ route('involved.leave.requests.index') }}">Involved Leave Requests</a>
                                 @endif
                                 @if ($authUser->can('review-leave-request'))
                                     <a class="nav-link hs-rqst" id="review-leave-requests-menu"
@@ -105,63 +107,14 @@
                                        href="{{ route('hr.approve.leave.requests.index') }}">HR Approve Leave
                                         Requests({!! $hrApproveLeaveCount !!})</a>
                                 @endif
-                                {{-- @if ($authUser->can('approve-leave-request'))
-                                    <a class="nav-link hs-rqst" id="approve-leave-requests-menu"
-                                        href="{{ route('approve.leave.requests.index') }}">Approve Leave
-                                        Requests({!! $approveLeaveCount !!})</a>
-                                @endif --}}
-                                <a class="nav-link" id="approved-leave-requests-menu"
-                                   href="{{ route('approved.leave.requests.index') }}">Approved Leave
-                                    Requests</a>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (
-                        $authUser->can('leave-encash') ||
-                            $authUser->can('approve-leave-encash') ||
-                            $authUser->can('review-leave-encash') ||
-                            $authUser->can('view-approved-leave-encash') ||
-                            $authUser->can('pay-leave-encash'))
-                        <div class="nav-item">
-                            <a class="nav-link dropdown-toggle" href="#navbarEncashName" role="button"
-                               data-bs-toggle="collapse" data-bs-target="#navbarEncashName" aria-expanded="false"
-                               aria-controls="navbarEncashName" title="Leave Encashment">
-                                <i class="bi bi-wallet nav-icon"></i>
-                                <span class="nav-link-title">Leave Encashment</span>
-                            </a>
-
-                            <div id="navbarEncashName" class="nav-collapse collapse" data-bs-parent="#navbarleave"
-                                 hs-parent-area="#navbarleave" style="">
-                                @if ($authUser->can('leave-encash'))
-                                    <a class="nav-link" id="leave-encash-menu"
-                                       href="{{ route('leave.encash.index') }}">Leave
-                                        Encash Requests</a>
-                                @endif
-                                @if ($authUser->can('review-leave-encash'))
-                                    <a class="nav-link hs-rqst" id="review-leave-encash-menu"
-                                       href="{{ route('review.leave.encash.index') }}">Review Leave Encash
-                                        Requests({!! $reviewLeaveEncashCount !!})</a>
-                                @endif
-                                @if ($authUser->can('approve-leave-encash'))
-                                    <a class="nav-link hs-rqst" id="approve-leave-encash-menu"
-                                       href="{{ route('approve.leave.encash.index') }}">Approve Leave Encash
-                                        Requests({!! $approveLeaveEncashCount !!})</a>
-                                @endif
-                                @if ($authUser->can('view-approved-leave-encash'))
-                                    <a class="nav-link" id="approved-leave-encash-menu"
-                                       href="{{ route('approved.leave.encash.index') }}">Approved Leave Encash
+                                @if ($authUser->can('view-approved-leave-request'))
+                                    <a class="nav-link" id="approved-leave-requests-menu"
+                                       href="{{ route('approved.leave.requests.index') }}">Approved Leave
                                         Requests</a>
                                 @endif
-                                @if ($authUser->can('pay-leave-encash'))
-                                    <a class="nav-link" id="paid-leave-encash-menu"
-                                       href="{{ route('paid.leave.encash.index') }}">Paid Leave Encash Requests
-                                    </a>
-                                @endif
                             </div>
                         </div>
                     @endif
-
 
                     @if (
                         $authUser->can('work-from-home-request') ||

@@ -61,6 +61,8 @@ class EmployeeController extends Controller
     {
         $authUser = auth()->user();
         $employee = $this->employees->find($authUser->employee_id);
+            $employee->setRelation('tenures', $employee->tenures()->orderBy('joined_date', 'asc')->get());
+
         $leaves = $this->leaves->select('*')
             ->where('employee_id', $employee->id)
             ->whereYear('reported_date', date('Y'))

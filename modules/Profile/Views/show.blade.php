@@ -982,6 +982,127 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
+                                    @php
+                                        $tenures = $employee->tenures->sortBy('joined_date');
+                                        $prev = null;
+                                    @endphp
+
+                                    @foreach ($tenures as $tenure)
+                                        @php
+                                            $isFirst = $loop->first;
+                                            $isLast = $loop->last;
+
+                                            $changed = function ($currentValue, $previousValue = null) use ($isFirst) {
+                                                if ($isFirst) {
+                                                    return true;
+                                                }
+                                                return $currentValue != $previousValue;
+                                            };
+
+                                            $prevDesignation = $prev ? $prev->getDesignationName() : null;
+                                            $prevDutyStation = $prev ? $prev->duty_station : null;
+                                            $prevDistrict = $prev ? $prev->getDutyStation() : null;
+                                            $prevOffice = $prev ? $prev->getOfficeName() : null;
+                                            $prevSupervisor = $prev ? $prev->getSupervisorName() : null;
+                                            $prevCross = $prev ? $prev->getCrossSupervisorName() : null;
+                                            $prevNextLine = $prev ? $prev->getNextLineManagerName() : null;
+                                            $prevContractEnd = $prev ? $prev->getContractEndDate() : null;
+                                        @endphp
+
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                @if ($changed($tenure->getDesignationName(), $prevDesignation))
+                                                    <tr>
+                                                        <th scope="row" width="10%">Position:</th>
+                                                        <td colspan="3">{{ $tenure->getDesignationName() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if (
+                                                    $isFirst ||
+                                                        $changed($tenure->getJoinedDate(), $prev?->getJoinedDate()) ||
+                                                        $changed($tenure->getToDate(), $prev?->getToDate()))
+                                                    <tr>
+                                                        <th scope="row" width="10%">{{ __('label.from-date') }}:
+                                                        </th>
+                                                        <td colspan="3">{{ $tenure->getJoinedDate() }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">To Date:</th>
+                                                        <td colspan="3">{{ $tenure->getToDate() ?: 'Present' }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getContractEndDate(), $prevContractEnd))
+                                                    <tr>
+                                                        <th scope="row">Contract End Date:</th>
+                                                        <td colspan="3">{{ $tenure->getContractEndDate() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->duty_station, $prevDutyStation))
+                                                    <tr>
+                                                        <th scope="row">Duty Station:</th>
+                                                        <td colspan="3">{{ $tenure->duty_station }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getDutyStation(), $prevDistrict))
+                                                    <tr>
+                                                        <th scope="row">District:</th>
+                                                        <td colspan="3">{{ $tenure->getDutyStation() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getOfficeName(), $prevOffice))
+                                                    <tr>
+                                                        <th scope="row">Office:</th>
+                                                        <td colspan="3">{{ $tenure->getOfficeName() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getSupervisorName(), $prevSupervisor))
+                                                    <tr>
+                                                        <th scope="row">Line Manager Name:</th>
+                                                        <td colspan="3">{{ $tenure->getSupervisorName() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getCrossSupervisorName(), $prevCross))
+                                                    <tr>
+                                                        <th scope="row">Cross-functional Supervisor Name:</th>
+                                                        <td colspan="3">{{ $tenure->getCrossSupervisorName() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($changed($tenure->getNextLineManagerName(), $prevNextLine))
+                                                    <tr>
+                                                        <th scope="row">Reviewer Name:</th>
+                                                        <td colspan="3">{{ $tenure->getNextLineManagerName() }}</td>
+                                                    </tr>
+                                                @endif
+
+                                                @if ($isLast && $employee->exitHandoverNote && is_null($employee->activated_at))
+                                                    <tr class="text-danger">
+                                                        <th scope="row">Resignation Date:</th>
+                                                        <td colspan="3">
+                                                            {{ $employee->exitHandoverNote?->getResignationDate() }}</td>
+                                                    </tr>
+                                                    <tr class="text-danger">
+                                                        <th scope="row">Last Duty Date:</th>
+                                                        <td colspan="3">
+                                                            {{ $employee->exitHandoverNote?->getLastDutyDate() }}</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                        </table>
+
+                                        @php $prev = $tenure; @endphp
+                                    @endforeach
+                                </div>
+                            </div>
+                            {{-- <div class="card-body">
+                                <div class="table-responsive">
                                     @foreach ($employee->tenures as $tenure)
                                         <table class="table table-bordered">
                                             <tbody>
@@ -1044,7 +1165,7 @@
                                         </table>
                                     @endforeach
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 

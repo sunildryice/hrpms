@@ -111,7 +111,11 @@
                         $('#btn-save-draft').prop('disabled', true).text('Saving...');
                     },
                     success: function(res) {
-                        toastr.success(res.message || 'Draft saved successfully');
+                        if (res.type === 'success') {
+                            toastr.success(res.message || 'Draft saved successfully');
+                        } else {
+                            toastr.error('Could not save. Please try again.');
+                        }
                         $('#btn-save-draft').prop('disabled', false).text('Save');
                     },
                     error: function(xhr) {

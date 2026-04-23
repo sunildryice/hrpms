@@ -2,8 +2,7 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Add Office</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('master.offices.store') !!}" method="post"
-      enctype="multipart/form-data" id="officeForm" autocomplete="off">
+<form action="{!! route('master.offices.store') !!}" method="post" enctype="multipart/form-data" id="officeForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -35,7 +34,7 @@
                 <select class="form-control" name="office_type_id" id="office_type_id">
                     <option value="">Select office type</option>
                     @foreach ($officeTypes as $type)
-                        <option value="{{$type->id}}">{{$type->getTitle()}}</option>
+                        <option value="{{ $type->id }}">{{ $type->getTitle() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -58,7 +57,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="phone_number" value="" placeholder="Phone Number">
+                <input type="text" class="form-control" name="phone_number" value=""
+                    placeholder="Phone Number">
             </div>
         </div>
         <div class="row mb-2">
@@ -78,7 +78,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="email" class="form-control" name="email_address" value="" placeholder="Email Address">
+                <input type="email" class="form-control" name="email_address" value=""
+                    placeholder="Email Address">
             </div>
         </div>
         <div class="row mb-2">
@@ -90,7 +91,7 @@
             <div class="col-lg-9">
                 <select class="select2 form-control" name="district_id">
                     <option value="">Select District</option>
-                    @foreach($districts as $district)
+                    @foreach ($districts as $district)
                         <option value="{{ $district->id }}">{{ $district->getDistrictName() }}</option>
                     @endforeach
                 </select>
@@ -103,7 +104,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="account_number" value="" placeholder="Bank Account Number">
+                <input type="text" class="form-control" name="account_number" value=""
+                    placeholder="Bank Account Number">
             </div>
         </div>
         <div class="row mb-2">
@@ -123,7 +125,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="branch_name" value="" placeholder="Bank Branch Name">
+                <input type="text" class="form-control" name="branch_name" value=""
+                    placeholder="Bank Branch Name">
             </div>
         </div>
         <div class="row mb-2">
@@ -137,6 +140,26 @@
                     <option value="1">Saturday</option>
                     <option value="2">Saturday+Sunday</option>
                 </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Office Check-in Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control time-picker" name="office_checkin_time" onfocus="this.blur()" placeholder="HH:mm">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Office Check-out Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control time-picker" name="office_checkout_time" onfocus="this.blur()" placeholder="HH:mm">
             </div>
         </div>
     </div>

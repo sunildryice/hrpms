@@ -67,7 +67,7 @@
             $(document).on('click', '.open-office-modal-form', function(e) {
                 e.preventDefault();
                 $('#openModal').find('.modal-content').html('');
-                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function (){
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('officeForm');
                     $(form).find(".select2").select2({
                         dropdownParent: $('.modal'),
@@ -146,15 +146,32 @@
                         fv.revalidateField('district_id');
                     });
 
-                    $(form).on('change', '[name="office_type_id"]', function (e) {
+                    $(form).on('change', '[name="office_type_id"]', function(e) {
                         let officeTypeId = $(this).val();
-                        let url = "{{route('master.offices.get.by.office.type', ':id')}}";
+                        let url = "{{ route('master.offices.get.by.office.type', ':id') }}";
                         url = url.replace(':id', officeTypeId);
                         let callback = (data) => {
                             document.getElementById('parent_id').innerHTML = '';
                             document.getElementById('parent_id').innerHTML = data;
                         };
                         $.get(url, callback);
+                    });
+
+                    // Time picker init
+                    $(form).find('.time-picker').each(function() {
+                        $(this).daterangepicker({
+                            singleDatePicker: true,
+                            timePicker: true,
+                            timePickerSeconds: false,
+                            autoUpdateInput: true,
+                            locale: {
+                                format: 'HH:mm'
+                            },
+                        }).on('show.daterangepicker', function(ev, picker) {
+                            picker.container.find(".calendar-table").hide();
+                        }).on('apply.daterangepicker', function(ev, picker) {
+                            $(this).val(picker.startDate.format('HH:mm'));
+                        });
                     });
                 });
             });
@@ -167,8 +184,8 @@
     <div class="m-content p-3">
         <div class="pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
+                <div class="brd-crms flex-grow-1">
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">{{ __('label.home') }}</a></li>

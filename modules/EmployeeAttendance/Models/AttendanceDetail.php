@@ -27,6 +27,8 @@ class AttendanceDetail extends Model
         'worked_hours',
         'checkin_from',
         'checkout_from',
+        'office_checkin_time',
+        'office_checkout_time',
         'created_by',
         'updated_by'
     ];
@@ -35,7 +37,7 @@ class AttendanceDetail extends Model
     protected $hidden = [];
 
     // Turn the columns into carbon object.
-    
+
     // Casting/Converting the columns into given data type
     protected $casts = [
         'checkin' => 'datetime',
@@ -61,6 +63,19 @@ class AttendanceDetail extends Model
     public function getCheckoutTime()
     {
         return $this->checkout?->format('H:i');
+    }
+    public function getOfficeCheckinTime(): string
+    {
+        return $this->office_checkin_time
+            ?? $this->office?->getOfficeCheckinTime()
+            ?? config('constant.OFFICE_CHECKIN_TIME');
+    }
+
+    public function getOfficeCheckoutTime(): string
+    {
+        return $this->office_checkout_time
+            ?? $this->office?->getOfficeCheckoutTime()
+            ?? config('constant.OFFICE_CHECKOUT_TIME');
     }
 
     public function getWorkedHours()

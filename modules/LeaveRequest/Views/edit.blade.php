@@ -73,9 +73,11 @@
 
         var maternityLeaveId = parseInt('{{ config('constant.MATERNITY_LEAVE') }}');
         var paternityLeaveId = parseInt('{{ config('constant.PATERNITY_LEAVE') }}');
+        var mourningLeaveId = parseInt('{{ config('constant.MOURNING_LEAVE') }}');
 
         const MATERNITY_LEAVE_DAYS = 98;
         const PATERNITY_LEAVE_DAYS = 15;
+        const MOURNING_LEAVE_DAYS = 13;
 
         let disabledDates = [];
 
@@ -123,6 +125,8 @@
                 daysToAdd = MATERNITY_LEAVE_DAYS;
             } else if (leaveTypeId === paternityLeaveId) {
                 daysToAdd = PATERNITY_LEAVE_DAYS;
+            } else if (leaveTypeId === mourningLeaveId) {
+                daysToAdd = MOURNING_LEAVE_DAYS;
             }
 
             if (daysToAdd > 0) {
@@ -428,7 +432,8 @@
                 debugger;
 
                 // If maternity or paternity is selected and start date already exists → auto calculate
-                if ((leaveTypeId == maternityLeaveId || leaveTypeId == paternityLeaveId) &&
+                if ((leaveTypeId == maternityLeaveId || leaveTypeId == paternityLeaveId || leaveTypeId ==
+                        mourningLeaveId) &&
                     $('[name="start_date"]').val()) {
                     autoCalculateEndDate($('[name="start_date"]'));
                 }

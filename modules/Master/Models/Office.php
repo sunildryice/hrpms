@@ -130,12 +130,12 @@ class Office extends Model
 
     public function getOfficeCheckinTime(): string
     {
-        return $this->office_checkin_time;
+        return $this->office_checkin_time ?? config('constant.OFFICE_CHECKIN_TIME');
     }
 
     public function getOfficeCheckoutTime(): string
     {
-        return $this->office_checkout_time;
+        return $this->office_checkout_time ?? config('constant.OFFICE_CHECKOUT_TIME');
     }
 
     public function getUpdatedAt()

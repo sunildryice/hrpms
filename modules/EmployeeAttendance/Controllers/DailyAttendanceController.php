@@ -2,16 +2,17 @@
 
 namespace Modules\EmployeeAttendance\Controllers;
 
+use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Modules\EmployeeAttendance\Models\Attendance;
-use Modules\Master\Repositories\OfficeRepository;
+use Modules\Employee\Models\Employee;
 use Modules\Employee\Repositories\EmployeeRepository;
+use Modules\EmployeeAttendance\Models\Attendance;
 use Modules\EmployeeAttendance\Models\AttendanceDetail;
 use Modules\EmployeeAttendance\Repositories\AttendanceDetailRepository;
+use Modules\Master\Repositories\OfficeRepository;
+use Yajra\DataTables\DataTables;
 
 class DailyAttendanceController extends Controller
 {
@@ -52,16 +53,18 @@ class DailyAttendanceController extends Controller
                         return '-';
                     }
                     $checkinTime = Carbon::parse($detail->checkin)->format('H:i:s');
-                    $checkin = Carbon::parse($selectedDate . ' ' . $checkinTime);
+                    $checkin = Carbon::parse($selectedDate . ' ' . $checkinTime)->startOfMinute();
 
-                    $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKIN_TIME'));
-                    if($detail->weekend_type_id == config('constant.Saturday')){
-                        $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKIN_TIME'));
-                    }
+                    // $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKIN_TIME'));
+                    $officeCheckin = Carbon::parse($selectedDate . ' ' . $detail->getOfficeCheckin())->startOfMinute();
+
+                    // if ($detail->weekend_type_id == config('constant.Saturday')) {
+                    //     $officeCheckin = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKIN_TIME'));
+                    // }
                     $time = $checkin->format('H:i');
 
                     if ($checkin->gt($officeCheckin)) {
-                        return '<span class="text-danger fw-bold">'. $time .'</span> <small class="text-danger">(Late Check-in)</small>';
+                        return '<span class="text-danger fw-bold">' . $time . '</span> <small class="text-danger">(Late Check-in)</small>';
                     }
                     return $time;
                 })
@@ -72,16 +75,18 @@ class DailyAttendanceController extends Controller
                         return '-';
                     }
                     $checkoutTime = Carbon::parse($detail->checkout)->format('H:i:s');
-                    $checkout = Carbon::parse($selectedDate . ' ' . $checkoutTime);
+                    $checkout = Carbon::parse($selectedDate . ' ' . $checkoutTime)->startOfMinute();
 
-                    $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKOUT_TIME'));
-                    if($detail->weekend_type_id == config('constant.Saturday')){
-                        $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKOUT_TIME'));
-                    }
+                    // $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_CHECKOUT_TIME'));
+                    $officeCheckout = Carbon::parse($selectedDate . ' ' . $detail->getOfficeCheckout())->startOfMinute();
+
+                    // if ($detail->weekend_type_id == config('constant.Saturday')) {
+                    //     $officeCheckout = Carbon::parse($selectedDate . ' ' . config('constant.OFFICE_FIELD_CHECKOUT_TIME'));
+                    // }
                     $time = $checkout->format('H:i');
 
                     if ($checkout->lt($officeCheckout)) {
-                        return '<span class="text-danger fw-bold">'. $time .'</span> <small class="text-danger">(Early Checkout)</small>';
+                        return '<span class="text-danger fw-bold">' . $time . '</span> <small class="text-danger">(Early Checkout)</small>';
                     }
                     return $time;
                 })
@@ -189,39 +194,50 @@ class DailyAttendanceController extends Controller
         $checkin = $request->checkin ? $date . ' ' . $request->checkin . ':00' : null;
         $checkout = $request->checkout ? $date . ' ' . $request->checkout . ':00' : null;
 
+        $employee = Employee::find($employeeId);
+        $office = $employee->latestTenure?->office;
+
         $detail = $this->attendanceDetailRepo->getDetailByEmployeeAndDate($employeeId, $date);
 
+        $officeHours = [
+            'office_checkin_time' => $detail?->office_checkin_time ?? $office?->getOfficeCheckinTime() ?? config('constant.OFFICE_CHECKIN_TIME'),
+            'office_checkout_time' => $detail?->office_checkout_time ?? $office?->getOfficeCheckoutTime() ?? config('constant.OFFICE_CHECKOUT_TIME'),
+        ];
+
         if ($detail) {
-            // Update existing record
-            $detail->update([
+            $detail->update(array_merge([
                 'checkin' => $checkin,
                 'checkout' => $checkout,
-            ]);
+            ], $officeHours));
         } else {
-            // Create new record (Create attendance master first)
             $attendance = Attendance::firstOrCreate(
-                ['employee_id' => $employeeId, 'month' => date('n', strtotime($date)), 'year' => date('Y', strtotime($date))],
+                [
+                    'employee_id' => $employeeId,
+                    'month' => date('n', strtotime($date)),
+                    'year' => date('Y', strtotime($date)),
+                ],
                 ['created_by' => auth()->id()]
             );
 
-            $detail = AttendanceDetail::create([
+            $detail = AttendanceDetail::create(array_merge([
                 'attendance_master_id' => $attendance->id,
                 'attendance_date' => $date,
                 'checkin' => $checkin,
                 'checkout' => $checkout,
                 'created_by' => auth()->id(),
-            ]);
+            ], $officeHours));
         }
-        // Recalculate worked_hours
+
         if ($checkin && $checkout) {
-            $start = Carbon::parse($checkin);
-            $end = Carbon::parse($checkout);
+            $start = Carbon::parse($checkin)->startOfMinute();
+            $end = Carbon::parse($checkout)->startOfMinute();
             $hours = $start->diff($end)->format('%H.%I');
             $detail->update(['worked_hours' => $hours]);
         }
+
         return response()->json([
             'success' => true,
-            'message' => 'Attendance updated successfully'
+            'message' => 'Attendance updated successfully',
         ]);
     }
 }

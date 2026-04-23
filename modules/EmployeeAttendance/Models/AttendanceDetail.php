@@ -64,14 +64,14 @@ class AttendanceDetail extends Model
     {
         return $this->checkout?->format('H:i');
     }
-    public function getOfficeCheckinTime(): string
+    public function getOfficeCheckin(): string
     {
         return $this->office_checkin_time
             ?? $this->office?->getOfficeCheckinTime()
             ?? config('constant.OFFICE_CHECKIN_TIME');
     }
 
-    public function getOfficeCheckoutTime(): string
+    public function getOfficeCheckout(): string
     {
         return $this->office_checkout_time
             ?? $this->office?->getOfficeCheckoutTime()

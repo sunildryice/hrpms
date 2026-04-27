@@ -65,7 +65,7 @@
 
         <section class="registration">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header fw-bold">
                             Good Request Details
@@ -73,7 +73,7 @@
                         @include('GoodRequest::Partials.detail')
                     </div>
                 </div>
-                <div class="col-lg-12">
+                <div class="col-lg-8">
                     <div class="card">
                         <div class="card-header fw-bold">
                             Asset Details
@@ -110,67 +110,67 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="card shadow-sm border rounded mt-2">
-                        <div class="card-header fw-bold">
-                            Asset Handover Process
-                        </div>
-                        <form action="{{ route('approve.asset.handovers.store', $goodRequestAsset->id) }}" id="assetHandoverForm" method="post" enctype="multipart/form-data" autocomplete="off">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="row mb-2">
-                                            <div class="col-lg-3">
-                                                <div class="d-flex align-items-start h-100">
-                                                    <label for="validationleavetype" class="form-label required-label">Status</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-9">
-                                                <select name="handover_status_id" class="select2 form-control" data-width="100%">
-                                                    <option value="">Select a Status</option>
-                                                    <option value="2" @if(old('handover_status_id')==2) selected @endif>
-                                                        Return to Requester
-                                                    </option>
-                                                    <option value="6" @if(old('handover_status_id')==6) selected @endif>
-                                                        Approve
-                                                    </option>
-                                                </select>
-                                                @if ($errors->has('handover_status_id'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="handover_status_id">
-                                                        {!! $errors->first('handover_status_id') !!}
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm border rounded mt-2">
+                            <div class="card-header fw-bold">
+                                Asset Handover Process
+                            </div>
+                            <form action="{{ route('approve.asset.handovers.store', $goodRequestAsset->id) }}" id="assetHandoverForm" method="post" enctype="multipart/form-data" autocomplete="off">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <div class="row mb-2">
+                                                <div class="col-lg-3">
+                                                    <div class="d-flex align-items-start h-100">
+                                                        <label for="validationleavetype" class="form-label required-label">Status</label>
                                                     </div>
                                                 </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="row mb-2">
-                                            <div class="col-lg-3">
-                                                <div class="d-flex align-items-start h-100">
-                                                    <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                                <div class="col-lg-9">
+                                                    <select name="handover_status_id" class="select2 form-control" data-width="100%">
+                                                        <option value="">Select a Status</option>
+                                                        <option value="2" @if(old('handover_status_id')==2) selected @endif>
+                                                            Return to Requester
+                                                        </option>
+                                                        <option value="6" @if(old('handover_status_id')==6) selected @endif>
+                                                            Approve
+                                                        </option>
+                                                    </select>
+                                                    @if ($errors->has('handover_status_id'))
+                                                    <div class="fv-plugins-message-container invalid-feedback">
+                                                        <div data-field="handover_status_id">
+                                                            {!! $errors->first('handover_status_id') !!}
+                                                        </div>
+                                                    </div>
+                                                    @endif
                                                 </div>
                                             </div>
-                                            <div class="col-lg-9">
-                                                <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
-                                                @if ($errors->has('log_remarks'))
-                                                <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                            <div class="row mb-2">
+                                                <div class="col-lg-3">
+                                                    <div class="d-flex align-items-start h-100">
+                                                        <label for="validationRemarks" class="form-label required-label">Remarks</label>
+                                                    </div>
                                                 </div>
-                                                @endif
+                                                <div class="col-lg-9">
+                                                    <textarea type="text" class="form-control @if ($errors->has('log_remarks')) is-invalid @endif" name="log_remarks">{{ old('log_remarks') }}</textarea>
+                                                    @if ($errors->has('log_remarks'))
+                                                    <div class="fv-plugins-message-container invalid-feedback">
+                                                        <div data-field="log_remarks">{!! $errors->first('log_remarks') !!}</div>
+                                                    </div>
+                                                    @endif
+                                                </div>
                                             </div>
+                                            {!! csrf_field() !!}
                                         </div>
-                                        {!! csrf_field() !!}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer border-0 justify-content-end d-flex gap-2">
-                                <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
-                                    Submit
-                                </button>
-                                <a href="{!! route('approve.asset.handovers.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
-                            </div>
-                        </form>
+                                <div class="card-footer border-0 justify-content-end d-flex gap-2">
+                                    <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
+                                        Submit
+                                    </button>
+                                    <a href="{!! route('approve.asset.handovers.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

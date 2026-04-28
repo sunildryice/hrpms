@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
+use Modules\Master\Repositories\StatusRepository;
 use Modules\Report\Exports\HumanResources\WorkFromHomeExport;
 use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Repositories\WorkFromHomeRepository;
@@ -18,7 +19,8 @@ class WorkFromHomeController extends Controller
         protected EmployeeRepository $employees,
         protected FiscalYearRepository $fiscalYears,
         protected WorkFromHomeRepository $workFromHomes,
-        protected OfficeRepository $offices
+        protected OfficeRepository $offices,
+        protected StatusRepository $statuses
     ) {
     }
 
@@ -28,8 +30,15 @@ class WorkFromHomeController extends Controller
         $fiscalYear = $request->fiscal_year ? $this->fiscalYears->find($request->fiscal_year) : $this->fiscalYears->getCurrentFiscalYear();
         $employees = $this->employees->getAllEmployees();
 
+        $wfhStatusIds = [
+            config('constant.APPROVED_STATUS'),
+            config('constant.SUBMITTED_STATUS'),
+            config('constant.REJECTED_STATUS'),
+        ];
+
         $query = $this->workFromHomes->select(['*'])
-            ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            // ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->whereIn('status_id', $wfhStatusIds)
             ->whereYear('request_date', $fiscalYear->start_date);
 
         if ($request->month) {
@@ -49,10 +58,15 @@ class WorkFromHomeController extends Controller
             $query->where('type', $request->type);
         }
 
+        if ($request->status) {
+            $query->where('status_id', $request->status);
+        }
+
         $workFromHomes = $query->orderBy('start_date', 'desc')->paginate(100);
 
         $offices = $this->offices->getOffices();
         $typeOptions = WorkFromHomeTypes::options();
+        $statuses = $this->statuses->whereIn('id', $wfhStatusIds)->get();
 
         return view('Report::HumanResources.WorkFromHome.index', [
             'employees' => $this->employees->getActiveEmployees(),
@@ -63,6 +77,7 @@ class WorkFromHomeController extends Controller
             'workFromHomes' => $workFromHomes,
             'months' => $months,
             'typeOptions' => $typeOptions,
+            'statuses' => $statuses,
         ]);
     }
 
@@ -74,7 +89,8 @@ class WorkFromHomeController extends Controller
         $requestDate = $request->request_date ?: null;
         $employee = $request->filled('employee') ? $request->employee : null;
         $type = $request->filled('type') ? $request->type : null;
+        $status     = $request->filled('status') ? (int) $request->status : null;
 
-        return new WorkFromHomeExport($fiscalYear, $month, $office, $employee, $requestDate, $type);
+        return new WorkFromHomeExport($fiscalYear, $month, $office, $employee, $requestDate, $type, $status);
     }
 }

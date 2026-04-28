@@ -19,19 +19,20 @@ class WorkFromHomeExport implements Responsable, ShouldAutoSize, WithStyles, Wit
 {
     use Exportable;
 
-    private $office, $fiscalYear, $month, $employee, $requestDate, $type;
+    private $office, $fiscalYear, $month, $employee, $requestDate, $type, $status;
     private $fiscalYears, $workFromHomes;
 
-    public function __construct($fiscalYear, $month, $office, $employee, $requestDate, $type)
+    public function __construct($fiscalYear, $month, $office, $employee, $requestDate, $type, $status = null)
     {
-        $this->fiscalYear   = $fiscalYear;
-        $this->month        = $month;
-        $this->office       = $office;
-        $this->employee     = $employee;
-        $this->requestDate  = $requestDate;
-        $this->type         = $type;
+        $this->fiscalYear = $fiscalYear;
+        $this->month = $month;
+        $this->office = $office;
+        $this->employee = $employee;
+        $this->requestDate = $requestDate;
+        $this->type = $type;
+        $this->status = $status;
 
-        $this->fiscalYears  = app(FiscalYearRepository::class);
+        $this->fiscalYears = app(FiscalYearRepository::class);
         $this->workFromHomes = app(WorkFromHomeRepository::class);
     }
 
@@ -65,8 +66,15 @@ class WorkFromHomeExport implements Responsable, ShouldAutoSize, WithStyles, Wit
     {
         $fiscalYear = $this->fiscalYear ? $this->fiscalYears->find($this->fiscalYear) : $this->fiscalYears->getCurrentFiscalYear();
 
+        $wfhStatusIds = [
+            config('constant.APPROVED_STATUS'),
+            config('constant.SUBMITTED_STATUS'),
+            config('constant.REJECTED_STATUS'),
+        ];
+
         $query = $this->workFromHomes->select(['*'])
-            ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            // ->whereIn('status_id', [config('constant.APPROVED_STATUS')])
+            ->whereIn('status_id', $wfhStatusIds)
             ->whereYear('request_date', $fiscalYear->start_date);
 
         if ($this->month) {
@@ -82,15 +90,18 @@ class WorkFromHomeExport implements Responsable, ShouldAutoSize, WithStyles, Wit
             $query->where('requester_id', $this->employee);
         }
         if ($this->type !== null && $this->type !== '') {
-            $query->where('type', $this->type);      
+            $query->where('type', $this->type);
+        }
+        if ($this->status) {
+            $query->where('status_id', $this->status);
         }
 
         $workFromHomes = $query->orderBy('start_date', 'desc')->get();
 
         return view('Report::HumanResources.WorkFromHome.export', [
             'workFromHomes' => $workFromHomes,
-            'fiscalYear'    => $fiscalYear->title,
-            'month'         => $this->month ? date('F', mktime(0, 0, 0, $this->month, 10)) : null,
+            'fiscalYear' => $fiscalYear->title,
+            'month' => $this->month ? date('F', mktime(0, 0, 0, $this->month, 10)) : null,
         ]);
     }
 }

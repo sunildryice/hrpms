@@ -112,6 +112,18 @@
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-md-2">
+                            <label class="form-label" for="status">Status</label>
+                            <select class="form-control select2" name="status" id="status">
+                                <option value="">All Statuses</option>
+                                @foreach ($statuses as $status)
+                                    <option value="{{ $status->id }}"
+                                        {{ $status->id == request()->status ? 'selected' : '' }}>
+                                        {{ ucwords($status->title) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div class="col">
                             <button type="submit" name="btn" value="search"
                                 class="m-1 btn btn-primary btn-sm">Search</button>
@@ -136,6 +148,7 @@
                                 <th>Request Date</th>
                                 <th>Total Days</th>
                                 <th>Projects</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,6 +165,11 @@
                                     <td>{{ $wfh->getRequestDate() }}</td>
                                     <td>{{ $wfh->getTotalDays() }} day{{ $wfh->getTotalDays() > 1 ? 's' : '' }}</td>
                                     <td>{{ implode(', ', $wfh->getProjectNames()) ?: '-' }}</td>
+                                    <td>
+                                        <span class="badge {{ $wfh->getStatusClass() }}">
+                                            {{ $wfh->getStatus() }}
+                                        </span>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

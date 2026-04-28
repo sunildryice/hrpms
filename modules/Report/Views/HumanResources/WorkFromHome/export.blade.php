@@ -1,7 +1,7 @@
 <table>
     <thead>
         <tr>
-            <th colspan="9" style="text-align: center">WFH / Field Work Report</th>
+            <th colspan="10" style="text-align: center">WFH / Field Work Report</th>
         </tr>
         <tr>
             <th>S.N.</th>
@@ -14,6 +14,7 @@
             <th>Request Date</th>
             <th>Total Days</th>
             <th>Projects</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -29,6 +30,7 @@
                 <td>{{ $wfh->getRequestDate() }}</td>
                 <td>{{ $wfh->getTotalDays() }} day{{ $wfh->getTotalDays() > 1 ? 's' : '' }}</td>
                 <td>{{ implode(', ', $wfh->getProjectNames()) ?: '-' }}</td>
+                <td>{{ $wfh->getStatus() }}</td>
             </tr>
         @endforeach
     </tbody>

@@ -75,6 +75,47 @@
                     </div>
 
                     @if (
+                        $authUser->can('work-from-home-request') ||
+                            $authUser->can('approve-work-from-home') ||
+                            $authUser->can('view-work-from-home'))
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarWorkFromHome" role="button"
+                               data-bs-toggle="collapse" data-bs-target="#navbarWorkFromHome" aria-expanded="false"
+                               aria-controls="navbarWorkFromHome" data-bs-toggle="tooltip" data-bs-placement="right"
+                               title="Work From Home">
+                                <i class="bi bi-person-workspace nav-icon"></i>
+                                <span class="nav-link-title">WFH / Field Work</span> </a>
+
+                            <div id="navbarWorkFromHome" class="collapse">
+
+                                <a class="nav-link" id="wfh-requests-index"
+                                   href="{{ route('wfh.requests.index') }}">Requests</a>
+                                <a class="nav-link" id="involved-wfh-requests-index"
+                                   href="{{ route('involved.wfh.requests.index') }}">Processed Requests</a>
+
+                                @if ($authUser->can('approve-work-from-home'))
+                                    <a class="nav-link" id="wfh-requests-approve"
+                                       href="{{ route('approve.wfh.requests.index') }}">
+                                        Approve Requests
+                                        @if ($approveWorkFromHomeRequestCount > 0)
+                                            ({{ $approveWorkFromHomeRequestCount }})
+                                        @endif
+                                    </a>
+
+                                    <a class="nav-link" id="wfh-requests-rejected"
+                                       href="{{ route('rejected.wfh.requests.index') }}">
+                                        Rejected Requests
+                                    </a>
+
+                                    <a class="nav-link" id="wfh-requests-approved"
+                                       href="{{ route('approved.wfh.requests.index') }}">Approved Requests</a>
+                                @endif
+                            </div>
+
+                        </div>
+                    @endif
+
+                    @if (
                         $authUser->can('leave-request') ||
                             $authUser->can('review-leave-request') ||
                             $authUser->can('approve-leave-request') ||
@@ -113,47 +154,6 @@
                                         Requests</a>
                                 @endif
                             </div>
-                        </div>
-                    @endif
-
-                    @if (
-                        $authUser->can('work-from-home-request') ||
-                            $authUser->can('approve-work-from-home') ||
-                            $authUser->can('view-work-from-home'))
-                        <div class="nav-item">
-                            <a class="nav-link dropdown-toggle" href="#navbarWorkFromHome" role="button"
-                               data-bs-toggle="collapse" data-bs-target="#navbarWorkFromHome" aria-expanded="false"
-                               aria-controls="navbarWorkFromHome" data-bs-toggle="tooltip" data-bs-placement="right"
-                               title="Work From Home">
-                                <i class="bi bi-person-workspace nav-icon"></i>
-                                <span class="nav-link-title">WFH / Field Work</span> </a>
-
-                            <div id="navbarWorkFromHome" class="collapse">
-
-                                <a class="nav-link" id="wfh-requests-index"
-                                   href="{{ route('wfh.requests.index') }}">Requests</a>
-                                <a class="nav-link" id="involved-wfh-requests-index"
-                                   href="{{ route('involved.wfh.requests.index') }}">Processed Requests</a>
-
-                                @if ($authUser->can('approve-work-from-home'))
-                                    <a class="nav-link" id="wfh-requests-approve"
-                                       href="{{ route('approve.wfh.requests.index') }}">
-                                        Approve Requests
-                                        @if ($approveWorkFromHomeRequestCount > 0)
-                                            ({{ $approveWorkFromHomeRequestCount }})
-                                        @endif
-                                    </a>
-
-                                    <a class="nav-link" id="wfh-requests-rejected"
-                                       href="{{ route('rejected.wfh.requests.index') }}">
-                                        Rejected Requests
-                                    </a>
-
-                                    <a class="nav-link" id="wfh-requests-approved"
-                                       href="{{ route('approved.wfh.requests.index') }}">Approved Requests</a>
-                                @endif
-                            </div>
-
                         </div>
                     @endif
 
@@ -232,6 +232,61 @@
                                        href="{{ route('approved.lieu.leave.requests.index') }}">
                                         Approved Requests
                                     </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    @if (
+                        $authUser->can('manage-performance-review') ||
+                            $authUser->can('review-performance-review') ||
+                            $authUser->can('recommend-performance-review') ||
+                            $authUser->can('approve-performance-review') ||
+                            $authUser->performanceReviewExists())
+                        <div class="nav-item">
+                            <a class="nav-link dropdown-toggle" href="#navbarPerformanceReview" role="button"
+                               data-bs-toggle="collapse" data-bs-target="#navbarPerformanceReview"
+                               aria-expanded="false" aria-controls="navbarPerformanceReview"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Performance Review">
+                                <i class="bi bi-graph-up-arrow nav-icon"></i>
+                                <span class="nav-link-title">Performance Review</span> </a>
+
+                            <div id="navbarPerformanceReview" class="nav-collapse collapse"
+                                 data-bs-parent="#navbarPerformanceReviewMenuName"
+                                 hs-parent-area="#navbarPerformanceReviewMenuName" style="">
+
+                                @if ($authUser->performanceReviewExists())
+                                    <a class="nav-link" id="performance-employee-index"
+                                       href="{{ route('performance.employee.index') }}">My Performance Review</a>
+                                @endif
+
+                                @if ($authUser->isSupervisor())
+                                    <a class="nav-link" id="performance-reviews-assistant"
+                                       href="{!! route('performance.reviews.assistant.index') !!}">Performance
+                                        Reviews</a>
+                                @endif
+
+                                @if ($authUser->can('manage-performance-review'))
+                                    <a class="nav-link" id="performance-index"
+                                       href="{{ route('performance.index') }}">Manage Performance Review</a>
+                                @endif
+
+                                @if ($authUser->can('review-performance-review'))
+                                    <a class="nav-link" id="performance-review-index"
+                                       href="{{ route('performance.review.index') }}">Review Performance
+                                        ({{ $reviewPerCount }})</a>
+                                @endif
+
+                                @if ($authUser->can('approve-performance-review'))
+                                    <a class="nav-link" id="performance-approve-index"
+                                       href="{{ route('performance.approve.index') }}">Approve Performance
+                                        ({{ $approvePerCount }})</a>
+                                @endif
+
+                                @if ($externalReviewPerCount > 0)
+                                    <a class="nav-link" id="performance-external-review-index"
+                                       href="{{ route('performance.external-review.index') }}">360 Feedback
+                                        ({{ $externalReviewPerCount }})</a>
                                 @endif
                             </div>
                         </div>
@@ -365,60 +420,6 @@
                         </div>
                     @endif
 
-                    @if (
-                        $authUser->can('manage-performance-review') ||
-                            $authUser->can('review-performance-review') ||
-                            $authUser->can('recommend-performance-review') ||
-                            $authUser->can('approve-performance-review') ||
-                            $authUser->performanceReviewExists())
-                        <div class="nav-item">
-                            <a class="nav-link dropdown-toggle" href="#navbarPerformanceReview" role="button"
-                               data-bs-toggle="collapse" data-bs-target="#navbarPerformanceReview"
-                               aria-expanded="false" aria-controls="navbarPerformanceReview"
-                               data-bs-toggle="tooltip" data-bs-placement="right" title="Performance Review">
-                                <i class="bi bi-graph-up-arrow nav-icon"></i>
-                                <span class="nav-link-title">Performance Review</span> </a>
-
-                            <div id="navbarPerformanceReview" class="nav-collapse collapse"
-                                 data-bs-parent="#navbarPerformanceReviewMenuName"
-                                 hs-parent-area="#navbarPerformanceReviewMenuName" style="">
-
-                                @if ($authUser->performanceReviewExists())
-                                    <a class="nav-link" id="performance-employee-index"
-                                       href="{{ route('performance.employee.index') }}">My Performance Review</a>
-                                @endif
-
-                                @if ($authUser->isSupervisor())
-                                    <a class="nav-link" id="performance-reviews-assistant"
-                                       href="{!! route('performance.reviews.assistant.index') !!}">Performance
-                                        Reviews</a>
-                                @endif
-
-                                @if ($authUser->can('manage-performance-review'))
-                                    <a class="nav-link" id="performance-index"
-                                       href="{{ route('performance.index') }}">Manage Performance Review</a>
-                                @endif
-
-                                @if ($authUser->can('review-performance-review'))
-                                    <a class="nav-link" id="performance-review-index"
-                                       href="{{ route('performance.review.index') }}">Review Performance
-                                        ({{ $reviewPerCount }})</a>
-                                @endif
-
-                                @if ($authUser->can('approve-performance-review'))
-                                    <a class="nav-link" id="performance-approve-index"
-                                       href="{{ route('performance.approve.index') }}">Approve Performance
-                                        ({{ $approvePerCount }})</a>
-                                @endif
-
-                                @if ($externalReviewPerCount > 0)
-                                    <a class="nav-link" id="performance-external-review-index"
-                                       href="{{ route('performance.external-review.index') }}">360 Feedback
-                                        ({{ $externalReviewPerCount }})</a>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
                     {{-- Project Management Menu --}}
                     <span class="dropdown-header fw-bold">Project Management</span>
                     <div class="nav-item">

@@ -225,7 +225,8 @@ class EmployeeRepository extends Repository
             ->get()
             ->map(function ($employee) use ($today) {
                 $dobThisYear = \Carbon\Carbon::parse($employee->date_of_birth)->year($today->year);
-                $daysUntil = $today->diffInDays($dobThisYear, false);
+                // $daysUntil = $today->diffInDays($dobThisYear, false);
+                $daysUntil = (int) $today->startOfDay()->diffInDays($dobThisYear, false);
 
                 $employee->upcoming_date = $dobThisYear;
                 $employee->days_until = $daysUntil;
@@ -253,7 +254,8 @@ class EmployeeRepository extends Repository
             ->get()
             ->map(function ($employee) use ($today) {
                 $annivThisYear = \Carbon\Carbon::parse($employee->joined_date)->year($today->year);
-                $daysUntil = $today->diffInDays($annivThisYear, false);
+                // $daysUntil = $today->diffInDays($annivThisYear, false);
+                $daysUntil = (int) $today->startOfDay()->diffInDays($annivThisYear, false);
 
                 $employee->upcoming_date = $annivThisYear;
                 $employee->days_until = $daysUntil;
@@ -299,7 +301,8 @@ class EmployeeRepository extends Repository
         return $employees->map(function ($employee) use ($today) {
             $contractEnd = $employee->latestTenure->contract_end_date;
 
-            $daysUntil = $today->diffInDays($contractEnd, false);
+            // $daysUntil = $today->diffInDays($contractEnd, false);
+            $daysUntil = (int) $today->startOfDay()->diffInDays($contractEnd, false);
 
             $employee->upcoming_date = $contractEnd;
             $employee->days_until = $daysUntil;
@@ -325,7 +328,8 @@ class EmployeeRepository extends Repository
             ->map(function ($employee) use ($today) {
                 $probationEnd = \Carbon\Carbon::parse($employee->probation_complete_date);
 
-                $daysUntil = $today->diffInDays($probationEnd, false);
+                // $daysUntil = $today->diffInDays($probationEnd, false);
+                $daysUntil = (int) $today->startOfDay()->diffInDays($probationEnd, false);
 
                 $employee->upcoming_date = $probationEnd;
                 $employee->days_until = $daysUntil;

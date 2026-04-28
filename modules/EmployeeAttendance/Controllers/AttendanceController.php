@@ -334,7 +334,8 @@ class AttendanceController extends Controller
         $now = now();
         $employeeId = auth()->user()->employee->id;
         $employee = auth()->user()->employee;
-        $officeId = $employee->latestTenure->office_id;
+        $office = $employee->latestTenure->office;
+        $officeId = $office->id;
         $weekendTypeId = $employee->latestTenure->office->weekend_type;
 
         $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
@@ -362,6 +363,10 @@ class AttendanceController extends Controller
         if ($detail && $detail->checkin) {
             return response()->json(['message' => 'Already checked in today.'], 400);
         }
+
+        $officeCheckinTime = $office->getOfficeCheckinTime();
+        $officeCheckoutTime = $office->getOfficeCheckoutTime();
+
         if (!$detail) {
             $this->attendanceDetail->create([
                 'attendance_master_id' => $attendance->id,
@@ -372,12 +377,16 @@ class AttendanceController extends Controller
                 'created_by' => auth()->id(),
                 'updated_by' => auth()->id(),
                 'checkin_from' => 'Manual',
+                'office_checkin_time' => $officeCheckinTime,
+                'office_checkout_time' => $officeCheckoutTime,
                 'worked_hours' => 0,
             ]);
         } else {
             $this->attendanceDetail->update($detail->id, [
                 'checkin' => $now,
                 'checkin_from' => 'Manual',
+                'office_checkin_time' => $officeCheckinTime,
+                'office_checkout_time' => $officeCheckoutTime,
                 'updated_by' => auth()->id(),
             ]);
         }
@@ -394,7 +403,8 @@ class AttendanceController extends Controller
         $now = now();
         $employeeId = auth()->user()->employee->id;
         $employee = auth()->user()->employee;
-        $officeId = $employee->latestTenure->office_id;
+        $office = $employee->latestTenure->office;
+        $officeId = $office->id;
         $weekendTypeId = $employee->latestTenure->office->weekend_type;
 
         $attendance = $this->attendance->getAttendanceObject($employeeId, $now->year, $now->month);
@@ -415,23 +425,22 @@ class AttendanceController extends Controller
 
         $this->attendanceDetail->update($detail->id, [
             'checkout' => $now,
+            'checkout_from' => 'Manual',
             'office_id' => $officeId,
             'weekend_type_id' => $weekendTypeId,
+            'office_checkin_time' => $detail->office_checkin_time ?? $office->getOfficeCheckinTime(),
+            'office_checkout_time' => $detail->office_checkout_time ?? $office->getOfficeCheckoutTime(),
             'updated_by' => auth()->id(),
         ]);
 
-        $checkIn = Carbon::parse($detail->checkin);
-        $checkOut = Carbon::parse($now);
-
-        $checkIn->startOfMinute();
-        $checkOut->startOfMinute();
+        $checkIn = Carbon::parse($detail->checkin)->startOfMinute();
+        $checkOut = Carbon::parse($now)->startOfMinute();
 
         // $workedHours = round($checkIn->floatDiffInHours($checkOut), 2);
         $workedHours = $checkIn->diff($checkOut)->format('%H.%I');
 
         $this->attendanceDetail->update($detail->id, [
             'worked_hours' => $workedHours,
-            'checkout_from' => 'Manual',
         ]);
 
         return response()->json([

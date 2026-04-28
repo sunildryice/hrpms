@@ -313,30 +313,44 @@ class AttendanceDetailController extends Controller
 
     protected function getAttendanceDatesWithLateEarlyFlags($attendance, $attendanceId)
     {
+        $office = $attendance->employee->latestTenure?->office;
         $baseDate = "{$attendance->year}-" . str_pad($attendance->month, 2, '0', STR_PAD_LEFT) . "-01";
 
         return $this->attendanceDetail->getAttendanceDetail($attendanceId)
-            ->map(function ($detail) use ($baseDate) {
+            ->map(function ($detail) use ($baseDate, $office, $attendanceId) {
 
-                if ($detail['weekend_type_id'] == config('constant.Saturday')) {
-                    $officeCheckin = config('constant.OFFICE_FIELD_CHECKIN_TIME');
-                    $officeCheckout = config('constant.OFFICE_FIELD_CHECKOUT_TIME');
-                } else {
-                    $officeCheckin = config('constant.OFFICE_CHECKIN_TIME');
-                    $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME');
-                }
+                // if ($detail['weekend_type_id'] == config('constant.Saturday')) {
+                //     $officeCheckin = config('constant.OFFICE_FIELD_CHECKIN_TIME');
+                //     $officeCheckout = config('constant.OFFICE_FIELD_CHECKOUT_TIME');
+                // } else {
+                //     $officeCheckin = config('constant.OFFICE_CHECKIN_TIME');
+                //     $officeCheckout = config('constant.OFFICE_CHECKOUT_TIME');
+                // }
+    
+                $detailModel = $this->attendanceDetail->getDetail($attendanceId, $detail->get('date'));
 
-                $officialCheckin = Carbon::parse("{$baseDate} {$officeCheckin}");
-                $officialCheckout = Carbon::parse("{$baseDate} {$officeCheckout}");
+                $officeCheckin = $detailModel?->getOfficeCheckin()
+                    ?? $office?->getOfficeCheckinTime()
+                    ?? config('constant.OFFICE_CHECKIN_TIME');
+
+                $officeCheckout = $detailModel?->getOfficeCheckout()
+                    ?? $office?->getOfficeCheckoutTime()
+                    ?? config('constant.OFFICE_CHECKOUT_TIME');
+
+                $officialCheckin = Carbon::parse("{$baseDate} {$officeCheckin}")->startOfMinute();
+                $officialCheckout = Carbon::parse("{$baseDate} {$officeCheckout}")->startOfMinute();
 
                 $checkinRaw = $detail['checkin'] ?? $detail['check_in_time'] ?? null;
                 $checkoutRaw = $detail['checkout'] ?? $detail['check_out_time'] ?? null;
 
-                $checkin = $checkinRaw ? Carbon::parse($checkinRaw) : null;
-                $checkout = $checkoutRaw ? Carbon::parse($checkoutRaw) : null;
+                $checkin = $checkinRaw ? Carbon::parse($checkinRaw)->startOfMinute() : null;
+                $checkout = $checkoutRaw ? Carbon::parse($checkoutRaw)->startOfMinute() : null;
 
                 $isLate = $checkin && $checkin->format('H:i:s') > $officialCheckin->format('H:i:s');
                 $isEarlyOut = $checkout && $checkout->format('H:i:s') < $officialCheckout->format('H:i:s');
+    
+                // $isLate = $checkin && $checkin->gt($officialCheckin);
+                // $isEarlyOut = $checkout && $checkout->lt($officialCheckout);
 
                 $displayCheckin = $checkin
                     ? ($isLate

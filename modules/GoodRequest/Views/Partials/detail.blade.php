@@ -15,7 +15,7 @@
                           title="Requester"></span>
                 </li>
 
-                <li class="position-relative">
+                {{-- <li class="position-relative">
                     <div class="d-flex gap-2 align-items-center">
                         <div class="icon-section"><i
                                 class="bi-person-badge dropdown-item-icon"></i></div>
@@ -23,7 +23,7 @@
                             class="d-content-section"> {!! $goodRequest->getReviewerName() !!} </div>
                     </div>
                     <span class="stretched-link" rel="tooltip" title="Reviewer"></span>
-                </li>
+                </li> --}}
 
                 <li class="position-relative">
                     <div class="d-flex gap-2 align-items-center">

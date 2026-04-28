@@ -45,6 +45,8 @@ class UpdateRequest extends FormRequest
             'bank_name' => 'nullable',
             'branch_name' => 'nullable',
             'weekend_type'=>'integer|between:1,2',
+            'office_checkin_time' => 'nullable|date_format:H:i',
+            'office_checkout_time' => 'nullable|date_format:H:i|after:office_checkin_time',
         ];
     }
 

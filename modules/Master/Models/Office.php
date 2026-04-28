@@ -38,6 +38,8 @@ class Office extends Model
         'bank_name',
         'branch_name',
         'weekend_type',
+        'office_checkin_time',
+        'office_checkout_time',
         'activated_at',
         'created_by',
         'updated_by',
@@ -124,6 +126,16 @@ class Office extends Model
     public function getOfficeCode()
     {
         return $this->office_code;
+    }
+
+    public function getOfficeCheckinTime(): string
+    {
+        return $this->office_checkin_time ?? config('constant.OFFICE_CHECKIN_TIME');
+    }
+
+    public function getOfficeCheckoutTime(): string
+    {
+        return $this->office_checkout_time ?? config('constant.OFFICE_CHECKOUT_TIME');
     }
 
     public function getUpdatedAt()

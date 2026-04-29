@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Edit Work From Home Request')
+@section('title', 'Edit Work From Home/Field Work Request')
 
 @section('page_css')
     <link href="{{ asset('plugins/slim-select/dist/slimselect.css') }}" rel="stylesheet">
@@ -516,14 +516,14 @@
                         </li>
                         <li class="breadcrumb-item">
                             <a href="{{ route('wfh.requests.index') }}" class="text-decoration-none text-dark">
-                                Work From Home Requests
+                                Work From Home/Field Work Requests
                             </a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Edit</li>
                     </ol>
                 </nav>
                 <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">
-                    Edit Work From Home Request
+                    Edit Work From Home/Field Work Request
                 </h4>
             </div>
         </div>

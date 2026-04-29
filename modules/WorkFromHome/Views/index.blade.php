@@ -1,7 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Work From Home Requests')
-
+@section('title', 'Work From Home/Field Work Requests')
 
 @section('page_css')
     <style>
@@ -156,8 +155,6 @@
                     </tbody>
                 </table>
             </div>
-
-
         </div>
     </div>
 @stop

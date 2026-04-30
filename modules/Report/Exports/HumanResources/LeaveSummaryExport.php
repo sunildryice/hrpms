@@ -25,8 +25,9 @@ class LeaveSummaryExport implements Responsable, ShouldAutoSize, WithStyles, Wit
     private $employeeCode;
     private $fiscalYear;
     private $month;
+    private $status;
 
-    public function __construct($employeeCode, $fiscalYear, $month)
+    public function __construct($employeeCode, $fiscalYear, $month, $status)
     {
         $this->employeeCode = $employeeCode;
         $this->fiscalYear = $fiscalYear;
@@ -34,22 +35,23 @@ class LeaveSummaryExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         $this->leaves = app(LeaveRepository::class);
         $this->leaveTypes = app(LeaveTypeRepository::class);
         $this->month = $month;
+        $this->status = $status;
     }
 
     /**
-    * It's required to define the fileName within
-    * the export class when making use of Responsable.
-    */
+     * It's required to define the fileName within
+     * the export class when making use of Responsable.
+     */
     private $fileName = 'leave_record_summary_report.xlsx';
 
     /**
-    * Optional Writer Type
-    */
+     * Optional Writer Type
+     */
     private $writerType = Excel::XLSX;
 
     /**
-    * Optional headers
-    */
+     * Optional headers
+     */
     private $headers = [
         'Content-Type' => 'text/csv',
     ];
@@ -62,8 +64,8 @@ class LeaveSummaryExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         $row_count = $sheet->getHighestDataRow(); // returns row count - int, eg: 1 or 2 or 3.
         $column_count = $sheet->getHighestDataColumn(); // returns last column - alphabet, eg: A or D or W.
         $start_cell = 'A1';
-        $end_cell = $column_count.$row_count;
-        return $start_cell.':'.$end_cell;   // returns cell range. example: 'A1:A7' or 'A1:W3'
+        $end_cell = $column_count . $row_count;
+        return $start_cell . ':' . $end_cell;   // returns cell range. example: 'A1:A7' or 'A1:W3'
     }
 
     public function styles(Worksheet $sheet)
@@ -96,10 +98,20 @@ class LeaveSummaryExport implements Responsable, ShouldAutoSize, WithStyles, Wit
         $leaves = $query->get();
 
         $data = Employee::query();
-        $data->whereNotNull('activated_at');
+        $data->where(function ($query) {
+            $query->whereNull('employee_type_id')
+                ->orWhere('employee_type_id', '=', config('constant.FULL_TIME_EMPLOYEE'));
+        });
         if (isset($this->employeeCode)) {
             $employeeCode = $this->employeeCode;
             $data->where('employee_code', $employeeCode);
+        }
+        if (isset($this->status)) {
+            if ($this->status === 'active') {
+                $data->whereNotNull('activated_at');
+            } elseif ($this->status === 'inactive') {
+                $data->whereNull('activated_at');
+            }
         }
         $data->whereIn('id', $leaves->pluck('employee_id')->toArray());
         $filteredEmployees = $data->get();

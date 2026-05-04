@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Work From Home Request Detail')
+@section('title', 'Work From Home/Field Work Request Detail')
 
 @section('page_js')
     <script type="text/javascript">

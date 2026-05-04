@@ -377,7 +377,7 @@
                                         </div>
                                         <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
                                             <small>Leave for {{ $leave->getLeaveDuration() }}
-                                                {{ $leave->leaveType->getLeaveBasis() }}.</small>
+                                                {{ $leave->leaveType->getLeaveBasis() }}{{ $leave->getLeaveDuration() > 1 ? 's' : '' }}.</small>
                                             <small> {{ $leave->getStartDate() }} - {{ $leave->getEndDate() }}</small>
                                         </div>
                                         @if ($time = $leave->getFirstLeaveTime())
@@ -408,7 +408,7 @@
                                         @if ($leave->getTable() == 'leave_requests')
                                             <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
                                                 <small>Leave for {{ $leave->getLeaveDuration() }}
-                                                    {{ $leave->leaveType->getLeaveBasis() }}.</small>
+                                                    {{ $leave->leaveType->getLeaveBasis() }}{{ $leave->getLeaveDuration() > 1 ? 's' : '' }}.</small>
                                                 <small> {{ $leave->getStartDate() }} - {{ $leave->getEndDate() }}</small>
                                             </div>
                                             @if ($time = $leave->getFirstLeaveTime())
@@ -416,7 +416,7 @@
                                             @endif
                                         @else
                                             <div class="text-muted d-flex flex-column flex-lg-row justify-content-between">
-                                                <small>Leave for {{ $leave->getLeaveDuration() }} Day</small>
+                                                <small>Leave for {{ $leave->getLeaveDuration() }} {{ $leave->getLeaveDuration() > 1 ? 'Days' : 'Day' }}</small>
                                                 <small> {{ $leave->getStartDate() }} - {{ $leave->getEndDate() }}</small>
                                             </div>
                                             <small>Time: Full Day</small>

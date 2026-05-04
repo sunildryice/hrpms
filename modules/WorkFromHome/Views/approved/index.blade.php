@@ -2,7 +2,6 @@
 
 @section('title', 'Approved Requests')
 
-
 @section('page_js')
     <script type="text/javascript">
         $(document).ready(function() {
@@ -136,8 +135,6 @@
                     </tbody>
                 </table>
             </div>
-
-
         </div>
     </div>
 @stop

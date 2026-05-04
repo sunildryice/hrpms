@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header fw-bold">
-        Work From Home Request Details
+        WFH/Field Work Request Details
     </div>
     <div class="card-body">
         <div class="p-1">
@@ -56,8 +56,7 @@
                     <span class="stretched-link" rel="tooltip" title="Duration"></span>
                 </li>
 
-                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason for Work From
-                        Home</span></li>
+                <li class="pt-4 pb-2"><span class="card-subtitle text-uppercase text-primary">Reason for WFH/Field Work</span></li>
                 <li class="position-relative">
                     <div class="gap-2 d-flex align-items-start">
                         <div class="icon-section"><i class="bi-chat-dots dropdown-item-icon"></i></div>

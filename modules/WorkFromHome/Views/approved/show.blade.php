@@ -18,7 +18,7 @@
                         <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                 class="text-decoration-none text-dark">Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('wfh.requests.index') }}"
-                                class="text-decoration-none text-dark">Work From Home Requests</a></li>
+                                class="text-decoration-none text-dark">Work From Home/Field Work Requests</a></li>
                         <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                     </ol>
                 </nav>

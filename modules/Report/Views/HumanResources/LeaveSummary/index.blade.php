@@ -10,6 +10,8 @@
             let oldEmployee = '{{request()->get("employee")}}';
             let fiscalYearId = '{{request()->get("fiscal_year")}}';
             let oldMonth = '{{request()->get("month")}}';
+            let oldStatus = '{{request()->get("status")}}';
+
 
             $('#leaveSummaryTable').DataTable({
                 scrollX: true,
@@ -25,16 +27,25 @@
                 $('#month').val(oldMonth).trigger('change');
             }
 
+            if (oldStatus) {
+                $('#status').val(oldStatus).trigger('change');
+            }
+
             $('#btn_export').attr('href', '');
             $('#btn_export').attr('href', $('#btn_export').attr('href') +
-                '/report/leave/summary/export?employee=' + oldEmployee + '&fiscal_year=' + fiscalYearId + '&month=' + oldMonth);
+                '/report/leave/summary/export?employee=' + oldEmployee + '&fiscal_year=' + fiscalYearId + '&month=' + oldMonth + '&status=' + oldStatus);
         });
+
+        // $('#btn_reset').on('click', function (e) {
+        //     e.preventDefault();
+        //     $('#employee').val('').trigger('change');
+        //     $('#month').val('').trigger('change');
+        //     $('#month').prop('selectedIndex',0);
+        // });
 
         $('#btn_reset').on('click', function (e) {
             e.preventDefault();
-            $('#employee').val('').trigger('change');
-            $('#month').val('').trigger('change');
-            $('#month').prop('selectedIndex',0);
+            window.location.href = '{{ route("report.leave.summary.index") }}';
         });
 
     </script>
@@ -70,10 +81,12 @@
                     <div class="row mb-4" style="align-items: flex-end">
                         <div class="col-md-2">
                             <label class="form-label" for="fiscal_year">Year</label>
-                            <select class="form-control" name="fiscal_year" id="fiscal_year">
+                            <select class="form-control select2" name="fiscal_year" id="fiscal_year">
+                                <option value="">Select Year</option>
                                 @foreach ($fiscalYears as $year)
-                                    <option
-                                        value="{{$year->id}}" {{$year->id == request()->get('fiscal_year') ? 'selected' : ''}}>{{$year->title}}</option>
+                                    <option value="{{ $year->id }}"
+                                        {{ $year->id == request()->get('fiscal_year') ? 'selected' : '' }}>
+                                        {{ $year->title }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -97,6 +110,14 @@
                                             value="{{ $employee->employee_code }}">{{ $employee->getFullName() }}</option>
                                     @endif
                                 @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label" for="status">Employee Status</label>
+                            <select class="form-control" name="status" id="status">
+                                <option value="">All</option>
+                                <option value="active" {{ request()->get('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ request()->get('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
                         </div>
                         <div class="col">

@@ -14,7 +14,9 @@ class FiscalYearRepository extends Repository
 
     public function getFiscalYears()
     {
-        return $this->model->get();
+        return $this->model
+            ->orderBy('start_date', 'desc')
+            ->get();
     }
 
     public function getCurrentFiscalYear()

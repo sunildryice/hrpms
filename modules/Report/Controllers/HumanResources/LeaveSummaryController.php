@@ -19,7 +19,8 @@ class LeaveSummaryController extends Controller
         protected FiscalYearRepository $fiscalYears,
         protected LeaveTypeRepository $leaveTypes,
         protected LeaveRepository $leaves,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request)
     {
@@ -34,10 +35,17 @@ class LeaveSummaryController extends Controller
         $leaves = $query->get();
 
         $data = Employee::query();
-        $data->where(function($query) {
+        $data->where(function ($query) {
             $query->whereNull('employee_type_id')
-            ->orWhere('employee_type_id', '=', config('constant.FULL_TIME_EMPLOYEE'));
+                ->orWhere('employee_type_id', '=', config('constant.FULL_TIME_EMPLOYEE'));
         });
+
+        $status = $request->status;
+        if ($status === 'active') {
+            $data->whereNotNull('activated_at');
+        } elseif ($status === 'inactive') {
+            $data->whereNull('activated_at');
+        }
 
         if ($request->filled('employee')) {
             $employeeCode = $request->employee;
@@ -50,7 +58,7 @@ class LeaveSummaryController extends Controller
             ->whereIn('id', $leaves->pluck('leave_type_id')->toArray())->get();
 
         $array = [
-            'employees' => $this->employees->getActiveEmployees(),
+            'employees' => $this->employees->getAllEmployees(),
             'fiscalYears' => $this->fiscalYears->getFiscalYears(),
             'filteredEmployees' => $filteredEmployees,
             'employee' => $request->filled('employee') ? $request->employee : '',
@@ -68,7 +76,8 @@ class LeaveSummaryController extends Controller
         $employeeCode = $request->employee ? (int) $request->employee : null;
         $fiscalYear = $request->fiscal_year ? (int) $request->fiscal_year : null;
         $month = $request->month ? (int) $request->month : null;
+        $status = $request->status ?? null;
 
-        return new LeaveSummaryExport($employeeCode, $fiscalYear, $month);
+        return new LeaveSummaryExport($employeeCode, $fiscalYear, $month, $status);
     }
 }

@@ -72,6 +72,12 @@
         <!-- Main Content -->
         <div class="card shadow-sm border">
             <div class="card-body">
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ route('monthly-timesheet.summary.employee.export', [$year, $month, $monthlyTimeSheet->id]) }}"
+                       class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                    </a>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="employeeTimesheetTable">
                         <thead class="bg-light">

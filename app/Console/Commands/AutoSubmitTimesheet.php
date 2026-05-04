@@ -78,7 +78,7 @@ class AutoSubmitTimesheet extends Command
         }
 
         $timesheets = $this->timesheets->select(['*'])
-            ->where('end_date', '<', now()->subDay(3))
+            ->where('end_date', '<', now()->subDay(5))
             ->whereIn('status_id', [config('constant.CREATED_STATUS')])
             ->get();
         $this->info($timesheets->count() . ' timesheets are being auto submitted.');

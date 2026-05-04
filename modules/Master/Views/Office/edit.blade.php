@@ -2,8 +2,7 @@
     <h5 class="modal-title mb-0 fs-6" id="openModalLabel">Edit Office</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
-<form action="{!! route('master.offices.update', $office->id) !!}" method="post" enctype="multipart/form-data"
-    id="officeForm" autocomplete="off">
+<form action="{!! route('master.offices.update', $office->id) !!}" method="post" enctype="multipart/form-data" id="officeForm" autocomplete="off">
     <div class="modal-body">
         <div class="row mb-2">
             <div class="col-lg-3">
@@ -37,8 +36,9 @@
                 <select class="form-control" name="office_type_id" id="office_type_id">
                     <option value="">Select office type</option>
                     @foreach ($officeTypes as $type)
-                        <option value="{{$type->id}}" {{$type->id == $office->office_type_id ? 'selected' : ''}}>
-                            {{$type->getTitle()}}</option>
+                        <option value="{{ $type->id }}"
+                            {{ $type->id == $office->office_type_id ? 'selected' : '' }}>
+                            {{ $type->getTitle() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -53,8 +53,9 @@
                 <select class="form-control" name="parent_id" id="parent_id">
                     <option value="">Select parent office</option>
                     @foreach ($parentOffices as $parentOffice)
-                        <option value="{{$parentOffice->id}}" {{$office->parent_id == $parentOffice->id ? 'selected' : ''}}>
-                            {{$parentOffice->getOfficeName()}}</option>
+                        <option value="{{ $parentOffice->id }}"
+                            {{ $office->parent_id == $parentOffice->id ? 'selected' : '' }}>
+                            {{ $parentOffice->getOfficeName() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -101,8 +102,8 @@
             <div class="col-lg-9">
                 <select class="select2 form-control" name="district_id">
                     <option value="">Select District</option>
-                    @foreach($districts as $district)
-                        <option value="{{ $district->id }}" @if($district->id == $office->district_id) selected @endif>
+                    @foreach ($districts as $district)
+                        <option value="{{ $district->id }}" @if ($district->id == $office->district_id) selected @endif>
                             {{ $district->getDistrictName() }}</option>
                     @endforeach
                 </select>
@@ -115,8 +116,8 @@
                 </div>
             </div>
             <div class="col-lg-9">
-                <input type="text" class="form-control" name="account_number" value="{{ $office->account_number }}"
-                    placeholder="Bank Account Number">
+                <input type="text" class="form-control" name="account_number"
+                    value="{{ $office->account_number }}" placeholder="Bank Account Number">
             </div>
         </div>
         <div class="row mb-2">
@@ -150,8 +151,30 @@
             <div class="col-lg-9">
                 <select class="select2 form-control" name="weekend_type">
                     <option value="1">Saturday</option>
-                    <option value="2" @if($office->weekend_type == 2) selected @endif>Saturday+Sunday</option>
+                    <option value="2" @if ($office->weekend_type == 2) selected @endif>Saturday+Sunday</option>
                 </select>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Office Check-in Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control time-picker" name="office_checkin_time"
+                    value="{{ $office->office_checkin_time }}" placeholder="HH:mm" onfocus="this.blur()">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label class="form-label m-0">Office Check-out Time</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control time-picker" name="office_checkout_time"
+                    value="{{ $office->office_checkout_time }}" placeholder="HH:mm" onfocus="this.blur()">
             </div>
         </div>
         <div class="row mb-2">
@@ -163,7 +186,7 @@
             <div class="col-lg-9">
                 <div class=" form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked"
-                        name="active" @if($office->activated_at) checked @endif>
+                        name="active" @if ($office->activated_at) checked @endif>
                     <label class="form-check-label" for="flexSwitchCheckChecked"></label>
                 </div>
             </div>

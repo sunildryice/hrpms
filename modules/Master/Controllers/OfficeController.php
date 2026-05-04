@@ -2,15 +2,13 @@
 
 namespace Modules\Master\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Requests\Office\StoreRequest;
 use Modules\Master\Requests\Office\UpdateRequest;
-
-use DataTables;
 use Modules\Master\Repositories\OfficeTypeRepository;
 
 class OfficeController extends Controller

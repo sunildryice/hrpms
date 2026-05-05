@@ -498,7 +498,7 @@
                                     ({{ $approveMonthlyTimeSheetCount }})</a>
                             @endif
 
-                            @if ($authUser->can('view-timesheet-summary') || $authUser->employee->isSupervisor())
+                            @if ($authUser->can('view-timesheet-summary'))
                                 <a class="nav-link" href="{{ route('approved.monthly-timesheet.index') }}"
                                    id="approved-monthly-timesheets-menu">Approved Monthly Timesheet</a>
                                 <a class="nav-link" href="{{ route('monthly-timesheet.summary.index') }}"

@@ -208,12 +208,14 @@ class CountrySeeder extends Seeder
         ];
 
         foreach ($countries as $title) {
-            DB::table('lkup_countries')->insertOrIgnore([
-                'title' => $title,
-                'enable_field' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('lkup_countries')->updateOrInsert(
+                ['title' => $title],
+                [
+                    'enable_field' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

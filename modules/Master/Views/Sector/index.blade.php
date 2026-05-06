@@ -48,10 +48,10 @@
             });
 
 
-        $(document).on('click', '.open-sector-modal-form', function(e) {
-            e.preventDefault();
-            $('#openModal').find('.modal-content').html('');
-            $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function (){
+            $(document).on('click', '.open-sector-modal-form', function(e) {
+                e.preventDefault();
+                $('#openModal').find('.modal-content').html('');
+                $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                     const form = document.getElementById('sectorForm');
                     const fv = FormValidation.formValidation(form, {
                         fields: {
@@ -94,11 +94,11 @@
 @endsection
 @section('page-content')
 
-    <div class="m-content p-3">
+    <div class="container-fluid">
         <div class="pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
-            <div class="brd-crms flex-grow-1">
-                <nav aria-label="breadcrumb">
+                <div class="brd-crms flex-grow-1">
+                    <nav aria-label="breadcrumb">
                         <ol class="breadcrumb m-0">
                             <li class="breadcrumb-item"><a href="{{ route('dashboard.index') }}"
                                     class="text-decoration-none text-dark">{{ __('label.home') }}</a></li>
@@ -118,27 +118,27 @@
             </div>
 
         </div>
-        <div class="container-fluid-s">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table" id="sectorTable">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th scope="col">Sector Name</th>
-                                    <th scope="col">Created By</th>
-                                    <th scope="col">Updated On</th>
-                                    <th style="width: 150px">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
+    </div>
+    <div class="container-fluid-s">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table" id="sectorTable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Sector Name</th>
+                                <th scope="col">Created By</th>
+                                <th scope="col">Updated On</th>
+                                <th style="width: 150px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
+
     </div>
 
 @stop

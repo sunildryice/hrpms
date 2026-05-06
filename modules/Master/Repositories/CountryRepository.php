@@ -15,6 +15,7 @@ class CountryRepository extends Repository
     public function getActiveCountries()
     {
         return $this->model->select(['*'])
+            ->where('enable_field', true)
             ->orderBy('title')->get();
     }
 }

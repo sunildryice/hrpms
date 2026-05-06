@@ -99,7 +99,7 @@ class ProjectController
         $authUser = auth()->user();
         $users = $this->userRepository->getActiveUsers();
         $project = Project::with('members')->getModel();
-        $stages = $this->activityStageRepository->all();
+        $stages = $this->activityStageRepository->getActiveActivityStages();
         $projectThemes = $this->projectThemeRepository->getActive();
         $approaches = $this->approachRepository->getActive();
         $sectors = $this->sectorRepository->getActive();
@@ -133,7 +133,7 @@ class ProjectController
     public function show($id)
     {
         $project = $this->projectRepository->find($id);
-        $stages = $this->activityStageRepository->all();
+        $stages = $this->activityStageRepository->getActiveActivityStages();
         $projectActivity = $project->activities;
         $authUser = auth()->user();
         return view('Project::Project.show', compact('project', 'stages', 'authUser', 'projectActivity'));
@@ -230,7 +230,7 @@ class ProjectController
     {
         $project = $this->projectRepository->with(['members', 'stages'])->find($id);
         $users = $this->userRepository->getActiveUsers();
-        $stages = $this->activityStageRepository->all();
+        $stages = $this->activityStageRepository->getActiveActivityStages();
         $districts = $this->districts->getDistricts();
         $projectThemes = $this->projectThemeRepository->getActive();
         $approaches = $this->approachRepository->getActive();

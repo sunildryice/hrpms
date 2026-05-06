@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
 
             BloodGroupSeeder::class,
             DepartmentSeeder::class,
+            SectorSeeder::class,
+            CountrySeeder::class,
             DesignationSeeder::class,
             EducationLevelSeeder::class,
             FamilyRelationSeeder::class,

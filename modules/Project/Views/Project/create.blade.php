@@ -408,6 +408,32 @@
                             </div>
                         </div>
 
+                        {{-- Country — multi-select --}}
+                        <div class="row mb-3">
+                            <div class="col-lg-3">
+                                <div class="d-flex align-items-start h-100">
+                                    <label class="form-label">Country</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-9">
+                                <select name="country_ids[]"
+                                    class="select2 form-control @error('country_ids') is-invalid @enderror" multiple
+                                    data-placeholder="Select Countries" style="width: 100%">
+                                    @foreach ($countries as $country)
+                                        <option value="{{ $country->id }}"
+                                            @if (in_array($country->id, old('country_ids', []))) selected @endif>
+                                            {{ $country->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('country_ids')
+                                    <div class="fv-plugins-message-container invalid-feedback">
+                                        <div data-field="country_ids">{{ $message }}</div>
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
                         {{-- Budget (US$) --}}
                         <div class="row mb-2">
                             <div class="col-lg-3">
@@ -427,7 +453,7 @@
                             </div>
                         </div>
 
-                        {{-- Project Theme — single select --}}
+                        {{-- Project Theme — multi-select --}}
                         <div class="row mb-3">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
@@ -435,19 +461,19 @@
                                 </div>
                             </div>
                             <div class="col-lg-9">
-                                <select name="project_theme_id"
-                                    class="select2 form-control @error('project_theme_id') is-invalid @enderror"
-                                    data-width="100%">
-                                    <option value="">Select Project Theme</option>
+                                <select name="project_theme_ids[]"
+                                    class="select2 form-control @error('project_theme_ids') is-invalid @enderror" multiple
+                                    data-placeholder="Select Project Themes" data-width="100%" style="width:100%">
                                     @foreach ($projectThemes as $theme)
-                                        <option value="{{ $theme->id }}" @selected(old('project_theme_id') == $theme->id)>
+                                        <option value="{{ $theme->id }}"
+                                            @if (in_array($theme->id, (array) old('project_theme_ids', []))) selected @endif>
                                             {{ $theme->title }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('project_theme_id')
+                                @error('project_theme_ids')
                                     <div class="fv-plugins-message-container invalid-feedback">
-                                        <div data-field="project_theme_id">{{ $message }}</div>
+                                        <div data-field="project_theme_ids">{{ $message }}</div>
                                     </div>
                                 @enderror
                             </div>
@@ -479,7 +505,7 @@
                             </div>
                         </div>
 
-                        {{-- Sector — single select --}}
+                        {{-- Sector — multi-select --}}
                         <div class="row mb-3">
                             <div class="col-lg-3">
                                 <div class="d-flex align-items-start h-100">
@@ -487,19 +513,20 @@
                                 </div>
                             </div>
                             <div class="col-lg-9">
-                                <select name="sector_id"
-                                    class="select2 form-control @error('sector_id') is-invalid @enderror"
-                                    data-width="100%">
+                                <select name="sector_ids[]"
+                                    class="select2 form-control @error('sector_ids') is-invalid @enderror" multiple
+                                    data-placeholder="Select Sectors" data-width="100%" style="width:100%">
                                     <option value="">Select Sector</option>
                                     @foreach ($sectors as $sector)
-                                        <option value="{{ $sector->id }}" @selected(old('sector_id') == $sector->id)>
+                                        <option value="{{ $sector->id }}"
+                                            @if (in_array($sector->id, (array) old('sector_ids', []))) selected @endif>
                                             {{ $sector->title }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('sector_id')
+                                @error('sector_ids')
                                     <div class="fv-plugins-message-container invalid-feedback">
-                                        <div data-field="sector_id">{{ $message }}</div>
+                                        <div data-field="sector_ids">{{ $message }}</div>
                                     </div>
                                 @enderror
                             </div>

@@ -34,10 +34,14 @@ class UpdateRequest extends FormRequest
             'budget_usd' => 'nullable|numeric|min:0',
             'district_ids' => 'nullable|array',
             'district_ids.*' => 'exists:lkup_districts,id',
-            'project_theme_id' => 'nullable|exists:lkup_project_themes,id',
+            'project_theme_ids' => 'nullable|array',
+            'project_theme_ids.*' => 'exists:lkup_project_themes,id',
             'approach_ids' => 'nullable|array',
             'approach_ids.*' => 'exists:lkup_approaches,id',
-            'sector_id' => 'nullable|exists:lkup_sectors,id',
+            'sector_ids' => 'nullable|array',
+            'sector_ids.*' => 'exists:lkup_sectors,id',
+            'country_ids' => 'nullable|array',
+            'country_ids.*' => 'exists:lkup_countries,id',
         ];
     }
 

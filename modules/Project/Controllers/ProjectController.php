@@ -7,6 +7,7 @@ use Modules\Master\Repositories\ApproachRepository;
 use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\ProjectThemeRepository;
 use Modules\Master\Repositories\SectorRepository;
+use Modules\Master\Repositories\CountryRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Enums\ActivityStatus;
@@ -26,6 +27,7 @@ class ProjectController
         protected ProjectRepository $projectRepository,
         protected ProjectThemeRepository $projectThemeRepository,
         protected SectorRepository $sectorRepository,
+        protected CountryRepository $countryRepository,
         protected UserRepository $userRepository,
 
     ) {
@@ -103,6 +105,7 @@ class ProjectController
         $projectThemes = $this->projectThemeRepository->getActive();
         $approaches = $this->approachRepository->getActive();
         $sectors = $this->sectorRepository->getActive();
+        $countries = $this->countryRepository->getActiveCountries();
         $districts = $this->districts->getDistricts();
         return view('Project::Project.create', compact(
             'authUser',
@@ -111,6 +114,7 @@ class ProjectController
             'projectThemes',
             'approaches',
             'sectors',
+            'countries',
             'districts'
         ));
     }
@@ -123,6 +127,9 @@ class ProjectController
         $inputs['activated_at'] = date('Y-m-d H:i:s');
         $inputs['approach_ids'] = $inputs['approach_ids'] ?? [];
         $inputs['district_ids'] = $inputs['district_ids'] ?? [];
+        $inputs['project_theme_ids'] = $inputs['project_theme_ids'] ?? [];
+        $inputs['sector_ids'] = $inputs['sector_ids'] ?? [];
+        $inputs['country_ids'] = $inputs['country_ids'] ?? [];
         $project = $this->projectRepository->create($inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project created successfully.');
@@ -235,6 +242,7 @@ class ProjectController
         $projectThemes = $this->projectThemeRepository->getActive();
         $approaches = $this->approachRepository->getActive();
         $sectors = $this->sectorRepository->getActive();
+        $countries = $this->countryRepository->getActiveCountries();
         return view('Project::Project.edit', compact(
             'project',
             'users',
@@ -242,7 +250,8 @@ class ProjectController
             'districts',
             'projectThemes',
             'approaches',
-            'sectors'
+            'sectors',
+            'countries'
         ));
     }
 
@@ -255,6 +264,9 @@ class ProjectController
         $inputs['show_pms_dashboard'] = $request->has('show_pms_dashboard') ? 1 : 0;
         $inputs['approach_ids'] = $inputs['approach_ids'] ?? [];
         $inputs['district_ids'] = $inputs['district_ids'] ?? [];
+        $inputs['project_theme_ids'] = $inputs['project_theme_ids'] ?? [];
+        $inputs['sector_ids'] = $inputs['sector_ids'] ?? [];
+        $inputs['country_ids'] = $inputs['country_ids'] ?? [];
         $project = $this->projectRepository->update($id, $inputs);
         if ($project) {
             return redirect()->route('project.index')->withSuccessMessage('Project updated successfully.');

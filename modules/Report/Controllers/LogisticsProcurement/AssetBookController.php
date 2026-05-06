@@ -34,7 +34,6 @@ class AssetBookController extends Controller
     {
         $data = Asset::query()->with([
             'inventoryItem.office',
-            'inventoryItem.grn.fiscalYear',
             'inventoryItem.item',
             'inventoryItem.accountCode',
             'inventoryItem.activityCode',
@@ -210,6 +209,6 @@ class AssetBookController extends Controller
         $disposition_type = $request->filled('disposition_type') ? $request->disposition_type : null;
         $office_id = $request->filled('office_id') ? $request->office_id : null;
 
-        return new AssetDispositionExport($start_date, $end_date, $item_id, $item_category, $requester, $disposition_type, $office_id, $priceRange);
+        return new AssetDispositionExport($start_date, $end_date, $item_id, $item_category, $requester, $disposition_type, $office_id);
     }
 }

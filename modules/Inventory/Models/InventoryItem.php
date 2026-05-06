@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\DistributionRequest\Models\DistributionRequestItem;
 use Modules\GoodRequest\Models\GoodRequestItem;
-use Modules\Grn\Models\Grn;
-use Modules\Grn\Models\GrnItem;
 use Modules\Master\Models\AccountCode;
 use Modules\Master\Models\ActivityCode;
 use Modules\Master\Models\DistributionType;
@@ -155,14 +153,6 @@ class InventoryItem extends Model
         return $this->belongsTo(Execution::class, 'execution_id')->withDefault();
     }
 
-    /**
-     * Get the grn of the inventory item.
-     */
-    public function grn()
-    {
-        return $this->belongsTo(Grn::class, 'grn_id')->withDefault();
-    }
-
     public function getDiscountAmount()
     {
         return $this->grn->discount_amount;
@@ -171,14 +161,6 @@ class InventoryItem extends Model
     public function getTotalAmountAfterDiscount()
     {
         return $this->getTotalPrice() - $this->getDiscountAmount();
-    }
-
-    /**
-     * Get the grn item of the inventory item.
-     */
-    public function grnItem()
-    {
-        return $this->belongsTo(GrnItem::class, 'grn_item_id')->withDefault();
     }
 
     /**

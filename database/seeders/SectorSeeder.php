@@ -16,15 +16,20 @@ class SectorSeeder extends Seeder
             'Climate Change Livelihood and Health',
             'Disease Prevention and Management',
             'Health Policy and Systems Research',
+            'Non-Communicable diseases',
+            'Monitoring and Evaluation',
+            'Nutrition'
         ];
 
         foreach ($sectors as $title) {
-            DB::table('lkup_sectors')->insertOrIgnore([
-                'title'        => $title,
-                'enable_field' => true,
-                'created_at'   => now(),
-                'updated_at'   => now(),
-            ]);
+            DB::table('lkup_sectors')->updateOrInsert(
+                ['title' => $title],
+                [
+                    'enable_field' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

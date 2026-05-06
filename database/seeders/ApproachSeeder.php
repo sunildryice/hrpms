@@ -18,15 +18,20 @@ class ApproachSeeder extends Seeder
             'Census',
             'Toolkit Development',
             'Systematic Review',
+            'Review',
+            'Documentation',
+            'Technical Assistance'
         ];
 
         foreach ($approaches as $title) {
-            DB::table('lkup_approaches')->insertOrIgnore([
-                'title' => $title,
-                'enable_field' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('lkup_approaches')->updateOrInsert(
+                ['title' => $title],
+                [
+                    'enable_field' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

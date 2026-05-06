@@ -112,10 +112,6 @@
 
                             </tr>
                             <tr>
-                                <th scope="row">Project:</th>
-                                <td colspan="3">{{ $travelRequest->getProjectCode() }}</td>
-                            </tr>
-                            <tr>
                                 <th scope="row">Purpose of travel:</th>
                                 <td colspan="3">{{ $travelRequest->purpose_of_travel }}</td>
                             </tr>
@@ -125,7 +121,7 @@
                     <table class="table border mb-4">
                         <tbody>
                             <tr>
-                                <th scope="row">Departure Date:</th>
+                                <th scope="row">Departure Date: :</th>
                                 <td>{{ $travelRequest->getDepartureDate() }}</td>
                                 <th scope="row">Return Date:</th>
                                 <td>{{ $travelRequest->getReturnDate() }}</td>
@@ -135,75 +131,200 @@
                             </tr>
                         </tbody>
                     </table>
-
-                    {{-- Travel Itinerary --}}
-                    <div class="fw-bold mb-2">Travel Itinerary</div>
                     <table class="table border mb-4">
                         <thead>
                             <tr>
                                 <th>Date</th>
+                                <th>Itinerary</th>
                                 <th>Activity</th>
-                                <th>Planned Activities</th>
-                                <th class="text-center">Accommodation</th>
-                                <th class="text-center">Air Ticket</th>
-                                <th class="text-center">Vehicle</th>
+                                {{-- <th>Account Code</th>
+                                <th>Donor Code</th> --}}
+                                <th>Mode of Travel</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($travelRequest->travelRequestDayItineraries as $dayItinerary)
+                            @foreach ($travelRequest->travelRequestItineraries as $itenrary)
                                 <tr>
-                                    <td>{{ $dayItinerary->formatted_date }}</td>
-                                    <td>{{ $dayItinerary->activity?->title }}</td>
-                                    <td>{{ $dayItinerary->planned_activities }}</td>
-                                    <td class="text-center">{{ $dayItinerary->accommodation ? 'Yes' : 'No' }}</td>
-                                    <td class="text-center">{{ $dayItinerary->air_ticket ? 'Yes' : 'No' }}</td>
-                                    <td class="text-center">{{ $dayItinerary->vehicle ? 'Yes' : 'No' }}</td>
+                                    <td>{{ $itenrary->getDepartureDate() }} - {{ $itenrary->getArrivalDate() }}</td>
+                                    <td>{{ $itenrary->departure_place }} - {{ $itenrary->arrival_place }}</td>
+                                    <td>{{ $itenrary->activityCode->getActivityCodeDescription() }}</td>
+                                    {{-- <td>{{ $itenrary->accountCode->getAccountCode() }}</td>
+                                    <td>{{ $itenrary->donorCode->description }}</td> --}}
+                                    <td>{{ $itenrary->getTravelModes() }}</td>
+                                    <td>{{ $itenrary->description }}</td>
                                 </tr>
                             @endforeach
+                            <tr>
+                                <th scope="row">Special Instructions
+                                    </td>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Excess Baggage, Air Kilos:
+                                    </td>
+                                <td colspan="4"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Estimated Cost
+                                    </td>
+                                <td></td>
+                                {{-- <td></td>
+                                <td></td> --}}
+                                <th scope="col">Rate</th>
+                                <th scope="col">Days</th>
+                                <th scope="col">NRs</th>
+                            </tr>
+                            {{-- @foreach ($travelRequest->travelRequestItineraries as $dsa)
+                                <tr>
+                                    <td colspan="2">{{ $dsa->description }}
+                                    </td>
+                                    <td>{{ $dsa->dsa_unit_price }}</td>
+                                    <td>{{ $dsa->getOvernights() }}</td>
+                                    <td>{{ $dsa->dsa_total_price }}</td>
+                                </tr>
+                            @endforeach --}}
+                            @if ($travelRequest->travelRequestEstimate)
+                                @php
+                                    $total =
+                                        $travelRequest->travelRequestEstimate->estimated_dsa +
+                                        $travelRequest->travelRequestEstimate->estimated_air_fare +
+                                        $travelRequest->travelRequestEstimate->estimated_vehicle_fare +
+                                        $travelRequest->travelRequestEstimate->estimated_hotel_accommodation +
+                                        $travelRequest->travelRequestEstimate->estimated_airport_taxi +
+                                        $travelRequest->travelRequestEstimate->estimated_event_activities_cost +
+                                        $travelRequest->travelRequestEstimate->miscellaneous_amount;
+                                @endphp
+                                <tr>
+                                    <td colspan="2">DSA</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_dsa }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Air Fare</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_air_fare }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Vehicle Fare</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_vehicle_fare }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Hotel Accommodation</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_hotel_accommodation }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Airport Taxi</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_airport_taxi }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Miscellaneous</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->miscellaneous_amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Event/Activities Cost</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_event_activities_cost }}</td>
+                                </tr>
+                            @else
+                                @php
+                                    $total = $travelRequest->travelRequestItineraries->sum('dsa_total_price');
+                                @endphp
+                                <tr>
+                                    <td colspan="2">DSA</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Air Fare</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Vehicle Fare</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Hotel Accommodation</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Airport Taxi</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Miscellaneous</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Event/Activities Cost</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            @endif
+
+                            <tr>
+                                <th scope="row" colspan="2" class="text-end">Total:</th>
+                                <td></td>
+                                <td></td>
+                                <td>{{ $total }}</td>
+                            </tr>
                         </tbody>
                     </table>
-
-                    {{-- Travel Advance Request --}}
-                    <div class="fw-bold mb-2">Travel Advance Request</div>
                     <table class="table border mb-4">
                         <thead>
                             <tr>
-                                <th scope="col">{{ __('label.estimated-dsa') }}</th>
-                                <th scope="col">{{ __('label.estimated-air-fare') }}</th>
-                                <th scope="col">{{ __('label.estimated-vehicle-fare') }}</th>
-                                <th scope="col">{{ __('label.estimated-hotel-accommodation') }}</th>
-                                <th scope="col">{{ __('label.estimated-airport-taxi') }}</th>
-                                <th scope="col">{{ __('label.miscellaneous-amount') }}</th>
-                                <th scope="col">{{ __('label.estimated-event-activities-cost') }}</th>
-                                <th scope="col">{{ __('label.miscellaneous-remarks') }}</th>
-                                <th scope="col">{{ __('label.total-amount') }}</th>
+                                <th scope="col" colspan="2">Requested Advance</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($travelRequest->travelRequestEstimate)
-                                <tr>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_dsa }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_air_fare }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_vehicle_fare }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_hotel_accommodation }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_airport_taxi }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->miscellaneous_amount }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->estimated_event_activities_cost }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->miscellaneous_remarks }}</td>
-                                    <td>{{ $travelRequest->travelRequestEstimate->total_amount }}</td>
-                                </tr>
-                            @else
-                                <tr>
-                                    <td colspan="9" class="text-center">No estimate available.</td>
-                                </tr>
-                            @endif
+                            <tr>
+                                <th scope="row">Less: Previous Advance (if Yes)</th>
+                                <td>{{ $travelRequest->travelRequestEstimate ? $travelRequest->travelRequestEstimate->total_amount : '' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Less: Direct Payment by Office</th>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Net Advance</th>
+                                <td>{{ $travelRequest->travelRequestEstimate ? $travelRequest->travelRequestEstimate->total_amount : '' }}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
-
+                    <table class="table border mb-4">
+                        <tbody>
+                            <tr>
+                                {{-- <th scope="row">Activity Code</th>
+                            <td> From Finance</td>
+                            <th scope="row">Account Code</th>
+                            <td> From Finance</td> --}}
+                                <th scope="row">Funding Amount</th>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <div class="row mt-4">
                         <div class="col-lg-4 mb-4">
                             <div>
-                                <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Behalf of Consultant)' : 'Requested By:' }}</strong>
+                                <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Belalf of Consultant)' : 'Requested By:' }}</strong>
                             </div>
                             <div class="mb-2">
                                 @if ($requesterSignature)

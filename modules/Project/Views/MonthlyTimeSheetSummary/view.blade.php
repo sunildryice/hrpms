@@ -32,12 +32,12 @@
 
 @section('page_js')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#navbarVerticalMenu').find('#monthly-timesheets-summary-menu').addClass('active');
         });
     </script>
 @endsection
-
+@php $authUser = auth()->user(); @endphp
 @section('page-content')
     <div class="container-fluid">
 
@@ -55,7 +55,7 @@
                     </li>
                     <li class="breadcrumb-item">
                         <a href="{{ route('monthly-timesheet.summary.show', [$year, $month]) }}"
-                            class="text-decoration-none text-dark">
+                           class="text-decoration-none text-dark">
                             {{ $year }} {{ $monthlyTimeSheet->month_name ?? $month }}
                         </a>
                     </li>
@@ -72,114 +72,122 @@
         <!-- Main Content -->
         <div class="card shadow-sm border">
             <div class="card-body">
+                <div class="d-flex justify-content-end mb-3">
+                    @if ($authUser->can('export-timesheet-summary'))
+                        <a href="{{ route('monthly-timesheet.summary.employee.export', [$year, $month, $monthlyTimeSheet->id]) }}"
+                           class="btn btn-success btn-sm">
+                            <i class="bi bi-file-earmark-excel"></i> Export to Excel
+                        </a>
+                    @endif
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered" id="employeeTimesheetTable">
                         <thead class="bg-light">
-                            <tr>
-                                <th class="text-center" style="width:50px">{{ __('label.sn') }}</th>
-                                <th>Date</th>
-                                <th>Project</th>
-                                <th>Activity</th>
-                                <th>Description / Task</th>
-                                <th class="text-end" style="width:90px">Hours</th>
-                            </tr>
+                        <tr>
+                            <th class="text-center" style="width:50px">{{ __('label.sn') }}</th>
+                            <th>Date</th>
+                            <th>Project</th>
+                            <th>Activity</th>
+                            <th>Description / Task</th>
+                            <th class="text-end" style="width:90px">Hours</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @php $sn = 1; @endphp
-                            @forelse ($allDates as $dateKey => $day)
+                        @php $sn = 1; @endphp
+                        @forelse ($allDates as $dateKey => $day)
+                            @php
+                                $items = $day['items'];
+                                $carbonDate = $day['carbon'];
+                                $isWeekend = $carbonDate->isWeekend();
+                                $dateClasses = $loop->first ? '' : 'date-group-divider';
+                            @endphp
+
+                            @if ($items->isEmpty())
+                                <tr class="{{ $dateClasses }}">
+                                    <td class="text-center align-middle">{{ $sn++ }}</td>
+                                    <td>{{ $carbonDate->format('d, M Y') }}</td>
+                                    <td colspan="4" class="text-center fw-bold">
+                                        {!! $day['reason'] !!}
+                                    </td>
+                                </tr>
+                            @else
                                 @php
-                                    $items = $day['items'];
-                                    $carbonDate = $day['carbon'];
-                                    $isWeekend = $carbonDate->isWeekend();
-                                    $dateClasses = $loop->first ? '' : 'date-group-divider';
+                                    $dateRowspan = $items->count();
+                                    $datePrinted = false;
+                                    $projectGroups = $items->groupBy(
+                                        fn($ts) => optional($ts->project)->id ?? 'unknown',
+                                    );
+
+                                    $reasonText = strip_tags($day['reason'] ?? '');
+                                    $isPartialLeave =
+                                        str_contains($reasonText, 'First Half') ||
+                                        str_contains($reasonText, 'Second Half');
+                                    $extraRowCount = $isPartialLeave ? 1 : 0;
                                 @endphp
 
-                                @if ($items->isEmpty())
-                                    <tr class="{{ $dateClasses }}">
-                                        <td class="text-center align-middle">{{ $sn++ }}</td>
-                                        <td>{{ $carbonDate->format('d, M Y') }}</td>
-                                        <td colspan="4" class="text-center fw-bold">
+                                @foreach ($projectGroups as $projId => $projItems)
+                                    @php
+                                        $projPrinted = false;
+                                        $projRowspan = $projItems->count();
+                                        $activityGroups = $projItems->groupBy(
+                                            fn($ts) => optional($ts->activity)->id ?? 'unknown',
+                                        );
+                                    @endphp
+
+                                    @foreach ($activityGroups as $actId => $actItems)
+                                        @php $actPrinted = false; @endphp
+
+                                        @foreach ($actItems as $entry)
+                                            <tr class="{{ !$datePrinted ? $dateClasses : '' }}">
+                                                @if (!$datePrinted)
+                                                    <td rowspan="{{ $dateRowspan + $extraRowCount }}"
+                                                        class="text-center align-middle">
+                                                        {{ $sn++ }}</td>
+                                                    <td rowspan="{{ $dateRowspan + $extraRowCount }}"
+                                                        class="align-middle">
+                                                        {{ $carbonDate->format('d, M Y') }}
+                                                    </td>
+                                                    @php $datePrinted = true; @endphp
+                                                @endif
+
+                                                @if (!$projPrinted)
+                                                    <td rowspan="{{ $projRowspan }}" class="align-middle wrap-text">
+                                                        {{ optional($entry->project)->short_name ?? '—' }}
+                                                    </td>
+                                                    @php $projPrinted = true; @endphp
+                                                @endif
+
+                                                @if (!$actPrinted)
+                                                    <td rowspan="{{ $actItems->count() }}"
+                                                        class="align-middle wrap-text">
+                                                        {{ optional($entry->activity)->title ?? '—' }}
+                                                    </td>
+                                                    @php $actPrinted = true; @endphp
+                                                @endif
+
+                                                <td class="wrap-text">{{ $entry->description ?: '—' }}</td>
+                                                <td class="text-end align-middle fw-medium">
+                                                    {{ number_format($entry->hours_spent ?? 0, 2) }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                @endforeach
+                                @if ($isPartialLeave)
+                                    <tr>
+                                        <td colspan="4" class="text-center py-2">
                                             {!! $day['reason'] !!}
                                         </td>
                                     </tr>
-                                @else
-                                    @php
-                                        $dateRowspan = $items->count();
-                                        $datePrinted = false;
-                                        $projectGroups = $items->groupBy(
-                                            fn($ts) => optional($ts->project)->id ?? 'unknown',
-                                        );
-
-                                        $reasonText = strip_tags($day['reason'] ?? '');
-                                        $isPartialLeave =
-                                            str_contains($reasonText, 'First Half') ||
-                                            str_contains($reasonText, 'Second Half');
-                                        $extraRowCount = $isPartialLeave ? 1 : 0;
-                                    @endphp
-
-                                    @foreach ($projectGroups as $projId => $projItems)
-                                        @php
-                                            $projPrinted = false;
-                                            $projRowspan = $projItems->count();
-                                            $activityGroups = $projItems->groupBy(
-                                                fn($ts) => optional($ts->activity)->id ?? 'unknown',
-                                            );
-                                        @endphp
-
-                                        @foreach ($activityGroups as $actId => $actItems)
-                                            @php $actPrinted = false; @endphp
-
-                                            @foreach ($actItems as $entry)
-                                                <tr class="{{ !$datePrinted ? $dateClasses : '' }}">
-                                                    @if (!$datePrinted)
-                                                        <td rowspan="{{ $dateRowspan + $extraRowCount }}"
-                                                            class="text-center align-middle">
-                                                            {{ $sn++ }}</td>
-                                                        <td rowspan="{{ $dateRowspan + $extraRowCount }}"
-                                                            class="align-middle">
-                                                            {{ $carbonDate->format('d, M Y') }}
-                                                        </td>
-                                                        @php $datePrinted = true; @endphp
-                                                    @endif
-
-                                                    @if (!$projPrinted)
-                                                        <td rowspan="{{ $projRowspan }}" class="align-middle wrap-text">
-                                                            {{ optional($entry->project)->short_name ?? '—' }}
-                                                        </td>
-                                                        @php $projPrinted = true; @endphp
-                                                    @endif
-
-                                                    @if (!$actPrinted)
-                                                        <td rowspan="{{ $actItems->count() }}"
-                                                            class="align-middle wrap-text">
-                                                            {{ optional($entry->activity)->title ?? '—' }}
-                                                        </td>
-                                                        @php $actPrinted = true; @endphp
-                                                    @endif
-
-                                                    <td class="wrap-text">{{ $entry->description ?: '—' }}</td>
-                                                    <td class="text-end align-middle fw-medium">
-                                                        {{ number_format($entry->hours_spent ?? 0, 2) }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @endforeach
-                                    @endforeach
-                                    @if ($isPartialLeave)
-                                        <tr>
-                                            <td colspan="4" class="text-center py-2">
-                                                {!! $day['reason'] !!}
-                                            </td>
-                                        </tr>
-                                    @endif
                                 @endif
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">
-                                        No data available for this period
-                                    </td>
-                                </tr>
-                            @endforelse
+                            @endif
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    No data available for this period
+                                </td>
+                            </tr>
+                        @endforelse
                         </tbody>
                     </table>
                 </div>

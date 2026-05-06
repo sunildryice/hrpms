@@ -4,7 +4,9 @@ namespace Modules\Project\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Privilege\Repositories\UserRepository;
+use Modules\Project\Exports\MonthlyTimesheetSummaryExport;
 use Modules\Project\Repositories\ActivityTimeSheetRepository;
 use Modules\Project\Repositories\TimeSheetRepository;
 use Modules\Project\Repositories\ViewUserTimeSheetRepository;
@@ -159,5 +161,56 @@ class MonthlyTimeSheetSummaryController extends Controller
             'year',
             'month'
         ));
+    }
+
+    public function exportMonthlyTimesheet($year, $month, $timesheet)
+    {
+        $monthlyTimeSheet = $this->timeSheets->find($timesheet);
+
+        if ($monthlyTimeSheet->year != $year || $monthlyTimeSheet->month != $month) {
+            abort(404);
+        }
+
+        $employee = $monthlyTimeSheet->requester;
+
+        $activityTimeSheets = $this->activityTimeSheets->getTimeSheetsByPeriod(
+            $monthlyTimeSheet->start_date,
+            $monthlyTimeSheet->end_date,
+            $employee->id
+        );
+
+        $grouped = $activityTimeSheets->groupBy(
+            fn($item) => $item->timesheet_date->format('Y-m-d')
+        );
+
+        $start = \Carbon\Carbon::parse($monthlyTimeSheet->start_date);
+        $end = \Carbon\Carbon::parse($monthlyTimeSheet->end_date);
+
+        $allDates = [];
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            $dateKey = $current->format('Y-m-d');
+            $items = $grouped->get($dateKey, collect());
+            $reason = $this->viewUserTimeSheets->getAbsenceReason($employee->id, $dateKey);
+
+            $allDates[$dateKey] = [
+                'items'  => $items,
+                'reason' => $reason,
+                'date'   => $dateKey,
+                'carbon' => $current->copy(),
+            ];
+
+            $current->addDay();
+        }
+
+        $yearMonth = $monthlyTimeSheet->month_name . ' ' . $monthlyTimeSheet->year;
+        $employeeName = $employee->getFullName() ?? 'employee';
+        $fileName = 'timesheet_' . str_replace(' ', '_', $employeeName) . '_' . $yearMonth . '.xlsx';
+
+        return Excel::download(
+            new MonthlyTimesheetSummaryExport($allDates, $employeeName, $yearMonth),
+            $fileName
+        );
     }
 }

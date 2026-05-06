@@ -157,8 +157,8 @@
                             <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm" data-submit="submit">
                                 Submit
                             </button>
-                            <a href="{!! route('advance.requests.index') !!}"
-                               class="btn btn-danger btn-sm">Cancel</a>
+                            {{-- <a href="{!! route('advance.requests.index') !!}"
+                               class="btn btn-danger btn-sm">Cancel</a> --}}
                         </div>
                     </form>
             </div>

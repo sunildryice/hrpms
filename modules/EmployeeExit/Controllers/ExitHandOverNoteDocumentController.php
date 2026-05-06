@@ -11,7 +11,6 @@ use Modules\AdvanceRequest\Notifications\AdvanceRequestSubmitted;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Privilege\Repositories\UserRepository;
 
-use Modules\AdvanceRequest\Repositories\AdvanceRequestRepository;
 use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Master\Repositories\ActivityCodeRepository;
@@ -33,7 +32,6 @@ class ExitHandOverNoteDocumentController extends Controller
      * @param DistrictRepository $districts
      * @param EmployeeRepository $employees
      * @param FiscalYearRepository $fiscalYears
-     * @param AdvanceRequestRepository $advanceRequests
      * @param ExitHandOverNoteActivityRepository $exitHandOverNoteActivities
      * @param UserRepository $users
      */
@@ -43,7 +41,6 @@ class ExitHandOverNoteDocumentController extends Controller
         EmployeeRepository                 $employees,
         ExitHandOverNoteRepository         $exitHandOverNote,
         FiscalYearRepository               $fiscalYears,
-        AdvanceRequestRepository           $advanceRequests,
         ExitHandOverNoteProjectRepository  $exitHandOverNoteProjects,
         ExitHandOverNoteActivityRepository $exitHandOverNoteActivities,
         ExitHandOverNoteDocumentRepository $exitHandOverNoteDocuments,
@@ -57,7 +54,6 @@ class ExitHandOverNoteDocumentController extends Controller
         $this->employees = $employees;
         $this->exitHandOverNote = $exitHandOverNote;
         $this->fiscalYears = $fiscalYears;
-        $this->advanceRequests = $advanceRequests;
         $this->exitHandOverNoteProjects = $exitHandOverNoteProjects;
         $this->exitHandOverNoteActivities = $exitHandOverNoteActivities;
         $this->exitHandOverNoteDocuments = $exitHandOverNoteDocuments;

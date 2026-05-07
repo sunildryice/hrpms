@@ -18,8 +18,8 @@ return new class extends Migration {
 //            $table->renameColumn('project_theme_id', 'project_theme_ids');
 //            $table->renameColumn('sector_id', 'sector_ids');
 
-            $table->json('project_theme_ids')->nullable()->change();
-            $table->json('sector_ids')->nullable()->change();
+//            $table->json('project_theme_ids')->nullable()->change();
+//            $table->json('sector_ids')->nullable()->change();
 
             $table->json('country_ids')->nullable()->after('district_ids');
         });

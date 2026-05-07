@@ -93,7 +93,7 @@ class AssetBookExport implements FromView, Responsable, ShouldAutoSize, WithStri
     {
         $data = Asset::query()->with([
             'inventoryItem.office',
-            'inventoryItem.grn.fiscalYear',
+            // 'inventoryItem.grn.fiscalYear',
             'inventoryItem.item',
             'inventoryItem.accountCode',
             'inventoryItem.activityCode',

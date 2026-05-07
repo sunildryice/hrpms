@@ -8,7 +8,7 @@
             <th>Items</th>
             <th>Coding (Item Code)</th>
             <th>Item Category</th>
-            <th>GRN No.</th>
+            {{-- <th>GRN No.</th> --}}
             <th>Asset Code</th>
             <th>Old Asset Code</th>
             <th>Description</th>
@@ -18,9 +18,9 @@
             <th>Purchasing Date</th>
             <th>Execution</th>
             <th>Voucher Number</th>
-            <th>Account Code</th>
+            {{-- <th>Account Code</th>
             <th>Activity Code</th>
-            <th>Donor Code</th>
+            <th>Donor Code</th> --}}
             <th>Staff Name</th>
             <th>Designation</th>
             <th>Office Code</th>
@@ -40,7 +40,7 @@
                 <td>{{ $asset->inventoryItem->item->title }}</td>
                 <td>{{ $asset->getItemCode() }}</td>
                 <td>{{ $asset->inventoryItem->getCategoryName() }}</td>
-                <td>{{ $asset->inventoryItem?->getGrnNumber() }}</td>
+                {{-- <td>{{ $asset->inventoryItem?->getGrnNumber() }}</td> --}}
                 <td>{{ $asset->getAssetNumber() }}</td>
                 <td>{{ $asset->old_asset_code }}</td>
                 <td>{{ $asset->getSpecification() }}</td>
@@ -51,9 +51,9 @@
                 <td>{{ $asset->getPurchaseDate() }}</td>
                 <td>{{ $asset->inventoryItem->getExecutionType() }}</td>
                 <td>{{ $asset->inventoryItem->getVoucherNumber() }}</td>
-                <td>{{ $asset->inventoryItem->accountCode->getAccountCode() }}</td>
+                {{-- <td>{{ $asset->inventoryItem->accountCode->getAccountCode() }}</td>
                 <td>{{ $asset->inventoryItem->activityCode->getActivityCode() }}</td>
-                <td>{{ $asset->inventoryItem->donorCode->description }}</td>
+                <td>{{ $asset->inventoryItem->donorCode->description }}</td> --}}
                 <td>{{ $asset->getAssignedUserName() }}</td>
                 <td>{{ $asset->getAssignedUserDesignation() }}</td>
                 <td>{{ $asset->inventoryItem->getOfficeCode() }}</td>

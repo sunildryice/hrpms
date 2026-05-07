@@ -11,8 +11,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->dropForeign(['project_theme_id']);
-            $table->dropForeign(['sector_id']);
+
+            $table->dropForeign('projects_project_theme_id_foreign');
+            $table->dropForeign('projects_sector_id_foreign');
 
             $table->renameColumn('project_theme_id', 'project_theme_ids');
             $table->renameColumn('sector_id', 'sector_ids');
@@ -30,6 +31,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
+
             $table->dropColumn('country_ids');
 
             $table->unsignedBigInteger('project_theme_ids')->nullable()->change();

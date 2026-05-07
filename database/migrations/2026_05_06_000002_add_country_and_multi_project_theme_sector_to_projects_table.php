@@ -12,11 +12,11 @@ return new class extends Migration {
     {
         Schema::table('projects', function (Blueprint $table) {
 
-            $table->dropForeign('projects_project_theme_id_foreign');
-            $table->dropForeign('projects_sector_id_foreign');
+//            $table->dropForeign('projects_project_theme_id_foreign');
+//            $table->dropForeign('projects_sector_id_foreign');
 
-            $table->renameColumn('project_theme_id', 'project_theme_ids');
-            $table->renameColumn('sector_id', 'sector_ids');
+//            $table->renameColumn('project_theme_id', 'project_theme_ids');
+//            $table->renameColumn('sector_id', 'sector_ids');
 
             $table->json('project_theme_ids')->nullable()->change();
             $table->json('sector_ids')->nullable()->change();

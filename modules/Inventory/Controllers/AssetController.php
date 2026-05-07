@@ -94,4 +94,19 @@ class AssetController extends Controller
             ->withDisposition($disposition)
             ->withGoodRequestAssets($goodRequestAssets);
     }
+
+    public function print()
+    {
+        $assets = $this->assets->with([
+            'inventoryItem',
+            'inventoryItem.office',
+        ])
+            ->whereDoesntHave('dispositionRequest', function ($query) {
+                $query->where('status_id', config('constant.APPROVED_STATUS'));
+            })
+            ->orderBy('created_at', 'desc')->get();
+
+        return view('Inventory::Asset.print')
+            ->withAssets($assets);
+    }
 }

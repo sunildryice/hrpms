@@ -132,6 +132,11 @@
                     </nav>
                     <h4 class="m-0 lh1 mt-1 fs-6 text-uppercase fw-bold text-primary">@yield('title')</h4>
                 </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('assets.print') }}" target="_blank" class="btn btn-outline-primary btn-sm" rel="tooltip" title="Print Asset Labels">
+                        <i class="bi bi-printer"></i> Print Asset Labels
+                    </a>
+                </div>
             </div>
 
         </div>

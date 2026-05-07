@@ -44,6 +44,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('assets/index', [AssetController::class, 'index'])->name('assets.index');
     Route::get('inventories/assets/{asset}/show', [AssetController::class, 'show'])->name('assets.show');
+    Route::get('assets/print', [AssetController::class, 'print'])->name('assets.print');
 
     Route::get('/assets/store/index', [StoredAssetController::class, 'index'])->name('assets.store.index');
     Route::get('inventories/assets/{asset}/store/show', [StoredAssetController::class, 'show'])->name('assets.store.show');

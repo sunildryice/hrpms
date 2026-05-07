@@ -10,6 +10,7 @@ use Modules\Master\Models\Approach;
 use Modules\Master\Models\District;
 use Modules\Master\Models\ProjectTheme;
 use Modules\Master\Models\Sector;
+use Modules\Master\Models\Country;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\ProjectActivity;
 
@@ -33,9 +34,10 @@ class Project extends Model
         'contracting_agency',
         'budget_usd',
         'district_ids',
-        'project_theme_id',
+        'project_theme_ids',
         'approach_ids',
-        'sector_id',
+        'sector_ids',
+        'country_ids',
     ];
 
     protected $casts = [
@@ -44,6 +46,9 @@ class Project extends Model
         'activated_at' => 'datetime',
         'approach_ids' => 'array',
         'district_ids' => 'array',
+        'project_theme_ids' => 'array',
+        'sector_ids' => 'array',
+        'country_ids' => 'array',
     ];
 
     public function members()
@@ -80,13 +85,41 @@ class Project extends Model
     }
     public function projectTheme()
     {
-        return $this->belongsTo(ProjectTheme::class, 'project_theme_id')->withDefault();
+        return $this->getProjectThemesAttribute()->first();
     }
 
     public function sector()
     {
-        return $this->belongsTo(Sector::class, 'sector_id')->withDefault();
+        return $this->getSectorsAttribute()->first();
     }
+
+    public function getProjectThemesAttribute()
+    {
+        if (empty($this->project_theme_ids)) {
+            return collect();
+        }
+
+        return ProjectTheme::whereIn('id', $this->project_theme_ids)->get();
+    }
+
+    public function getSectorsAttribute()
+    {
+        if (empty($this->sector_ids)) {
+            return collect();
+        }
+
+        return Sector::whereIn('id', $this->sector_ids)->get();
+    }
+
+    public function getCountriesAttribute()
+    {
+        if (empty($this->country_ids)) {
+            return collect();
+        }
+
+        return Country::whereIn('id', $this->country_ids)->get();
+    }
+
     public function getApproachesAttribute()
     {
         if (empty($this->approach_ids)) {

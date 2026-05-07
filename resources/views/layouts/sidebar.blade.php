@@ -947,6 +947,11 @@
                                        id="activity-codes-menu">{{ __('label.activities') }}</a>
                                 @endif
 
+                                @if ($authUser->can('manage-country'))
+                                    <a class="nav-link" href="{{ route('master.countries.index') }}"
+                                       id="countries-menu">Countries</a>
+                                @endif
+
                                 @if ($authUser->can('manage-department'))
                                     <a class="nav-link" href="{{ route('master.departments.index') }}"
                                        id="departments-menu">Departments</a>
@@ -1006,6 +1011,11 @@
                                 @if ($authUser->can('manage-probationary-indicator'))
                                     <a class="nav-link" href="{{ route('master.probationary.indicators.index') }}"
                                        id="probationary-indicators-menu">{{ __('label.probationary-indicators') }}</a>
+                                @endif
+
+                                @if ($authUser->can('manage-sector'))
+                                    <a class="nav-link" href="{{ route('master.sectors.index') }}"
+                                       id="sectors-menu">Sectors</a>
                                 @endif
 
                                 @if ($authUser->can('manage-supplier'))

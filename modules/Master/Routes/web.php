@@ -18,9 +18,11 @@ use Modules\Master\Controllers\ActivityCodeController;
 use Modules\Master\Controllers\ActivityCodeImportController;
 use Modules\Master\Controllers\BillCategoryController;
 use Modules\Master\Controllers\BrandController;
+use Modules\Master\Controllers\CountryController;
 use Modules\Master\Controllers\DepartmentController;
 use Modules\Master\Controllers\DesignationController;
 use Modules\Master\Controllers\DistrictController;
+use Modules\Master\Controllers\SectorController;
 use Modules\Master\Controllers\DonorCodeController;
 use Modules\Master\Controllers\DsaCategoryController;
 use Modules\Master\Controllers\ExecutionTypeController;
@@ -104,6 +106,26 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             Route::get('departments/{department}/edit', [DepartmentController::class, 'edit'])->name('master.departments.edit');
             Route::put('departments/{department}', [DepartmentController::class, 'update'])->name('master.departments.update');
             Route::delete('departments/{department}', [DepartmentController::class, 'destroy'])->name('master.departments.destroy');
+        });
+
+        Route::middleware('can:manage-sector')->group(function () {
+            Route::get('sectors', [SectorController::class, 'index'])->name('master.sectors.index');
+            Route::get('sectors/create', [SectorController::class, 'create'])->name('master.sectors.create');
+            Route::post('sectors', [SectorController::class, 'store'])->name('master.sectors.store');
+            Route::get('sectors/{sector}', [SectorController::class, 'show'])->name('master.sectors.show');
+            Route::get('sectors/{sector}/edit', [SectorController::class, 'edit'])->name('master.sectors.edit');
+            Route::put('sectors/{sector}', [SectorController::class, 'update'])->name('master.sectors.update');
+            Route::delete('sectors/{sector}', [SectorController::class, 'destroy'])->name('master.sectors.destroy');
+        });
+
+        Route::middleware('can:manage-country')->group(function () {
+            Route::get('countries', [CountryController::class, 'index'])->name('master.countries.index');
+            Route::get('countries/create', [CountryController::class, 'create'])->name('master.countries.create');
+            Route::post('countries', [CountryController::class, 'store'])->name('master.countries.store');
+            Route::get('countries/{country}', [CountryController::class, 'show'])->name('master.countries.show');
+            Route::get('countries/{country}/edit', [CountryController::class, 'edit'])->name('master.countries.edit');
+            Route::put('countries/{country}', [CountryController::class, 'update'])->name('master.countries.update');
+            Route::delete('countries/{country}', [CountryController::class, 'destroy'])->name('master.countries.destroy');
         });
 
         Route::middleware('can:manage-designation')->group(function () {

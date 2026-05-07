@@ -132,19 +132,6 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label for="" class="m-0">Weekend Type</label>
-                </div>
-            </div>
-            <div class="col-lg-9">
-                <select class="select2 form-control" name="weekend_type">
-                    <option value="1">Saturday</option>
-                    <option value="2">Saturday+Sunday</option>
-                </select>
-            </div>
-        </div>
-        <div class="row mb-2">
-            <div class="col-lg-3">
-                <div class="d-flex align-items-start h-100">
                     <label class="form-label m-0">Office Check-in Time</label>
                 </div>
             </div>
@@ -160,6 +147,19 @@
             </div>
             <div class="col-lg-9">
                 <input type="text" class="form-control time-picker" name="office_checkout_time" onfocus="this.blur()" placeholder="HH:mm">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Weekend Type</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <select class="select2 form-control" name="weekend_type">
+                    <option value="1">Saturday</option>
+                    <option value="2">Saturday+Sunday</option>
+                </select>
             </div>
         </div>
     </div>

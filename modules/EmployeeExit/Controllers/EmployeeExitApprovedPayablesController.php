@@ -23,7 +23,6 @@ class EmployeeExitApprovedPayablesController extends Controller
      * @param DistrictRepository $districts
      * @param EmployeeRepository $employees
      * @param FiscalYearRepository $fiscalYears
-     * @param AdvanceRequestRepository $advanceRequests
      * @param UserRepository $users
      */
     public function __construct(

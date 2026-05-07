@@ -15,12 +15,14 @@ class ProjectThemeSeeder extends Seeder
         ];
 
         foreach ($themes as $title) {
-            DB::table('lkup_project_themes')->insertOrIgnore([
-                'title' => $title,
-                'enable_field' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('lkup_project_themes')->updateOrInsert(
+                ['title' => $title],
+                [
+                    'enable_field' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }

@@ -22,4 +22,9 @@ class ActivityStageRepository extends Repository
             ->where('end_date', '>=', $currentDate)
             ->exists();
     }
+
+    public function getActiveActivityStages()
+    {
+        return $this->model->whereNotNull('activated_at')->get();
+    }
 }

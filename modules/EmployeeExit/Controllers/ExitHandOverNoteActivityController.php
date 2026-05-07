@@ -11,7 +11,6 @@ use Modules\AdvanceRequest\Notifications\AdvanceRequestSubmitted;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Privilege\Repositories\UserRepository;
 
-use Modules\AdvanceRequest\Repositories\AdvanceRequestRepository;
 use Modules\Master\Repositories\DistrictRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Master\Repositories\ActivityCodeRepository;
@@ -33,7 +32,6 @@ class ExitHandOverNoteActivityController extends Controller
      * @param DistrictRepository $districts
      * @param EmployeeRepository $employees
      * @param FiscalYearRepository $fiscalYears
-     * @param AdvanceRequestRepository $advanceRequests
      * @param ExitHandOverNoteActivityRepository $exitHandOverNoteActivities
      * @param UserRepository $users
      */
@@ -43,7 +41,6 @@ class ExitHandOverNoteActivityController extends Controller
         protected EmployeeRepository                 $employees,
         protected ExitHandOverNoteRepository         $exitHandOverNote,
         protected FiscalYearRepository               $fiscalYears,
-        protected AdvanceRequestRepository           $advanceRequests,
         protected ExitHandOverNoteProjectRepository  $exitHandOverNoteProjects,
         protected ExitHandOverNoteActivityRepository $exitHandOverNoteActivities,
         protected ProjectCodeRepository              $projects,

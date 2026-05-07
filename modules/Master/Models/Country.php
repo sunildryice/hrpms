@@ -5,9 +5,9 @@ namespace Modules\Master\Models;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
 
-class Sector extends Model
+class Country extends Model
 {
-    protected $table = 'lkup_sectors';
+    protected $table = 'lkup_countries';
 
     protected $fillable = [
         'title',

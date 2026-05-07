@@ -188,14 +188,14 @@
                                 <th>Item Category</th>
                                 {{-- <th>GRN No.</th> --}}
                                 <th>Asset Code</th>
-                                <th>Old Asset Code</th>
+                                {{-- <th>Old Asset Code</th> --}}
                                 <th>Description</th>
                                 <th>Serial Number</th>
                                 <th>Price</th>
                                 <th>Price (with VAT)</th>
                                 <th>Purchasing Date</th>
                                 <th>Execution</th>
-                                <th>Voucher Number</th>
+                                {{-- <th>Voucher Number</th> --}}
                                 {{-- <th>Account Code</th>
                                 <th>Activity Code</th>
                                 <th>Donor Code</th> --}}
@@ -205,7 +205,7 @@
                                 <th>Location</th>
                                 <th>Issued On</th>
                                 <th>Condition</th>
-                                <th>Room Number</th>
+                                {{-- <th>Room Number</th> --}}
                                 <th>Vendors</th>
                                 <th>Remarks</th>
                             </tr>
@@ -220,14 +220,14 @@
                                     <td>{{ $asset->inventoryItem->getCategoryName() }}</td>
                                     {{-- <td>{{ $asset->inventoryItem?->getGrnNumber() }}</td> --}}
                                     <td>{{ $asset->getAssetNumber() }}</td>
-                                    <td>{{ $asset->old_asset_code }}</td>
+                                    {{-- <td>{{ $asset->old_asset_code }}</td> --}}
                                     <td>{{ $asset->getSpecification() }}</td>
                                     <td>{{ $asset->getSerialNumber() }}</td>
                                     <td>{{ round($asset->inventoryItem->total_price/ $asset->inventoryItem->quantity, 2) }}</td>
                                     <td>{{ round(($asset->inventoryItem->total_price + $asset->inventoryItem->vat_amount)/ $asset->inventoryItem->quantity, 2) }}</td>
                                     <td>{{ $asset->getPurchaseDate() }}</td>
                                     <td>{{ $asset->inventoryItem->getExecutionType() }}</td>
-                                    <td>{{ $asset->inventoryItem->getVoucherNumber() ?:  $asset->voucher_number}}</td>
+                                    {{-- <td>{{ $asset->inventoryItem->getVoucherNumber() ?:  $asset->voucher_number}}</td> --}}
                                     {{-- <td>{{ $asset->inventoryItem->accountCode->getAccountCode() }}</td>
                                     <td>{{ $asset->inventoryItem->activityCode->getActivityCode() }}</td>
                                     <td>{{ $asset->inventoryItem->donorCode->description }}</td> --}}
@@ -237,7 +237,7 @@
                                     <td>{{ $asset->getAssignedOffice() }}</td>
                                     <td>{{ $asset->getIssuedDate() }}</td>
                                     <td>{{ $asset->getAssetCondition() }}</td>
-                                    <td>{{ $asset->room_number }}</td>
+                                    {{-- <td>{{ $asset->room_number }}</td> --}}
                                     <td>{{ $asset->inventoryItem->getSupplierName() }}</td>
                                     <td>{{ $asset->remarks }}</td>
                                 </tr>

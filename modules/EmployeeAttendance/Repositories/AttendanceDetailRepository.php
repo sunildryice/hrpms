@@ -265,28 +265,38 @@ class AttendanceDetailRepository extends Repository
 
         $dates_month_with_holidays = [];
 
+        if (!empty($attendance->requester_id)) {
+            $requester = $attendance->requester;
+        } elseif ($attendance->employee && $attendance->employee->user) {
+            $requester = $attendance->employee->user;
+        }
+
         $leaveDates = [];
-        $leaveRequests = $attendance->requester->getApprovedLeaveRequests();
-        foreach ($leaveRequests as $leaveRequest) {
-            foreach ($leaveRequest->leaveDays as $leaveDay) {
-                array_push($leaveDates, [
-                    'leave_date' => $leaveDay->leave_date,
-                    'leave_mode' => $leaveDay->leaveMode->title,
-                    'leave_mode_id' => $leaveDay->leave_mode_id,
-                    'leave_type_id' => $leaveRequest->leaveType->id,
-                    'leave_type_name' => $leaveRequest->leaveType->getLeaveName(),
-                    'leave_type_basis' => $leaveRequest->leaveType->getLeaveBasis(),
-                    'leave_abbreviation' => Helper::getLeaveAbbreviation($leaveRequest->leaveType->id, $leaveDay->leave_mode_id),
-                ]);
+        if ($requester) {
+            $leaveRequests = $requester->getApprovedLeaveRequests();
+            foreach ($leaveRequests as $leaveRequest) {
+                foreach ($leaveRequest->leaveDays as $leaveDay) {
+                    array_push($leaveDates, [
+                        'leave_date' => $leaveDay->leave_date,
+                        'leave_mode' => $leaveDay->leaveMode->title,
+                        'leave_mode_id' => $leaveDay->leave_mode_id,
+                        'leave_type_id' => $leaveRequest->leaveType->id,
+                        'leave_type_name' => $leaveRequest->leaveType->getLeaveName(),
+                        'leave_type_basis' => $leaveRequest->leaveType->getLeaveBasis(),
+                        'leave_abbreviation' => Helper::getLeaveAbbreviation($leaveRequest->leaveType->id, $leaveDay->leave_mode_id),
+                    ]);
+                }
             }
         }
 
         $travelDates = [];
-        $travelRequests = $attendance->requester->getApprovedTravelRequests();
-        foreach ($travelRequests as $travelRequest) {
-            array_push($travelDates, Helper::getDatesBetween($travelRequest->departure_date, $travelRequest->return_date));
+        if ($requester) {
+            $travelRequests = $requester->getApprovedTravelRequests();
+            foreach ($travelRequests as $travelRequest) {
+                array_push($travelDates, Helper::getDatesBetween($travelRequest->departure_date, $travelRequest->return_date));
+            }
+            $travelDates = call_user_func_array('array_merge', $travelDates);
         }
-        $travelDates = call_user_func_array('array_merge', $travelDates);
 
         foreach ($dates_month as $key => $date) {
 

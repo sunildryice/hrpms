@@ -84,7 +84,7 @@
         <div class="print-body mb-5">
             <div class="row">
                 <div class="col-lg-12">
-                    <table class="table border mb-4">
+                    <table class="table border mb-3">
                         <tbody>
                             <tr>
                                 <th scope="row">Name:</th>
@@ -122,7 +122,7 @@
 
                         </tbody>
                     </table>
-                    <table class="table border mb-4">
+                    <table class="table border mb-3">
                         <tbody>
                             <tr>
                                 <th scope="row">Departure Date:</th>
@@ -138,7 +138,7 @@
 
                     {{-- Travel Itinerary --}}
                     <div class="fw-bold mb-2">Travel Itinerary</div>
-                    <table class="table border mb-4">
+                    <table class="table border mb-3">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -165,7 +165,7 @@
 
                     {{-- Travel Advance Request --}}
                     <div class="fw-bold mb-2">Travel Advance Request</div>
-                    <table class="table border mb-4">
+                    <table class="table border mb-3">
                         <thead>
                             <tr>
                                 <th scope="col">{{ __('label.estimated-dsa') }}</th>
@@ -201,21 +201,20 @@
                     </table>
 
                     <div class="row mt-4">
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-4 mb-3">
                             <div>
                                 <strong>{{ $travelRequest->isConsultantTravel() ? 'Prepared By: (On Behalf of Consultant)' : 'Requested By:' }}</strong>
                             </div>
-                            <div class="mb-2">
-                                @if ($requesterSignature)
-                                    <img src="{{ $requesterSignature }}"
-                                        alt="Signature of {{ $travelRequest->getRequesterName() }}"
-                                        class="img-fluid signature-img"
-                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
-                                @else
-                                    <div class="signature-line mx-auto"
-                                        style="width: 240px; height: 90px;"></div>
-                                @endif
-                            </div>
+                            {{-- <div class="mb-2"> --}}
+                            @if ($requesterSignature)
+                                <img src="{{ $requesterSignature }}"
+                                    alt="Signature of {{ $travelRequest->getRequesterName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                {{-- <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div> --}}
+                            @endif
+                            {{-- </div> --}}
                             <div><strong>Name:</strong> {{ $travelRequest->getRequesterName() }} </div>
                             <div><strong>Title:</strong> {{ $requester->getDesignationName() }} </div>
                             <div>
@@ -223,19 +222,18 @@
                                 {{ $travelRequest->submittedLog ? $travelRequest->submittedLog->created_at->format('Y-m-d') : '' }}
                             </div>
                         </div>
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-4 mb-3">
                             <div><strong>Recommended By:</strong></div>
-                            <div class="mb-2">
-                                @if ($reviewerSignature)
-                                    <img src="{{ $reviewerSignature }}"
-                                        alt="Signature of {{ $travelRequest->getReviewerName() }}"
-                                        class="img-fluid signature-img"
-                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
-                                @else
-                                    <div class="signature-line mx-auto"
-                                        style="width: 240px; height: 90px;"></div>
-                                @endif
-                            </div>
+                            {{-- <div class="mb-2"> --}}
+                            @if ($reviewerSignature)
+                                <img src="{{ $reviewerSignature }}"
+                                    alt="Signature of {{ $travelRequest->getReviewerName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                {{-- <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div> --}}
+                            @endif
+                            {{-- </div> --}}
                             <div><strong>Name:</strong> {{ $travelRequest->getReviewerName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->reviewer->employee->getDesignationName() }}
                             </div>
@@ -243,24 +241,24 @@
                                 {{ $travelRequest->recommendedLog ? $travelRequest->recommendedLog->created_at->format('Y-m-d') : '' }}
                             </div>
                         </div>
-                        <div class="col-lg-4 mb-4">
+                        <div class="col-lg-4 mb-3">
                             <div><strong>Authorized By:</strong></div>
-                            <div class="mb-2">
-                                @if ($approverSignature)
-                                    <img src="{{ $approverSignature }}"
-                                        alt="Signature of {{ $travelRequest->getApproverName() }}"
-                                        class="img-fluid signature-img"
-                                        style="max-height: 90px; max-width: 240px; object-fit: contain;">
-                                @else
-                                    <div class="signature-line mx-auto"
-                                        style="width: 240px; height: 90px;"></div>
-                                @endif
-                            </div>
+                            {{-- <div class="mb-2"> --}}
+                            @if ($approverSignature)
+                                <img src="{{ $approverSignature }}"
+                                    alt="Signature of {{ $travelRequest->getApproverName() }}"
+                                    class="img-fluid signature-img"
+                                    style="max-height: 90px; max-width: 240px; object-fit: contain;">
+                            @else
+                                {{-- <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div> --}}
+                            @endif
+                            {{-- </div> --}}
                             <div><strong>Name:</strong> {{ $travelRequest->getApproverName() }} </div>
                             <div><strong>Title:</strong> {{ $travelRequest->approver->employee->getDesignationName() }}
                             </div>
                             <div><strong>Date:</strong>
-                                {{ $travelRequest->approvedLog ? $travelRequest->approvedLog->created_at->format('Y-m-d') : '' }} </div>
+                                {{ $travelRequest->approvedLog ? $travelRequest->approvedLog->created_at->format('Y-m-d') : '' }}
+                            </div>
                         </div>
                     </div>
                 </div>

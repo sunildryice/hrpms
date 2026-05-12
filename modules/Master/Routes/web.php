@@ -16,13 +16,13 @@ use Modules\Master\Controllers\AccountCodeController;
 use Modules\Master\Controllers\ActivityAreaController;
 use Modules\Master\Controllers\ActivityCodeController;
 use Modules\Master\Controllers\ActivityCodeImportController;
+use Modules\Master\Controllers\ApproachController;
 use Modules\Master\Controllers\BillCategoryController;
 use Modules\Master\Controllers\BrandController;
 use Modules\Master\Controllers\CountryController;
 use Modules\Master\Controllers\DepartmentController;
 use Modules\Master\Controllers\DesignationController;
 use Modules\Master\Controllers\DistrictController;
-use Modules\Master\Controllers\SectorController;
 use Modules\Master\Controllers\DonorCodeController;
 use Modules\Master\Controllers\DsaCategoryController;
 use Modules\Master\Controllers\ExecutionTypeController;
@@ -48,6 +48,7 @@ use Modules\Master\Controllers\ProbationaryIndicatorController;
 use Modules\Master\Controllers\ProbationaryQuestionController;
 use Modules\Master\Controllers\ProjectCodeController;
 use Modules\Master\Controllers\ProvinceController;
+use Modules\Master\Controllers\SectorController;
 use Modules\Master\Controllers\TrainingQuestionController;
 use Modules\Master\Controllers\UnitController;
 use Modules\Master\Controllers\VehicleController;
@@ -116,6 +117,16 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
             Route::get('sectors/{sector}/edit', [SectorController::class, 'edit'])->name('master.sectors.edit');
             Route::put('sectors/{sector}', [SectorController::class, 'update'])->name('master.sectors.update');
             Route::delete('sectors/{sector}', [SectorController::class, 'destroy'])->name('master.sectors.destroy');
+        });
+
+        Route::middleware('can:manage-approaches')->group(function () {
+            Route::get('approaches', [ApproachController::class, 'index'])->name('master.approaches.index');
+            Route::get('approaches/create', [ApproachController::class, 'create'])->name('master.approaches.create');
+            Route::post('approaches', [ApproachController::class, 'store'])->name('master.approaches.store');
+            Route::get('approaches/{approach}', [ApproachController::class, 'show'])->name('master.approaches.show');
+            Route::get('approaches/{approach}/edit', [ApproachController::class, 'edit'])->name('master.approaches.edit');
+            Route::put('approaches/{approach}', [ApproachController::class, 'update'])->name('master.approaches.update');
+            Route::delete('approaches/{approach}', [ApproachController::class, 'destroy'])->name('master.approaches.destroy');
         });
 
         Route::middleware('can:manage-country')->group(function () {

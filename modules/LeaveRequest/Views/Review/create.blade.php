@@ -147,7 +147,9 @@
                                                         <option value="{{ config('constant.RETURNED_STATUS') }}">Return to
                                                             Requester</option>
                                                         @if ($leaveRequest->approver_id == auth()->id())
-                                                            <option value="8">Reject</option>
+                                                            @if (!$leaveRequest->modification_number)
+                                                                <option value="8">Reject</option>
+                                                            @endif
                                                             {{-- <option value="4">Recommend</option> --}}
                                                             <option value="{{ config('constant.APPROVED_STATUS') }}">Approve
                                                             </option>
@@ -204,8 +206,7 @@
                                             <div class="row mb-2">
                                                 <div class="col-lg-3">
                                                     <div class="d-flex align-items-start h-100">
-                                                        <label for="validationRemarks"
-                                                            class="form-label">Remarks</label>
+                                                        <label for="validationRemarks" class="form-label">Remarks</label>
                                                     </div>
                                                 </div>
                                                 <div class="col-lg-9">

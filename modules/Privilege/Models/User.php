@@ -13,17 +13,18 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Modules\Employee\Models\Employee;
 use Modules\GoodRequest\Models\GoodRequestAsset;
 use Modules\LeaveRequest\Models\LeaveEncash;
 use Modules\LeaveRequest\Models\LeaveRequest;
 use Modules\Master\Models\Department;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\Master\Models\Office;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\PerformanceReview\Models\PerformanceReview;
-use Modules\TravelRequest\Models\TravelRequest;
-use Illuminate\Support\Str;
 use Modules\Project\Models\Project;
+use Modules\TravelRequest\Models\TravelRequest;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract
 {
@@ -273,6 +274,17 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function performanceReviewExists()
     {
         return $this->performanceReviews->count() == 0 ? false : true;
+    }
+
+    public function hasApprovedKeyGoalsReview()
+    {
+        $currentFiscalYearId = app(NepaliFiscalYear::class)->getCurrentFiscalYearId();
+
+        return $this->performanceReviews()
+            ->where('review_type_id', config('constant.KEY_GOALS_REVIEW'))
+            ->where('fiscal_year_id', $currentFiscalYearId)
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->exists();
     }
 
     /**

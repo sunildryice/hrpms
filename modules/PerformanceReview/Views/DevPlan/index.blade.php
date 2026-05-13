@@ -52,46 +52,20 @@
 
 @section('page_js')
     <script type="text/javascript">
-        @if ($keyGoalReview)
+        @if ($canAccessPDP && $keyGoalReview)
             let devPlanRowIndex = {{ $devPlans->count() ?: 0 }};
 
             $(function() {
-                /* Highlight sidebar link */
                 $('#navbarVerticalMenu').find('#performance-devplan-index').addClass('active');
 
-                updateDevPlanButtons();
+                $('#btn-add-devplan').on('click', function() {
+                    openDevPlanModal();
+                });
 
-                /* ── SAVE ── */
-                $('#btn-save').on('click', function() {
-                    if (!validateRows()) return;
-
-                    $.ajax({
-                        url: "{{ route('performance.devplan.standalone.update') }}",
-                        type: 'POST',
-                        data: buildPayload(),
-                        beforeSend: function() {
-                            $('#btn-save').prop('disabled', true).text('Saving…');
-                        },
-                        success: function(res) {
-                            if (res.type === 'success') {
-                                toastr.success(res.message || 'Development plan saved.');
-                            } else {
-                                toastr.error('Could not save. Please try again.');
-                            }
-                            $('#btn-save').prop('disabled', false).text('Save');
-                        },
-                        error: function(xhr) {
-                            toastr.error(
-                                xhr.responseJSON?.message ||
-                                'An error occurred. Please try again.'
-                            );
-                            $('#btn-save').prop('disabled', false).text('Save');
-                        }
-                    });
+                $('#btn-save-devplan').on('click', function() {
+                    saveDevPlanModal();
                 });
             });
-
-            /* ── Helpers ── */
 
             function buildPayload() {
                 const base = {
@@ -111,10 +85,68 @@
                 };
             }
 
+            function openDevPlanModal(rowIndex = '', plan = '', id = '') {
+                $('#devplan-row-index').val(rowIndex);
+                $('#devplan-plan-id').val(id);
+                $('#devplan-plan').val(plan);
+                $('#devplanModalLabel').text(rowIndex === '' ? 'Add Professional Development Plan' : 'Edit Professional Development Plan');
+                $('#devplanModal').modal('show');
+            }
+
+            function saveDevPlanModal() {
+                const plan = $('#devplan-plan').val().trim();
+                if (!plan) {
+                    toastr.error('Please enter a development plan.');
+                    return;
+                }
+
+                const rowIndex = $('#devplan-row-index').val();
+                const id = $('#devplan-plan-id').val();
+                let $row;
+                let oldPlan = '';
+
+                if (rowIndex !== '') {
+                    $row = $(`#devplan-body .devplan-row[data-row-index="${rowIndex}"]`);
+                    oldPlan = $row.find('.devplan-input-plan').val();
+                    $row.find('.devplan-text').text(plan);
+                    $row.find('.devplan-input-plan').val(plan);
+                } else {
+                    $('#devplan-body .placeholder-row').remove();
+                    $row = $(buildDevPlanRow(devPlanRowIndex, plan, id));
+                    $('#devplan-body').append($row);
+                    devPlanRowIndex++;
+                }
+
+                renumberRows();
+
+                ajaxSubmit("{{ route('performance.devplan.standalone.update') }}", 'POST', buildPayload(), function(res) {
+                    toastr.success(res.message || 'Development plan saved.');
+                    $('#devplanModal').modal('hide');
+                }, function(xhr) {
+                    toastr.error(xhr.responseJSON?.message || 'An error occurred while saving.');
+                    if (rowIndex === '') {
+                        $row.remove();
+                        if ($('#devplan-body .devplan-row').length === 0) {
+                            $('#devplan-body').html('<tr class="placeholder-row"><td colspan="3" class="text-center text-muted py-4">No development plan entries yet. Click Add Plan to get started.</td></tr>');
+                        }
+                    } else {
+                        $row.find('.devplan-text').text(oldPlan);
+                        $row.find('.devplan-input-plan').val(oldPlan);
+                    }
+                });
+            }
+
             function validateRows() {
                 let valid = true;
-                $('#devplan-body .devplan-row').each(function() {
-                    const plan = $(this).find('textarea').val()?.trim();
+                const $rows = $('#devplan-body .devplan-row');
+
+                if ($rows.length === 0) {
+                    toastr.error('Please add at least one development plan item.', 'Validation Error');
+                    return false;
+                }
+
+                $rows.each(function() {
+                    const plan = $(this).find('.devplan-input-plan').val()?.trim();
                     if (!plan) {
                         valid = false;
                         $(this).addClass('table-danger');
@@ -129,87 +161,72 @@
                 return valid;
             }
 
-            /* ── Row builder ── */
-            function buildDevPlanRow(idx, plan = '', id = null) {
+            function buildDevPlanRow(idx, plan = '', id = '') {
                 return `
-            <tr class="devplan-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
-                <td class="col-sn">${idx + 1}</td>
-                <td class="col-plan">
-                    <input type="hidden" name="devplans[${idx}][id]" value="${id ?? ''}">
-                    <textarea class="form-control"
-                              name="devplans[${idx}][plan]"
-                              rows="2"
-                              placeholder="Describe the development activity or training attended"
-                              required>${plan.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
-                </td>
-                <td class="col-action">
-                    <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row" title="Add row">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row" title="Remove row">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            </tr>`;
+                <tr class="devplan-row" data-row-index="${idx}" ${id ? `data-id="${id}"` : ''}>
+                    <td class="col-sn">${idx + 1}</td>
+                    <td class="col-plan">
+                        <div class="devplan-text">${escapeHtml(plan)}</div>
+                        <input type="hidden" name="devplans[${idx}][id]" value="${id}">
+                        <input type="hidden" class="devplan-input-plan" name="devplans[${idx}][plan]" value="${escapeHtml(plan)}">
+                    </td>
+                    <td class="col-action">
+                        <button type="button" class="btn btn-outline-primary btn-sm edit-devplan-row" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm delete-devplan-row" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>`;
             }
 
-            function updateDevPlanButtons() {
-                const $rows = $('#devplan-body .devplan-row');
-                $rows.find('.add-devplan-row').hide();
-                $rows.find('.remove-devplan-row').show();
-                if ($rows.length === 1) $rows.find('.remove-devplan-row').hide();
-                $rows.last().find('.add-devplan-row').show();
+            function escapeHtml(value) {
+                return $('<div>').text(value).html();
             }
 
-            /* Renumber SN column */
             function renumberRows() {
                 $('#devplan-body .devplan-row').each(function(i) {
                     $(this).find('.col-sn').text(i + 1);
                     $(this).attr('data-row-index', i);
-                    $(this).find('input[type=hidden]').attr('name', `devplans[${i}][id]`);
-                    $(this).find('textarea').attr('name', `devplans[${i}][plan]`);
+                    $(this).find('input[name^="devplans"][name$="[id]"]').attr('name', `devplans[${i}][id]`);
+                    $(this).find('input.devplan-input-plan').attr('name', `devplans[${i}][plan]`);
                 });
             }
 
-            $(document).on('click', '.add-devplan-row', function() {
-                devPlanRowIndex++;
-                const $row = $(buildDevPlanRow(devPlanRowIndex));
-                $('#devplan-body').append($row);
-                updateDevPlanButtons();
+            $(document).on('click', '.edit-devplan-row', function() {
+                const $row = $(this).closest('.devplan-row');
+                const rowIndex = $row.data('row-index');
+                const plan = $row.find('.devplan-input-plan').val();
+                const id = $row.data('id') || '';
+                openDevPlanModal(rowIndex, plan, id);
             });
 
-            $(document).on('click', '.remove-devplan-row', function() {
-                const $row = $(this).closest('tr');
+            $(document).on('click', '.delete-devplan-row', function() {
+                const $row = $(this).closest('.devplan-row');
                 const planId = $row.data('id');
-
-                const doRemove = function() {
+                const removeRow = function() {
                     $row.remove();
                     renumberRows();
-                    updateDevPlanButtons();
+                    if ($('#devplan-body .devplan-row').length === 0) {
+                        $('#devplan-body').html('<tr class="placeholder-row"><td colspan="3" class="text-center text-muted py-4">No development plan entries yet. Click Add Plan to get started.</td></tr>');
+                    }
                 };
 
                 if (planId) {
-                    $.ajax({
-                        url: "{{ route('performance.devplan.destroy') }}",
-                        type: 'POST',
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            devPlanId: planId
-                        },
-                        success: function(res) {
-                            if (res.type === 'success') {
-                                doRemove();
-                                toastr.success('Development plan entry removed.');
-                            } else {
-                                toastr.error('Failed to delete. Please try again.');
-                            }
-                        },
-                        error: function() {
-                            toastr.error('Server error. Please try again.');
+                    ajaxSweetAlert("{{ route('performance.devplan.destroy') }}", 'POST', {
+                        _token: "{{ csrf_token() }}",
+                        devPlanId: planId
+                    }, 'Yes, delete it!', function(res) {
+                        if (res.type === 'success') {
+                            removeRow();
+                            toastr.success(res.message || 'Development plan entry removed.');
+                        } else {
+                            toastr.error('Failed to delete. Please try again.');
                         }
                     });
                 } else {
-                    doRemove();
+                    removeRow();
                 }
             });
         @endif
@@ -218,20 +235,30 @@
 
 @section('page-content')
 
-    @if (!$keyGoalReview)
-        {{-- No key-goals review found yet ──────────────────────────────────────── --}}
+    @if (!$canAccessPDP)
+        {{-- PDP not available after annual/mid-term review --}}
         <div class="card">
             <div class="card-body text-center py-5 text-muted">
                 <i class="bi bi-journal-x fs-1 d-block mb-3"></i>
-                <p class="mb-0">No Key Goals Review found.</p>
-                <p>A development plan can be created once a Key Goals Review has been set up for you.</p>
+                <p class="mb-0">Professional Development Plan is not available.</p>
+                <p>Professional Development Plan cannot be modified after an Annual Review has been created for the current fiscal year.</p>
+            </div>
+        </div>
+    @elseif (!$keyGoalReview)
+        <div class="card">
+            <div class="card-body text-center py-5 text-muted">
+                <i class="bi bi-journal-text fs-1 d-block mb-3"></i>
+                <p class="mb-0">Professional Development Plan will become available after your Key Goals Review is approved.</p>
+                <p>Once your current fiscal year Key Goals Review is approved, you can manage development plan items here.</p>
             </div>
         </div>
     @else
-        {{-- Development plan table ─────────────────────────────────────────────── --}}
         <div class="card mb-3">
-            <div class="card-header fw-bold">
-                Professional Development Plan
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-bold">Professional Development Plan</span>
+                <button type="button" id="btn-add-devplan" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus me-1"></i> Add New
+                </button>
             </div>
             <div class="card-body">
                 <form id="devplan-form">
@@ -240,7 +267,7 @@
                         <thead>
                             <tr>
                                 <th class="col-sn">SN</th>
-                                <th class="col-plan">Development Plan </th>
+                                <th class="col-plan">Development Plan</th>
                                 <th class="col-action">Action</th>
                             </tr>
                         </thead>
@@ -249,38 +276,23 @@
                                 <tr class="devplan-row" data-row-index="{{ $index }}" data-id="{{ $plan->id }}">
                                     <td class="col-sn">{{ $loop->iteration }}</td>
                                     <td class="col-plan">
-                                        <input type="hidden" name="devplans[{{ $index }}][id]"
-                                            value="{{ $plan->id }}">
-                                        <textarea class="form-control" name="devplans[{{ $index }}][plan]" rows="2"
-                                            placeholder="Describe the development activity or training attended" required>{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}</textarea>
+                                        <div class="devplan-text">{{ $plan->objective }}</div>
+                                        <input type="hidden" name="devplans[{{ $index }}][id]" value="{{ $plan->id }}">
+                                        <input type="hidden" class="devplan-input-plan" name="devplans[{{ $index }}][plan]" value="{{ $plan->objective }}">
                                     </td>
                                     <td class="col-action">
-                                        <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row"
-                                            title="Add row">
-                                            <i class="bi bi-plus"></i>
+                                        <button type="button" class="btn btn-outline-primary btn-sm edit-devplan-row" title="Edit">
+                                            <i class="bi-pencil-square"></i>
                                         </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row"
-                                            title="Remove row">
+                                        <button type="button" class="btn btn-outline-danger btn-sm delete-devplan-row" title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
                             @empty
-                                <tr class="devplan-row" data-row-index="0">
-                                    <td class="col-sn">1</td>
-                                    <td class="col-plan">
-                                        <textarea class="form-control" name="devplans[0][plan]" rows="2"
-                                            placeholder="Describe the development activity or training attended" required></textarea>
-                                    </td>
-                                    <td class="col-action">
-                                        <button type="button" class="btn btn-outline-primary btn-sm add-devplan-row"
-                                            title="Add row">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm remove-devplan-row"
-                                            style="display:none" title="Remove row">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                <tr class="placeholder-row">
+                                    <td colspan="3" class="text-center text-muted py-4">
+                                        No development plan entries yet. Click Add Plan to get started.
                                     </td>
                                 </tr>
                             @endforelse
@@ -291,10 +303,29 @@
         </div>
 
         <div class="text-end mt-3">
-            <button type="button" id="btn-save" class="btn btn-sm btn-primary px-4">
-                <i class="bi bi-floppy me-1"></i> Save
-            </button>
             <a href="{{ route('performance.employee.index') }}" class="btn btn-sm btn-danger px-4">Cancel</a>
+        </div>
+
+        <div class="modal fade" id="devplanModal" tabindex="-1" aria-labelledby="devplanModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="devplanModalLabel">Add Professional Development Plan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="devplan-row-index" value="">
+                        <input type="hidden" id="devplan-plan-id" value="">
+                        <div class="mb-2">
+                            <label for="devplan-plan" class="form-label">Development Plan</label>
+                            <textarea id="devplan-plan" class="form-control" rows="3" placeholder="Describe the development activity or training attended"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn-save-devplan" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 

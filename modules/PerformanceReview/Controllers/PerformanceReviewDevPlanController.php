@@ -5,23 +5,21 @@ namespace Modules\PerformanceReview\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Models\NepaliFiscalYear;
 use Modules\PerformanceReview\Models\PerformanceProfessionalDevelopmentPlan;
 use Modules\PerformanceReview\Models\PerformanceReview;
 
 class PerformanceReviewDevPlanController extends Controller
 {
-    protected PerformanceReview $performanceReview;
 
-    public function __construct(PerformanceReview $performanceReview)
-    {
+    public function __construct(
+        protected PerformanceReview $performanceReview,
+        protected NepaliFiscalYear $nepaliFiscalYear
+    ) {
         $this->performanceReview = $performanceReview;
+        $this->nepaliFiscalYear = $nepaliFiscalYear;
     }
 
-    /**
-     * Show the standalone Development Plan page for the authenticated employee.
-     * Looks up the employee's most recent Key Goals Review across ALL fiscal years,
-     * so they can update dev plans at any time (e.g. after a training session).
-     */
     public function index()
     {
         $employee = auth()->user()->employee;
@@ -30,39 +28,46 @@ class PerformanceReviewDevPlanController extends Controller
             abort(403, 'No employee record linked to your account.');
         }
 
-        // Find the latest Key Goals Review (review_type_id = 3) for this employee.
-        // Order by fiscal year descending so the most recent one is used.
-        $keyGoalReview = $this->performanceReview
-            ->with(['developmentPlans', 'fiscalYear'])
-            ->where('employee_id', $employee->id)
-            ->where('review_type_id', 3) // Key Goals Review
-            ->orderByDesc('created_at')
-            ->first();
+        $currentFiscalYearId = $this->nepaliFiscalYear->getCurrentFiscalYearId();
 
-        if (!$keyGoalReview) {
+        // Check if employee has any Annual Review (1) review in the current fiscal year.
+        $hasAnnualReview = $this->performanceReview
+            ->where('employee_id', $employee->id)
+            ->where('review_type_id', config('constant.ANNUAL_REVIEW'))
+            ->where('fiscal_year_id', $currentFiscalYearId)
+            ->exists();
+
+        if ($hasAnnualReview) {
             return view('PerformanceReview::DevPlan.index', [
-                'keyGoalReview'  => null,
-                'devPlans'       => collect(),
+                'keyGoalReview' => null,
+                'devPlans' => collect(),
+                'canAccessPDP' => false,
             ]);
         }
 
+        // Find the latest approved Key Goals Review (review_type_id = 3) for the current fiscal year.
+        $keyGoalReview = $this->performanceReview
+            ->with(['developmentPlans', 'fiscalYear'])
+            ->where('employee_id', $employee->id)
+            ->where('review_type_id', config('constant.KEY_GOALS_REVIEW'))
+            ->where('fiscal_year_id', $currentFiscalYearId)
+            ->where('status_id', config('constant.APPROVED_STATUS'))
+            ->orderByDesc('created_at')
+            ->first();
+
         return view('PerformanceReview::DevPlan.index', [
             'keyGoalReview' => $keyGoalReview,
-            'devPlans'      => $keyGoalReview->developmentPlans,
+            'devPlans' => $keyGoalReview ? $keyGoalReview->developmentPlans : collect(),
+            'canAccessPDP' => true,
         ]);
     }
 
-    /**
-     * Save (upsert) development plans for the given performance review.
-     * This is intentionally kept as a separate endpoint so it can be called
-     * from both the existing fill page and the new standalone dev-plan page.
-     */
     public function update(Request $request)
     {
         $request->validate([
-            'performance_review_id'  => 'required|integer|exists:performance_reviews,id',
-            'devplans'               => 'required|array|min:1',
-            'devplans.*.plan'        => 'required|string|max:2000',
+            'performance_review_id' => 'required|integer|exists:performance_reviews,id',
+            'devplans' => 'required|array|min:1',
+            'devplans.*.plan' => 'required|string|max:2000',
         ]);
 
         $performanceReview = $this->performanceReview->findOrFail($request->performance_review_id);
@@ -70,6 +75,22 @@ class PerformanceReviewDevPlanController extends Controller
         // Authorise: only the employee who owns this review may edit it.
         if ($performanceReview->employee_id !== auth()->user()->employee?->id) {
             abort(403, 'You are not authorised to update this development plan.');
+        }
+
+        if ($performanceReview->review_type_id !== config('constant.KEY_GOALS_REVIEW') ||
+            $performanceReview->status_id !== config('constant.APPROVED_STATUS') ||
+            $performanceReview->fiscal_year_id !== $this->nepaliFiscalYear->getCurrentFiscalYearId()) {
+            abort(403, 'This development plan cannot be updated.');
+        }
+
+        $hasAnnualReview = $this->performanceReview
+            ->where('employee_id', $performanceReview->employee_id)
+            ->where('review_type_id', config('constant.ANNUAL_REVIEW'))
+            ->where('fiscal_year_id', $this->nepaliFiscalYear->getCurrentFiscalYearId())
+            ->exists();
+
+        if ($hasAnnualReview) {
+            abort(403, 'Development plans cannot be modified after an Annual Review has been created for the current fiscal year.');
         }
 
         DB::beginTransaction();
@@ -80,8 +101,8 @@ class PerformanceReviewDevPlanController extends Controller
             foreach ($request->devplans as $item) {
                 $data = [
                     'performance_review_id' => $performanceReview->id,
-                    'objective'             => trim($item['plan']),
-                    'updated_by'            => auth()->id(),
+                    'objective' => trim($item['plan']),
+                    'updated_by' => auth()->id(),
                 ];
 
                 if (!empty($item['id'])) {
@@ -106,14 +127,14 @@ class PerformanceReviewDevPlanController extends Controller
             DB::commit();
 
             return response()->json([
-                'type'    => 'success',
+                'type' => 'success',
                 'message' => 'Development plan saved successfully.',
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'type'    => 'error',
+                'type' => 'error',
                 'message' => 'Failed to save: ' . $e->getMessage(),
             ], 500);
         }

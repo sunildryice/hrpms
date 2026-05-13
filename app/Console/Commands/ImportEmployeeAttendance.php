@@ -56,9 +56,12 @@ class ImportEmployeeAttendance extends Command
             $manualCheckInExists = $attendanceDetail ? ($attendanceDetail->checkin && $attendanceDetail->checkin_from != 'Device' ? true : false) : false;
 
             if (count($attendanceLogs) > 0) {
+                $office = $employee->latestTenure->office;
                 $attendanceInputs = [
                     'weekend_type_id' => $employee->office->weekend_type,
                     'office_id' => $employee->office_id,
+                    'office_checkin_time' => $office->getOfficeCheckinTime(),
+                    'office_checkout_time'=> $office->getOfficeCheckoutTime(),
                 ];
                 if ($manualCheckInExists) {
                     $checkIn = $attendanceDetail->checkin;

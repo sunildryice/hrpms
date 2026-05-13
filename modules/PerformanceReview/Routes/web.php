@@ -6,6 +6,7 @@ use Modules\PerformanceReview\Controllers\PerformanceReviewAssistantController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewChallengeController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewCoreCompetencyController;
+use Modules\PerformanceReview\Controllers\PerformanceReviewDevPlanController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewExternalReviewController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewKeyGoalController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewRecommendController;
@@ -77,4 +78,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::get('performance/external-review', [PerformanceReviewExternalReviewController::class, 'index'])->name('performance.external-review.index');
     Route::get('performance/external-review/{id}/show', [PerformanceReviewExternalReviewController::class, 'show'])->name('performance.external-review.show');
     Route::post('performance/external-review', [PerformanceReviewExternalReviewController::class, 'storeExternalReviewerComments'])->name('performance.external-review.store');
+
+    Route::get('performance/devplan', [PerformanceReviewDevPlanController::class, 'index'])->name('performance.devplan.index');
+    Route::post('performance/devplan/standalone/update', [PerformanceReviewDevPlanController::class, 'update'])->name('performance.devplan.standalone.update');
 });

@@ -258,6 +258,8 @@
                                 @if ($authUser->performanceReviewExists())
                                     <a class="nav-link" id="performance-employee-index"
                                        href="{{ route('performance.employee.index') }}">My Performance Review</a>
+                                    <a class="nav-link" id="performance-devplan-index"
+                                       href="{{ route('performance.devplan.index') }}">Professional Development Plan</a>
                                 @endif
 
                                 @if ($authUser->isSupervisor())

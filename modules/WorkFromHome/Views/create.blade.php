@@ -148,6 +148,21 @@
             }
 
             var dateTypeOptions = @json($WorkFromHomeDayOptions ?? []);
+            var projectActivitiesMap = @json(collect($projects)->mapWithKeys(function ($project) {
+                return [$project->id => $project->activities];
+            })->all());
+            var projectOptions = @json(collect($projects)->mapWithKeys(function ($project) {
+                return [$project->id => $project->short_name ?: $project->title];
+            })->all());
+
+            function escapeHtml(text) {
+                return String(text)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
 
             function buildDateTypeOptionsHtml(selectedType) {
                 var optionsHtml = '';
@@ -209,6 +224,11 @@
             })();
 
             function buildDeliverableRow(idx) {
+                var projectOptionsHtml = '<option value="" disabled selected>Select Project</option>';
+                Object.keys(projectOptions).forEach(function(projectId) {
+                    projectOptionsHtml += '<option value="' + escapeHtml(projectId) + '">' + escapeHtml(projectOptions[projectId]) + '</option>';
+                });
+
                 return `
                     <tr class="deliverable-row" data-row-index="${idx}">
                         <td style="width: 10%;">
@@ -217,10 +237,7 @@
                         <td style="width: 15%;">
                             <select class="form-select project-select" autocomplete="off"
                                     name="deliverables[${idx}][project_id]" required>
-                                <option value="" disabled selected>Select Project</option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}" data-activities='@json($project->activities)'>{{ $project->short_name ?: $project->title }}</option>
-                                @endforeach
+                                ${projectOptionsHtml}
                             </select>
                         </td>
                         <td>
@@ -302,16 +319,15 @@
             // Populate activities select based on selected project
             function populateActivities($projectSelect, $activitiesSelect, selectedActivityId) {
                 selectedActivityId = selectedActivityId || null;
-                var activitiesData = $projectSelect.find('option:selected').data('activities');
+                var projectId = String($projectSelect.val());
+                var activitiesData = projectActivitiesMap[projectId] || $projectSelect.find('option:selected').data('activities') || [];
                 $activitiesSelect.empty();
                 $activitiesSelect.append('<option value="">Select Activity</option>');
-                if (activitiesData && Array.isArray(activitiesData)) {
+                if (Array.isArray(activitiesData)) {
                     activitiesData.forEach(function(activity) {
-                        var selected = selectedActivityId && String(activity.id) === String(
-                            selectedActivityId) ? 'selected' : '';
+                        var selected = selectedActivityId && String(activity.id) === String(selectedActivityId) ? 'selected' : '';
                         $activitiesSelect.append(
-                            '<option value="' + activity.id + '" ' + selected + '>' + (activity.name ||
-                                activity.title || activity.activity_name) + '</option>'
+                            '<option value="' + escapeHtml(activity.id) + '" ' + selected + '>' + escapeHtml(activity.name || activity.title || activity.activity_name) + '</option>'
                         );
                     });
                 }

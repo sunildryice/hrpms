@@ -185,7 +185,15 @@
                                 $remarkParts[] = 'Travel';
                             }
                             if ($hasLeave) {
-                                $remarkParts[] = $date->get('leave')['leave_abbreviation'];
+                                $leaveType = $date->get('leave')['leave_type_name'];
+                                $leaveMode = trim($date->get('leave')['leave_mode'] ?? '');
+
+                                if ($leaveMode && strtolower($leaveMode) !== 'full day') {
+                                    $leaveModeLabel = $leaveMode === '2 Hour' ? 'Two Hour' : $leaveMode;
+                                    $leaveType .= " ({$leaveModeLabel})";
+                                }
+
+                                $remarkParts[] = $leaveType;
                             }
 
                             // Only show "Absent" for past dates or today (not future dates)

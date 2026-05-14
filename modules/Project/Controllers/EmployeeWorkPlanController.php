@@ -40,6 +40,7 @@ class EmployeeWorkPlanController extends Controller
                 ->join('employees', 'employees.id', '=', 'work_plan.employee_id')
                 ->where('from_date', '>=', $currentWeekStart->format('Y-m-d'))
                 ->where('to_date', '<=', $currentWeekEnd->format('Y-m-d'))
+                ->whereNotNull('employees.activated_at')
                 ->select('work_plan.*')
                 ->orderBy('employees.full_name', 'asc');
 

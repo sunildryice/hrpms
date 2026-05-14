@@ -259,6 +259,10 @@
                                     <a class="nav-link" id="performance-employee-index"
                                        href="{{ route('performance.employee.index') }}">My Performance Review</a>
                                 @endif
+                                @if ($authUser->hasApprovedKeyGoalsReview())
+                                    <a class="nav-link" id="performance-devplan-index"
+                                       href="{{ route('performance.devplan.index') }}">Professional Development Plan</a>
+                                @endif
 
                                 @if ($authUser->isSupervisor())
                                     <a class="nav-link" id="performance-reviews-assistant"

@@ -16,11 +16,36 @@
             width: 100%;
         }
 
-        .col-date { width: 10%; overflow: hidden; word-wrap: break-word; }
-        .col-project { width: 20%; overflow: hidden; word-wrap: break-word; }
-        .col-activities { width: 20%; overflow: hidden; word-wrap: break-word; }
-        .col-task { width: 40%; overflow: hidden; word-wrap: break-word; }
-        .col-action { width: 10%; overflow: hidden; word-wrap: break-word; text-align: center; }
+        .col-date {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-project {
+            width: 20%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-activities {
+            width: 20%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-task {
+            width: 40%;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+
+        .col-action {
+            width: 10%;
+            overflow: hidden;
+            word-wrap: break-word;
+            text-align: center;
+        }
 
         .task-item+.task-item {
             margin-top: .35rem;
@@ -48,6 +73,14 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
+            var weekendType = {{ $weekendType }};
+
+            function isWeekend(dateStr) {
+                var d = toDateOnly(dateStr);
+                var day = d.getDay();
+                if (weekendType === 2) return day === 0 || day === 6;
+                return day === 6;
+            }
 
             $('#send_to, #type').addClass('select2').select2({
                 width: '100%',
@@ -148,12 +181,13 @@
             }
 
             var dateTypeOptions = @json($WorkFromHomeDayOptions ?? []);
+            var holidays = @json($holidays ?? []);
             var projectActivitiesMap = @json(collect($projects)->mapWithKeys(function ($project) {
-                return [$project->id => $project->activities];
-            })->all());
+                        return [$project->id => $project->activities];
+                    })->all());
             var projectOptions = @json(collect($projects)->mapWithKeys(function ($project) {
-                return [$project->id => $project->short_name ?: $project->title];
-            })->all());
+                        return [$project->id => $project->short_name ?: $project->title];
+                    })->all());
 
             function escapeHtml(text) {
                 return String(text)
@@ -178,17 +212,22 @@
 
             function renderTypeTableRows() {
                 var range = getWFHDateRange();
-                var dates = getDateListFromRange(range.start, range.end);
+                var dates = getDateListFromRange(range.start, range.end).filter(function(d) {
+                    return !isWeekend(d) && holidays.indexOf(d) === -1;
+                });
                 var existing = collectExistingTypeRowValues();
                 var $typeBody = $('#type-table-body');
 
                 if (!range.start) {
-                    $typeBody.html('<tr><td colspan="3" class="text-muted text-center">Select start date first.</td></tr>');
+                    $typeBody.html(
+                        '<tr><td colspan="3" class="text-muted text-center">Select start date first.</td></tr>');
                     return;
                 }
 
                 if (!dates.length) {
-                    $typeBody.html('<tr><td colspan="3" class="text-muted text-center">End date must be same or after start date.</td></tr>');
+                    $typeBody.html(
+                        '<tr><td colspan="3" class="text-muted text-center">End date must be same or after start date.</td></tr>'
+                    );
                     return;
                 }
 
@@ -199,9 +238,11 @@
 
 
                     html += '<tr class="type-row" data-date="' + dateValue + '">' +
-                        '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx + '][date]" value="' + dateValue + '"></td>' +
+                        '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx +
+                        '][date]" value="' + dateValue + '"></td>' +
                         '<td>' +
-                        '<select class="form-select day-type-select" name="date_types[' + idx + '][type]">' +
+                        '<select class="form-select day-type-select" name="date_types[' + idx +
+                        '][type]">' +
                         buildDateTypeOptionsHtml(selectedType) +
                         '</select>' +
                         '</td>' +
@@ -226,7 +267,8 @@
             function buildDeliverableRow(idx) {
                 var projectOptionsHtml = '<option value="" disabled selected>Select Project</option>';
                 Object.keys(projectOptions).forEach(function(projectId) {
-                    projectOptionsHtml += '<option value="' + escapeHtml(projectId) + '">' + escapeHtml(projectOptions[projectId]) + '</option>';
+                    projectOptionsHtml += '<option value="' + escapeHtml(projectId) + '">' + escapeHtml(
+                        projectOptions[projectId]) + '</option>';
                 });
 
                 return `
@@ -281,7 +323,25 @@
                         format: 'yyyy-mm-dd',
                         startDate: start,
                         endDate: end,
-                        enableOnReadonly: true
+                        enableOnReadonly: true,
+                        filter: function(date) {
+                            var day = date.getDay();
+                            var dateStr = formatDate(date); 
+
+                            // Weekend check
+                            if (weekendType === 2) {
+                                if (day === 0 || day === 6) return false;
+                            } else if (day === 6) {
+                                return false;
+                            }
+
+                            // Holiday check
+                            if (holidays.indexOf(dateStr) !== -1) {
+                                return false;
+                            }
+
+                            return true;
+                        }
                     });
                     $input.prop('disabled', false);
                 } else {
@@ -320,14 +380,18 @@
             function populateActivities($projectSelect, $activitiesSelect, selectedActivityId) {
                 selectedActivityId = selectedActivityId || null;
                 var projectId = String($projectSelect.val());
-                var activitiesData = projectActivitiesMap[projectId] || $projectSelect.find('option:selected').data('activities') || [];
+                var activitiesData = projectActivitiesMap[projectId] || $projectSelect.find('option:selected').data(
+                    'activities') || [];
                 $activitiesSelect.empty();
                 $activitiesSelect.append('<option value="">Select Activity</option>');
                 if (Array.isArray(activitiesData)) {
                     activitiesData.forEach(function(activity) {
-                        var selected = selectedActivityId && String(activity.id) === String(selectedActivityId) ? 'selected' : '';
+                        var selected = selectedActivityId && String(activity.id) === String(
+                            selectedActivityId) ? 'selected' : '';
                         $activitiesSelect.append(
-                            '<option value="' + escapeHtml(activity.id) + '" ' + selected + '>' + escapeHtml(activity.name || activity.title || activity.activity_name) + '</option>'
+                            '<option value="' + escapeHtml(activity.id) + '" ' + selected + '>' +
+                            escapeHtml(activity.name || activity.title || activity.activity_name) +
+                            '</option>'
                         );
                     });
                 }
@@ -606,7 +670,7 @@
                     <table class="table table-bordered" id="deliverables-table">
                         <thead>
                             <tr>
-                        <th class="col-date align-middle">Date</th>
+                                <th class="col-date align-middle">Date</th>
                                 <th class="col-project align-middle">Project</th>
                                 <th class="col-activities align-middle">Activities</th>
                                 <th class="col-task align-middle">Task</th>

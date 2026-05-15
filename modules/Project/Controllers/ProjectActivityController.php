@@ -63,7 +63,12 @@ class ProjectActivityController extends Controller
         $activities = $data->get()->sortBy(function ($item) {
             $path = [];
             $current = $item;
+            $visited = [];
             while ($current) {
+                if (isset($visited[$current->id])) { 
+                    break;
+                }
+                $visited[$current->id] = true; 
                 $path[] = str_pad($current->sort_order ?? $current->id, 4, '0', STR_PAD_LEFT);
                 $current = $current->parent;
             }

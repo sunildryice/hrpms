@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Modules\Master\Models\Holiday;
 use Modules\WorkFromHome\Requests\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
-use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
 use Modules\Project\Repositories\ProjectRepository;
 use Modules\WorkFromHome\Enums\WorkFromHomeDays;
@@ -28,7 +28,8 @@ class RequestController extends Controller
         protected WorkFromHomeRepository $workFromHomes,
         protected WorkFromHomeLogRepository $workFromHomeLogs,
         protected FiscalYearRepository $fiscalYears
-    ) {}
+    ) {
+    }
 
 
 
@@ -36,13 +37,15 @@ class RequestController extends Controller
     {
 
         if ($request->ajax()) {
-            $query = $this->workFromHomes->where('requester_id', '=', auth()->id())
+            $query = $this->workFromHomes
+                ->with('WorkFromHomeDays')
+                ->where('requester_id', '=', auth()->id())
                 ->orderBy('created_at', 'desc');
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('request_date', function ($row) {
-                    return  $row->getRequestDate();
+                    return $row->getRequestDate();
                 })
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
@@ -101,14 +104,19 @@ class RequestController extends Controller
 
         $typeOptions = WorkFromHomeTypes::options();
         $WorkFromHomeDayOptions = WorkFromHomeDays::options();
-
- 
+        $weekendType = $authUser->employee->office->weekend_type ?? 2;
+        $holidays = Holiday::where('is_holiday', true)
+            ->pluck('holiday_date')
+            ->map(fn($date) => $date instanceof Carbon ? $date->format('Y-m-d') : $date)
+            ->toArray();
 
         return view('WorkFromHome::create', [
             'projects' => $projects,
             'supervisors' => $supervisors,
             'typeOptions' => $typeOptions,
             'WorkFromHomeDayOptions' => $WorkFromHomeDayOptions,
+            'weekendType' => $weekendType,
+            'holidays' => $holidays,
         ]);
     }
 
@@ -136,7 +144,7 @@ class RequestController extends Controller
                 $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $workFromHome = $this->workFromHomes->create($inputs);
-             
+
 
 
                 $logInputs = [
@@ -153,7 +161,7 @@ class RequestController extends Controller
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
 
                 $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
-                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->fiscal_year_id = $this->fiscalYears->getCurrentFiscalYearId();
                 $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
                 $workFromHome->save();
 
@@ -164,7 +172,7 @@ class RequestController extends Controller
                 $workFromHome = $this->workFromHomes->create($inputs);
             }
 
-               $workFromHome->WorkFromHomeDays()->createMany($inputs['date_types'] ?? []);
+            $workFromHome->WorkFromHomeDays()->createMany($inputs['date_types'] ?? []);
 
             DB::commit();
 
@@ -201,6 +209,11 @@ class RequestController extends Controller
         $supervisors = $this->users->getSupervisors($authUser)->pluck('full_name', 'id');
         $typeOptions = \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options();
         $WorkFromHomeDayOptions = WorkFromHomeDays::options();
+        $weekendType = $authUser->employee->office->weekend_type ?? 2;
+        $holidays = Holiday::where('is_holiday', true)
+            ->pluck('holiday_date')
+            ->map(fn($date) => $date instanceof Carbon ? $date->format('Y-m-d') : $date)
+            ->toArray();
 
         return view('WorkFromHome::edit', compact(
             'workFromHome',
@@ -208,34 +221,36 @@ class RequestController extends Controller
             'supervisors',
             'typeOptions',
             'WorkFromHomeDayOptions',
+            'weekendType',
+            'holidays'
         ));
     }
 
     public function update(UpdateRequest $request, $id)
     {
         $authUser = auth()->user();
-        $inputs   = $request->validated();
+        $inputs = $request->validated();
 
         try {
             DB::beginTransaction();
 
-            $inputs['requester_id']     = auth()->id();
-            $inputs['approver_id']      = $inputs['send_to'];
+            $inputs['requester_id'] = auth()->id();
+            $inputs['approver_id'] = $inputs['send_to'];
             $inputs['original_user_id'] = session()->get('original_user');
-            $inputs['office_id']        = $authUser->employee->office_id;
-            $inputs['department_id']    = $authUser->employee->department_id;
-            $inputs['updated_by']       = auth()->id();
+            $inputs['office_id'] = $authUser->employee->office_id;
+            $inputs['department_id'] = $authUser->employee->department_id;
+            $inputs['updated_by'] = auth()->id();
 
             if ($inputs['btn'] === 'submit') {
-                $inputs['status_id']    = config('constant.SUBMITTED_STATUS');
+                $inputs['status_id'] = config('constant.SUBMITTED_STATUS');
 
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
 
                 $logInputs = [
-                    'user_id'          => $authUser->id,
-                    'log_remarks'      => 'Work From Home request is submitted.',
+                    'user_id' => $authUser->id,
+                    'log_remarks' => 'Work From Home request is submitted.',
                     'original_user_id' => $inputs['original_user_id'],
-                    'status_id'        => $workFromHome->status_id,
+                    'status_id' => $workFromHome->status_id,
                     'work_from_home_id' => $workFromHome->id,
                 ];
 
@@ -245,10 +260,10 @@ class RequestController extends Controller
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
 
                 $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
-                $workFromHome->fiscal_year_id =  $this->fiscalYears->getCurrentFiscalYearId();
+                $workFromHome->fiscal_year_id = $this->fiscalYears->getCurrentFiscalYearId();
                 $workFromHome->work_from_home_number = $this->workFromHomes->getWorkFromHomeRequestNumber($fiscalYear);
 
-              
+
 
                 $workFromHome->save();
 
@@ -260,11 +275,11 @@ class RequestController extends Controller
 
                 $workFromHome = $this->workFromHomes->update($id, $inputs);
             }
-            
+
             $workFromHome->WorkFromHomeDays()->delete();
             $workFromHome->WorkFromHomeDays()->createMany($inputs['date_types'] ?? []);
-              
-                
+
+
             DB::commit();
 
             return redirect()

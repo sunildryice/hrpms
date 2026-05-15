@@ -11,6 +11,7 @@ use Modules\Master\Models\Status;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
 use Modules\Project\Models\ProjectActivity;
+use Modules\WorkFromHome\Enums\WorkFromHomeDays;
 use Modules\WorkFromHome\Enums\WorkFromHomeTypes;
 use Modules\WorkFromHome\Models\WorkFromHomeLog;
 
@@ -195,9 +196,31 @@ class WorkFromHome extends Model
     }
 
 
+    // public function getTotalDays()
+    // {
+    //     return $this->end_date ? $this->end_date->diffInDays($this->start_date, true) + 1 : 1;
+    // }
+
     public function getTotalDays()
     {
-        return $this->end_date ? $this->end_date->diffInDays($this->start_date, true) + 1 : 1;
+        if (!$this->relationLoaded('WorkFromHomeDays')) {
+            $this->load('WorkFromHomeDays');
+        }
+
+        if ($this->WorkFromHomeDays->isEmpty()) {
+            return $this->end_date
+                ? $this->end_date->diffInDays($this->start_date, true) + 1
+                : 1;
+        }
+
+        return $this->WorkFromHomeDays->sum(
+            fn($day) =>
+            match ($day->type) {
+                WorkFromHomeDays::FIRST_HALF,
+                WorkFromHomeDays::SECOND_HALF => 0.5,
+                default => 1.0,
+            }
+        );
     }
 
     public function getWorkFromHomeDuration()

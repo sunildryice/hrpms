@@ -73,6 +73,14 @@
     <script type="text/javascript">
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#wfh-requests-index').addClass('active');
+            var weekendType = {{ $weekendType }};
+
+            function isWeekend(dateStr) {
+                var d = toDateOnly(dateStr);
+                var day = d.getDay();
+                if (weekendType === 2) return day === 0 || day === 6;
+                return day === 6;
+            }
 
             $('#send_to, #type').addClass('select2').select2({
                 width: '100%',
@@ -155,12 +163,13 @@
             }
 
             var dateTypeOptions = @json($WorkFromHomeDayOptions ?? []);
+            var holidays = @json($holidays ?? []);
             var projectActivitiesMap = @json(collect($projects)->mapWithKeys(function ($project) {
-                return [$project->id => $project->activities];
-            })->all());
+                        return [$project->id => $project->activities];
+                    })->all());
             var projectOptions = @json(collect($projects)->mapWithKeys(function ($project) {
-                return [$project->id => $project->short_name ?: $project->title];
-            })->all());
+                        return [$project->id => $project->short_name ?: $project->title];
+                    })->all());
 
             function escapeHtml(text) {
                 return String(text)
@@ -189,17 +198,23 @@
 
             function renderTypeTableRows() {
                 var range = getWFHDateRange();
-                var dates = getDateListFromRange(range.start, range.end);
+                // var dates = getDateListFromRange(range.start, range.end);
+                var dates = getDateListFromRange(range.start, range.end).filter(function(d) {
+                    return !isWeekend(d) && holidays.indexOf(d) === -1;
+                });
                 var existing = collectExistingTypeRowValues();
                 var $typeBody = $('#type-table-body');
 
                 if (!range.start) {
-                    $typeBody.html('<tr><td colspan="2" class="text-muted text-center">Select start date first.</td></tr>');
+                    $typeBody.html(
+                        '<tr><td colspan="2" class="text-muted text-center">Select start date first.</td></tr>');
                     return;
                 }
 
                 if (!dates.length) {
-                    $typeBody.html('<tr><td colspan="2" class="text-muted text-center">End date must be same or after start date.</td></tr>');
+                    $typeBody.html(
+                        '<tr><td colspan="2" class="text-muted text-center">End date must be same or after start date.</td></tr>'
+                    );
                     return;
                 }
 
@@ -208,9 +223,11 @@
                     var selectedType = existing[dateValue] || initialDateTypes[dateValue] || '';
 
                     html += '<tr class="type-row" data-date="' + dateValue + '">' +
-                        '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx + '][date]" value="' + dateValue + '"></td>' +
+                        '<td>' + dateValue + '<input type="hidden" name="date_types[' + idx +
+                        '][date]" value="' + dateValue + '"></td>' +
                         '<td>' +
-                        '<select class="form-select day-type-select" name="date_types[' + idx + '][type]">' +
+                        '<select class="form-select day-type-select" name="date_types[' + idx +
+                        '][type]">' +
                         buildDateTypeOptionsHtml(selectedType) +
                         '</select>' +
                         '</td>' +
@@ -235,7 +252,8 @@
             function buildDeliverableRow(idx) {
                 var projectOptionsHtml = '<option value="" disabled selected>Select Project</option>';
                 Object.keys(projectOptions).forEach(function(projectId) {
-                    projectOptionsHtml += '<option value="' + escapeHtml(projectId) + '">' + escapeHtml(projectOptions[projectId]) + '</option>';
+                    projectOptionsHtml += '<option value="' + escapeHtml(projectId) + '">' + escapeHtml(
+                        projectOptions[projectId]) + '</option>';
                 });
 
                 return `
@@ -273,14 +291,18 @@
             function populateActivities($projectSelect, $activitiesSelect, selectedActivityId) {
                 selectedActivityId = selectedActivityId || null;
                 var projectId = String($projectSelect.val());
-                var activitiesData = projectActivitiesMap[projectId] || $projectSelect.find('option:selected').data('activities') || [];
+                var activitiesData = projectActivitiesMap[projectId] || $projectSelect.find('option:selected').data(
+                    'activities') || [];
                 $activitiesSelect.empty();
                 $activitiesSelect.append('<option value="">Select Activity</option>');
                 if (Array.isArray(activitiesData)) {
                     activitiesData.forEach(function(activity) {
-                        var selected = selectedActivityId && String(activity.id) === String(selectedActivityId) ? 'selected' : '';
+                        var selected = selectedActivityId && String(activity.id) === String(
+                            selectedActivityId) ? 'selected' : '';
                         $activitiesSelect.append(
-                            '<option value="' + escapeHtml(activity.id) + '" ' + selected + '>' + escapeHtml(activity.name || activity.title || activity.activity_name) + '</option>'
+                            '<option value="' + escapeHtml(activity.id) + '" ' + selected + '>' +
+                            escapeHtml(activity.name || activity.title || activity.activity_name) +
+                            '</option>'
                         );
                     });
                 }
@@ -323,7 +345,22 @@
                     format: 'yyyy-mm-dd',
                     startDate: $('[name="start_date"]').val() || new Date(),
                     endDate: $('[name="end_date"]').val() || null,
-                    enableOnReadonly: true
+                    enableOnReadonly: true,
+                    filter: function(date) {
+                        var day = date.getDay();
+                        var dateStr = formatDate(date);
+
+                        if (weekendType === 2) {
+                            if (day === 0 || day === 6) return false;
+                        } else if (day === 6) {
+                            return false;
+                        }
+
+                        if (holidays.indexOf(dateStr) !== -1) {
+                            return false;
+                        }
+                        return true;
+                    }
                 });
                 $dateInput.prop('disabled', !($('[name="start_date"]').val() && $('[name="end_date"]')
                     .val()));
@@ -355,7 +392,22 @@
                     format: 'yyyy-mm-dd',
                     startDate: $('[name="start_date"]').val() || new Date(),
                     endDate: $('[name="end_date"]').val() || null,
-                    enableOnReadonly: true
+                    enableOnReadonly: true,
+                    filter: function(date) {
+                        var day = date.getDay();
+                        var dateStr = formatDate(date);
+
+                        if (weekendType === 2) {
+                            if (day === 0 || day === 6) return false;
+                        } else if (day === 6) {
+                            return false;
+                        }
+
+                        if (holidays.indexOf(dateStr) !== -1) {
+                            return false;
+                        }
+                        return true;
+                    }
                 });
                 $newRow.find('input.date').prop('disabled', !($('[name="start_date"]').val() && $(
                     '[name="end_date"]').val()));
@@ -401,9 +453,25 @@
                         format: 'yyyy-mm-dd',
                         startDate: start,
                         endDate: end,
-                        enableOnReadonly: true
+                        enableOnReadonly: true,
+                        filter: function(date) {
+                            var day = date.getDay();
+                            var dateStr = formatDate(date);
+
+                            if (weekendType === 2) {
+                                if (day === 0 || day === 6) return false;
+                            } else if (day === 6) {
+                                return false;
+                            }
+
+                            if (holidays.indexOf(dateStr) !== -1) {
+                                return false;
+                            }
+                            return true;
+                        }
                     });
-                    $dateInput.prop('disabled', !($('[name="start_date"]').val() && $('[name="end_date"]').val()));
+                    $dateInput.prop('disabled', !($('[name="start_date"]').val() && $(
+                        '[name="end_date"]').val()));
                 });
 
                 renderTypeTableRows();

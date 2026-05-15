@@ -278,9 +278,9 @@
                                     </td>
                                     <td class="col-wrap">{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}
                                     </td>
-                                    <td class="col-wrap">{{ $p->projectTheme->title ?? '-' }}</td>
+                                    <td class="col-wrap">{{ $p->projectThemes->pluck('title')->join(', ') ?: '-' }}</td>
                                     <td class="col-wrap">{{ $p->approaches->pluck('title')->join(', ') ?: '-' }}</td>
-                                    <td class="col-wrap">{{ $p->sector->title ?? '-' }}</td>
+                                    <td class="col-wrap">{{ $p->sectors->pluck('title')->join(', ') ?: '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>

@@ -35,8 +35,6 @@ class ProjectSummaryController extends Controller
             ->with([
                 'teamLead:id,full_name',
                 'focalPerson:id,full_name',
-                'projectTheme:id,title',
-                'sector:id,title',
             ])
             ->withCount([
                 'activities as completed_count' => fn($q) => $q->where('status', ActivityStatus::Completed),
@@ -56,7 +54,11 @@ class ProjectSummaryController extends Controller
         }
 
         if ($request->filled('project_theme_id')) {
-            $query->where('project_theme_id', $request->project_theme_id);
+            $projectThemeId = (int) $request->project_theme_id;
+            $query->where(function ($q) use ($projectThemeId) {
+                $q->whereJsonContains('project_theme_ids', $projectThemeId)
+                    ->orWhere('project_theme_ids', 'LIKE', '%"' . $projectThemeId . '"%');
+            });
         }
 
         if ($request->filled('approach_id')) {

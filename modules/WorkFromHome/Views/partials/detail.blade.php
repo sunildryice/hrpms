@@ -49,7 +49,7 @@
                         <div class="d-content-section">
                             {{ $wfhRequest->getStartDate() }} -
                             {{ $wfhRequest->getEndDate() }}
-                            @php $duration = \Carbon\Carbon::parse($wfhRequest->start_date)->diffInDays(\Carbon\Carbon::parse($wfhRequest->end_date)) + 1; @endphp
+                            @php $duration = max($wfhRequest->getTotalDays(), 0); @endphp
                             <span class="badge bg-primary">{{ $duration }} Day{{ $duration > 1 ? 's' : '' }}</span>
                         </div>
                     </div>

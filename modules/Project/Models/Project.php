@@ -83,12 +83,13 @@ class Project extends Model
         }
         return District::whereIn('id', $this->district_ids)->get();
     }
-    public function projectTheme()
+
+    public function getProjectThemeAttribute()
     {
         return $this->getProjectThemesAttribute()->first();
     }
 
-    public function sector()
+    public function getSectorAttribute()
     {
         return $this->getSectorsAttribute()->first();
     }

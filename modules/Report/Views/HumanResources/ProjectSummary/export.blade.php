@@ -44,9 +44,9 @@
                 <td>{{ $p->contracting_agency ?: '-' }}</td>
                 <td>{{ $p->budget_usd ? number_format($p->budget_usd, 2) : '-' }}</td>
                 <td>{{ $p->districts->pluck('district_name')->join(', ') ?: '-' }}</td>
-                <td>{{ optional($p->projectTheme)->title ?? '-' }}</td>
+                <td>{{ $p->projectThemes->pluck('title')->join(', ') ?: '-' }}</td>
                 <td>{{ $p->approaches->pluck('title')->join(', ') ?: '-' }}</td>
-                <td>{{ optional($p->sector)->title ?? '-' }}</td>
+                <td>{{ $p->sectors->pluck('title')->join(', ') ?: '-' }}</td>
             </tr>
         @empty
             <tr>

@@ -23,18 +23,26 @@ class WorkPlanController extends Controller
     public function index(Request $request)
     {
         $now = Carbon::now()->startOfDay();
+        $employeeId = auth()->user()->employee->id ?? null;
+
         $workPlans = $this->workPlans
-            ->where('employee_id', '=', auth()->user()->employee->id ?? null)
+            ->where('employee_id', '=', $employeeId)
             ->whereYear('from_date', Carbon::now()->year)
             ->whereYear('to_date', Carbon::now()->year)
             ->orderByRaw("
-                CASE 
-                    WHEN ? BETWEEN from_date AND to_date THEN 0   
-                    WHEN to_date >= ? THEN 1                      
-                    ELSE 2                                        
-                END
-            ", [$now, $now])
-            ->orderBy('from_date', 'desc')
+            CASE 
+                WHEN ? BETWEEN from_date AND to_date THEN 0      -- Current week
+                WHEN from_date > ? THEN 1                        -- Future weeks
+                ELSE 2                                           -- Past weeks
+            END ASC
+        ", [$now, $now])
+            ->orderByRaw("
+            CASE 
+                WHEN ? BETWEEN from_date AND to_date THEN 0
+                WHEN from_date > ? THEN from_date                -- Future: Soonest first (ASC)
+                ELSE 9999999999 - UNIX_TIMESTAMP(from_date)      -- Past: Most recent first (reverse)
+            END ASC
+        ", [$now, $now])
             ->get();
 
         return view('Project::WorkPlan.index', compact('workPlans', 'now'));

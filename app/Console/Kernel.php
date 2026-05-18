@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('dryice:import:attendance')->hourlyAt(46);
         $schedule->command('dryice:generate:timesheets')->dailyAt('02:00');
         $schedule->command('dryice:auto:submit:timesheet')->dailyAt('09:30');
+        $schedule->command('dryice:send:workplan:reminder')->weekly()->mondays()->at('10:00');
     }
 
     /**

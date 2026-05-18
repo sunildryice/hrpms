@@ -33,9 +33,9 @@ class SendWorkPlanReminder extends Command
         $this->info('Sending weekly work plan update reminders...');
 
         $employees = $this->employees->activeEmployees();
-        $employees = $employees->filter(function ($employee) {
-           return $employee->employee_code == 41;
-        });
+//        $employees = $employees->filter(function ($employee) {
+//           return $employee->employee_code == 41;
+//        });
         $weekStart = Carbon::now()->startOfWeek(Carbon::SUNDAY);
         $weekEnd = $weekStart->copy()->addDays(6);
         $reminder = new WorkPlanReminder($weekStart, $weekEnd);

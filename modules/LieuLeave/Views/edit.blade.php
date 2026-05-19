@@ -98,7 +98,6 @@
                 ajaxNativeSubmit(url, 'GET', {}, 'json', successCallback, errorCallback);
             }
 
-            checkAvailableStatus($('#leave_date').val());
 
             function fetchOffDayWorksforLieuLeave(date) {
                 const url = "{{ route('api.lieu.leave.offdaywork.user', ':date') }}".replace(':date', date || '');
@@ -129,8 +128,6 @@
 
             });
 
-            // Prefetch available Off Day Work dates for current leave date
-            fetchOffDayWorksforLieuLeave($('#leave_date').val());
 
             if (form) {
                 window.fv = FormValidation.formValidation(form, {
@@ -174,6 +171,10 @@
                     },
                 });
             }
+
+            // Prefetch available Off Day Work dates for current leave date
+            checkAvailableStatus($('#leave_date').val());
+            fetchOffDayWorksforLieuLeave($('#leave_date').val());
 
             // Revalidate selects on change
             $(form).on('change', '#project_id', function() {
@@ -244,8 +245,11 @@
                         <label for="leave_date" class="form-label required-label">Leave Date</label>
                     </div>
                     <div class="mb-3 col-8">
-                        <input type="date" class="form-control" id="leave_date" name="leave_date"
-                            value="{{ $prefillLeaveDate }}" required>
+                        {{-- <input type="date" class="form-control" id="leave_date" name="leave_date"
+                            value="{{ $prefillLeaveDate }}" required> --}}
+                        <input type="text" class="form-control" id="leave_date" name="leave_date"
+                            value="{{ $prefillLeaveDate }}" required readonly>
+
                     </div>
                     <div class="mb-3 col-2">
                         <input type="text" class="form-control" id="balance" name="balance"
@@ -257,8 +261,10 @@
                         <label for="off_day_work_date" class="form-label required-label">Off Day Work Date</label>
                     </div>
                     <div class="mb-3 col-10">
-                        <input type="date" class="form-control date" id="off_day_work_date" name="off_day_work_date"
-                            value="{{ $prefillOffDayWorkDate }}" required>
+                        {{-- <input type="date" class="form-control date" id="off_day_work_date" name="off_day_work_date"
+                            value="{{ $prefillOffDayWorkDate }}" required> --}}
+                        <input type="text" class="form-control date" id="off_day_work_date" name="off_day_work_date"
+                            value="{{ $prefillOffDayWorkDate }}" required readonly>
                     </div>
                 </div>
                 <div class="row mb-3">

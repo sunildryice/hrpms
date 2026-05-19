@@ -45,8 +45,8 @@ class WorkPlanReminder extends Notification
         return (new MailMessage)
             ->greeting('Dear ' . ($notifiable->full_name ?? 'Employee') . ',')
             ->subject('Weekly Work Plan Reminder')
-            ->line('This is your weekly reminder to update your work plan for the week of ' . $weekLabel . '.')
-            ->line('Please update your weekly work plan in the system.')
+            ->line('This is a weekly reminder to update your work plan for the week of ' . $weekLabel . '.')
+            ->line('If you have not yet updated your weekly work plan, please update it in the system.')
             ->action('View Work Plans', $url);
     }
 
@@ -76,7 +76,7 @@ class WorkPlanReminder extends Notification
             'link' => route('work-plan.index'),
             'alternate_link' => route('work-plan.index'),
             'subject' => 'Weekly Work Plan Reminder',
-            'message' => 'This is your weekly reminder to update your work plan for the week of ' . $this->weekStart->format('M j, Y') . ' - ' . $this->weekEnd->format('M j, Y') . '.',
+            'message' => 'This is a weekly reminder to update your work plan for the week of ' . $this->weekStart->format('M j, Y') . ' - ' . $this->weekEnd->format('M j, Y') . '.',
         ];
     }
 }

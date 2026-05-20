@@ -35,7 +35,8 @@ class RequestController extends Controller
         protected EmployeeRepository $employees,
         protected AttendanceRepository $attendance,
         protected AttendanceDetailRepository $attendanceDetails,
-    ) {}
+    ) {
+    }
 
 
     public function index(Request $request)
@@ -44,7 +45,7 @@ class RequestController extends Controller
         $userId = auth()->id();
 
         $appliedLeaveofMonth = $this->lieuLeaveBalance->countAppliedLeave($userId, $month);
-        $lieuLeaveBalance =  $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
+        $lieuLeaveBalance = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
 
 
         $availableOffDayWorkDates = $this->lieuLeaveBalance->getPresentOffDayWorkDates($userId, $month);
@@ -77,7 +78,7 @@ class RequestController extends Controller
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->editColumn('request_date', function ($row) {
-                    return  $row->getRequestDate();
+                    return $row->getRequestDate();
                 })
                 ->addColumn('request_id', function ($row) {
                     return $row->getRequestId();
@@ -128,11 +129,11 @@ class RequestController extends Controller
             return $staff->id == $authUser->employee_id;
         });
 
-        $lieuLeaveRequests = $this->lieuLeaveRequests->select(['id','start_date'])
+        $lieuLeaveRequests = $this->lieuLeaveRequests->select(['id', 'start_date'])
             ->where('requester_id', '=', $authUser->id)
             ->get();
         $disableDates = [];
-        foreach($lieuLeaveRequests as $lieuLeaveRequest){
+        foreach ($lieuLeaveRequests as $lieuLeaveRequest) {
 
             $start = Carbon::create($lieuLeaveRequest->start_date)->startOfMonth();
             $end = Carbon::create($lieuLeaveRequest->start_date)->endOfMonth();
@@ -173,11 +174,11 @@ class RequestController extends Controller
 
             DB::beginTransaction();
 
-            $month  = Carbon::parse($inputs['leave_date']);
+            $month = Carbon::parse($inputs['leave_date']);
             $userId = auth()->id();
 
             $appliedLeaveofMonth = $this->lieuLeaveBalance->countAppliedLeave($userId, $month);
-            $lieuLeaveBalance    = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
+            $lieuLeaveBalance = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
 
             if ($appliedLeaveofMonth > 0 || $lieuLeaveBalance == 0) {
 
@@ -203,10 +204,13 @@ class RequestController extends Controller
                     'lieu_leave_request_id' => $lieuLeaveRequest->id,
                 ];
 
-                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])
-                    ->where('earned_date', $inputs['off_day_work_date'])
+                // $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($authUser->id, $inputs['leave_date'])
+                //     ->where('earned_date', $inputs['off_day_work_date'])
+                //     ->first();
+                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])
+                    ->filter(fn($item) => Carbon::parse($item->earned_date)->format('Y-m-d') === $inputs['off_day_work_date'])
                     ->first();
-                
+
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
 
@@ -312,14 +316,13 @@ class RequestController extends Controller
 
             if ($inputs['btn'] === 'submit') {
 
-                $month  = Carbon::parse($inputs['leave_date']);
+                $month = Carbon::parse($inputs['leave_date']);
                 $userId = auth()->id();
 
                 $appliedLeaveofMonth = $this->lieuLeaveBalance->countAppliedLeave($userId, $month);
-                $lieuLeaveBalance    = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
+                $lieuLeaveBalance = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
 
                 if ($appliedLeaveofMonth > 0 || $lieuLeaveBalance == 0) {
-
                     return redirect()->back()->withInput()->with('error_message', 'You do not have available Lieu Leave balance for ' . $month->format('F Y') . '.');
                 }
 
@@ -343,13 +346,29 @@ class RequestController extends Controller
 
                 $this->lieuLeaveRequestLogs->create($logInputs);
 
-                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])
-                    ->where('earned_date', $inputs['off_day_work_date'])
+                $oldBalance = $this->lieuLeaveBalance
+                    ->where('lieu_leave_request_id', '=', $lieuLeaveRequest->id)
                     ->first();
+
+                if ($oldBalance) {
+                    $oldBalance->lieu_leave_request_id = null;
+                    $oldBalance->save();
+                }
+
+                // $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])
+                //     ->where('earned_date', $inputs['off_day_work_date'])
+                //     ->first();
+                $availableLeave = $this->lieuLeaveBalance->getAvailableLeaveForUse($userId, $inputs['leave_date'])
+                    ->filter(fn($item) => Carbon::parse($item->earned_date)->format('Y-m-d') === $inputs['off_day_work_date'])
+                    ->first();
+
+                if (!$availableLeave) {
+                    DB::rollBack();
+                    return redirect()->back()->withInput()->with('error_message', 'No available lieu leave balance found for the selected off day work date.');
+                }
+
                 $availableLeave->lieu_leave_request_id = $lieuLeaveRequest->id;
                 $availableLeave->save();
-
-
 
                 $inputs['fiscal_year_id'] = $this->fiscalYears->getCurrentFiscalYearId();
                 $fiscalYear = $this->fiscalYears->find($inputs['fiscal_year_id']);
@@ -358,7 +377,6 @@ class RequestController extends Controller
                 $lieuLeaveRequest->lieu_leave_request_number = $inputs['lieu_leave_request_number'];
                 $lieuLeaveRequest->fiscal_year_id = $inputs['fiscal_year_id'];
                 $lieuLeaveRequest->save();
-
 
                 $lieuLeaveRequest->approver->notify(new LieuLeaveRequestSubmitted($lieuLeaveRequest));
 

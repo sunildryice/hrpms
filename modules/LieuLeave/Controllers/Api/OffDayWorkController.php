@@ -16,8 +16,9 @@ class OffDayWorkController extends Controller
         protected LieuLeaveBalanceRepository $lieuLeaveBalance,
         protected AttendanceDetailRepository $attendanceDetails,
         protected AttendanceRepository $attendance,
-        protected OffdayWorkRepository $offDayWorks,
-    ) {}
+        protected OffDayWorkRepository $offDayWorks,
+    ) {
+    }
 
 
     public function index(Request $request, $date)
@@ -27,7 +28,7 @@ class OffDayWorkController extends Controller
         $startDate = $leaveDate->copy()->subMonthNoOverflow();
         $checkLieuLeaveApplied = $this->lieuLeaveBalance->checkLieuRequestOnLeaveMonthByDate($user->id, $leaveDate);
         $lieuLeaveAvailableDates = [];
-        if(!$checkLieuLeaveApplied) {
+        if (!$checkLieuLeaveApplied) {
             $offDayWorkDates = $this->offDayWorks->select('date')
                 ->where('requester_id', $user->id)
                 ->whereBetween('date', [$startDate, $leaveDate])
@@ -37,7 +38,7 @@ class OffDayWorkController extends Controller
             $validOffDayWorkDates = [];
             foreach ($offDayWorkDates as $offDayWorkDate) {
                 $attendanceDetail = $this->attendanceDetails->getDetailByEmployeeAndDate($user->employee_id, $offDayWorkDate);
-                if($attendanceDetail) {
+                if ($attendanceDetail) {
                     ($attendanceDetail->checkin || $attendanceDetail->checkout) ? array_push($validOffDayWorkDates, $offDayWorkDate) : '';
                 }
             }
@@ -45,8 +46,10 @@ class OffDayWorkController extends Controller
             $lieuLeaveAvailableDates = $this->lieuLeaveBalance->select(['earned_date'])
                 ->where('user_id', $user->id)
                 ->whereNull('lieu_leave_request_id')
-                ->whereIn('earned_date', $offDayWorkDates)
-                ->pluck('earned_date')->toArray();
+                ->whereIn('earned_date', $validOffDayWorkDates)
+                ->pluck('earned_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
         }
         return response()->json([
             'status' => 'success',
@@ -63,11 +66,11 @@ class OffDayWorkController extends Controller
             $year,
             $month,
         )?->load([
-            'attendanceDetails' => function ($q) {
-                $q->whereNotNull('checkin')
-                    ->whereNotNull('checkout');
-            }
-        ]);
+                    'attendanceDetails' => function ($q) {
+                        $q->whereNotNull('checkin')
+                            ->whereNotNull('checkout');
+                    }
+                ]);
 
         return $attendance->attendanceDetails->pluck('attendance_date')->toArray();
     }

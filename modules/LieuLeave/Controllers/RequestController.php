@@ -18,7 +18,6 @@ use Modules\LieuLeave\Requests\StoreRequest;
 use Modules\LieuLeave\Requests\UpdateRequest;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
-use Modules\OffDayWork\Repositories\OffDayWorkRepository;
 use Modules\Privilege\Repositories\UserRepository as RepositoriesUserRepository;
 use Yajra\DataTables\DataTables;
 
@@ -26,15 +25,15 @@ class RequestController extends Controller
 {
 
     public function __construct(
-        protected ProjectCodeRepository $projects,
-        protected RepositoriesUserRepository $users,
-        protected LieuLeaveRequestRepository $lieuLeaveRequests,
-        protected LieuLeaveRequestLog $lieuLeaveRequestLogs,
-        protected FiscalYearRepository $fiscalYears,
-        protected LieuLeaveBalanceRepository $lieuLeaveBalance,
-        protected EmployeeRepository $employees,
         protected AttendanceRepository $attendance,
         protected AttendanceDetailRepository $attendanceDetails,
+        protected EmployeeRepository $employees,
+        protected FiscalYearRepository $fiscalYears,
+        protected LieuLeaveBalanceRepository $lieuLeaveBalance,
+        protected LieuLeaveRequestLog $lieuLeaveRequestLogs,
+        protected LieuLeaveRequestRepository $lieuLeaveRequests,
+        protected ProjectCodeRepository $projects,
+        protected RepositoriesUserRepository $users,
     ) {
     }
 

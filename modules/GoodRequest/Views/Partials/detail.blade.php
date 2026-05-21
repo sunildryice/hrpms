@@ -58,6 +58,14 @@
                 @endisset
 
                 <li class="position-relative">
+                    <div class="gap-2 d-flex align-items-center">
+                        <div class="icon-section"><i class="bi-calendar dropdown-item-icon"></i></div>
+                        <div class="d-content-section">{!! $goodRequest->request_date?->format('Y-m-d') !!} </div>
+                    </div>
+                    <span class="stretched-link" rel="tooltip" title="Request Date"></span>
+                </li>
+
+                <li class="position-relative">
                     <div class="d-flex gap-2 align-items-center">
                         <div class="icon-section"><i
                                 class="bi-building dropdown-item-icon"></i></div>

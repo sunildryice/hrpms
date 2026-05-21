@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             $('#navbarVerticalMenu').find('#good-requests-menu').addClass('active');
             const form = document.getElementById('goodRequestEditForm');
             const fv = FormValidation.formValidation(form, {
@@ -38,21 +38,40 @@
             bFilter: false,
             bPaginate: false,
             bInfo: false,
-            columns: [
-                {data: 'item_name', name: 'item_name'},
-                {data: 'unit', name: 'unit'},
-                {data: 'quantity', name: 'quantity'},
-                {data: 'specification', name: 'specification'},
-                {data: 'action', name: 'action', orderable: false, searchable: false, className:'sticky-col'},
+            columns: [{
+                    data: 'item_name',
+                    name: 'item_name'
+                },
+                {
+                    data: 'unit',
+                    name: 'unit'
+                },
+                {
+                    data: 'quantity',
+                    name: 'quantity'
+                },
+                {
+                    data: 'specification',
+                    name: 'specification'
+                },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false,
+                    className: 'sticky-col'
+                },
             ]
         });
 
-        $('#goodRequestItemTable').on('click', '.delete-record', function (e) {
+        $('#goodRequestItemTable').on('click', '.delete-record', function(e) {
             e.preventDefault();
             $object = $(this);
             var $url = $object.attr('data-href');
-            var successCallback = function (response) {
-                toastr.success(response.message, 'Success', {timeOut: 5000});
+            var successCallback = function(response) {
+                toastr.success(response.message, 'Success', {
+                    timeOut: 5000
+                });
                 oTable.ajax.reload();
             }
             ajaxDeleteSweetAlert($url, successCallback);
@@ -61,9 +80,9 @@
         $(document).on('click', '.open-item-modal-form', function(e) {
             e.preventDefault();
             $('#openModal').find('.modal-content').html('');
-            $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function () {
+            $('#openModal').modal('show').find('.modal-content').load($(this).attr('href'), function() {
                 const form = document.getElementById('goodRequestItemForm');
-                $(form).find(".select2").each(function () {
+                $(form).find(".select2").each(function() {
                     $(this)
                         .wrap("<div class=\"position-relative\"></div>")
                         .select2({
@@ -110,19 +129,21 @@
                             validating: 'bi bi-arrow-repeat',
                         }),
                     },
-                }).on('core.form.valid', function (event) {
+                }).on('core.form.valid', function(event) {
                     $url = fv.form.action;
                     $form = fv.form;
                     data = $($form).serialize();
-                    var successCallback = function (response) {
+                    var successCallback = function(response) {
                         $('#openModal').modal('hide');
-                        toastr.success(response.message, 'Success', {timeOut: 5000});
+                        toastr.success(response.message, 'Success', {
+                            timeOut: 5000
+                        });
                         oTable.ajax.reload();
                     }
                     ajaxSubmit($url, 'POST', data, successCallback);
                 });
 
-                $(form).on('change','[name="unit_id"]', function (e){
+                $(form).on('change', '[name="unit_id"]', function(e) {
                     fv.revalidateField('unit_id');
                 });
             });
@@ -156,25 +177,22 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="card">
-                            <form action="{{ route('good.requests.update', $goodRequest->id) }}"
-                                  id="goodRequestEditForm" method="post"
-                                  enctype="multipart/form-data" autocomplete="off">
+                            <form action="{{ route('good.requests.update', $goodRequest->id) }}" id="goodRequestEditForm"
+                                method="post" enctype="multipart/form-data" autocomplete="off">
                                 <div class="card-body">
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
                                                 <label for="validationRemarks"
-                                                       class="form-label required-label">Purpose</label>
+                                                    class="form-label required-label">Purpose</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
-                                            <textarea type="text" rows="10"
-                                                      class="form-control @if($errors->has('purpose')) is-invalid @endif"
-                                                      name="purpose">{{ old('purpose') ?: $goodRequest->purpose }}</textarea>
-                                            @if($errors->has('purpose'))
+                                            <textarea type="text" rows="10" class="form-control @if ($errors->has('purpose')) is-invalid @endif"
+                                                name="purpose">{{ old('purpose') ?: $goodRequest->purpose }}</textarea>
+                                            @if ($errors->has('purpose'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div
-                                                        data-field="purpose">{!! $errors->first('purpose') !!}</div>
+                                                    <div data-field="purpose">{!! $errors->first('purpose') !!}</div>
                                                 </div>
                                             @endif
                                         </div>
@@ -189,15 +207,18 @@
                                         </div>
                                         <div class="col-lg-9">
                                             @php $selectedReviewerId = old('reviewer_id') ?: $goodRequest->reviewer_id; @endphp
-                                            <select name="reviewer_id" class="select2 form-control
-                                                @if($errors->has('reviewer_id')) is-invalid @endif" data-width="100%">
+                                            <select name="reviewer_id"
+                                                class="select2 form-control
+                                                @if ($errors->has('reviewer_id')) is-invalid @endif"
+                                                data-width="100%">
                                                 <option value="">Select a reviewer</option>
-                                                @foreach($reviewers as $reviewer)
-                                                    <option
-                                                        value="{{ $reviewer->id }}" {{$reviewer->id == $selectedReviewerId ? "selected":""}}>{{ $reviewer->getFullName() }}</option>
+                                                @foreach ($reviewers as $reviewer)
+                                                    <option value="{{ $reviewer->id }}"
+                                                        @if ($reviewer->id == $selectedReviewerId) selected @elseif($reviewers->count() == 1) selected @endif>
+                                                        {{ $reviewer->getFullName() }}</option>
                                                 @endforeach
                                             </select>
-                                            @if($errors->has('reviewer_id'))
+                                            @if ($errors->has('reviewer_id'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div data-field="reviewer_id">
                                                         {!! $errors->first('reviewer_id') !!}
@@ -215,16 +236,19 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
-                                            @php $selectedApproverId = old('approver_id') ?: $goodRequest->approver_id; @endphp
-                                            <select name="approver_id" class="select2 form-control
-                                                @if($errors->has('approver_id')) is-invalid @endif" data-width="100%">
+                                            @php $selectedApproverId = old('approver_id') ?: $goodRequest->approver_id ?: $defaultApproverId; @endphp
+                                            <select name="approver_id"
+                                                class="select2 form-control
+                                                @if ($errors->has('approver_id')) is-invalid @endif"
+                                                data-width="100%">
                                                 <option value="">Select an approver</option>
-                                                @foreach($approvers as $approver)
-                                                    <option
-                                                        value="{{ $approver->id }}" {{$approver->id == $selectedApproverId ? "selected":""}}>{{ $approver->getFullName() }}</option>
+                                                @foreach ($approvers as $approver)
+                                                    <option value="{{ $approver->id }}" 
+                                                        @if ($approver->id == $selectedApproverId) selected @elseif($approvers->count() == 1) selected @endif>
+                                                        {{ $approver->getFullName() }}</option>
                                                 @endforeach
                                             </select>
-                                            @if($errors->has('approver_id'))
+                                            @if ($errors->has('approver_id'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
                                                     <div data-field="approver_id">
                                                         {!! $errors->first('approver_id') !!}
@@ -249,9 +273,8 @@
                                         <div class="p-2">
                                             <div class="d-flex align-items-center add-info justify-content-end">
                                                 <button data-toggle="modal"
-                                                        class="btn btn-primary btn-sm open-item-modal-form"
-                                                        href="{!! route('good.requests.items.create', $goodRequest->id) !!}"
-                                                ><i class="bi-plus"></i> Add New Item
+                                                    class="btn btn-primary btn-sm open-item-modal-form"
+                                                    href="{!! route('good.requests.items.create', $goodRequest->id) !!}"><i class="bi-plus"></i> Add New Item
                                                 </button>
                                             </div>
                                         </div>
@@ -261,13 +284,14 @@
                                                     <div class="table-responsive">
                                                         <table class="table" id="goodRequestItemTable">
                                                             <thead class="thead-light">
-                                                            <tr>
-                                                                <th scope="col">{{ __('label.item-name') }}</th>
-                                                                <th scope="col">{{ __('label.unit') }}</th>
-                                                                <th scope="col">{{ __('label.quantity') }}</th>
-                                                                <th scope="col">{{ __('label.specification') }}</th>
-                                                                <th style="width: 150px" class="sticky-col">{{ __('label.action') }}</th>
-                                                            </tr>
+                                                                <tr>
+                                                                    <th scope="col">{{ __('label.item-name') }}</th>
+                                                                    <th scope="col">{{ __('label.unit') }}</th>
+                                                                    <th scope="col">{{ __('label.quantity') }}</th>
+                                                                    <th scope="col">{{ __('label.specification') }}</th>
+                                                                    <th style="width: 150px" class="sticky-col">
+                                                                        {{ __('label.action') }}</th>
+                                                                </tr>
                                                             </thead>
                                                             <tbody>
                                                             </tbody>
@@ -283,8 +307,7 @@
                                     <button type="submit" name="btn" value="submit" class="btn btn-success btn-sm">
                                         Submit
                                     </button>
-                                    <a href="{!! route('good.requests.index') !!}"
-                                       class="btn btn-danger btn-sm">Cancel</a>
+                                    <a href="{!! route('good.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                                 </div>
                             </form>
                         </div>

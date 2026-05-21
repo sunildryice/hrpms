@@ -147,6 +147,20 @@
                     </tr>
                 @endforelse
             </tbody>
+            <tfoot>
+                <tr>
+                    <th class="text-end">Total</th>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('breakfast'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('lunch'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('dinner'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('incident_cost'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('total_dsa'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('lodging_expense'), 2) }}</td>
+                    <td class="text-end">{{ number_format($travelClaim->dsaClaims->sum('other_expense'), 2) }}</td>
+                    <td class="text-end fw-bold">{{ number_format($travelClaim->dsaClaims->sum('total_amount'), 2) }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
 
         <!-- Local Travel Claim -->

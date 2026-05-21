@@ -152,11 +152,11 @@
                 <a href="{{ route('performance.create') }}" class="btn btn-primary btn-sm">
                     <i class="bi-plus"></i> New Performance Review
                 </a>
-                <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
+                {{-- <button data-toggle="modal" class="btn btn-secondary btn-sm open-import-modal-form"
                     href="{{ route('performance.keygoals.import') }}">
                     <i class="bi-plus"></i> Import Key Goals Review
                     </a>
-                </button>
+                </button> --}}
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@ namespace Modules\TravelRequest\Policies;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Modules\Privilege\Models\User;
 use Modules\TravelRequest\Models\TravelRequest;
+use Modules\TravelRequest\Models\TravelRequestView;
 
 class TravelRequestPolicy
 {
@@ -25,7 +26,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function amend(User $user, TravelRequest $travelRequest)
+    public function amend(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
             !$travelRequest->travelClaim &&
@@ -37,7 +38,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function approve(User $user, TravelRequest $travelRequest)
+    public function approve(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return $user->id == $travelRequest->approver_id &&
             in_array($travelRequest->status_id, [config('constant.SUBMITTED_STATUS'), config('constant.RECOMMENDED_STATUS')]);
@@ -48,7 +49,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function cancel(User $user, TravelRequest $travelRequest)
+    public function cancel(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by])
@@ -61,7 +62,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function approveCancel(User $user, TravelRequest $travelRequest)
+    public function approveCancel(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return $user->id == $travelRequest->approver_id &&
             in_array($travelRequest->status_id, [config('constant.INIT_CANCEL_STATUS')]);
@@ -72,7 +73,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function createClaim(User $user, TravelRequest $travelRequest)
+    public function createClaim(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return
             $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
@@ -90,7 +91,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function createReport(User $user, TravelRequest $travelRequest)
+    public function createReport(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return (now() > $travelRequest->departure_date && $travelRequest->status_id == config('constant.APPROVED_STATUS') &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by])) && !$travelRequest->travelReport;
@@ -101,7 +102,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function delete(User $user, TravelRequest $travelRequest)
+    public function delete(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]) &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
@@ -112,7 +113,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function print(User $user, TravelRequest $travelRequest)
+    public function print(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS'), config('constant.AMENDED_STATUS')]);
     }
@@ -123,7 +124,7 @@ class TravelRequestPolicy
      * @param  \Modules\TravelRequest\Models\TravelRequestItinerary  $travelRequestItinerary
      * @return bool
      */
-    public function submit(User $user, TravelRequest $travelRequest)
+    public function submit(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         if (!in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) || !in_array($travelRequest->status_id, [1, 2])) {
             return false;
@@ -152,7 +153,7 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function update(User $user, TravelRequest $travelRequest)
+    public function update(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [1, 2]) && in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
     }
@@ -162,12 +163,12 @@ class TravelRequestPolicy
      *
      * @return bool
      */
-    public function view(User $user, TravelRequest $travelRequest)
+    public function view(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]);
     }
 
-    public function askAdvance(User $user, TravelRequest $travelRequest)
+    public function askAdvance(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             in_array($user->id, [$travelRequest->requester_id, $travelRequest->created_by]) &&
@@ -175,7 +176,7 @@ class TravelRequestPolicy
             !$travelRequest->travelClaim;
     }
 
-    public function giveAdvance(User $user, TravelRequest $travelRequest)
+    public function giveAdvance(User $user, TravelRequest|TravelRequestView $travelRequest)
     {
         return in_array($travelRequest->status_id, [config('constant.APPROVED_STATUS')]) &&
             $travelRequest->advance_received_at == null &&

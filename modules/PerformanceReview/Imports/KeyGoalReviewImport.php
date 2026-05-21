@@ -77,16 +77,23 @@ class KeyGoalReviewImport implements WithMultipleSheets, SkipsUnknownSheets
         }
 
         $reviewId = $performanceReview->id;
-
         $keyGoalsImported = 0;
         $devPlansImported = 0;
 
-        PerformanceReviewKeyGoal::where('performance_review_id', $reviewId)
+        // Load existing records indexed by their position (1-based) for matching
+        $existingKeyGoals = PerformanceReviewKeyGoal::where('performance_review_id', $reviewId)
             ->where('type', 'current')
-            ->delete();
+            ->orderBy('id')
+            ->get()
+            ->values();
 
-        PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $reviewId)
-            ->delete();
+        $existingDevPlans = PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $reviewId)
+            ->orderBy('id')
+            ->get()
+            ->values();
+
+        $keyGoalIndex = 0;
+        $devPlanIndex = 0;
 
         foreach ($rows as $row) {
             $keyGoalTitle = isset($row[1]) ? trim((string) $row[1]) : '';
@@ -94,24 +101,44 @@ class KeyGoalReviewImport implements WithMultipleSheets, SkipsUnknownSheets
             $pdpObjective = isset($row[3]) ? trim((string) $row[3]) : '';
 
             if ($keyGoalTitle !== '') {
-                PerformanceReviewKeyGoal::create([
-                    'performance_review_id' => $reviewId,
-                    'title' => $keyGoalTitle,
-                    'output_deliverables' => $outputDeliverables ?: null,
-                    'type' => 'current',
-                    'created_by' => $this->authUserId,
-                    'updated_by' => $this->authUserId,
-                ]);
+                if (isset($existingKeyGoals[$keyGoalIndex])) {
+                    // Update only the importable fields, preserve everything else
+                    $existingKeyGoals[$keyGoalIndex]->update([
+                        'title' => $keyGoalTitle,
+                        'output_deliverables' => $outputDeliverables ?: null,
+                        'updated_by' => $this->authUserId,
+                    ]);
+                } else {
+                    // No existing record at this position — create a new one
+                    PerformanceReviewKeyGoal::create([
+                        'performance_review_id' => $reviewId,
+                        'title' => $keyGoalTitle,
+                        'output_deliverables' => $outputDeliverables ?: null,
+                        'type' => 'current',
+                        'created_by' => $this->authUserId,
+                        'updated_by' => $this->authUserId,
+                    ]);
+                }
+                $keyGoalIndex++;
                 $keyGoalsImported++;
             }
 
             if ($pdpObjective !== '') {
-                PerformanceProfessionalDevelopmentPlan::create([
-                    'performance_review_id' => $reviewId,
-                    'objective' => $pdpObjective,
-                    'created_by' => $this->authUserId,
-                    'updated_by' => $this->authUserId,
-                ]);
+                if (isset($existingDevPlans[$devPlanIndex])) {
+                    // Update only 'objective', preserve 'activity' and other fields
+                    $existingDevPlans[$devPlanIndex]->update([
+                        'objective' => $pdpObjective,
+                        'updated_by' => $this->authUserId,
+                    ]);
+                } else {
+                    PerformanceProfessionalDevelopmentPlan::create([
+                        'performance_review_id' => $reviewId,
+                        'objective' => $pdpObjective,
+                        'created_by' => $this->authUserId,
+                        'updated_by' => $this->authUserId,
+                    ]);
+                }
+                $devPlanIndex++;
                 $devPlansImported++;
             }
         }

@@ -16,7 +16,7 @@
                             },
                         },
                     },
-                    request_date: {
+                    required_date: {
                         validators: {
                             notEmpty: {
                                 message: 'The request date is required',
@@ -41,13 +41,13 @@
                 },
             });
 
-            $('[name="request_date"]').datepicker({
+            $('[name="required_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-                endDate: '{!! date('Y-m-d') !!}',
+                // endDate: '{!! date('Y-m-d') !!}',
             }).on('change', function(e) {
-                fv.revalidateField('request_date');
+                fv.revalidateField('required_date');
             });
             
         });
@@ -204,18 +204,18 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationRemarks" class="form-label required-label">Request
+                                                <label for="validationRemarks" class="form-label required-label">Required
                                                     Date</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
                                             <input type="text" readonly
-                                                class="form-control @if ($errors->has('request_date')) is-invalid @endif"
-                                                name="request_date"
-                                                value="{{ old('request_date') ?: $goodRequest->request_date?->format('Y-m-d') }}">
-                                            @if ($errors->has('request_date'))
+                                                class="form-control @if ($errors->has('required_date')) is-invalid @endif"
+                                                name="required_date"
+                                                value="{{ old('required_date') ?: $goodRequest->required_date?->format('Y-m-d') }}">
+                                            @if ($errors->has('required_date'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div data-field="request_date">{!! $errors->first('request_date') !!}</div>
+                                                    <div data-field="required_date">{!! $errors->first('required_date') !!}</div>
                                                 </div>
                                             @endif
                                         </div>

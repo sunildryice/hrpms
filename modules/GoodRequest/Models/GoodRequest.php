@@ -35,7 +35,7 @@ class GoodRequest extends Model
         'prefix',
         'good_request_number',
         'purpose',
-        'request_date',
+        'required_date',
         'receiver_note',
         'receiver_id',
         'received_at',
@@ -60,7 +60,7 @@ class GoodRequest extends Model
     protected $casts = [
         'received_at' => 'datetime',
         'handover_date' => 'date',
-        'request_date' => 'date',
+        'required_date' => 'date',
     ];
 
     /**

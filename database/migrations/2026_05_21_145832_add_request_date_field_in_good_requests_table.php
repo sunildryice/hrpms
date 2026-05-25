@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('good_requests', function (Blueprint $table) {
-            $table->date('request_date')->nullable()->after('prefix');
+            $table->date('required_date')->nullable()->after('prefix');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('good_requests', function (Blueprint $table) {
-            $table->dropColumn('request_date');
+            $table->dropColumn('required_date');
         });
     }
 };

@@ -25,7 +25,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'request_date' => 'required|date',
+            'required_date' => 'required|date',
             'purpose'=>'required',
             'receiver_note' => 'nullable',
             'reviewer_id'=>'nullable',

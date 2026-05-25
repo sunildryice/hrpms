@@ -14,10 +14,6 @@ class EmployeeProfileController extends Controller
 {
     public function index(Request $request)
     {
-        // $employee = Employee::first();
-        // $gender = $employee->gender->title;
-        // dd($gender);
-
         $data = Employee::query()->with(['finance', 'employeeGender', 'address.permanent_province', 'latestTenure.dutyStation', 'medicalCondition.bloodGroup',
             'address.permanent_district', 'address.permanent_local_level', 'latestTenure.supervisor', 'maritalStatus', 'latestTenure.designation']);
 

@@ -92,15 +92,15 @@ class MaintenanceRequestController extends Controller
                 ->addColumn('project', function ($row) {
                     return '';
                 })
-                ->addColumn('activity_code', function ($row) {
-                    return $row->getActivityCode();
-                })
-                ->addColumn('account_code', function ($row) {
-                    return $row->getAccountCode();
-                })
-                ->addColumn('donor_code', function ($row) {
-                    return $row->getDonorCode();
-                })
+                // ->addColumn('activity_code', function ($row) {
+                //     return $row->getActivityCode();
+                // })
+                // ->addColumn('account_code', function ($row) {
+                //     return $row->getAccountCode();
+                // })
+                // ->addColumn('donor_code', function ($row) {
+                //     return $row->getDonorCode();
+                // })
                 ->addColumn('remarks', function ($row) {
                     return $row->remarks;
                 })

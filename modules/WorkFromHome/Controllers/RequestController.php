@@ -126,6 +126,22 @@ class RequestController extends Controller
 
         $inputs = $request->validated();
 
+        $overlapping = $this->workFromHomes
+            ->where('requester_id', '=', auth()->id())
+            ->whereNotIn('status_id', [
+                config('constant.REJECTED_STATUS'),
+                // config('constant.CREATED_STATUS'),
+            ])
+            ->where('start_date', '<=', $inputs['end_date'])
+            ->where('end_date', '>=', $inputs['start_date'])
+            ->exists();
+
+        if ($overlapping) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+        }
+
         try {
             $inputs['requester_id'] = auth()->id();
             $inputs['approver_id'] = $inputs['send_to'];
@@ -230,6 +246,23 @@ class RequestController extends Controller
     {
         $authUser = auth()->user();
         $inputs = $request->validated();
+
+        $overlapping = $this->workFromHomes
+            ->where('requester_id', '=', auth()->id())
+            ->where('id', '!=', $id)
+            ->whereNotIn('status_id', [
+                config('constant.REJECTED_STATUS'),
+                // config('constant.CREATED_STATUS'),
+            ])
+            ->where('start_date', '<=', $inputs['end_date'])
+            ->where('end_date', '>=', $inputs['start_date'])
+            ->exists();
+
+        if ($overlapping) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+        }
 
         try {
             DB::beginTransaction();

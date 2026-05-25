@@ -27,14 +27,13 @@ class GoodRequestController extends Controller
 {
     protected $destinationPath;
     public function __construct(
-        protected EmployeeRepository    $employees,
-        protected FiscalYearRepository  $fiscalYears,
+        protected EmployeeRepository $employees,
+        protected FiscalYearRepository $fiscalYears,
         protected GoodRequestRepository $goodRequests,
-        protected Helper                $helper,
+        protected Helper $helper,
         protected ProjectCodeRepository $projectCodes,
-        protected UserRepository        $users
-    )
-    {
+        protected UserRepository $users
+    ) {
         $this->destinationPath = 'goodRequest';
     }
 
@@ -159,6 +158,11 @@ class GoodRequestController extends Controller
         $reviewers = $this->users->getSupervisors($authUser);
         $approvers = $this->users->permissionBasedUsers('approve-good-request');
 
+        // $defaultApproverId = $approvers->first(function ($user) {
+        //     return str_contains(strtolower($user->getFullName()), 'ramesh pathak');
+        // })?->id;
+        $defaultApproverId = 344; // Default approver ID for Ramesh Pathak i.e: 344
+
         $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
         return view('GoodRequest::edit')
@@ -166,7 +170,8 @@ class GoodRequestController extends Controller
             ->withGoodRequest($goodRequest)
             ->withProjectCodes($projectCodes)
             ->withApprovers($approvers)
-            ->withReviewers($reviewers);
+            ->withReviewers($reviewers)
+            ->withDefaultApproverId($defaultApproverId); 
     }
 
     /**
@@ -196,7 +201,7 @@ class GoodRequestController extends Controller
                     $goodRequest->approver->notify(new GoodRequestForwarded($goodRequest));
                 }
             }
-            if($inputs['btn'] == 'save'){
+            if ($inputs['btn'] == 'save') {
                 return redirect()->back()->withInput()->withSuccessMessage($message);
             }
             return redirect()->route('good.requests.index')

@@ -341,7 +341,8 @@
                                 data-width="100%">
                                 <option value="">Select Reviewer</option>
                                 @foreach ($reviewers as $reviewer)
-                                    <option value="{{ $reviewer->id }}" @if ($reviewer->id == $selectedReviewerId) selected @endif>
+                                    <option value="{{ $reviewer->id }}"
+                                        @if ($reviewer->id == $selectedReviewerId) selected @elseif($reviewers->count() == 1) selected @endif>
                                         {{ $reviewer->getFullName() }}
                                     </option>
                                 @endforeach
@@ -363,14 +364,15 @@
                             </div>
                         </div>
                         <div class="col-lg-10">
-                            @php $selectedApproverId = old('approver_id') ?: $maintenanceRequest->approver_id; @endphp
+                            @php $selectedApproverId = old('approver_id') ?: $maintenanceRequest->approver_id ?: $defaultApproverId; @endphp
                             <select name="approver_id"
                                 class="select2 form-control
                                             @if ($errors->has('approver_id')) is-invalid @endif"
                                 data-width="100%">
                                 <option value="">Select Approver</option>
                                 @foreach ($approvers as $approver)
-                                    <option value="{{ $approver->id }}" @if ($approver->id == $selectedApproverId) selected @endif>
+                                    <option value="{{ $approver->id }}"
+                                        @if ($approver->id == $selectedApproverId) selected @elseif($approvers->count() == 1) selected @endif>
                                         {{ $approver->getFullName() }}
                                     </option>
                                 @endforeach

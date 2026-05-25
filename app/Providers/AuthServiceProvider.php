@@ -27,6 +27,7 @@ use Modules\LieuLeave\Models\LieuLeaveRequest;
 use Modules\TravelRequest\Models\TravelReport;
 use Modules\LieuLeave\Policies\LieuLeavePolicy;
 use Modules\TravelRequest\Models\TravelRequest;
+use Modules\TravelRequest\Models\TravelRequestView;
 use Modules\EmployeeAttendance\Models\Attendance;
 use Modules\EmployeeExit\Models\ExitHandOverNote;
 use Modules\EmployeeRequest\Models\EmployeeRequest;
@@ -72,6 +73,7 @@ class AuthServiceProvider extends ServiceProvider
         TravelClaim::class => TravelClaimPolicy::class,
         TravelReport::class => TravelReportPolicy::class,
         TravelRequest::class => TravelRequestPolicy::class,
+        TravelRequestView::class => TravelRequestPolicy::class,
         WorkFromHome::class => WorkFromHomePolicy::class,
         WorkPlan::class => WorkPlanPolicy::class,
     ];

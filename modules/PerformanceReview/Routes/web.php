@@ -1,5 +1,6 @@
 <?php
 
+use Modules\PerformanceReview\Controllers\KeyGoalReviewImportController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewAnswerController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewApproveController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewAssistantController;
@@ -39,6 +40,9 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::post('performance/keygoal', [PerformanceReviewKeyGoalController::class, 'store'])->name('performance.keygoal.store');
     Route::post('performance/keygoal/edit', [PerformanceReviewKeyGoalController::class, 'edit'])->name('performance.keygoal.edit');
+
+    Route::get('performance/keygoals/import', [KeyGoalReviewImportController::class, 'create'])->name('performance.keygoals.import');
+    Route::post('performance/keygoals/store', [KeyGoalReviewImportController::class, 'store'])->name('performance.keygoals.store');
 
     Route::post('performance/keygoal/update', [PerformanceReviewKeyGoalController::class, 'update'])->name('performance.keygoal.update');
     Route::get('perfromance/keygoal/{id}/editOne', [PerformanceReviewKeyGoalController::class, 'editOne'])->name('performance.keygoal.editOne');

@@ -76,18 +76,18 @@
                         data: 'project',
                         name: 'project'
                     },
-                    {
-                        data: 'activity_code',
-                        name: 'activity_code'
-                    },
-                    {
-                        data: 'account_code',
-                        name: 'account_code'
-                    },
-                    {
-                        data: 'donor_code',
-                        name: 'dob'
-                    },
+                    // {
+                    //     data: 'activity_code',
+                    //     name: 'activity_code'
+                    // },
+                    // {
+                    //     data: 'account_code',
+                    //     name: 'account_code'
+                    // },
+                    // {
+                    //     data: 'donor_code',
+                    //     name: 'dob'
+                    // },
                     {
                         data: 'remarks',
                         name: 'remarkste'
@@ -252,9 +252,9 @@
                                 <th>Qty</th>
                                 <th>Total Tentative Cost</th>
                                 <th>Project</th>
-                                <th>Activity Code</th>
+                                {{-- <th>Activity Code</th>
                                 <th>Account Code</th>
-                                <th>Donor Code</th>
+                                <th>Donor Code</th> --}}
                                 <th>Remarks</th>
                             </tr>
                         </thead>

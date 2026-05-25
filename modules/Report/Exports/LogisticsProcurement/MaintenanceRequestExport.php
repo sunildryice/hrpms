@@ -132,9 +132,9 @@ class MaintenanceRequestExport implements Responsable, WithHeadings, WithMapping
             'Qty',
             'Total Tentative Cost',
             'Project',
-            'Activity Code',
-            'Account Code',
-            'Donor Code',
+                // 'Activity Code',
+                // 'Account Code',
+                // 'Donor Code',
             'Remarks',
         ];
     }
@@ -146,16 +146,16 @@ class MaintenanceRequestExport implements Responsable, WithHeadings, WithMapping
             $record->getMaintenanceRequestNumber(),
             $record->requester->getOfficeName(),
             $record->created_at->format('M d, Y'),
-            $record->getRequester(),
+            $record->getRequesterName(),
             $record->getItem(),
             $record->item->item_code,
             $record->problem,
             '',
             $record->estimated_cost,
             '',
-            $record->getActivityCode(),
-            $record->getAccountCode(),
-            $record->getDonorCode(),
+            // $record->getActivityCode(),
+            // $record->getAccountCode(),
+            // $record->getDonorCode(),
             $record->remarks
         ];
     }

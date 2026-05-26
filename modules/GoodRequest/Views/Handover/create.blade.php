@@ -133,7 +133,8 @@
                                                                 data-width="100%">
                                                             <option value="">Select Approver</option>
                                                             @foreach ($approvers as $approver)
-                                                                <option value="{{ $approver->id }}">
+                                                                <option value="{{ $approver->id }}" 
+                                                                    @if ($approvers->count() == 1) selected @endif>
                                                                     {{ $approver->getFullName() }}
                                                                 </option>
                                                             @endforeach

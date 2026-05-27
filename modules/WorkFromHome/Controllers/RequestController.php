@@ -31,8 +31,6 @@ class RequestController extends Controller
     ) {
     }
 
-
-
     public function index(Request $request)
     {
 
@@ -90,6 +88,61 @@ class RequestController extends Controller
         }
 
         return view('WorkFromHome::index');
+    }
+
+    public function all(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = $this->workFromHomes
+                ->with('WorkFromHomeDays', 'requester')
+                ->whereHas('requester', function ($q) {
+                    $q->where('office_id', auth()->user()->employee->office_id);
+                })
+                ->orderBy('created_at', 'desc');
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('request_date', function ($row) {
+                    return $row->getRequestDate();
+                })
+                ->addColumn('request_id', function ($row) {
+                    return $row->getRequestId();
+                })
+                ->addColumn('type', function ($row) {
+                    return \Modules\WorkFromHome\Enums\WorkFromHomeTypes::options()[$row->type] ?? ucfirst(str_replace('_', ' ', $row->type));
+                })
+                ->addColumn('requester', function ($row) {
+                    return $row->requester->full_name ?? '-';
+                })
+                ->editColumn('start_date', function ($row) {
+                    return $row->getStartDate();
+                })
+                ->editColumn('end_date', function ($row) {
+                    return $row->getEndDate();
+                })
+                ->addColumn('total_days', function ($row) {
+                    return $row->getTotalDays();
+                })
+                ->addColumn('project', function ($row) {
+                    return $row->getProjectNames() ?? '-';
+                })
+                ->addColumn('status', function ($row) {
+
+                    return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
+                })
+                ->addColumn('action', function ($row) {
+
+                    $btn = '<a href="' . route('wfh.requests.show.all', $row->id) . '" class="btn btn-sm btn-primary">
+                    <i class="bi bi-eye"></i> 
+                    </a>';
+
+                    return $btn;
+                })
+                ->rawColumns(['action', 'status'])
+                ->make(true);
+        }
+
+        return view('WorkFromHome::allRequest.index');
     }
 
     public function create()
@@ -210,6 +263,23 @@ class RequestController extends Controller
         $typeLabel = $typeOptions[$wfhRequest->type] ?? ucfirst(str_replace('_', ' ', $wfhRequest->type));
 
         return view('WorkFromHome::show', [
+            'wfhRequest' => $wfhRequest,
+            'deliverables' => $deliverables,
+            'typeLabel' => $typeLabel,
+        ]);
+    }
+
+    public function showAll($id)
+    {
+        $wfhRequest = $this->workFromHomes
+            ->with('logs')->find($id);
+
+        $deliverables = $wfhRequest->getDeliverablesWithProjectNames();
+
+        $typeOptions = WorkFromHomeTypes::options();
+        $typeLabel = $typeOptions[$wfhRequest->type] ?? ucfirst(str_replace('_', ' ', $wfhRequest->type));
+
+        return view('WorkFromHome::allRequest.show', [
             'wfhRequest' => $wfhRequest,
             'deliverables' => $deliverables,
             'typeLabel' => $typeLabel,

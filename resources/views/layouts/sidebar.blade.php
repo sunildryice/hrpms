@@ -90,6 +90,10 @@
 
                                 <a class="nav-link" id="wfh-requests-index"
                                    href="{{ route('wfh.requests.index') }}">Requests</a>
+                                @if ($authUser->hasRole('Human Resource'))
+                                    <a class="nav-link" id="wfh-requests-all-index"
+                                       href="{{ route('wfh.requests.all') }}">All Requests - HR</a>
+                                @endif
                                 <a class="nav-link" id="involved-wfh-requests-index"
                                    href="{{ route('involved.wfh.requests.index') }}">Processed Requests</a>
 

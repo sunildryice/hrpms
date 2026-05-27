@@ -5,9 +5,7 @@ namespace Modules\GoodRequest\Controllers;
 use App\Helper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Illuminate\Support\Facades\Storage;
-
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\GoodRequest\Notifications\GoodRequestForwarded;
 use Modules\Master\Repositories\UnitRepository;
@@ -16,10 +14,8 @@ use Modules\GoodRequest\Repositories\GoodRequestRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\GoodRequest\Requests\StoreRequest;
 use Modules\GoodRequest\Requests\UpdateRequest;
-
 use DataTables;
 use Illuminate\Support\Facades\DB;
 

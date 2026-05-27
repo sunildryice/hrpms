@@ -16,6 +16,17 @@
                             },
                         },
                     },
+                    required_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The request date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The request date is not a valid date',
+                            },
+                        },
+                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -29,6 +40,16 @@
                     }),
                 },
             });
+
+            $('[name="required_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                // endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('required_date');
+            });
+            
         });
 
         var oTable = $('#goodRequestItemTable').DataTable({
@@ -183,6 +204,25 @@
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
+                                                <label for="validationRemarks" class="form-label required-label">Required
+                                                    Date</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <input type="text" readonly
+                                                class="form-control @if ($errors->has('required_date')) is-invalid @endif"
+                                                name="required_date"
+                                                value="{{ old('required_date') ?: $goodRequest->required_date?->format('Y-m-d') }}">
+                                            @if ($errors->has('required_date'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="required_date">{!! $errors->first('required_date') !!}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
                                                 <label for="validationRemarks"
                                                     class="form-label required-label">Purpose</label>
                                             </div>
@@ -243,7 +283,7 @@
                                                 data-width="100%">
                                                 <option value="">Select an approver</option>
                                                 @foreach ($approvers as $approver)
-                                                    <option value="{{ $approver->id }}" 
+                                                    <option value="{{ $approver->id }}"
                                                         @if ($approver->id == $selectedApproverId) selected @elseif($approvers->count() == 1) selected @endif>
                                                         {{ $approver->getFullName() }}</option>
                                                 @endforeach
@@ -288,7 +328,8 @@
                                                                     <th scope="col">{{ __('label.item-name') }}</th>
                                                                     <th scope="col">{{ __('label.unit') }}</th>
                                                                     <th scope="col">{{ __('label.quantity') }}</th>
-                                                                    <th scope="col">{{ __('label.specification') }}</th>
+                                                                    <th scope="col">{{ __('label.specification') }}
+                                                                    </th>
                                                                     <th style="width: 150px" class="sticky-col">
                                                                         {{ __('label.action') }}</th>
                                                                 </tr>

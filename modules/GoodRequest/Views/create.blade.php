@@ -4,7 +4,7 @@
 
 @section('page_js')
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function (e) {
+        document.addEventListener('DOMContentLoaded', function(e) {
             $('#navbarVerticalMenu').find('#good-requests-menu').addClass('active');
             const form = document.getElementById('goodRequestAddForm');
             const fv = FormValidation.formValidation(form, {
@@ -13,6 +13,17 @@
                         validators: {
                             notEmpty: {
                                 message: 'The purpose of good request is required',
+                            },
+                        },
+                    },
+                    required_date: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The request date is required',
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'The request date is not a valid date',
                             },
                         },
                     },
@@ -29,6 +40,16 @@
                     }),
                 },
             });
+
+            $('[name="required_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+                // endDate: '{!! date('Y-m-d') !!}',
+            }).on('change', function(e) {
+                fv.revalidateField('required_date');
+            });
+            
         });
     </script>
 @endsection
@@ -62,35 +83,52 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <form action="{{ route('good.requests.store') }}" id="goodRequestAddForm" method="post"
-                                  enctype="multipart/form-data" autocomplete="off">
+                                enctype="multipart/form-data" autocomplete="off">
                                 <div class="card-body">
-
 
                                     <div class="row mb-2">
                                         <div class="col-lg-3">
                                             <div class="d-flex align-items-start h-100">
-                                                <label for="validationRemarks" class="form-label required-label">Purpose</label>
+                                                <label for="validationRemarks" class="form-label required-label">Required
+                                                    Date</label>
                                             </div>
                                         </div>
                                         <div class="col-lg-9">
-                                            <textarea type="text" rows="10"
-                                                      class="form-control @if($errors->has('purpose')) is-invalid @endif"
-                                                      name="purpose">{{ old('purpose') }}</textarea>
-                                            @if($errors->has('purpose'))
+                                            <input type="text"
+                                                class="form-control @if ($errors->has('required_date')) is-invalid @endif"
+                                                name="required_date" value="{{ old('required_date') }}" onfocus="this.blur()">
+                                            @if ($errors->has('required_date'))
                                                 <div class="fv-plugins-message-container invalid-feedback">
-                                                    <div
-                                                        data-field="purpose">{!! $errors->first('purpose') !!}</div>
+                                                    <div data-field="required_date">{!! $errors->first('required_date') !!}</div>
                                                 </div>
                                             @endif
                                         </div>
                                     </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-lg-3">
+                                            <div class="d-flex align-items-start h-100">
+                                                <label for="validationRemarks"
+                                                    class="form-label required-label">Purpose</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9">
+                                            <textarea type="text" rows="10" class="form-control @if ($errors->has('purpose')) is-invalid @endif"
+                                                name="purpose">{{ old('purpose') }}</textarea>
+                                            @if ($errors->has('purpose'))
+                                                <div class="fv-plugins-message-container invalid-feedback">
+                                                    <div data-field="purpose">{!! $errors->first('purpose') !!}</div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
                                     {!! csrf_field() !!}
                                 </div>
                                 <div class="card-footer border-0 justify-content-end d-flex gap-2">
                                     <button type="submit" name="btn" value="save" class="btn btn-primary btn-sm">Next
                                     </button>
-                                    <a href="{!! route('good.requests.index') !!}"
-                                       class="btn btn-danger btn-sm">Cancel</a>
+                                    <a href="{!! route('good.requests.index') !!}" class="btn btn-danger btn-sm">Cancel</a>
                                 </div>
                             </form>
                         </div>

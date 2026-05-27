@@ -29,7 +29,7 @@ class AssetController extends Controller
     }
 
     /**
-     * Display a listing of the Good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException

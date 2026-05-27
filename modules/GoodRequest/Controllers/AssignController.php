@@ -28,7 +28,7 @@ class AssignController extends Controller
     ) {}
 
     /**
-     * Display a listing of the good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      *
@@ -54,7 +54,7 @@ class AssignController extends Controller
                     return '<span class="'.$row->getStatusClass().'">'.$row->getStatus().'</span>';
                 })->addColumn('action', function ($row) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('assign.good.requests.create', $row->id).'" rel="tooltip" title="Assign good Request">';
+                    $btn .= route('assign.good.requests.create', $row->id).'" rel="tooltip" title="Assign Goods Request">';
                     $btn .= '<i class="bi bi-box-arrow-in-up-right"></i></a>';
 
                     return $btn;
@@ -99,7 +99,7 @@ class AssignController extends Controller
     }
 
     /**
-     *  Store a newly assigned asset items to good request in storage.
+     *  Store a newly assigned asset items to Goods Request in storage.
      *
      * @return mixed
      *
@@ -142,13 +142,13 @@ class AssignController extends Controller
         if ($goodRequest) {
             $message = '';
             if ($goodRequest->status_id == config('constant.RETURNED_STATUS')) {
-                $message = 'Good request is successfully returned.';
+                $message = 'Goods Request is successfully returned.';
                 $goodRequest->requester->notify(new GoodRequestReturned($goodRequest));
             } elseif ($goodRequest->status_id == config('constant.REJECTED_STATUS')) {
-                $message = 'Good request is successfully rejected.';
+                $message = 'Goods Request is successfully rejected.';
                 $goodRequest->requester->notify(new GoodRequestRejected($goodRequest));
             } elseif ($goodRequest->status_id == config('constant.ASSIGNED_STATUS')) {
-                $message = 'Good request is successfully assigned.';
+                $message = 'Goods Request is successfully assigned.';
                 $goodRequest->requester->notify(new GoodRequestAssigned($goodRequest));
             }
 
@@ -158,6 +158,6 @@ class AssignController extends Controller
 
         return redirect()->back()
             ->withInput()
-            ->withWarningMessage('Good request can not be assigned.');
+            ->withWarningMessage('Goods Request can not be assigned.');
     }
 }

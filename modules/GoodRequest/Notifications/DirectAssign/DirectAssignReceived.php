@@ -48,8 +48,8 @@ class DirectAssignReceived extends Notification
 
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been approved.')
-            ->action('View Direct Dispatch Good Request', $url)
+            ->line('Direct dispatch goods request ' . $this->goodRequest->getGoodRequestNumber() . ' has been approved.')
+            ->action('View Direct Dispatch Goods Request', $url)
         ;
     }
 
@@ -86,7 +86,7 @@ class DirectAssignReceived extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => $url,
-            'subject' => $type . ' good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been received by ' . $this->goodRequest->receiver->getFullName(),
+            'subject' => $type . ' goods request ' . $this->goodRequest->getGoodRequestNumber() . ' has been received by ' . $this->goodRequest->receiver->getFullName(),
         ];
     }
 }

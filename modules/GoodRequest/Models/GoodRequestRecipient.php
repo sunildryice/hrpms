@@ -41,7 +41,7 @@ class GoodRequestRecipient extends Model
     
 
     /**
-     * Get the good request that owns good request item
+     * Get the Goods Request that owns Goods Request item
      */
     public function goodRequest()
     {

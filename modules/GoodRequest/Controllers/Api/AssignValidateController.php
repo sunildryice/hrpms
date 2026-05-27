@@ -45,7 +45,7 @@ class AssignValidateController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Good request validated successfully.',
+            'message' => 'Goods Request validated successfully.',
         ], 200);
     }
 }

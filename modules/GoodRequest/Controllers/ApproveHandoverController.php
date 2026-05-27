@@ -22,7 +22,7 @@ class ApproveHandoverController extends Controller
     ) {}
 
     /**
-     * Display a listing of the good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      *

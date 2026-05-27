@@ -42,7 +42,7 @@ class ApproveController extends Controller
     }
 
     /**
-     * Display a listing of the good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -75,7 +75,7 @@ class ApproveController extends Controller
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('approve.good.requests.create', $row->id) . '" rel="tooltip" title="Approve good Request">';
+                    $btn .= route('approve.good.requests.create', $row->id) . '" rel="tooltip" title="Approve Goods Request">';
                     $btn .= '<i class="bi bi-box-arrow-in-up-right"></i></a>';
                     return $btn;
                 })->rawColumns(['action', 'status'])
@@ -100,7 +100,7 @@ class ApproveController extends Controller
     }
 
     /**
-     *  Store a newly assigned asset items to good request in storage.
+     *  Store a newly assigned asset items to Goods Request in storage.
      *
      * @param StoreRequest $request
      * @param $goodRequestId
@@ -121,13 +121,13 @@ class ApproveController extends Controller
         if ($goodRequest) {
             $message = '';
             if ($goodRequest->status_id == config('constant.RETURNED_STATUS')) {
-                $message = 'Good request is successfully returned.';
+                $message = 'Goods Request is successfully returned.';
                 $goodRequest->requester->notify(new GoodRequestReturned($goodRequest));
             } else if ($goodRequest->status_id == config('constant.REJECTED_STATUS')) {
-                $message = 'Good request is successfully rejected.';
+                $message = 'Goods Request is successfully rejected.';
                 $goodRequest->requester->notify(new GoodRequestRejected($goodRequest));
             } else if ($goodRequest->status_id == config('constant.APPROVED_STATUS')) {
-                $message = 'Good request is successfully approved.';
+                $message = 'Goods Request is successfully approved.';
                 $goodRequest->logisticOfficer->notify(new GoodRequestApproved($goodRequest));
 
                 // $approver = $goodRequest->approver;
@@ -147,6 +147,6 @@ class ApproveController extends Controller
 
         return redirect()->back()
             ->withInput()
-            ->withWarningMessage('Good request can not be approved.');
+            ->withWarningMessage('Goods Request can not be approved.');
     }
 }

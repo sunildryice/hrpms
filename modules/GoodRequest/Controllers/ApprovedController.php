@@ -39,7 +39,7 @@ class ApprovedController extends Controller
     }
 
     /**
-     * Display a listing of the Good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -60,7 +60,7 @@ class ApprovedController extends Controller
                 return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
             })->addColumn('action', function ($row) use ($authUser) {
                 $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                $btn .= route('good.requests.show', $row->id) . '" rel="tooltip" title="View Good Request"><i class="bi bi-eye"></i></a>';
+                $btn .= route('good.requests.show', $row->id) . '" rel="tooltip" title="View Goods Request"><i class="bi bi-eye"></i></a>';
                 return $btn;
             })
             ->rawColumns(['action', 'status'])
@@ -71,7 +71,7 @@ class ApprovedController extends Controller
     }
 
     /**
-     * Show the specified good request.
+     * Show the specified Goods Request.
      *
      * @param $goodRequestId
      * @return mixed

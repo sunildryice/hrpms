@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Edit Good Request')
+@section('title', 'Edit Goods Request')
 
 @section('page_js')
     <script type="text/javascript">
@@ -12,7 +12,7 @@
                     purpose: {
                         validators: {
                             notEmpty: {
-                                message: 'The purpose of good request is required',
+                                message: 'The purpose of goods request is required',
                             },
                         },
                     },
@@ -308,7 +308,7 @@
                                 <div class="card-body">
                                     <div class="card">
                                         <div class="card-header fw-bold">
-                                            Good Request Items
+                                            Goods Request Items
                                         </div>
                                         <div class="p-2">
                                             <div class="d-flex align-items-center add-info justify-content-end">

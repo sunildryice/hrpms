@@ -1,7 +1,7 @@
 @php $authUser = auth()->user();@endphp
 @extends('layouts.container')
 
-@section('title', 'Good Request Detail')
+@section('title', 'Goods Request Detail')
 
 @section('page_js')
     <script type="text/javascript">
@@ -39,7 +39,7 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Good Request Details
+                                Goods Request Details
                             </div>
                             @include("GoodRequest::Partials.detail")
                         </div>
@@ -47,7 +47,7 @@
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Good Request Process
+                                Goods Request Process
                             </div>
                             <div class="card-body">
                                 <div class="row">

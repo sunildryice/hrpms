@@ -41,7 +41,7 @@ class GoodRequestLog extends Model
     protected $hidden = [];
 
     /**
-     * Get the good request of the log.
+     * Get the Goods Request of the log.
      */
     public function goodRequest()
     {
@@ -57,7 +57,7 @@ class GoodRequestLog extends Model
     }
 
     /**
-     * Get the status of the good request log.
+     * Get the status of the Goods Request log.
      */
     public function status()
     {

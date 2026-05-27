@@ -80,7 +80,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get the items for the good request.
+     * Get the items for the Goods Request.
      */
     public function goodRequestItems()
     {
@@ -108,7 +108,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get the logs for the good request.
+     * Get the logs for the Goods Request.
      */
     public function logs()
     {
@@ -133,7 +133,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get the project of the good request.
+     * Get the project of the Goods Request.
      */
     public function projectCode()
     {
@@ -141,7 +141,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get requester of the good request.
+     * Get requester of the Goods Request.
      */
     public function requester()
     {
@@ -159,7 +159,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get reviewer of the good request.
+     * Get reviewer of the Goods Request.
      */
     public function reviewer()
     {
@@ -172,7 +172,7 @@ class GoodRequest extends Model
     }
 
     /**
-     * Get the good request status.
+     * Get the Goods Request status.
      */
     public function status()
     {

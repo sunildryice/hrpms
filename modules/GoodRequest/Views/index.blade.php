@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Good Requests')
+@section('title', 'Goods Requests')
 
 @section('page_js')
     <script type="text/javascript">
@@ -64,7 +64,7 @@
                     });
                     oTable.ajax.reload();
                 }
-                var confirmText = 'Amend this good request'
+                var confirmText = 'Amend this Goods Request'
                 ajaxSweetAlert($url, 'POST', {}, confirmText, successCallback);
             });
         });
@@ -87,7 +87,7 @@
                 </div>
                 <div class="add-info justify-content-end">
                     <a href="{{ route('good.requests.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi-plus"></i> New Good Request
+                        <i class="bi-plus"></i> New Goods Request
                     </a>
                 </div>
             </div>

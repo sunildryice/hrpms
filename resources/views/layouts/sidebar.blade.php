@@ -838,16 +838,16 @@
                             <a class="nav-link dropdown-toggle" href="#navbarGoodRequestMenuName" role="button"
                                data-bs-toggle="collapse" data-bs-target="#navbarGoodRequestMenuName"
                                aria-expanded="false" aria-controls="#navbarGoodRequestMenuName"
-                               data-bs-toggle="tooltip" data-bs-placement="right" title="Good Request">
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Goods Request">
                                 <i class="bi bi-arrow-repeat me-1 nav-icon"></i>
-                                <span class="nav-link-title">Good Request</span>
+                                <span class="nav-link-title">{{ __('label.good-request') }}</span>
                             </a>
                             <div id="navbarGoodRequestMenuName" class="nav-collapse collapse"
                                  data-bs-parent="#navbarGoodRequestMenu" hs-parent-area="#navbarGoodRequestMenu"
                                  style="">
                                 @if ($authUser->can('good-request'))
                                     <a class="nav-link" href="{{ route('good.requests.index') }}"
-                                       id="good-requests-menu">Good Request</a>
+                                       id="good-requests-menu">{{ __('label.good-request') }}</a>
                                     {{-- <a class="nav-link" href="{{ route('assets.index') }}"
                                        id="assets-menu">Assets</a> --}}
                                 @endif
@@ -866,18 +866,18 @@
                                 {{-- @endif --}}
                                 {{--                                @if ($authUser->can('review-good-request')) --}}
                                 <a class="nav-link" href="{{ route('review.good.requests.index') }}"
-                                   id="review-good-requests-menu">Review Good Request
+                                   id="review-good-requests-menu">Review Goods Request
                                     ({{ $reviewGoodRequestCount }}
                                     )</a>
                                 {{--                                @endif --}}
                                 @if ($authUser->can('approve-good-request'))
                                     <a class="nav-link" href="{{ route('approve.good.requests.index') }}"
-                                       id="approve-good-requests-menu">Approve Good Request
+                                       id="approve-good-requests-menu">Approve Goods Request
                                         ({{ $approveGoodRequestCount }})</a>
                                 @endif
                                 @if ($authUser->can('assign-good-request'))
                                     <a class="nav-link" href="{{ route('assign.good.requests.index') }}"
-                                       id="assign-good-requests-menu">Assign Good Request
+                                       id="assign-good-requests-menu">Assign Goods Request
                                         ({{ $assignGoodRequestCount }})</a>
                                 @endif
                                 @if ($authUser->can('approve-asset-handover'))
@@ -887,7 +887,7 @@
                                 @endif
                                 @if ($authUser->can('view-approved-good-request'))
                                     <a class="nav-link" href="{{ route('approved.good.requests.index') }}"
-                                       id="approved-good-requests-menu">Approved Good Request</a>
+                                       id="approved-good-requests-menu">Approved Goods Request</a>
                                 @endif
                                 <a class="nav-link" href="{{ route('receive.good.requests.direct.assign.index') }}"
                                    id="asset-receive-menu">Receive Item/Asset

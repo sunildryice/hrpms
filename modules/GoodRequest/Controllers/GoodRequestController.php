@@ -151,13 +151,15 @@ class GoodRequestController extends Controller
         $goodRequest = $this->goodRequests->find($id);
         $this->authorize('update', $goodRequest);
 
-        $reviewers = $this->users->getSupervisors($authUser);
-        $approvers = $this->users->permissionBasedUsers('approve-good-request');
-
         // $defaultApproverId = $approvers->first(function ($user) {
         //     return str_contains(strtolower($user->getFullName()), 'ramesh pathak');
         // })?->id;
         $defaultApproverId = 344; // Default approver ID for Ramesh Pathak i.e: 344
+
+        $reviewers = $this->users->getSupervisors($authUser);
+        $approvers = $this->users->permissionBasedUsers('approve-good-request')
+            ->where('id', $defaultApproverId);
+
 
         $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
@@ -167,7 +169,7 @@ class GoodRequestController extends Controller
             ->withProjectCodes($projectCodes)
             ->withApprovers($approvers)
             ->withReviewers($reviewers)
-            ->withDefaultApproverId($defaultApproverId); 
+            ->withDefaultApproverId($defaultApproverId);
     }
 
     /**

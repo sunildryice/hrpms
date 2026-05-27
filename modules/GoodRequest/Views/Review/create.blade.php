@@ -1,7 +1,7 @@
 @php $authUser = auth()->user();@endphp
 @extends('layouts.container')
 
-@section('title', 'Review Good Request')
+@section('title', 'Review Goods Request')
 
 @section('page_js')
     <script type="text/javascript">
@@ -113,7 +113,7 @@
                     <div class="col-lg-3">
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Good Request Details
+                                Goods Request Details
                             </div>
                             @include("GoodRequest::Partials.detail")
                         </div>
@@ -121,7 +121,7 @@
                     <div class="col-lg-9">
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Good Request Items
+                                Goods Request Items
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -146,7 +146,7 @@
                         </div>
                         <div class="card">
                             <div class="card-header fw-bold">
-                                Good Request Process
+                                Goods Request Process
                             </div>
                             <form action="{{ route('review.good.requests.store', $goodRequest->id) }}"
                                   id="goodRequestReviewForm" method="post" enctype="multipart/form-data" autocomplete="off">

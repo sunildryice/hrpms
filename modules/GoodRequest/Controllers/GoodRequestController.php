@@ -34,7 +34,7 @@ class GoodRequestController extends Controller
     }
 
     /**
-     * Display a listing of the good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -62,10 +62,10 @@ class GoodRequestController extends Controller
                     return '<span class="' . $row->getStatusClass() . '">' . $row->getStatus() . '</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('good.requests.show', $row->id) . '" rel="tooltip" title="View Good Request"><i class="bi bi-eye"></i></a>';
+                    $btn .= route('good.requests.show', $row->id) . '" rel="tooltip" title="View Goods Request"><i class="bi bi-eye"></i></a>';
                     if ($authUser->can('update', $row)) {
                         $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('good.requests.edit', $row->id) . '" rel="tooltip" title="Edit Good Request"><i class="bi-pencil-square"></i></a>';
+                        $btn .= route('good.requests.edit', $row->id) . '" rel="tooltip" title="Edit Goods Request"><i class="bi-pencil-square"></i></a>';
                     }
                     if ($authUser->can('delete', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-danger btn-sm delete-record" ';
@@ -83,7 +83,7 @@ class GoodRequestController extends Controller
     }
 
     /**
-     * Show the form for creating a new good request by employee.
+     * Show the form for creating a new Goods Request by employee.
      *
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -97,7 +97,7 @@ class GoodRequestController extends Controller
     }
 
     /**
-     * Store a newly created good request in storage.
+     * Store a newly created Goods Request in storage.
      *
      * @param \Modules\GoodRequest\Requests\StoreRequest $request
      * @return \Illuminate\Http\Response
@@ -113,16 +113,16 @@ class GoodRequestController extends Controller
         $goodRequest = $this->goodRequests->create($inputs);
 
         if ($goodRequest) {
-            $message = 'Good request is successfully added.';
+            $message = 'Goods Request is successfully added.';
             return redirect()->route('good.requests.edit', $goodRequest->id)
                 ->withSuccessMessage($message);
         }
         return redirect()->back()->withInput()
-            ->withWarningMessage('Good Request can not be added.');
+            ->withWarningMessage('Goods Request can not be added.');
     }
 
     /**
-     * Show the specified good request.
+     * Show the specified Goods Request.
      *
      * @param $goodRequestId
      * @return mixed
@@ -139,7 +139,7 @@ class GoodRequestController extends Controller
     }
 
     /**
-     * Show the form for editing the specified good request.
+     * Show the form for editing the specified Goods Request.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
@@ -151,13 +151,15 @@ class GoodRequestController extends Controller
         $goodRequest = $this->goodRequests->find($id);
         $this->authorize('update', $goodRequest);
 
-        $reviewers = $this->users->getSupervisors($authUser);
-        $approvers = $this->users->permissionBasedUsers('approve-good-request');
-
         // $defaultApproverId = $approvers->first(function ($user) {
         //     return str_contains(strtolower($user->getFullName()), 'ramesh pathak');
         // })?->id;
         $defaultApproverId = 344; // Default approver ID for Ramesh Pathak i.e: 344
+
+        $reviewers = $this->users->getSupervisors($authUser);
+        $approvers = $this->users->permissionBasedUsers('approve-good-request')
+            ->where('id', $defaultApproverId);
+
 
         $projectCodes = $this->projectCodes->getActiveProjectCodes();
 
@@ -167,11 +169,11 @@ class GoodRequestController extends Controller
             ->withProjectCodes($projectCodes)
             ->withApprovers($approvers)
             ->withReviewers($reviewers)
-            ->withDefaultApproverId($defaultApproverId); 
+            ->withDefaultApproverId($defaultApproverId);
     }
 
     /**
-     * Update the specified good request in storage.
+     * Update the specified Goods Request in storage.
      *
      * @param \Modules\GoodRequest\Requests\UpdateRequest $request
      * @param int $id
@@ -188,9 +190,9 @@ class GoodRequestController extends Controller
         $goodRequest = $this->goodRequests->update($id, $inputs);
 
         if ($goodRequest) {
-            $message = 'Good request is successfully updated.';
+            $message = 'Goods Request is successfully updated.';
             if ($goodRequest->status_id == config('constant.SUBMITTED_STATUS')) {
-                $message = 'Good request is successfully submitted.';
+                $message = 'Goods Request is successfully submitted.';
                 if ($goodRequest->reviewer_id) {
                     $goodRequest->reviewer->notify(new GoodRequestSubmitted($goodRequest));
                 } else {
@@ -204,11 +206,11 @@ class GoodRequestController extends Controller
                 ->withSuccessMessage($message);
         }
         return redirect()->back()->withInput()
-            ->withWarningMessage('Good Request can not be updated.');
+            ->withWarningMessage('Goods Request can not be updated.');
     }
 
     /**
-     * Remove the specified good request from storage.
+     * Remove the specified Goods Request from storage.
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -222,12 +224,12 @@ class GoodRequestController extends Controller
         if ($flag) {
             return response()->json([
                 'type' => 'success',
-                'message' => 'Good request is successfully deleted.',
+                'message' => 'Goods Request is successfully deleted.',
             ], 200);
         }
         return response()->json([
             'type' => 'error',
-            'message' => 'Good request can not deleted.',
+            'message' => 'Goods Request can not deleted.',
         ], 422);
     }
 

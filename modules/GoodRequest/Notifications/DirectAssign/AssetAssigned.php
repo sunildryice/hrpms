@@ -48,8 +48,8 @@ class AssetAssigned extends Notification
         $url = route('good.requests.direct.dispatch.approve.create', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your approval/assignment.')
-            ->action('View Direct Dispatch Good Request', $url)
+            ->line('Direct dispatch goods request ' . $this->goodRequest->getGoodRequestNumber() . ' has been submitted for your approval/assignment.')
+            ->action('View Direct Dispatch Goods Request', $url)
         ;
     }
 

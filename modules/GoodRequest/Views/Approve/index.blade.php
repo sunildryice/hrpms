@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Approve Good Requests')
+@section('title', 'Approve Goods Requests')
 
 @section('page_js')
     <script type="text/javascript">

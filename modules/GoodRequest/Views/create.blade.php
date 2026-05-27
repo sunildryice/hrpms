@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Add New Good Request')
+@section('title', 'Add New Goods Request')
 
 @section('page_js')
     <script type="text/javascript">
@@ -12,7 +12,7 @@
                     purpose: {
                         validators: {
                             notEmpty: {
-                                message: 'The purpose of good request is required',
+                                message: 'The purpose of goods request is required',
                             },
                         },
                     },

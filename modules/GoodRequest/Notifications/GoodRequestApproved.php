@@ -63,7 +63,7 @@ class GoodRequestApproved extends Notification
             // ->greeting($greeting)
             ->greeting('Dear ' . ($notifiable->getFullName() ?? $notifiable->full_name) . ',')
             ->line('A goods request for ' . $itemName . ' submitted by ' . $requesterName . ' has been approved and assigned to you for processing. Please review the request and take the necessary action.')
-            ->action('View Good Request', $url);
+            ->action('View Goods Request', $url);
     }
 
     /**

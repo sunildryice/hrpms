@@ -48,8 +48,8 @@ class DirectAssignRejected extends Notification
         $url = route('good.requests.show', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Direct dispatch good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been rejected.')
-            ->action('View Direct Dispatch Good Request', $url)
+            ->line('Direct dispatch goods request ' . $this->goodRequest->getGoodRequestNumber() . ' has been rejected.')
+            ->action('View Direct Dispatch Goods Request', $url)
         ;
     }
 
@@ -79,7 +79,7 @@ class DirectAssignRejected extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => $url,
-            'subject' => 'Direct Assign good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been rejected.'
+            'subject' => 'Direct Assign goods request ' . $this->goodRequest->getGoodRequestNumber() . ' has been rejected.'
         ];
     }
 }

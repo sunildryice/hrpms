@@ -21,7 +21,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given good request can be approved by the user.
+     * Determine if the given Goods Request can be approved by the user.
      *
      * @return bool
      */
@@ -43,7 +43,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given good request's receiver note can be added by the user.
+     * Determine if the given Goods Request's receiver note can be added by the user.
      *
      * @return bool
      */
@@ -55,7 +55,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given good request can be deleted by the user.
+     * Determine if the given Goods Request can be deleted by the user.
      *
      * @return bool
      */
@@ -66,7 +66,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given good request can be reviewed by the user.
+     * Determine if the given Goods Request can be reviewed by the user.
      *
      * @return bool
      */
@@ -76,7 +76,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given good request can be updated by the user.
+     * Determine if the given Goods Request can be updated by the user.
      *
      * @return bool
      */
@@ -87,7 +87,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given approved good request can be viewed by the user.
+     * Determine if the given approved Goods Request can be viewed by the user.
      *
      * @return bool
      */
@@ -97,7 +97,7 @@ class GoodRequestPolicy
     }
 
     /**
-     * Determine if the given handovered good request can be viewed by the user.
+     * Determine if the given handovered Goods Request can be viewed by the user.
      *
      * @return bool
      */

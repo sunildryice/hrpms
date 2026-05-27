@@ -68,7 +68,7 @@
                         <div class="col-lg-3">
                             <div class="card">
                                 <div class="card-header fw-bold">
-                                    Good Request Details
+                                    Goods Request Details
                                 </div>
                                 @include("GoodRequest::Partials.detail")
                             </div>
@@ -76,7 +76,7 @@
                         <div class="col-lg-9">
                             <div class="card">
                                 <div class="card-header fw-bold">
-                                    Good Request Items
+                                    Goods Request Items
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -124,7 +124,7 @@
 
                             <div class="card shadow-sm border rounded mt-2">
                                 <div class="card-header fw-bold">
-                                    Good Request Process
+                                    Goods Request Process
                                 </div>
                                 <div class="card-body">
                                     <div class="row">

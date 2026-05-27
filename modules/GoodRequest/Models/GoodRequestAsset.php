@@ -63,7 +63,7 @@ class GoodRequestAsset extends Model
     ];
 
     /**
-     * Get the approver of a good request asset
+     * Get the approver of a Goods Request asset
      */
     public function approver()
     {
@@ -71,7 +71,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the asset of the good request assigned asset.
+     * Get the asset of the Goods Request assigned asset.
      */
     public function asset()
     {
@@ -112,7 +112,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the good request of the assigned asset.
+     * Get the Goods Request of the assigned asset.
      */
     public function goodRequest()
     {
@@ -120,7 +120,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the good request item of the assigned asset.
+     * Get the Goods Request item of the assigned asset.
      */
     public function goodRequestItem()
     {
@@ -128,7 +128,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the logs for the good request asset.
+     * Get the logs for the Goods Request asset.
      */
     public function logs()
     {
@@ -156,7 +156,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the reviewer of a good request asset
+     * Get the reviewer of a Goods Request asset
      */
     public function reviewer()
     {
@@ -164,7 +164,7 @@ class GoodRequestAsset extends Model
     }
 
     /**
-     * Get the good request asset handover status.
+     * Get the Goods Request asset handover status.
      */
     public function handoverStatus()
     {

@@ -193,6 +193,7 @@ return [
     'from-place' => 'From Place',
     'from-to-date' => 'Travel Date',
     'fy' => 'FY',
+    'good-request' => 'Goods Request',
     'grand-total' => 'Grand Total',
     'grn' => 'GRN',
     'grn-amount' => 'GRN Amount',

@@ -41,7 +41,7 @@ class ReviewController extends Controller
     }
 
     /**
-     * Display a listing of the good requests
+     * Display a listing of the Goods Requests
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -66,7 +66,7 @@ class ReviewController extends Controller
                     return '<span class="'.$row->getStatusClass() .'">'.$row->getStatus().'</span>';
                 })->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-outline-primary btn-sm" href="';
-                    $btn .= route('review.good.requests.create', $row->id) . '" rel="tooltip" title="Review Good Request">';
+                    $btn .= route('review.good.requests.create', $row->id) . '" rel="tooltip" title="Review Goods Request">';
                     $btn .= '<i class="bi bi-box-arrow-in-up-right"></i></a>';
                     return $btn;
                 })
@@ -105,13 +105,13 @@ class ReviewController extends Controller
         if($goodRequest){
             $message = '';
             if ($goodRequest->status_id == config('constant.RETURNED_STATUS')) {
-                $message = 'Good request is successfully returned.';
+                $message = 'Goods Request is successfully returned.';
                 $goodRequest->requester->notify(new GoodRequestReturned($goodRequest));
             } else if ($goodRequest->status_id == config('constant.REJECTED_STATUS')) {
-                $message = 'Good request is successfully rejected.';
+                $message = 'Goods Request is successfully rejected.';
                 $goodRequest->requester->notify(new GoodRequestRejected($goodRequest));
             } else if ($goodRequest->status_id == config('constant.VERIFIED_STATUS')) {
-                $message = 'Good request is successfully verified.';
+                $message = 'Goods Request is successfully verified.';
                 $goodRequest->approver->notify(new GoodRequestForwarded($goodRequest));
             }
 
@@ -121,6 +121,6 @@ class ReviewController extends Controller
 
         return redirect()->back()
             ->withInput()
-            ->withWarningMessage('Good request can not be approved.');
+            ->withWarningMessage('Goods Request can not be approved.');
     }
 }

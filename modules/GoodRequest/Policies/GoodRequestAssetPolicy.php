@@ -21,7 +21,7 @@ class GoodRequestAssetPolicy
     }
 
     /**
-     * Determine if the given good request can be approved by the user.
+     * Determine if the given Goods Request can be approved by the user.
      *
      * @param  \Modules\Privilege\Models\User  $user
      * @param  \Modules\GoodRequest\Models\GoodRequestAsset  $goodRequestAsset
@@ -34,7 +34,7 @@ class GoodRequestAssetPolicy
     }
 
     /**
-     * Determine if the given handovered good request asset can be viewed by the user.
+     * Determine if the given handovered Goods Request asset can be viewed by the user.
      *
      * @param  \Modules\Privilege\Models\User  $user
      * @param  \Modules\GoodRequest\Models\GoodRequestAsset  $goodRequestAssetAsset

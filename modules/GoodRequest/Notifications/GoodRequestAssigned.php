@@ -48,8 +48,8 @@ class GoodRequestAssigned extends Notification
         $url = route('good.requests.show', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.')
-            ->action('View Good Request', $url)
+            ->line('Goods Request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.')
+            ->action('View Goods Request', $url)
         ;
     }
 
@@ -78,7 +78,7 @@ class GoodRequestAssigned extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => route('good.requests.show', $this->goodRequest->id),
-            'subject' => 'Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.'
+            'subject' => 'Goods Request ' . $this->goodRequest->getGoodRequestNumber() . ' has been assigned. Please add receiver note.'
         ];
     }
 }

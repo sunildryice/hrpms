@@ -50,7 +50,7 @@ class GoodRequestItemController extends Controller
     }
 
     /**
-     * Display a listing of the good request items
+     * Display a listing of the Goods Request items
      *
      * @return mixed
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -98,7 +98,7 @@ class GoodRequestItemController extends Controller
     }
 
     /**
-     * Show the form for creating a new good request item.
+     * Show the form for creating a new Goods Request item.
      *
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -113,7 +113,7 @@ class GoodRequestItemController extends Controller
     }
 
     /**
-     * Store a newly created good request item in storage.
+     * Store a newly created Goods Request item in storage.
      *
      * @param StoreRequest $request
      * @param $id
@@ -131,14 +131,14 @@ class GoodRequestItemController extends Controller
             return response()->json(['status' => 'ok',
                 'goodRequest' => $goodRequestItem->goodRequest,
                 'goodRequestItem' => $goodRequestItem,
-                'message' => 'Good request item is successfully added.'], 200);
+                'message' => 'Goods Request item is successfully added.'], 200);
         }
         return response()->json(['status' => 'error',
-            'message' => 'Good request item can not be added.'], 422);
+            'message' => 'Goods Request item can not be added.'], 422);
     }
 
     /**
-     * Show the form for editing the specified good request item.
+     * Show the form for editing the specified Goods Request item.
      *
      * @param int $id
      * @return \Illuminate\Http\Response
@@ -157,7 +157,7 @@ class GoodRequestItemController extends Controller
     }
 
     /**
-     * Update the specified good request item in storage.
+     * Update the specified Goods Request item in storage.
      *
      * @param UpdateRequest $request
      * @param $drId
@@ -175,14 +175,14 @@ class GoodRequestItemController extends Controller
             return response()->json(['status' => 'ok',
                 'goodRequest' => $goodRequestItem->goodRequest,
                 'goodRequestItem' => $goodRequestItem,
-                'message' => 'Good request item is successfully updated.'], 200);
+                'message' => 'Goods Request item is successfully updated.'], 200);
         }
         return response()->json(['status' => 'error',
-            'message' => 'Good request item can not be updated.'], 422);
+            'message' => 'Goods Request item can not be updated.'], 422);
     }
 
     /**
-     * Remove the specified good request item from storage.
+     * Remove the specified Goods Request item from storage.
      *
      * @param $id
      * @return \Illuminate\Http\JsonResponse
@@ -198,13 +198,13 @@ class GoodRequestItemController extends Controller
             return response()->json([
                 'type' => 'success',
                 'goodRequest' => $goodRequest,
-                'message' => 'Good request item is successfully deleted.',
+                'message' => 'Goods Request item is successfully deleted.',
             ], 200);
         }
         return response()->json([
             'type' => 'error',
             'goodRequest' => $goodRequestItem->goodRequest,
-            'message' => 'Good request item can not deleted.',
+            'message' => 'Goods Request item can not deleted.',
         ], 422);
     }
 }

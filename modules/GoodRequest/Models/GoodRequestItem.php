@@ -74,7 +74,7 @@ class GoodRequestItem extends Model
     }
 
     /**
-     * Get the assigned item of a good request
+     * Get the assigned item of a Goods Request
      */
     public function assignedItem()
     {
@@ -92,7 +92,7 @@ class GoodRequestItem extends Model
     }
 
     /**
-     * Get the assigned unit of a good request
+     * Get the assigned unit of a Goods Request
      */
     public function assignedUnit()
     {
@@ -108,7 +108,7 @@ class GoodRequestItem extends Model
     }
 
     /**
-     * Get the good request that owns good request item
+     * Get the Goods Request that owns Goods Request item
      */
     public function goodRequest()
     {
@@ -116,7 +116,7 @@ class GoodRequestItem extends Model
     }
 
     /**
-     * Get the good request assets of a good request item
+     * Get the Goods Request assets of a Goods Request item
      */
     public function goodRequestAssets()
     {
@@ -124,7 +124,7 @@ class GoodRequestItem extends Model
     }
 
     /**
-     * Get the unit of good request.
+     * Get the unit of Goods Request.
      */
     public function unit()
     {

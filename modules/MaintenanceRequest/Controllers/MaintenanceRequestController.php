@@ -161,20 +161,23 @@ class MaintenanceRequestController extends Controller
         $authUser = auth()->user();
         $maintenanceRequest = $this->maintenanceRequest->find($id);
         $this->authorize('update', $maintenanceRequest);
-        $reviewers = $this->users->permissionBasedUsers('review-maintenance-request');
-        $approvers = $this->users->permissionBasedUsers('approve-maintenance-request');
 
         // $defaultApproverId = $approvers->first(function ($user) {
         //     return str_contains(strtolower($user->getFullName()), 'ramesh pathak');
         // })?->id;
         $defaultApproverId = 344; // Default approver ID for Ramesh Pathak i.e: 344
 
+        $reviewers = $this->users->permissionBasedUsers('review-maintenance-request');
+        $approvers = $this->users->permissionBasedUsers('approve-maintenance-request')
+            ->where('id', $defaultApproverId);
+
+
         return view('MaintenanceRequest::edit')
             ->withAuthUser($authUser)
             ->withApprovers($approvers)
             ->withReviewers($reviewers)
             ->withMaintenanceRequest($maintenanceRequest)
-            ->withDefaultApproverId($defaultApproverId); 
+            ->withDefaultApproverId($defaultApproverId);
     }
 
     /**

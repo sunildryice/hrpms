@@ -41,7 +41,7 @@ class GoodRequestAssetLog extends Model
     protected $hidden = [];
 
     /**
-     * Get the good request asset of the log.
+     * Get the Goods Request asset of the log.
      */
     public function goodRequestAsset()
     {
@@ -57,7 +57,7 @@ class GoodRequestAssetLog extends Model
     }
 
     /**
-     * Get the status of the good request log.
+     * Get the status of the Goods Request log.
      */
     public function status()
     {

@@ -48,8 +48,8 @@ class GoodRequestReturned extends Notification
         $url = route('good.requests.edit', $this->goodRequest->id);
         return (new MailMessage)
             ->greeting('Hello!')
-            ->line('Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been returned.')
-            ->action('View Good Request', $url)
+            ->line('Goods Request ' . $this->goodRequest->getGoodRequestNumber() . ' has been returned.')
+            ->action('View Goods Request', $url)
         ;
     }
 
@@ -78,7 +78,7 @@ class GoodRequestReturned extends Notification
         return [
             'good_request_id' => $this->goodRequest->id,
             'link' => route('good.requests.edit', $this->goodRequest->id),
-            'subject' => 'Good request ' . $this->goodRequest->getGoodRequestNumber() . ' has been returned.'
+            'subject' => 'Goods Request ' . $this->goodRequest->getGoodRequestNumber() . ' has been returned.'
         ];
     }
 }

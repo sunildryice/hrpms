@@ -49,7 +49,7 @@ class GoodRequestAssignItemController extends Controller
     }
 
     /**
-     * Show the form for creating a new good request item.
+     * Show the form for creating a new Goods Request item.
      *
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Auth\Access\AuthorizationException
@@ -77,7 +77,7 @@ class GoodRequestAssignItemController extends Controller
     }
 
     /**
-     * Store a newly created good request item in storage.
+     * Store a newly created Goods Request item in storage.
      *
      * @param StoreRequest $request
      * @param $id
@@ -98,9 +98,9 @@ class GoodRequestAssignItemController extends Controller
             return response()->json(['status' => 'ok',
                 'goodRequest' => $goodRequestItem->goodRequest,
                 'goodRequestItem' => $goodRequestItem,
-                'message' => 'Good request item is successfully updated.'], 200);
+                'message' => 'Goods Request item is successfully updated.'], 200);
         }
         return response()->json(['status' => 'error',
-            'message' => 'Good request item can not be updated.'], 422);
+            'message' => 'Goods Request item can not be updated.'], 422);
     }
 }

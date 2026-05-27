@@ -43,7 +43,7 @@ class GoodRequestRepository extends Repository
 
 
     /**
-     * Get a list of approved good requests.
+     * Get a list of approved Goods Requests.
      *
      * @return mixed
      */
@@ -179,7 +179,7 @@ class GoodRequestRepository extends Repository
             $goodRequest->logs()->create([
                 'user_id' => $inputs['created_by'],
                 'original_user_id' => $inputs['original_user_id'],
-                'log_remarks' => 'Direct dispatch good request has been submitted.',
+                'log_remarks' => 'Direct dispatch goods request has been submitted.',
                 'status_id' => $inputs['status_id'],
             ]);
 
@@ -339,7 +339,7 @@ class GoodRequestRepository extends Repository
             if ($inputs['btn'] == 'submit') {
                 $forwardInputs = [
                     'user_id' => $inputs['updated_by'],
-                    'log_remarks' => 'Good request is submitted.',
+                    'log_remarks' => 'Goods Request is submitted.',
                     'original_user_id' => $inputs['original_user_id'],
                 ];
                 $goodRequest = $this->forward($goodRequest->id, $forwardInputs);
@@ -568,7 +568,7 @@ class GoodRequestRepository extends Repository
             $goodRequest->logs()->create([
                 'user_id' => $inputs['created_by'],
                 'original_user_id' => $inputs['original_user_id'],
-                'log_remarks' => $inputs['log_remarks'] ?? 'Good request has been received.',
+                'log_remarks' => $inputs['log_remarks'] ?? 'Goods Request has been received.',
                 'status_id' => config('constant.RECEIVED_STATUS'),
             ]);
             DB::commit();
@@ -602,7 +602,7 @@ class GoodRequestRepository extends Repository
             }
 
             if ($inputs['btn'] == 'submit') {
-                $inputs['log_remarks'] = 'Direct dispatch good request has been submitted.';
+                $inputs['log_remarks'] = 'Direct dispatch goods request has been submitted.';
                 $goodRequest->logs()->create($inputs);
             }
 
@@ -649,7 +649,7 @@ class GoodRequestRepository extends Repository
             $goodRequest->logs()->create([
                 'user_id' => $inputs['created_by'],
                 'original_user_id' => $inputs['original_user_id'],
-                'log_remarks' => 'Direct dispatch good request has been submitted.',
+                'log_remarks' => 'Direct dispatch goods request has been submitted.',
                 'status_id' => $inputs['status_id'],
             ]);
 

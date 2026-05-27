@@ -578,7 +578,7 @@
                                             <option value="">Select an approver</option>
                                             @foreach ($supervisors as $supervisor)
                                                 <option value="{{ $supervisor->id }}"
-                                                    {{ $supervisor->id == $selectedSupervisorId ? 'selected' : '' }}>
+                                                    @if ($supervisor->id == $selectedSupervisorId) selected @elseif($supervisors->count() == 1) selected @endif>
                                                     {{ $supervisor->full_name }}</option>
                                             @endforeach
                                         </select>

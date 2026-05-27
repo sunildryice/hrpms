@@ -10,6 +10,8 @@ use Modules\WorkFromHome\Controllers\RejectedController;
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('wfh/requests', [RequestController::class, 'index'])->name('wfh.requests.index');
+    Route::get('wfh/requests/all', [RequestController::class, 'all'])->name('wfh.requests.all');
+    Route::get('wfh/requests/all/{id}', [RequestController::class, 'showAll'])->name('wfh.requests.show.all');
     Route::get('involved/wfh/requests', [InvolvedController::class, 'index'])->name('involved.wfh.requests.index');
     Route::get('wfh/requests/create', [RequestController::class, 'create'])->name('wfh.requests.create');
     Route::post('wfh/requests', [RequestController::class, 'store'])->name('wfh.requests.store');

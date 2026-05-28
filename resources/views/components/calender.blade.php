@@ -583,7 +583,7 @@
                 allDay: true,
                 backgroundColor: 'var(--bg-holiday-bar)',
                 description: desc,
-                priority: getPriority('holiday'),
+                priority: 0,
                 extendedProps: {
                     only_female: h.only_female,
                     type: 'holiday',

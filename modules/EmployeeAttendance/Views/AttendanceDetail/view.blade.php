@@ -140,14 +140,14 @@
                     </ul>
                 </div>
             </div>
-            <div class="col">
+            {{-- <div class="col">
                 <div class="print-header-info mb-3 mt-4" style="display: flex; flex-direction: column; align-items: center;">
                     <ul class="list-unstyled m-0 p-0">
                         <li><span class="fw-bold me-2">Reviewer:</span><span>{{ $attendance->getReviewer() }}</span></li>
                         <li><span class="fw-bold me-2">Approver:</span><span>{{ $attendance->getApprover() }}</span></li>
                     </ul>
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
     <div class="print-body">
@@ -235,7 +235,7 @@
             </table>
         </div>
     </div>
-    <div class="row my-3">
+    {{-- <div class="row my-3">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-body">
@@ -264,5 +264,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection

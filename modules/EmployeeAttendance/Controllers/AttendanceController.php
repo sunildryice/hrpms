@@ -133,10 +133,10 @@ class AttendanceController extends Controller
                     $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
                     $btn .= route('attendance.detail.print', $row->id) . '" target="_blank" rel="tooltip" title="Print Attendance Detail"><i class="bi bi-printer"></i></a>';
 
-                    if (auth()->user()->can('submit', $row)) {
-                        $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
-                        $btn .= route('attendance.detail.edit', $row->id) . '" rel="tooltip" title="Edit Attendance Detail"><i class="bi bi-pencil-square"></i></a>';
-                    }
+                    // if (auth()->user()->can('submit', $row)) {
+                    //     $btn .= '&emsp;<a class="btn btn-outline-primary btn-sm" href="';
+                    //     $btn .= route('attendance.detail.edit', $row->id) . '" rel="tooltip" title="Edit Attendance Detail"><i class="bi bi-pencil-square"></i></a>';
+                    // }
                     if (auth()->user()->can('amend', $row)) {
                         $btn .= '&emsp;<a href = "javascript:;" class="btn btn-sm btn-outline-danger amend-attendance"';
                         $btn .= 'data-href = "' . route('attendance.amend', $row->id) . '" data-month="' . $row->getMonth() . '" data-year="' . $row->getYear() . '"  title="Reverse Attendance">';

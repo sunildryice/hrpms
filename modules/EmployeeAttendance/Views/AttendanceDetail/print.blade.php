@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    <div class="row last-row">
+    {{-- <div class="row last-row">
         <div class="col-sm-6 col-lg-4">
             <div><strong>Submitted By:</strong></div>
             <div><strong>Name:</strong> {{ $attendance->getRequester() }} </div>
@@ -250,7 +250,7 @@
             <div><strong>Position:</strong> {{ $attendance->getApproverDesignation() }} </div>
             <div><strong>Date:</strong> {{ $attendance->getApprovedDate() }} </div>
         </div>
-    </div>
+    </div> --}}
 
 
 

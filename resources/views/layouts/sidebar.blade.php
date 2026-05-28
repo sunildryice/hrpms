@@ -52,7 +52,7 @@
                                    href="{{ route('daily.attendance.index') }}">Daily Attendance</a>
                             @endif
 
-                            @if ($authUser->can('review-employee-attendance'))
+                            {{-- @if ($authUser->can('review-employee-attendance'))
                                 <a class="nav-link" id="attendance-review-index"
                                    href="{{ route('attendance.review.index') }}">Review Attendance
                                     ({{ $verifyAttendanceCount }})</a>
@@ -70,7 +70,7 @@
                             @if ($authUser->can('employee-attendance'))
                                 <a class="nav-link" id="pending-attendance-menu"
                                    href="{{ route('attendance.pending.index') }}">Pending Attendance</a>
-                            @endif
+                            @endif --}}
                         </div>
                     </div>
 

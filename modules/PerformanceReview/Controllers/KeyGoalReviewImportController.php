@@ -61,15 +61,15 @@ class KeyGoalReviewImportController extends Controller
 
             $summary = $importer->summary;
             $message = sprintf(
-                'Import complete. %d employee(s) processed — %d key goal(s) and %d development plan(s) imported.',
+                'Import complete.',
                 $summary['employees_processed'],
                 $summary['key_goals_imported'],
                 $summary['dev_plans_imported']
             );
 
-            if (!empty($summary['skipped_sheets'])) {
-                $message .= ' Skipped sheets: ' . implode(', ', $summary['skipped_sheets']) . '.';
-            }
+            // if (!empty($summary['skipped_sheets'])) {
+            //     $message .= ' Skipped sheets: ' . implode(', ', $summary['skipped_sheets']) . '.';
+            // }
 
             return response()->json([
                 'message' => $message,

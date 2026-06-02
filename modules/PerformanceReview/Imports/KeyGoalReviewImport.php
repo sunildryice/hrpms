@@ -57,7 +57,7 @@ class KeyGoalReviewImport implements WithMultipleSheets, SkipsUnknownSheets
         ])->first();
 
         if (!$employee) {
-            $this->summary['skipped_sheets'][] = $sheetName;
+            $this->summary['skipped_sheets'][] = $sheetName . ' (employee not found)';
             Log::warning("KeyGoalReviewImport: No employee found for sheet '{$sheetName}'.");
             return;
         }
@@ -68,7 +68,7 @@ class KeyGoalReviewImport implements WithMultipleSheets, SkipsUnknownSheets
             ->first();
 
         if (!$performanceReview) {
-            $this->summary['skipped_sheets'][] = $sheetName;
+            $this->summary['skipped_sheets'][] = $sheetName . ' (no performance review record)';
             Log::warning(
                 "KeyGoalReviewImport: No Key Goals Review found for employee '{$sheetName}' "
                 . "(id={$employee->id}) in fiscal year id={$this->currentFiscalYearId}."

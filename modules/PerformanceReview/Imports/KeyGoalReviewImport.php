@@ -52,8 +52,8 @@ class KeyGoalReviewImport implements WithMultipleSheets, SkipsUnknownSheets
 
     public function importSheetData(string $sheetName, Collection $rows): void
     {
-        $employee = Employee::whereRaw('LOWER(TRIM(full_name)) = ?', [
-            strtolower(trim($sheetName)),
+        $employee = Employee::whereRaw('LOWER(REGEXP_REPLACE(TRIM(full_name), \' +\', \' \')) = ?', [
+            strtolower(preg_replace('/\s+/', ' ', trim($sheetName))),
         ])->first();
 
         if (!$employee) {

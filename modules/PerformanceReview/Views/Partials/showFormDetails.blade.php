@@ -36,7 +36,8 @@
                     @foreach ($keygoals as $keygoal)
                         <tr>
                             <td class="wrap-text">{{ $keygoal->title }}</td>
-                            <td class="wrap-text">{{ $keygoal->output_deliverables }}</td>
+                            <td class="wrap-text">{!! nl2br(e($keygoal->output_deliverables)) !!}</td>
+                            
                             <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
                             <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                             <td>
@@ -82,7 +83,7 @@
                         @foreach ($devPlans as $index => $plan)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td class="wrap-text">{{ $plan->objective }}</td>
+                                <td class="wrap-text">{!! nl2br(e($plan->objective)) !!}</td>
                                 <td class="wrap-text">{{ $plan->activity ?? '—' }}</td>
                             </tr>
                         @endforeach

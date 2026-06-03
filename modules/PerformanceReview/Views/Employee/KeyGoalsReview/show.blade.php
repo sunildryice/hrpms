@@ -236,7 +236,7 @@
                                         {{ $kg->title }}
                                     </td>
                                     <td class="col-output readonly-cell wrap-text">
-                                        {{ $kg->output_deliverables ?? '—' }}
+                                        {!! $kg->output_deliverables ? nl2br(e($kg->output_deliverables)) : '—' !!}
                                     </td>
                                     <td class="col-project readonly-cell wrap-text">
                                         {{ $kg->project ? $kg->project->short_name ?? $kg->project->title : '—' }}
@@ -283,7 +283,8 @@
                                     <tr class="devplan-row readonly">
                                         <td class="sn">{{ $loop->iteration }}</td>
                                         <td class="col-plan readonly-cell wrap-text">
-                                            {{ $plan->objective }}
+                                            {{-- {{ $plan->objective }} --}}
+                                            {!! $plan->objective ? nl2br(e($plan->objective)) : '—' !!}
                                         </td>
                                     </tr>
                                 @endforeach

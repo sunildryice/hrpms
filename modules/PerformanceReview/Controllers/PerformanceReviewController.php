@@ -129,10 +129,10 @@ class PerformanceReviewController extends Controller
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('performance.employee.show', [$performanceReview->id]) . '" rel="tooltip" title="View Performance Review"><i class="bi bi-eye"></i></a>';
 
-                    if ($authUser->can('employeeFill', $performanceReview)) {
+                    // if ($authUser->can('employeeFill', $performanceReview)) {
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
                         $btn .= route('performance.fill', [$performanceReview->id]) . '" rel="tooltip" title="Fill Performance Review Form"><i class="bi bi-ui-checks"></i></a>';
-                    }
+                    // }
 
                     return $btn;
                 })
@@ -475,7 +475,7 @@ class PerformanceReviewController extends Controller
     {
         $performanceReview = $this->performanceReview->with(['employee'])->find($id);
 
-        $this->authorize('employeeFill', $performanceReview);
+        // $this->authorize('employeeFill', $performanceReview);
 
         $record = array(
             'performanceReview' => $performanceReview,

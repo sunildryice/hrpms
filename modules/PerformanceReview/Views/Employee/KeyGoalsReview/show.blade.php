@@ -236,7 +236,7 @@
                                         {{ $kg->title }}
                                     </td>
                                     <td class="col-output readonly-cell wrap-text">
-                                        {{ $kg->output_deliverables ?? '—' }}
+                                        {!! $kg->output_deliverables ? nl2br(e($kg->output_deliverables)) : '—' !!}
                                     </td>
                                     <td class="col-project readonly-cell wrap-text">
                                         {{ $kg->project ? $kg->project->short_name ?? $kg->project->title : '—' }}

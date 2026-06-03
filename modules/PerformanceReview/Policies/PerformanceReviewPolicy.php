@@ -55,7 +55,7 @@ class PerformanceReviewPolicy
 
     public function employeeFill(User $user, PerformanceReview $performanceReview)
     {
-        return in_array($performanceReview->status_id, [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS')]);
+        return in_array($performanceReview->status_id, [config('constant.CREATED_STATUS'), config('constant.RETURNED_STATUS'), config('constant.APPROVED_STATUS')]);
     }
 
     public function supervisorFill(User $user, PerformanceReview $performanceReview)

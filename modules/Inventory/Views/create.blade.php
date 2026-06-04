@@ -572,7 +572,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-9">
-                                        <select class="form-control" name="execution_id">
+                                        <select class="form-control select2" name="execution_id">
                                             <option value="">Select Type</option>
                                             @foreach ($executionTypes as $executionType)
                                                 <option value="{{ $executionType->id }}" {{ $executionType->id == old('execution_id') ? 'selected' : '' }}>

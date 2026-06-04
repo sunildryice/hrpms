@@ -289,7 +289,8 @@ class VehicleRequest extends Model
 
     public function getEndDatetime()
     {
-        return $this->end_datetime?->format('j M, Y g:i A');
+        // return $this->end_datetime?->format('j M, Y g:i A');
+        return $this->end_datetime?->format('j M, Y');
     }
 
     public function getOfficeName()
@@ -319,7 +320,8 @@ class VehicleRequest extends Model
 
     public function getStartDatetime()
     {
-        return $this->start_datetime?->format('j M, Y g:i A');
+        // return $this->start_datetime?->format('j M, Y g:i A');
+        return $this->start_datetime?->format('j M, Y');
     }
 
     public function getVehicleRequestNumber()

@@ -82,8 +82,8 @@
                         <tr>
                             <th>{{ __('label.sn') }}</th>
                             <th>Request Number</th>
-                            <th>From DateTime</th>
-                            <th>To DateTime</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
                             <th>Type</th>
                             <th>{{ __('label.requester') }}</th>
                             <th>{{ __('label.status') }}</th>

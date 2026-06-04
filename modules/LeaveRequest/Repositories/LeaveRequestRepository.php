@@ -411,7 +411,7 @@ class LeaveRequestRepository extends Repository
     {
         return $this->model->with(['department', 'office', 'leaveType', 'fiscalYear', 'status', 'requester.employee'])
             ->whereIn('status_id', [config('constant.SUBMITTED_STATUS')])
-            ->where('updated_at', '<=', now()->subDays(7))
+            ->where('request_date', '<=', now()->subDays(7))
             ->orderBy('start_date', 'desc')
             ->get();
     }

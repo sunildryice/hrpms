@@ -53,11 +53,22 @@
                 </div>
                 <div class="row mb-2">
                     <div class="col-lg-3">
+                        <div class="d-flex align-items-start h-100">
+                            <label class="m-0 text-end flex-grow-1 fw-bold">Project</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        {{ $vehicleRequest->getProjectName() }}
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
                             <label for="validationfullname" class="m-0 text-end flex-grow-1 fw-bold">Date </label>
                         </div>
                     </div>
                     <div class="col-lg-9">
+                        {{-- {{ $vehicleRequest->start_datetime?->format('j M, Y') }} - {{ $vehicleRequest->end_datetime?->format('j M, Y') }} --}}
                         {!! $vehicleRequest->getStartDatetime() !!} - {!! $vehicleRequest->getEndDatetime() !!}
 
                     </div>
@@ -169,14 +180,17 @@
                             </div>
                             <div class="col-lg-6">
                                 <div class="d-inline-flex gap-2">
-                                    <span> <strong> Number of Overnight Stay</strong></span>
-                                    <span>{{ $vehicleRequest->getOvernights() }}</span>
+                                    {{-- <span> <strong> Number of Overnight Stay</strong></span>
+                                    <span>{{ $vehicleRequest->getOvernights() }}</span> --}}
+                                    <span><strong>Travel Duration</strong></span>
+                                    <span>{{ $vehicleRequest->getDifferenceInDays() }}</span>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                 </div>
+
                 <div class="row mb-2">
                     <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
@@ -191,7 +205,8 @@
                 <div class="row mb-2">
                     <div class="col-lg-3">
                         <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Tentative Cost (in NPR) </label>
+                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Tentative Cost (in NPR)
+                            </label>
                         </div>
                     </div>
                     <div class="col-lg-9">
@@ -205,36 +220,6 @@
                         </h4>
                     </div>
                 </div>
-                {{-- <div class="row mb-2">
-                    <div class="col-lg-3">
-                        <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Activity Code </label>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        {{ $vehicleRequest->activityCode->getActivityCode() }}
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-lg-3">
-                        <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Account Code </label>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        {{ $vehicleRequest->accountCode->getAccountCode() }}
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col-lg-3">
-                        <div class="d-flex align-items-start  h-100">
-                            <label for="" class="m-0 text-end flex-grow-1 fw-bold">Grants</label>
-                        </div>
-                    </div>
-                    <div class="col-lg-9">
-                        {{ $vehicleRequest->getDonorCode() }}
-                    </div>
-                </div> --}}
 
                 <div class="row mb-2">
                     <div class="col-lg-3">
@@ -267,7 +252,7 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Prepared By:</strong></li>
-                        <div class="mb-2">
+                        {{-- <div class="mb-2">
                             @if ($requesterSignature)
                                 <img src="{{ $requesterSignature }}"
                                     alt="Signature of {{ $vehicleRequest->getRequesterName() }}"
@@ -276,7 +261,7 @@
                             @else
                                 <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
                             @endif
-                        </div>
+                        </div> --}}
                         <li><strong class="me-1">Name:</strong> {{ $vehicleRequest->getRequesterName() }} </li>
                         <li><strong class="me-1">Title:</strong>
                             {{ $vehicleRequest->requester->employee->latestTenure->getDesignationName() }} </li>
@@ -288,7 +273,7 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Recommended By:</strong></li>
-                        <div class="mb-2">
+                        {{-- <div class="mb-2">
                             @if ($reviewerSignature)
                                 <img src="{{ $reviewerSignature }}"
                                     alt="Signature of {{ $vehicleRequest->getReviewerName() }}"
@@ -297,7 +282,7 @@
                             @else
                                 <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
                             @endif
-                        </div>
+                        </div> --}}
                         <li><strong class="me-1">Name:</strong>
                             {{ $vehicleRequest->reviewer->getFullName() }}
                         </li>
@@ -312,7 +297,7 @@
                 <div class="col-lg-4">
                     <ul class="list-unstyled">
                         <li><strong>Approved By:</strong></li>
-                        <div class="mb-2">
+                        {{-- <div class="mb-2">
                             @if ($approverSignature)
                                 <img src="{{ $approverSignature }}"
                                     alt="Signature of {{ $vehicleRequest->getApproverName() }}"
@@ -321,7 +306,7 @@
                             @else
                                 <div class="signature-line mx-auto" style="width: 240px; height: 90px;"></div>
                             @endif
-                        </div>
+                        </div> --}}
                         <li>
                             <strong class="me-1">Name:</strong>
                             {{ $vehicleRequest->getApproverName() }}

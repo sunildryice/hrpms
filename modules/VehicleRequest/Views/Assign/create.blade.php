@@ -104,9 +104,7 @@
     <section class="registration">
         <div class="card">
             <div class="card-header fw-bold">Vehicle Request Details</div>
-            <div class="card-body">
-                @include('VehicleRequest::Partials.detail')
-            </div>
+            @include('VehicleRequest::Partials.detail')
         </div>
         <div class="card">
             <div class="card-header fw-bold">

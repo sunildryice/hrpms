@@ -25,14 +25,15 @@
             }
         });
 
-        $('[data-toggle="datepicker-time"]').daterangepicker({
+        $('[data-toggle="datepicker-date"]').daterangepicker({
             "singleDatePicker": true,
-            "timePicker": true,
-            "timePicker24Hour": true,
-            "autoApply": false,
+            // "timePicker": true,
+            // "timePicker24Hour": true,
+            "autoApply": true,
             "minDate": sevenDaysAgo,
             locale: {
-                format: 'YYYY-MM-DD HH:mm'
+                // format: 'YYYY-MM-DD HH:mm'
+                format: 'YYYY-MM-DD'
             }
         }, function(start, end, label) {
             console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format(
@@ -365,7 +366,7 @@
                                                 <div class="input-group-append">
                                                     <span class="input-group-text" id="basic-addon2">From</span>
                                                 </div>
-                                                <input data-toggle="datepicker-time" type="text"
+                                                <input data-toggle="datepicker-date" type="text"
                                                     name="office_start_datetime" value="{!! old('office_start_datetime') !!}"
                                                     class="form-control @if ($errors->has('office_start_datetime')) is-invalid @endif">
                                                 @if ($errors->has('office_start_datetime'))
@@ -382,7 +383,7 @@
                                                 <div class="input-group-append">
                                                     <span class="input-group-text" id="basic-addon2">To</span>
                                                 </div>
-                                                <input data-toggle="datepicker-time" type="text"
+                                                <input data-toggle="datepicker-date" type="text"
                                                     name="office_end_datetime" value="{!! old('office_end_datetime') !!}"
                                                     class="form-control @if ($errors->has('office_end_datetime')) is-invalid @endif">
                                                 @if ($errors->has('office_end_datetime'))

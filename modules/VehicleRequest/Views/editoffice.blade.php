@@ -41,7 +41,25 @@
                 'YYYY-MM-DD') + ' (predefined range: ' + label + ')');
         });
 
+        $('[data-toggle="datepicker-date"]').daterangepicker({
+            "singleDatePicker": true,
+            "autoApply": true,
+            locale: {
+                format: 'YYYY-MM-DD'
+            }
+        });
 
+        $('[name="pickup_time"]').daterangepicker({
+            singleDatePicker: true,
+            timePicker: true,
+            timePicker24Hour: true,
+            timePickerIncrement: 1,
+            locale: {
+                format: 'HH:mm'
+            }
+        }).on('show.daterangepicker', function(ev, picker) {
+            picker.container.find(".calendar-table").hide();
+        });
 
         $('.filter-items').on('click', function() {
             var chk_box = $(this).find('.f-check-input');
@@ -109,7 +127,8 @@
                         validating: 'bi bi-arrow-repeat',
                     }),
                     startEndDate: new FormValidation.plugins.StartEndDate({
-                        format: 'YYYY-MM-DD H:i',
+                        // format: 'YYYY-MM-DD H:i',
+                        format: 'YYYY-MM-DD',
                         startDate: {
                             field: 'office_start_datetime',
                             message: 'Date From must be a valid date and earlier than Date To.',
@@ -277,10 +296,8 @@
                                                         <span class="input-group-text" id="basic-addon2">From</span>
                                                     </div>
                                                     {{-- <input name="start_date" value="{!!$vehicleRequest->start_datetime->format('Y-m-d H:i')!!}" hidden> --}}
-                                                    <input data-toggle="datepicker-time" type="text"
-                                                        name="office_start_datetime" value="{!! old('office_start_datetime')
-                                                            ? old('office_start_datetime')
-                                                            : $vehicleRequest->start_datetime->format('YYYY-mm-dd H:i') !!}"
+                                                    <input data-toggle="datepicker-date" name="office_start_datetime"
+                                                        value="{{ old('office_start_datetime') ?: $vehicleRequest->start_datetime->format('Y-m-d') }}"
                                                         class="form-control @if ($errors->has('office_start_datetime')) is-invalid @endif">
                                                     @if ($errors->has('office_start_datetime'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
@@ -299,8 +316,8 @@
                                                     <div class="input-group-append">
                                                         <span class="input-group-text" id="basic-addon2">To</span>
                                                     </div>
-                                                    <input data-toggle="datepicker-time2" type="text"
-                                                        name="office_end_datetime" value="{!! old('office_end_datetime') ? old('office_end_datetime') : $vehicleRequest->end_datetime->format('Y-m-d H:i') !!}"
+                                                    <input data-toggle="datepicker-date" name="office_end_datetime"
+                                                        value="{{ old('office_end_datetime') ?: $vehicleRequest->end_datetime->format('Y-m-d') }}"
                                                         class="form-control @if ($errors->has('office_end_datetime')) is-invalid @endif">
                                                     @if ($errors->has('office_end_datetime'))
                                                         <div class="fv-plugins-message-container invalid-feedback">
@@ -365,6 +382,39 @@
                                                         name="destination" placeholder="Destination Point"
                                                         value="{{ old('destination') ?: $vehicleRequest->destination }}"
                                                         aria-label="Destination Point" aria-describedby="basic-addon2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-lg-3">
+                                        <div class="d-flex align-items-start h-100">
+                                            <label class="form-label">Pick Up </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-9">
+                                        <div class="row">
+                                            <div class="col-lg-6 mb-2">
+                                                <div class="input-group">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="basic-addon2">Time</span>
+                                                    </div>
+                                                    <input type="text" class="form-control" name="pickup_time"
+                                                        value="{{ old('pickup_time') ?: $vehicleRequest->pickup_time }}"
+                                                        readonly aria-label="Pick Up time"
+                                                        aria-describedby="basic-addon2">
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 mb-2">
+                                                <div class="input-group has-validation">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text" id="basic-addon2">Location</span>
+                                                    </div>
+                                                    <input type="text" class="form-control fv-plugins-icon-input"
+                                                        name="pickup_place" placeholder="Pick Up Location"
+                                                        value="{{ old('pickup_place') ?: $vehicleRequest->pickup_place }}"
+                                                        aria-label="Pick Up Location" aria-describedby="basic-addon2">
                                                 </div>
                                             </div>
                                         </div>

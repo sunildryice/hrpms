@@ -4,8 +4,8 @@
             <th colspan="10" style="text-align: center;">Stock Book Report (Distribution)</th>
         </tr>
         <tr>
-            <th colspan="17" style="text-align: center;">IN</th>
-            <th colspan="15" style="text-align: center;">OUT</th>
+            <th colspan="13" style="text-align: center;">IN</th>
+            <th colspan="11" style="text-align: center;">OUT</th>
             <th rowspan="2">Balance Quantity</th>
             <th rowspan="2">Balance Amount</th>
         </tr>
@@ -22,12 +22,12 @@
             <th>Amount</th>
             <th>VAT Amount</th>
             <th>Total Amount with VAT</th>
-            <th>GRN No.</th>
+            {{-- <th>GRN No.</th> --}}
             <th>Purchased Date</th>
             <th>Execution Type</th>
-            <th>Account Code</th>
+            {{-- <th>Account Code</th>
             <th>Activity Code</th>
-            <th>Donor Code</th>
+            <th>Donor Code</th> --}}
             <th>Goods Source/Vendor</th>
 
 
@@ -40,10 +40,10 @@
             <th>Location</th>
             <th>Health Facility</th>
             <th>Project</th>
-            <th>Account Code</th>
+            {{-- <th>Account Code</th>
             <th>Activity Code</th>
             <th>Donor Code</th>
-            <th>GRN No.</th>
+            <th>GRN No.</th> --}}
             <th>Stock Requisition No.</th>
             <th>Issued Date</th>
         </tr>
@@ -67,12 +67,12 @@
                 <td>{{ $inventoryItem->getTotalPrice() }}</td>
                 <td>{{ $inventoryItem->getVatAmount() }}</td>
                 <td>{{ $inventoryItem->total_price + $inventoryItem->vat_amount }}</td>
-                <td>{{ $inventoryItem->grn->getGrnNumber() }}</td>
+                {{-- <td>{{ $inventoryItem->grn->getGrnNumber() }}</td> --}}
                 <td>{{ $inventoryItem->getPurchaseDate() }}</td>
                 <td>{{ $inventoryItem->getExecutionType() }}</td>
-                <td>{{ $inventoryItem->accountCode->getAccountCode() }}</td>
+                {{-- <td>{{ $inventoryItem->accountCode->getAccountCode() }}</td>
                 <td>{{ $inventoryItem->activityCode->getActivityCode() }}</td>
-                <td>{{ $inventoryItem->donorCode->getDonorCode() }}</td>
+                <td>{{ $inventoryItem->donorCode->getDonorCode() }}</td> --}}
                 <td>{{ $inventoryItem->getSupplierName() }}</td>
 
                 @php
@@ -126,10 +126,10 @@
                     <td>{{ $location }}</td>
                     <td>{{ $healthFacility }}</td>
                     <td>{{ $project }}</td>
-                    <td>{{ $accountCode }}</td>
+                    {{-- <td>{{ $accountCode }}</td>
                     <td>{{ $activityCode }}</td>
                     <td>{{ $donorCode }}</td>
-                    <td>{{ $grnNumber }}</td>
+                    <td>{{ $grnNumber }}</td> --}}
                     <td>{{ $inventoryItem->quantity - $usedQuantity }}</td>
                     <td>{{ $inventoryItem->unit_price * ($inventoryItem->quantity - $usedQuantity) }}</td>
                     <td>{{ $stockRequisitionNumber }}</td>

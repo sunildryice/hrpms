@@ -3,22 +3,21 @@
 namespace Modules\VehicleRequest\Models;
 
 use App\Traits\ModelEventLogger;
-use Modules\Master\Models\Office;
-
-use Modules\Master\Models\Status;
-use Modules\Master\Models\Vehicle;
-use Modules\Privilege\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Modules\Employee\Models\Employee;
+use Modules\Master\Models\AccountCode;
+use Modules\Master\Models\ActivityCode;
 use Modules\Master\Models\District;
 use Modules\Master\Models\DonorCode;
-use Modules\Employee\Models\Employee;
 use Modules\Master\Models\FiscalYear;
-use Modules\Master\Models\AccountCode;
-use Modules\Master\Models\ProjectCode;
-use Modules\Master\Models\VehicleType;
-use Illuminate\Database\Eloquent\Model;
-use Modules\Master\Models\ActivityCode;
+use Modules\Master\Models\Office;
+use Modules\Master\Models\Status;
+use Modules\Master\Models\Vehicle;
 use Modules\Master\Models\VehicleRequestType;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Master\Models\VehicleType;
+use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
 
 class VehicleRequest extends Model
 {
@@ -112,14 +111,14 @@ class VehicleRequest extends Model
     /**
      * Get the projectCode of the vehicle request.
      */
-    public function projectCode()
+    public function project()
     {
-        return $this->belongsTo(ProjectCode::class, 'project_code_id')->withDefault();
+        return $this->belongsTo(Project::class, 'project_code_id')->withDefault();
     }
 
-    public function getProjectCode()
+    public function getProjectName()
     {
-        return $this->projectCode->getProjectCodeWithDescription();
+        return $this->project->title ?? $this->project->short_name ?? '';
     }
     /**
      * Get the approver of the vehicle request.
@@ -274,7 +273,7 @@ class VehicleRequest extends Model
 
     public function getDifferenceInDays()
     {
-        return ($this->end_datetime && $this->start_datetime) ? $this->end_datetime->diffInDays($this->start_datetime) + 1 : 1;
+        return ($this->end_datetime && $this->start_datetime) ? (int) $this->end_datetime->diffInDays($this->start_datetime, true) + 1 : 1;
     }
 
     public function getDistricts()
@@ -290,7 +289,8 @@ class VehicleRequest extends Model
 
     public function getEndDatetime()
     {
-        return $this->end_datetime?->format('j M, Y g:i A');
+        // return $this->end_datetime?->format('j M, Y g:i A');
+        return $this->end_datetime?->format('j M, Y');
     }
 
     public function getOfficeName()
@@ -320,7 +320,8 @@ class VehicleRequest extends Model
 
     public function getStartDatetime()
     {
-        return $this->start_datetime?->format('j M, Y g:i A');
+        // return $this->start_datetime?->format('j M, Y g:i A');
+        return $this->start_datetime?->format('j M, Y');
     }
 
     public function getVehicleRequestNumber()
@@ -370,7 +371,7 @@ class VehicleRequest extends Model
 
     public function getOvernights()
     {
-        return ($this->end_datetime && $this->start_datetime) ? $this->end_datetime->diffInDays($this->start_datetime) : 0;
+        return ($this->end_datetime && $this->start_datetime) ? $this->end_datetime->diffInDays($this->start_datetime, true) : 0;
     }
 
     public function getFor()

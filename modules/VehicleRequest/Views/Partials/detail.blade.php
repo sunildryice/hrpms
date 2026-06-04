@@ -4,7 +4,7 @@
             <div class="d-flex align-items-start gap-2" rel="tooltip" title="Project">
                 <i class="bi-dash-square dropdown-item-icon"></i>
                 <span class="fw-bold col-auto"> Project :</span>
-                <span>{{ $vehicleRequest->getProjectCode() }}</span>
+                <span>{{ $vehicleRequest->getProjectName() }}</span>
             </div>
         </div>
         <div class="col-lg-6 mb-2">
@@ -45,7 +45,8 @@
             <div class="col-lg-6 mb-2">
                 <div class="d-flex align-items-start gap-2" rel="tooltip" title="Travel Duration">
                     <i class="bi-calendar-range"></i><span class="fw-bold col-auto"> Travel Duration :</span>
-                    <span> {{ $vehicleRequest->start_datetime }} - {{ $vehicleRequest->end_datetime }}
+                    <span> {{ $vehicleRequest->start_datetime?->format('Y-m-d') }} -
+                        {{ $vehicleRequest->end_datetime?->format('Y-m-d') }}
                         <span class="badge bg-primary">{{ $vehicleRequest->getDifferenceInDays() }} days</span>
                     </span>
                 </div>
@@ -54,6 +55,20 @@
                 <div class="d-flex align-items-start gap-2" rel="tooltip" title="Travel Locations">
                     <i class="bi-pin-map"></i><span class="fw-bold col-auto"> Travel Locations :</span>
                     <span>{{ $vehicleRequest->travel_from }} - {{ $vehicleRequest->destination }}</span>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-2">
+                <div class="d-flex align-items-start gap-2" rel="tooltip" title="Pickup Time">
+                    <i class="bi-clock"></i>
+                    <span class="fw-bold col-auto"> Pickup Time :</span>
+                    <span>{{ $vehicleRequest->pickup_time }}</span>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-2">
+                <div class="d-flex align-items-start gap-2" rel="tooltip" title="Pickup Location">
+                    <i class="bi-pin-map"></i>
+                    <span class="fw-bold col-auto"> Pickup Location :</span>
+                    <span>{{ $vehicleRequest->pickup_place }}</span>
                 </div>
             </div>
             @if ($vehicleRequest->status_id == config('constant.ASSIGNED_STATUS'))

@@ -113,18 +113,18 @@ class StockBookOfficeUseExport implements FromView, Responsable, ShouldAutoSize,
             'goodRequestItems.goodRequest.requester',
             'goodRequestItems.goodRequest.office',
             'goodRequestItems.goodRequest.logs',
-            'grn',
-            'grn.fiscalYear',
-            'grn.createdBy',
+            // 'grn',
+            // 'grn.fiscalYear',
+            // 'grn.createdBy',
             'executionType',
-            'distributionRequestItems' => function ($q) {
-                $q->whereHas('distributionRequest', function ($q) {
-                    $q->where('status_id', config('constant.APPROVED_STATUS'));
-                });
-            },
-            'distributionRequestItems.distributionRequest',
-            'distributionRequestItems.distributionRequest.fiscalYear',
-            'distributionRequestItems.inventoryItem.grn.fiscalYear',
+            // 'distributionRequestItems' => function ($q) {
+            //     $q->whereHas('distributionRequest', function ($q) {
+            //         $q->where('status_id', config('constant.APPROVED_STATUS'));
+            //     });
+            // },
+            // 'distributionRequestItems.distributionRequest',
+            // 'distributionRequestItems.distributionRequest.fiscalYear',
+            // 'distributionRequestItems.inventoryItem.grn.fiscalYear',
             'distributionType',
             'item',
             'item.category',

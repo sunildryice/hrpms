@@ -204,8 +204,10 @@ class VehicleRequestController extends Controller
             ->first();
         $vehicleType = 'hire-vehicle';
         if ($inputs['vehicle_request_type_id'] == 1) {
-            $inputs['start_datetime'] = $inputs['office_start_datetime'];
-            $inputs['end_datetime'] = $inputs['office_end_datetime'];
+            // $inputs['start_datetime'] = $inputs['office_start_datetime'];
+            // $inputs['end_datetime'] = $inputs['office_end_datetime'];
+            $inputs['start_datetime'] = $inputs['office_start_datetime'] . ' 00:00:00';
+            $inputs['end_datetime'] = $inputs['office_end_datetime'] . ' 00:00:00';
         }
         $inputs['employee_ids'] = json_encode($request->employee_ids ? $request->employee_ids : []);
         $inputs['district_ids'] = json_encode($request->district_ids ? $request->district_ids : []);
@@ -293,8 +295,10 @@ class VehicleRequestController extends Controller
         $this->authorize('update', $vehicleRequest);
         $inputs = $request->validated();
         if ($vehicleRequest->vehicle_request_type_id == 1) {
-            $inputs['start_datetime'] = $inputs['office_start_datetime'];
-            $inputs['end_datetime'] = $inputs['office_end_datetime'];
+            // $inputs['start_datetime'] = $inputs['office_start_datetime'];
+            // $inputs['end_datetime'] = $inputs['office_end_datetime'];
+            $inputs['start_datetime'] = $inputs['office_start_datetime'] . ' 00:00:00';
+            $inputs['end_datetime'] = $inputs['office_end_datetime'] . ' 00:00:00';
             $vehicleType = 'office-vehicle';
         }
         $inputs['employee_ids'] = json_encode($request->employee_ids ? $request->employee_ids : []);

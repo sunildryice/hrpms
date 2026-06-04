@@ -239,8 +239,8 @@
                     <table class="table table-responsive table-bordered" id="stockBookTable">
                         <thead>
                             <tr>
-                                <th colspan="18" style="text-align: center;">IN</th>
-                                <th colspan="16" style="text-align: center;">OUT</th>
+                                <th colspan="15" style="text-align: center;">IN</th>
+                                <th colspan="11" style="text-align: center;">OUT</th>
                                 <th rowspan="2">Balance Quantity</th>
                                 <th rowspan="2">Balance Amount</th>
                                 <th rowspan="2">Issued Date</th>
@@ -258,12 +258,12 @@
                                 <th>Amount</th>
                                 <th>VAT Amount</th>
                                 <th>Total Amount with VAT</th>
-                                <th>GRN No.</th>
+                                {{-- <th>GRN No.</th> --}}
                                 <th>Purchased Date</th>
                                 <th>Execution Type</th>
-                                <th>Account Code</th>
+                                {{-- <th>Account Code</th>
                                 <th>Activity Code</th>
-                                <th>Donor Code</th>
+                                <th>Donor Code</th> --}}
                                 <th>Goods Source/Vendor</th>
 
 
@@ -277,10 +277,10 @@
                                 <th>Location</th>
                                 <th>Health Facility</th>
                                 <th>Project</th>
-                                <th>Account Code</th>
+                                {{-- <th>Account Code</th>
                                 <th>Activity Code</th>
                                 <th>Donor Code</th>
-                                <th>GRN No.</th>
+                                <th>GRN No.</th> --}}
                                 <th>Stock Requisition No.</th>
                             </tr>
                         </thead>
@@ -306,16 +306,16 @@
                                     <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getVatAmount() }}</td>
                                     <td rowspan="{{ $rowCount }}">
                                         {{ $inventoryItem->total_price + $inventoryItem->vat_amount }}</td>
-                                    <td rowspan="{{ $rowCount }}">{{ $inventoryItem->grn->getGrnNumber() }}</td>
+                                    {{-- <td rowspan="{{ $rowCount }}">{{ $inventoryItem->grn->getGrnNumber() }}</td> --}}
                                     <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getPurchaseDate() }}</td>
                                     <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getExecutionType() }}</td>
-                                    <td rowspan="{{ $rowCount }}">{{ $inventoryItem->accountCode->getAccountCode() }}
+                                    {{-- <td rowspan="{{ $rowCount }}">{{ $inventoryItem->accountCode->getAccountCode() }}
                                     </td>
                                     <td rowspan="{{ $rowCount }}">
                                         {{ $inventoryItem->activityCode->getActivityCode() }}</td>
                                     <td rowspan="{{ $rowCount }}">
                                         {{ $inventoryItem->donorCode->getDonorCodeWithDescription() }}
-                                    </td>
+                                    </td> --}}
                                     <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getSupplierName() }}</td>
 
 
@@ -334,10 +334,10 @@
                             <td>{{ $item->get('location') }}</td>
                             <td>{{ $item->get('health_facility') }}</td>
                             <td>{{ $item->get('project') }}</td>
-                            <td>{{ $item->get('account_code') }}</td>
+                            {{-- <td>{{ $item->get('account_code') }}</td>
                             <td>{{ $item->get('activity_code') }}</td>
                             <td>{{ $item->get('donor_code') }}</td>
-                            <td>{{ $item->get('grn_number') }}</td>
+                            <td>{{ $item->get('grn_number') }}</td> --}}
                             <td>{{ $item->get('stock_requisition_number') }}</td>
                             <td>{{ $inventoryItem->quantity - $inventoryItem->assigned_quantity }}</td>
                             <td>{{ $inventoryItem->unit_price * ($inventoryItem->quantity - $inventoryItem->assigned_quantity) }} </td>
@@ -361,10 +361,10 @@
                             <td></td>
                             <td></td>
                             <td></td>
+                            {{-- <td></td>
                             <td></td>
                             <td></td>
-                            <td></td>
-                            <td></td>
+                            <td></td> --}}
                             @endif
                             </tr>
                             @endforeach

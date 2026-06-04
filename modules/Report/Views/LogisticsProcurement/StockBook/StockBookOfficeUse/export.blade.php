@@ -4,8 +4,8 @@
             <th colspan="10" style="text-align: center;">Stock Book Report (Office Use)</th>
         </tr>
         <tr>
-            <th colspan="20" style="text-align: center;">IN</th>
-            <th colspan="9" style="text-align: center;">OUT</th>
+            <th colspan="14" style="text-align: center;">IN</th>
+            <th colspan="8" style="text-align: center;">OUT</th>
             <th rowspan="2">Balance Quantity</th>
             <th rowspan="2">Balance Amount</th>
         </tr>
@@ -20,16 +20,16 @@
             <th>Purchased Quantity</th>
             <th>Rate</th>
             <th>Amount</th>
-            <th>Discount</th>
-            <th>Amount after Discount</th>
+            {{-- <th>Discount</th> --}}
+            {{-- <th>Amount after Discount</th> --}}
             <th>VAT Amount</th>
             <th>Total Amount with VAT</th>
-            <th>GRN No.</th>
+            {{-- <th>GRN No.</th> --}}
             <th>Purchased Date</th>
             <th>Execution Type</th>
-            <th>Account Code</th>
+            {{-- <th>Account Code</th>
             <th>Activity Code</th>
-            <th>Donor Code</th>
+            <th>Donor Code</th> --}}
             <th>Goods Source/Vendor</th>
 
 
@@ -39,7 +39,7 @@
             <th>VAT</th>
             <th>Total Amount</th>
             <th>Location</th>
-            <th>GRN No.</th>
+            {{-- <th>GRN No.</th> --}}
             <th>Stock Requisition No.</th>
             <th>Handover Date</th>
             <th>Issued Date</th>
@@ -70,16 +70,16 @@
                 <td>{{ $inventoryItem->quantity }}</td>
                 <td>{{ $inventoryItem->getUnitPrice() }}</td>
                 <td>{{ $inventoryItem->getTotalPrice() }}</td>
-                <td>{{ $inventoryItem->getDiscountAmount() }}</td>
-                <td>{{ $inventoryItem->getTotalAmountAfterDiscount() }}</td>
+                {{-- <td>{{ $inventoryItem->getDiscountAmount() }}</td> --}}
+                {{-- <td>{{ $inventoryItem->getTotalAmountAfterDiscount() }}</td> --}}
                 <td>{{ $inventoryItem->getVatAmount() }}</td>
                 <td>{{ $inventoryItem->total_price + $inventoryItem->vat_amount }}</td>
-                <td>{{ $inventoryItem->grn->getGrnNumber() }}</td>
+                {{-- <td>{{ $inventoryItem->grn->getGrnNumber() }}</td> --}}
                 <td>{{ $inventoryItem->getPurchaseDate() }}</td>
                 <td>{{ $inventoryItem->getExecutionType() }}</td>
-                <td>{{ $inventoryItem->accountCode->getAccountCode() }}</td>
+                {{-- <td>{{ $inventoryItem->accountCode->getAccountCode() }}</td>
                 <td>{{ $inventoryItem->activityCode->getActivityCode() }}</td>
-                <td>{{ $inventoryItem->donorCode->getDescription() }}</td>
+                <td>{{ $inventoryItem->donorCode->getDescription() }}</td> --}}
                 <td>{{ $inventoryItem->getSupplierName() }}</td>
 
                 @php
@@ -132,7 +132,7 @@
                     <td>{{ $outVat }}</td>
                     <td>{{ $usedQuantity * $item->get('rate') + $outVat }}</td>
                     <td>{{ $location }}</td>
-                    <td>{{ $grnNumber }}</td>
+                    {{-- <td>{{ $grnNumber }}</td> --}}
                     <td>{{ $stockRequisitionNumber }}</td>
                     <td>{{ $inventoryItem->quantity - $usedQuantity }}</td> <!-- balance qty-->
                     <td>{{ $inventoryItem->unit_price * ($inventoryItem->quantity - $usedQuantity) }}</td>
@@ -146,9 +146,9 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td></td>
                     <td>{{ $inventoryItem->quantity - $assignedQuantity }}</td>
                     <td>{{ $inventoryItem->unit_price * ($inventoryItem->quantity - $assignedQuantity) }}</td>
+                    <td></td>
                     <td></td>
                 @endif
             </tr>

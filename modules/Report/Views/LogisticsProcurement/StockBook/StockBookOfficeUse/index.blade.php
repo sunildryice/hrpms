@@ -223,10 +223,10 @@
                     <table class="table table-responsive table-bordered" id="stockBookTable">
                         <thead>
                         <tr>
-                            <th colspan="19" style="text-align: center;">IN</th>
+                            <th colspan="15" style="text-align: center;">IN</th>
                             <th rowspan="2">Balance Quantity</th>
                             <th rowspan="2">Balance Amount</th>
-                            <th colspan="12" style="text-align: center;">OUT</th>
+                            <th colspan="11" style="text-align: center;">OUT</th>
                         </tr>
                         <tr>
                             <th>{{ __('label.sn') }}</th>
@@ -241,13 +241,14 @@
                             <th>Amount</th>
                             <th>VAT Amount</th>
                             <th>Total Amount with VAT</th>
-                            <th>GRN No.</th>
+                            {{-- <th>GRN No.</th> --}}
                             <th>Purchased Date</th>
                             <th>Execution Type</th>
-                            <th>Account Code</th>
+                            {{-- <th>Account Code</th>
                             <th>Activity Code</th>
-                            <th>Donor Code</th>
+                            <th>Donor Code</th> --}}
                             <th>Goods Source/Vendor</th>
+                            
                             <th>{{ __('label.sn') }}</th>
                             <th>Used Quantity</th>
                             <th>Rate</th>
@@ -256,7 +257,7 @@
                             <th>Total Amount</th>
                             <th>Received By</th>
                             <th>Location</th>
-                            <th>GRN No.</th>
+                            {{-- <th>GRN No.</th> --}}
                             <th>Stock Requisition No.</th>
                             <th>Handover Date</th>
                             <th>Issued Date</th>
@@ -288,15 +289,15 @@
                                 <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getVatAmount() }}</td>
                                 <td rowspan="{{ $rowCount }}">
                                     {{ $inventoryItem->total_price + $inventoryItem->vat_amount }}</td>
-                                <td rowspan="{{ $rowCount }}">{{ $inventoryItem->grn->getGrnNumber() }}</td>
+                                {{-- <td rowspan="{{ $rowCount }}">{{ $inventoryItem->grn->getGrnNumber() }}</td> --}}
                                 <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getPurchaseDate() }}</td>
                                 <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getExecutionType() }}</td>
-                                <td rowspan="{{ $rowCount }}">{{ $inventoryItem->accountCode->getAccountCode() }}
+                                {{-- <td rowspan="{{ $rowCount }}">{{ $inventoryItem->accountCode->getAccountCode() }}
                                 </td>
                                 <td rowspan="{{ $rowCount }}">
                                     {{ $inventoryItem->activityCode->getActivityCode() }}</td>
                                 <td rowspan="{{ $rowCount }}">
-                                    {{ $inventoryItem->donorCode->getDonorCodeWithDescription() }}</td>
+                                    {{ $inventoryItem->donorCode->getDonorCodeWithDescription() }}</td> --}}
                                 <td rowspan="{{ $rowCount }}">{{ $inventoryItem->getSupplierName() }}</td>
 
                                 <td rowspan="{{ $rowCount }}">{{ $inventoryItem->quantity - $usedQuantity }}</td> <!-- balance quenaity -->
@@ -315,7 +316,7 @@
                                             {{-- <td>{{ $item->get('office_code') }}</td> --}}
                                             <td>{{ $inventoryItem->grn?->createdBy?->getFullName() }}</td>
                                             <td>{{ $item->get('location') }}</td>
-                                            <td>{{ $item->get('grn_number') }}</td>
+                                            {{-- <td>{{ $item->get('grn_number') }}</td> --}}
                                             <td>{{ $item->get('stock_requisition_number') }}</td>
                                             <td>{{ $item->get('handover_date') }}</td>
                                             <td>{{ $item->get('issued_date') }}</td>
@@ -324,7 +325,7 @@
                                     @endif
                                 @endforeach
                             @else
-                                <td colspan="12"></td>
+                                <td colspan="11"></td>
                             @endif
                         @endforeach
                         </tbody>

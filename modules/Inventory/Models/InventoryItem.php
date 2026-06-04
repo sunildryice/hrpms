@@ -153,15 +153,15 @@ class InventoryItem extends Model
         return $this->belongsTo(Execution::class, 'execution_id')->withDefault();
     }
 
-    public function getDiscountAmount()
-    {
-        return $this->grn->discount_amount;
-    }
+    // public function getDiscountAmount()
+    // {
+    //     return $this->grn->discount_amount;
+    // }
 
-    public function getTotalAmountAfterDiscount()
-    {
-        return $this->getTotalPrice() - $this->getDiscountAmount();
-    }
+    // public function getTotalAmountAfterDiscount()
+    // {
+    //     return $this->getTotalPrice() - $this->getDiscountAmount();
+    // }
 
     /**
      * Get the item of the inventory item.
@@ -194,14 +194,14 @@ class InventoryItem extends Model
                 });
             })->get();
         }
-        if ($this->relationLoaded('distributionRequestItems')) {
-            $distributionRequestItems = $this->distributionRequestItems;
-        } else {
-            $distributionRequestItems = $this->distributionRequestItems()->whereHas('distributionRequest', function ($q) {
-                $q->where('status_id', config('constant.APPROVED_STATUS'));
-            })->get();
-        }
-        $items = $goodRequestItems->merge($distributionRequestItems);
+        // if ($this->relationLoaded('distributionRequestItems')) {
+        //     $distributionRequestItems = $this->distributionRequestItems;
+        // } else {
+        //     $distributionRequestItems = $this->distributionRequestItems()->whereHas('distributionRequest', function ($q) {
+        //         $q->where('status_id', config('constant.APPROVED_STATUS'));
+        //     })->get();
+        // }
+        $items = $goodRequestItems;
         $collection = collect();
 
         if ($items->isNotEmpty()) {

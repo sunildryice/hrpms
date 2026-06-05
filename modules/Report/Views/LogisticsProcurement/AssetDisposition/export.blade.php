@@ -17,13 +17,13 @@
             <th>Price</th>
             <th>Purchasing Date</th>
             <th>Execution</th>
-            <th>Voucher Number</th>
+            {{-- <th>Voucher Number</th> --}}
             <th>Staff Name</th>
             <th>Designation</th>
             <th>Location</th>
             <th>District Code</th>
             <th>Condition</th>
-            <th>Room Number</th>
+            {{-- <th>Room Number</th> --}}
             <th>Vendors</th>
             <th>Remarks</th>
         </tr>
@@ -45,13 +45,13 @@
                 <td>{{ $asset->getPrice() }}</td>
                 <td>{{ $asset->getPurchaseDate() }}</td>
                 <td></td>
-                <td></td>
+                {{-- <td></td> --}}
                 <td>{{ $asset->getAssignedUserName() }}</td>
                 <td>{{ $asset->getAssignedUserDesignation() }}</td>
                 <td>{{ $asset->getAssignedUserOfficeLocation() }}</td>
                 <td>{{ $asset->getAssignedUserOfficeDistrict() }}</td>
                 <td>{{ $asset->getAssetCondition() }}</td>
-                <td></td>
+                {{-- <td></td> --}}
                 <td>{{ $asset->inventoryItem->getSupplierName() }}</td>
                 <td></td>
             </tr>

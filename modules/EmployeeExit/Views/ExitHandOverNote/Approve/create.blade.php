@@ -17,7 +17,7 @@
                 {data: 'project', name: 'project'},
                 {data: 'action_needed', name: 'action_needed'},
                 {data: 'partners', name: 'partners'},
-                {data: 'budget', name: 'budget'},
+                // {data: 'budget', name: 'budget'},
                 {data: 'critical_issues', name: 'critical_issues'},
                 {data: 'project_status', name: 'project_status'},
                  @if($authUser->can('update', $exitHandOverNote))
@@ -35,9 +35,9 @@
             bInfo: false,
             columns: [
                 {data: 'activity', name: 'activity'},
-                {data: 'organization', name: 'organization'},
-                {data: 'phone', name: 'phone'},
-                {data: 'email', name: 'email'},
+                // {data: 'organization', name: 'organization'},
+                // {data: 'phone', name: 'phone'},
+                // {data: 'email', name: 'email'},
                 {data: 'comments', name: 'comments'},
                  @if($authUser->can('update', $exitHandOverNote))
                 {data: 'action', name: 'action', orderable: false, searchable: false},
@@ -134,7 +134,7 @@
                                     <textarea rows="3" class="form-control" readonly>{{ $exitHandOverNote->duty_description }}</textarea>
                                     </div>
                             </div>
-                            <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                                 <div class="col-lg-3">
                                     <label for=""> Reporting procedures</label>
                                 </div>
@@ -152,9 +152,9 @@
                                 <div class="col-lg-9 ">
                                     <textarea rows="3" class="form-control" readonly>{{ $exitHandOverNote->meeting_description }}</textarea>
                                 </div>
-                                </div>
+                                </div> --}}
 
-                                <div class="row mb-3">
+                            <div class="row mb-3">
                                 <div class="col-lg-3">
                                     <label for=""> Contact After Exit </label>
                                 </div>
@@ -174,7 +174,7 @@
                                         <th class="">Name of project</th>
                                         <th>Action needed</th>
                                         <th>Partners</th>
-                                        <th>Budget</th>
+                                        {{-- <th>Budget</th> --}}
                                         <th>Critical issues</th>
                                         <th>Status</th>
                                             @if($authUser->can('update', $exitHandOverNote))
@@ -195,9 +195,9 @@
 
                                         <!-- <th style="width:45px;"></th> -->
                                         <th class="">Name</th>
-                                        <th>Organization</th>
+                                        {{-- <th>Organization</th>
                                         <th>Phone</th>
-                                        <th>Email</th>
+                                        <th>Email</th> --}}
                                         <th>Comments</th>
                                             @if($authUser->can('update', $exitHandOverNote))
                                         <th style="width: 130px;">Action</th>

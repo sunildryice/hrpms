@@ -107,14 +107,14 @@
                         <th>Brief Description of Duties:</th>
                         <td colspan="3">{{ $handOverNote->duty_description }}</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th>Reporting Procedure:</th>
                         <td colspan="3">{{ $handOverNote->reporting_procedures }} </td>
                     </tr>
                     <tr>
                         <th>Meeting Description:</th>
                         <td colspan="3">{{ $handOverNote->meeting_description }}</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <th>Contact After Exit:</th>
                         <td colspan="3">{{ $handOverNote->contact_after_exit }}</td>
@@ -130,17 +130,17 @@
                             <th scope="row" class="col-md-2">Name of Project</th>
                             <th scope="row">Action Needed</th>
                             <th scope="row">Partners</th>
-                            <th scope="row">Budget</th>
+                            {{-- <th scope="row">Budget</th> --}}
                             <th scope="row">Critical Issues</th>
                             <th scope="row">Status</th>
 
                         </tr>
                         @foreach ($handOverNote->handOverProjects as $project)
                             <tr>
-                                <td>{{ $project->getProjectCode() }}</td>
+                                <td>{{ $project->project }}</td>
                                 <td>{{ $project->action_needed }}</td>
                                 <td>{{ $project->partners }}</td>
-                                <td>{{ $project->budget }}</td>
+                                {{-- <td>{{ $project->budget }}</td> --}}
                                 <td>{{ $project->critical_issues }}</td>
                                 <td>{{ $project->project_status }}</td>
 
@@ -157,17 +157,17 @@
                     <tbody>
                         <tr>
                             <th scope="row"class="col-md-3">Name</th>
-                            <th scope="row">Organization</th>
+                            {{-- <th scope="row">Organization</th>
                             <th scope="row">Phone</th>
-                            <th scope="row">Email</th>
+                            <th scope="row">Email</th> --}}
                             <th scope="row" class="col-md-4">Comments</th>
                         </tr>
                         @foreach ($handOverNote->handoverActivities as $activity)
                             <tr>
-                                <td>{{ $activity->getActivityCode() }}</td>
-                                <td>{{ $activity->organization }}</td>
+                                <td>{{ $activity->activity }}</td>
+                                {{-- <td>{{ $activity->organization }}</td>
                                 <td>{{ $activity->phone }}</td>
-                                <td>{{ $activity->email }}</td>
+                                <td>{{ $activity->email }}</td> --}}
                                 <td>{{ $activity->comments }}</td>
                             </tr>
                         @endforeach

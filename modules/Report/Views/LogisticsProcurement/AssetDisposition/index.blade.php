@@ -181,7 +181,7 @@
                                 <th>Coding (Item Code)</th>
                                 <th>Item Category</th>
                                 <th>Asset Code</th>
-                                <th>Old Asset Code</th>
+                                {{-- <th>Old Asset Code</th> --}}
                                 <th>Disposition Type</th>
                                 <th>Disposed Date</th>
                                 <th>Disposed By</th>
@@ -191,16 +191,16 @@
                                 <th>Price (with VAT)</th>
                                 <th>Purchasing Date</th>
                                 <th>Execution</th>
-                                <th>Voucher Number</th>
+                                {{-- <th>Voucher Number</th>
                                 <th>Account Code</th>
                                 <th>Activity Code</th>
-                                <th>Donor Code</th>
+                                <th>Donor Code</th> --}}
                                 <th>Staff Name</th>
                                 <th>Designation</th>
                                 <th>Office Code</th>
                                 <th>Issued On</th>
                                 <th>Condition</th>
-                                <th>Room Number</th>
+                                {{-- <th>Room Number</th> --}}
                                 <th>Vendors</th>
                                 <th>Remarks</th>
                             </tr>
@@ -214,7 +214,7 @@
                                     <td>{{ $asset->inventoryItem->getCategoryName() }}</td>
                                     <td>{{ $asset->getItemCode() }}</td>
                                     <td>{{ $asset->getAssetNumber() }}</td>
-                                    <td>{{ $asset->old_asset_code }}</td>
+                                    {{-- <td>{{ $asset->old_asset_code }}</td> --}}
                                     <td>{{ $asset->getDispositionType() }}</td>
                                     <td>{{ $asset->getDispositionDate() }}</td>
                                     <td>{{ $asset->getDisposedBy() }}</td>
@@ -224,16 +224,16 @@
                                     <td>{{ $asset->inventoryItem->getTotalAmount() / $asset->inventoryItem->quantity }}</td>
                                     <td>{{ $asset->getPurchaseDate() }}</td>
                                     <td>{{ $asset->inventoryItem->getExecutionType() }}</td>
-                                    <td>{{ $asset->inventoryItem->getVoucherNumber() }}</td>
+                                    {{-- <td>{{ $asset->inventoryItem->getVoucherNumber() }}</td>
                                     <td>{{ $asset->inventoryItem->accountCode->getAccountCode() }}</td>
                                     <td>{{ $asset->inventoryItem->activityCode->getActivityCode() }}</td>
-                                    <td>{{ $asset->inventoryItem->donorCode->getDonorCode() }}</td>
+                                    <td>{{ $asset->inventoryItem->donorCode->getDonorCode() }}</td> --}}
                                     <td>{{ $asset->getAssignedUserName() }}</td>
                                     <td>{{ $asset->getAssignedUserDesignation() }}</td>
                                     <td>{{ $asset->getAssignedUserOfficeCode() }}</td>
                                     <td>{{ $asset->getIssuedDate() }}</td>
                                     <td>{{ $asset->getAssetCondition() }}</td>
-                                    <td></td>
+                                    {{-- <td></td> --}}
                                     <td>{{ $asset->inventoryItem->getSupplierName() }}</td>
                                     <td>{{ $asset->remarks }}</td>
                                 </tr>

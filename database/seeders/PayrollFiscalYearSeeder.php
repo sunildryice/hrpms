@@ -32,7 +32,7 @@ class PayrollFiscalYearSeeder extends Seeder
                 'title' => '2083/84',
                 'start_date' => '2026-07-17',
                 'end_date' => '2027-07-16',
-                'activated_at' => null,
+                'activated_at' => now(),
             ]
         );
     }

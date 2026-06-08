@@ -160,7 +160,7 @@
                  var status = $select.val();
                  var prev = $select.data('prev');
 
-                 if (status === 'no_required' || status === 'partially_completed') {
+                 if (['partially_completed', 'not_started', 'no_required'].includes(status)) {
                      currentStatusElement = $select;
                      currentStatusPreviousValue = prev;
 
@@ -181,6 +181,11 @@
                          placeholder = 'Please provide a reason...';
                      } else if (status === 'partially_completed') {
                          title = 'Mark As Ongoing';
+                         labelText = 'Remarks';
+                         isRequired = false; // Optional
+                         placeholder = 'Please provide remarks...';
+                     } else if (status === 'not_started') {
+                         title = 'Mark As Not Started';
                          labelText = 'Remarks';
                          isRequired = false; // Optional
                          placeholder = 'Please provide remarks...';

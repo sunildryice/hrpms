@@ -25,8 +25,8 @@ class UpdateRequest extends FormRequest
     {
         return [
             'duty_description'=>'required',
-            'reporting_procedures'=>'required',
-            'meeting_description'=>'required',
+            // 'reporting_procedures'=>'required',
+            // 'meeting_description'=>'required',
             'contact_after_exit'=>['required','regex:/^(?:[9][7-8]\d{8}|[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,})$/'],
             'approver_id'=>'required_if:btn,submit',
             'btn'=>'required',

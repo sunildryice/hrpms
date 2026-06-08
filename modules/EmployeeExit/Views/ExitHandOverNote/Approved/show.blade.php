@@ -26,10 +26,10 @@
                     data: 'partners',
                     name: 'partners'
                 },
-                {
-                    data: 'budget',
-                    name: 'budget'
-                },
+                // {
+                //     data: 'budget',
+                //     name: 'budget'
+                // },
                 {
                     data: 'critical_issues',
                     name: 'critical_issues'
@@ -60,18 +60,18 @@
                     data: 'activity',
                     name: 'activity'
                 },
-                {
-                    data: 'organization',
-                    name: 'organization'
-                },
-                {
-                    data: 'phone',
-                    name: 'phone'
-                },
-                {
-                    data: 'email',
-                    name: 'email'
-                },
+                // {
+                //     data: 'organization',
+                //     name: 'organization'
+                // },
+                // {
+                //     data: 'phone',
+                //     name: 'phone'
+                // },
+                // {
+                //     data: 'email',
+                //     name: 'email'
+                // },
                 {
                     data: 'comments',
                     name: 'comments'
@@ -150,7 +150,7 @@
                                     <textarea rows="3" class="form-control" readonly>{{ $exitHandOverNote->duty_description }}</textarea>
                                 </div>
                             </div>
-                            <div class="row mb-3">
+                            {{-- <div class="row mb-3">
                                 <div class="col-lg-3">
                                     <label for=""> Reporting procedures</label>
                                 </div>
@@ -168,7 +168,7 @@
                                 <div class="col-lg-9 ">
                                     <textarea rows="3" class="form-control" readonly>{{ $exitHandOverNote->meeting_description }}</textarea>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="row mb-3">
                                 <div class="col-lg-3">
@@ -198,7 +198,7 @@
                                             <th class="">Name of project</th>
                                             <th>Action needed</th>
                                             <th>Partners</th>
-                                            <th>Budget</th>
+                                            {{-- <th>Budget</th> --}}
                                             <th>Critical issues</th>
                                             <th>Status</th>
                                         </tr>
@@ -216,9 +216,9 @@
 
                                             <!-- <th style="width:45px;"></th> -->
                                             <th class="">Name</th>
-                                            <th>Organization</th>
+                                            {{-- <th>Organization</th>
                                             <th>Phone</th>
-                                            <th>Email</th>
+                                            <th>Email</th> --}}
                                             <th>Comments</th>
                                         </tr>
                                     </thead>

@@ -33,7 +33,7 @@
         {{--    </div>--}}
         {{--</div>--}}
 
-         <div class="row mb-2">
+         {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label ">Organization</label>
@@ -64,7 +64,7 @@
             <div class="col-lg-9">
                <input type="email" class="form-control" name="email" value="{{$exitHandOverNoteActivity->email}}" placeholder="Email">
             </div>
-        </div>
+        </div> --}}
 
           <div class="row mb-2">
             <div class="col-lg-3">

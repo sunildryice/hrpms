@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <div class="row mb-2">
+        {{-- <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label ">Budget</label>
@@ -73,7 +73,7 @@
             <div class="col-lg-9">
                 <input type="number" class="form-control" name="budget" value="" placeholder="Budget">
             </div>
-        </div>
+        </div> --}}
 
         <div class="row mb-2">
             <div class="col-lg-3">

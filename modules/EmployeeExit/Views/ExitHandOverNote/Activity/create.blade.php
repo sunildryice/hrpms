@@ -34,7 +34,7 @@
         {{--    </div>--}}
         {{--</div>--}}
 
-        <div class="mb-2 row">
+        {{-- <div class="mb-2 row">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
                     <label for="" class="form-label ">Organization</label>
@@ -66,7 +66,7 @@
             <div class="col-lg-9">
                 <input type="email" class="form-control" name="email" value="" placeholder="Email">
             </div>
-        </div>
+        </div> --}}
 
         <div class="mb-2 row">
             <div class="col-lg-3">

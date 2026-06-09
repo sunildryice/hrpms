@@ -60,6 +60,10 @@ class WorkPlanDetailController extends Controller
                     }
 
                     $selectInput = '<select class="form-select form-select-sm work-plan-status" data-id="' . $row->id . '">';
+                    // Add placeholder option when status is not set
+                    if (is_null($row->status)) {
+                        $selectInput .= '<option value="">Select Status</option>';
+                    }
                     foreach (WorkPlanStatus::cases() as $status) {
                         $selected = $row->status === $status->value ? 'selected' : '';
                         $selectInput .= '<option value="' . $status->value . '" ' . $selected . '>' . $status->label() . '</option>';

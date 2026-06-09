@@ -53,6 +53,7 @@ class WorkPlanRepository extends Repository
             // 'project_activity_id' => $data['activity_id'],
             'plan_tasks' => $data['planned_task'],
             'status' => $data['status'] ?? 'not_started',
+            // 'status' => $data['status'] ?? null,
         ]);
 
         if (!empty($data['members'])) {

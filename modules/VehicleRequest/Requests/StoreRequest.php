@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
             // 'office_start_datetime'=>'required_if:vehicle_request_type_id,1|date_format:Y-m-d H:i',
             // 'office_end_datetime'=>'required_if:vehicle_request_type_id,1|date_format:Y-m-d H:i|after:office_start_datetime',
             'office_start_datetime' => 'required_if:vehicle_request_type_id,1|date_format:Y-m-d',
-            'office_end_datetime' => 'required_if:vehicle_request_type_id,1|date_format:Y-m-d|after:office_start_datetime',
+            'office_end_datetime' => 'required_if:vehicle_request_type_id,1|date_format:Y-m-d',
             'start_datetime' => 'required_if:vehicle_request_type_id,2|date',
             'end_datetime' => 'required_if:vehicle_request_type_id,2|date',
             // 'end_datetime'=>'required_if:vehicle_request_type_id,2|date',
@@ -63,7 +63,7 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'office_end_datetime.after' => 'To date and time should be greater than from date and time.',
+            // 'office_end_datetime.after' => 'To date and time should be greater than from date and time.',
             'office_start_datetime.required_if' => 'From date and time required.',
             'office_end_datetime.required_if' => 'To date and time required.',
             'office_id.required_if' => 'Office is required.',

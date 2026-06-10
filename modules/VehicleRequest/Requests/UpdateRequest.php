@@ -61,8 +61,8 @@ class UpdateRequest extends FormRequest
     {
         return [
             // 'office_end_datetime.after' => 'To Date and Time should be greater than from Date and Time.',
-            'office_start_datetime.required_if' => 'From Date and Time required.',
-            'office_end_datetime.required_if' => 'To Date and Time required.'
+            'office_start_datetime.required_if' => 'From Date is required.',
+            'office_end_datetime.required_if' => 'To Date is required.'
         ];
     }
 }

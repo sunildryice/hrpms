@@ -64,8 +64,8 @@ class StoreRequest extends FormRequest
     {
         return [
             // 'office_end_datetime.after' => 'To date and time should be greater than from date and time.',
-            'office_start_datetime.required_if' => 'From date and time required.',
-            'office_end_datetime.required_if' => 'To date and time required.',
+            'office_start_datetime.required_if' => 'From date is required.',
+            'office_end_datetime.required_if' => 'To date is required.',
             'office_id.required_if' => 'Office is required.',
             'vehicle_type_id.required_if' => 'Vehicle type is required.',
             'vehicle_type_ids.required_if' => 'Vehicle types is required.',

@@ -119,14 +119,14 @@
                     start_datetime: {
                         validators: {
                             notEmpty: {
-                                message: 'The start date time is required',
+                                message: 'The start date is required',
                             },
                         },
                     },
                     end_datetime: {
                         validators: {
                             notEmpty: {
-                                message: 'The end date time is required',
+                                message: 'The end date is required',
                             },
                         },
                     },

@@ -169,7 +169,7 @@ class PerformanceReviewReviewController extends Controller
         // ED Approval
         if (
             ($authUser->employee->designation_id == 9 || $authUser->can('approve-performance-review')) &&
-            $request->status_id == config('constant.APPROVED_STATUS') &&
+            // $request->status_id == config('constant.APPROVED_STATUS') &&
             $performanceReview->review_type_id == config('constant.ANNUAL_REVIEW')
         ) {
             $inputs = $request->validated();

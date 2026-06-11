@@ -64,22 +64,22 @@
 
                 let isValid = true;
 
-                $('#keyGoalTable tbody tr').each(function() {
-                    const supervisorComment = $(this).find('.description-supervisor').val().trim();
+                // $('#keyGoalTable tbody tr').each(function() {
+                //     const supervisorComment = $(this).find('.description-supervisor').val().trim();
 
-                    if (!supervisorComment) {
-                        isValid = false;
-                        $(this).addClass('table-danger');
-                    } else {
-                        $(this).removeClass('table-danger');
-                    }
-                });
+                //     if (!supervisorComment) {
+                //         isValid = false;
+                //         $(this).addClass('table-danger');
+                //     } else {
+                //         $(this).removeClass('table-danger');
+                //     }
+                // });
 
-                if (!isValid) {
-                    toastr.error('Please fill Line Manager Comments for all key goals.',
-                        'Validation Error');
-                    return;
-                }
+                // if (!isValid) {
+                //     toastr.error('Please fill Line Manager Comments for all key goals.',
+                //         'Validation Error');
+                //     return;
+                // }
 
                 // Save each row via AJAX
                 $('#keyGoalTable tbody tr').each(function() {
@@ -213,15 +213,15 @@
             });
 
             // G. Result and Comments
-            const resultVal = $('#result').val().trim();
-            const commentsVal = $('#comments').val().trim();
-            if (!resultVal || !commentsVal) {
-                isGroupGValid = false;
-                $('#result, #comments').addClass('is-invalid');
-                toastr.error('Please provide both Result and Comments (Section G) before submitting.', 'Validation Error');
-            } else {
-                $('#result, #comments').removeClass('is-invalid');
-            }
+            // const resultVal = $('#result').val().trim();
+            // const commentsVal = $('#comments').val().trim();
+            // if (!resultVal || !commentsVal) {
+            //     isGroupGValid = false;
+            //     $('#result, #comments').addClass('is-invalid');
+            //     toastr.error('Please provide both Result and Comments (Section G) before submitting.', 'Validation Error');
+            // } else {
+            //     $('#result, #comments').removeClass('is-invalid');
+            // }
 
             // I. Line Manager Overall Rating
             const lineManagerRating = $('#line_manager_overall_rating').val();
@@ -231,9 +231,9 @@
                     'Validation Error');
             }
 
-            if (!isGroupBValid) {
-                toastr.error('Please fill Line Manager Comments for all key goals (Section B).', 'Validation Error');
-            }
+            // if (!isGroupBValid) {
+            //     toastr.error('Please fill Line Manager Comments for all key goals (Section B).', 'Validation Error');
+            // }
 
             if (!isGroupBValid || !isGroupGValid || !isGroupIValid) {
                 toastr.warning('Please fill all required sections before submitting.', 'Validation Warning', {

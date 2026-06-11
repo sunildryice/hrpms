@@ -50,8 +50,12 @@
                         excluded: function(field, ele, eles) {
                             const statusId = parseInt(form.querySelector('[name="status_id"]')
                                 .value);
-                            return (field === 'assigned_vehicle_id' && statusId !== 6) || (
-                                field === 'status_id' && statusId === 6);
+                            // return (field === 'assigned_vehicle_id' && statusId !== 6) || (
+                            //     field === 'status_id' && statusId === 6);
+                            if (field === 'assigned_vehicle_id' || field === 'driver_id') {
+                                return statusId !== 6;
+                            }
+                            return false;
                         },
                     }),
                     icon: new FormValidation.plugins.Icon({

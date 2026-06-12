@@ -63,22 +63,22 @@
 
                 let isValid = true;
 
-                $('#keyGoalTable tbody tr').each(function() {
-                    const supervisorComment = $(this).find('.description-supervisor').val().trim();
+                // $('#keyGoalTable tbody tr').each(function() {
+                //     const supervisorComment = $(this).find('.description-supervisor').val().trim();
 
-                    if (!supervisorComment) {
-                        isValid = false;
-                        $(this).addClass('table-danger');
-                    } else {
-                        $(this).removeClass('table-danger');
-                    }
-                });
+                //     if (!supervisorComment) {
+                //         isValid = false;
+                //         $(this).addClass('table-danger');
+                //     } else {
+                //         $(this).removeClass('table-danger');
+                //     }
+                // });
 
-                if (!isValid) {
-                    toastr.error('Please fill Line Manager Comments for all key goals.',
-                        'Validation Error');
-                    return;
-                }
+                // if (!isValid) {
+                //     toastr.error('Please fill Line Manager Comments for all key goals.',
+                //         'Validation Error');
+                //     return;
+                // }
 
                 // Save each row via AJAX
                 $('#keyGoalTable tbody tr').each(function() {
@@ -201,15 +201,15 @@
             let isGroupIValid = true;
 
             // B. Key Goals Review
-            $('#keyGoalTable tbody tr').each(function() {
-                const supervisorComment = $(this).find('.description-supervisor').val().trim();
-                if (!supervisorComment) {
-                    isGroupBValid = false;
-                    $(this).addClass('table-danger');
-                } else {
-                    $(this).removeClass('table-danger');
-                }
-            });
+            // $('#keyGoalTable tbody tr').each(function() {
+            //     const supervisorComment = $(this).find('.description-supervisor').val().trim();
+            //     if (!supervisorComment) {
+            //         isGroupBValid = false;
+            //         $(this).addClass('table-danger');
+            //     } else {
+            //         $(this).removeClass('table-danger');
+            //     }
+            // });
 
             // G. Result and Comments
             const resultVal = $('#result').val().trim();
@@ -230,9 +230,9 @@
                     'Validation Error');
             }
 
-            if (!isGroupBValid) {
-                toastr.error('Please fill Line Manager Comments for all key goals (Section B).', 'Validation Error');
-            }
+            // if (!isGroupBValid) {
+            //     toastr.error('Please fill Line Manager Comments for all key goals (Section B).', 'Validation Error');
+            // }
 
             if (!isGroupBValid || !isGroupGValid || !isGroupIValid) {
                 toastr.warning('Please fill all required sections before submitting.', 'Validation Warning', {
@@ -683,7 +683,7 @@
                                         <option value="{{ config('constant.APPROVED_STATUS') }}"
                                             {{ old('status_id') == config('constant.APPROVED_STATUS') ? 'selected' : '' }}>
                                             Approve</option>
-                                        @if ($authUser->employee->designation_id == 9)
+                                        {{-- @if ($authUser->employee->designation_id == 9)
                                             <option value="{{ config('constant.APPROVED_STATUS') }}"
                                                 @if (old('status_id') == config('constant.APPROVED_STATUS')) selected @endif>
                                                 Approve
@@ -693,7 +693,7 @@
                                                 @if (old('status_id') == config('constant.APPROVED_STATUS')) selected @endif>
                                                 Approve
                                             </option>
-                                        @endif
+                                        @endif --}}
                                     </select>
                                     @if ($errors->has('status_id'))
                                         <div class="fv-plugins-message-container invalid-feedback">

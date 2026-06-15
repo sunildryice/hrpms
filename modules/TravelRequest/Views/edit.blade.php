@@ -18,6 +18,12 @@
                 '{{ $travelRequest->return_date ? $travelRequest->return_date->format('Y-m-d') : '' }}';
             let itineraryData = [];
 
+            // Shared URL constants (used by both saveEditBtn and saveAllItineraryBtn)
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const createUrl = '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
+            const updateUrlTemplate =
+                '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
+
             function generateDateRange(start, end) {
                 const dates = [];
                 let current = new Date(start);
@@ -313,9 +319,10 @@
                 });
             }
 
-            // Project change → reload activities
-            $projectSelect.on('change', () => {
+            // Project change → reload activities in modal AND sync bulk select
+            $projectSelect.on('change', function() {
                 loadActivitiesForProject($projectSelect.val());
+                syncBulkActivityOptions($projectSelect.val());
             });
 
             // When modal opens → load correct activities + fix dropdown position
@@ -397,8 +404,8 @@
                     const currentRow = itineraryData[index];
                     const dayId = currentRow.id;
                     let response;
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
-                        'content');
+                    // const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute(
+                    //     'content');
                     const payload = {
                         date: updatedRow.date,
                         activity_id: $('#activity_id').val() || null,
@@ -412,8 +419,8 @@
                     };
 
                     if (dayId) {
-                        const updateUrlTemplate =
-                            '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
+                        // const updateUrlTemplate =
+                        //     '{{ route('travel.requests.day-itinerary.update', [$travelRequest->id, ':dayItinerary']) }}';
                         const updateUrl = updateUrlTemplate.replace(':dayItinerary', dayId);
 
                         response = await fetch(updateUrl, {
@@ -426,8 +433,8 @@
                             body: JSON.stringify(payload)
                         });
                     } else {
-                        const createUrl =
-                            '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
+                        // const createUrl =
+                        //     '{{ route('travel.requests.day-itinerary.store', $travelRequest->id) }}';
 
                         response = await fetch(createUrl, {
                             method: 'POST',
@@ -546,6 +553,247 @@
                     return false;
                 }
             }
+
+            // ─────────────────────────────────────────────────────────────
+            // QUICK FILL: Sync bulk activity dropdown when project changes
+            // ─────────────────────────────────────────────────────────────
+            function syncBulkActivityOptions(projectId) {
+                const $bulk = $('#bulkActivitySelect');
+                if (!projectId) {
+                    $bulk.html('<option value="">Select activity to apply to all rows</option>').trigger('change');
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('timesheet.get-activities-by-project') }}',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
+                    },
+                    dataType: 'json',
+                    success: (response) => {
+                        $bulk.html('<option value="">Select activity to apply to all rows</option>');
+                        if (response?.activities?.length) {
+                            response.activities.forEach(act => {
+                                $bulk.append(
+                                    `<option value="${act.id}" data-title="${act.title}">${act.title}</option>`
+                                );
+                            });
+                        }
+                        if ($.fn.select2) $bulk.trigger('change');
+                    }
+                });
+            }
+
+            // QUICK FILL: Apply to All button
+            document.getElementById('applyToAllBtn').addEventListener('click', async function() {
+                const bulkSelect = document.getElementById('bulkActivitySelect');
+                const activityId = bulkSelect.value;
+                const activityTitle = bulkSelect.selectedOptions[0]?.dataset.title || bulkSelect
+                    .selectedOptions[0]?.text || '';
+                const plannedActivities = document.getElementById('bulkPlannedActivities').value.trim();
+
+                if (!activityId || !plannedActivities) {
+                    toastr.warning('Please select an activity and enter planned activities first.');
+                    return;
+                }
+
+                const result = await Swal.fire({
+                    title: 'Apply to which rows?',
+                    html: `Apply <strong>${activityTitle}</strong> to:`,
+                    // icon: 'question',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: 'Empty Rows Only',
+                    denyButtonText: 'Overwrite All Rows',
+                    cancelButtonText: 'Cancel',
+                    confirmButtonColor: '#0d6efd',
+                    denyButtonColor: '#fd7e14',
+                });
+
+                if (result.isDismissed) return;
+                const overwriteAll = result.isDenied;
+
+                let count = 0;
+                itineraryData.forEach(row => {
+                    if (overwriteAll || (!row.activities && !row.activity_id)) {
+                        row.activity_id = activityId;
+                        row.activity_title = activityTitle;
+                        row.activities = plannedActivities;
+                        count++;
+                    }
+                });
+
+                // renderDayItineraryRows();
+                // toastr.info(`Applied to ${count} row(s). Click "Save All" to persist.`);
+
+                renderDayItineraryRows();
+
+                if (count === 0) {
+                    toastr.warning('No rows were updated.');
+                    return;
+                }
+
+                // Auto-save immediately after applying
+                const saveBtn = document.getElementById('saveAllItineraryBtn');
+                saveBtn.disabled = true;
+                saveBtn.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+                let saved = 0,
+                    failed = 0,
+                    lastResult = null;
+
+                for (let index = 0; index < itineraryData.length; index++) {
+                    const row = itineraryData[index];
+                    if (!row.activities || !row.activity_id) continue;
+
+                    const payload = {
+                        date: row.date,
+                        activity_id: row.activity_id,
+                        planned_activities: row.activities,
+                        accommodation: row.accommodation ? 1 : 0,
+                        air_ticket: row.air_ticket ? 1 : 0,
+                        vehicle: row.vehicle ? 1 : 0,
+                        departure_place: row.from || null,
+                        arrival_place: row.to || null,
+                        departure_time: row.departure_time || null,
+                    };
+
+                    try {
+                        const url = row.id ?
+                            updateUrlTemplate.replace(':dayItinerary', row.id) :
+                            createUrl;
+
+                        const response = await fetch(url, {
+                            method: row.id ? 'PUT' : 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (!row.id && result.id) itineraryData[index].id = result.id;
+                            lastResult = result;
+                            saved++;
+                        } else {
+                            failed++;
+                        }
+                    } catch {
+                        failed++;
+                    }
+                }
+
+                await reloadItineraryDataFromServer();
+
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="bi bi-save"></i> Save All';
+
+                if (failed === 0) {
+                    toastr.success(`Applied and saved ${saved} row(s) successfully!`);
+                } else {
+                    toastr.warning(
+                        `Applied to ${count} row(s), but ${failed} failed to save. Use "Save All" to retry.`
+                        );
+                }
+
+                if (lastResult?.itineraryCount !== undefined && lastResult?.totalTravelDurationDays !==
+                    undefined) {
+                    if (lastResult.itineraryCount == lastResult.totalTravelDurationDays) {
+                        $('.submit-record').show();
+                    } else {
+                        $('.submit-record').hide();
+                    }
+                }
+            });
+
+            // QUICK FILL: Save All button
+            document.getElementById('saveAllItineraryBtn').addEventListener('click', async function() {
+                const rowsToSave = itineraryData.filter(row => row.activities && row.activity_id);
+
+                if (rowsToSave.length === 0) {
+                    toastr.warning('No rows with activity and planned activities to save.');
+                    return;
+                }
+
+                const btn = this;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving...';
+
+                let saved = 0,
+                    failed = 0,
+                    lastResult = null;
+
+                for (let index = 0; index < itineraryData.length; index++) {
+                    const row = itineraryData[index];
+                    if (!row.activities || !row.activity_id) continue;
+
+                    const payload = {
+                        date: row.date,
+                        activity_id: row.activity_id,
+                        planned_activities: row.activities,
+                        accommodation: row.accommodation ? 1 : 0,
+                        air_ticket: row.air_ticket ? 1 : 0,
+                        vehicle: row.vehicle ? 1 : 0,
+                        departure_place: row.from || null,
+                        arrival_place: row.to || null,
+                        departure_time: row.departure_time || null,
+                    };
+
+                    try {
+                        const url = row.id ?
+                            updateUrlTemplate.replace(':dayItinerary', row.id) :
+                            createUrl;
+
+                        const response = await fetch(url, {
+                            method: row.id ? 'PUT' : 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (!row.id && result.id) itineraryData[index].id = result.id;
+                            lastResult = result;
+                            saved++;
+                        } else {
+                            failed++;
+                        }
+                    } catch {
+                        failed++;
+                    }
+                }
+
+                await reloadItineraryDataFromServer();
+
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-save"></i> Save All';
+
+                if (failed === 0) {
+                    toastr.success(`All ${saved} row(s) saved successfully!`);
+                } else {
+                    toastr.warning(`${saved} saved, ${failed} failed. Edit failed rows individually.`);
+                }
+
+                if (lastResult?.itineraryCount !== undefined && lastResult?.totalTravelDurationDays !==
+                    undefined) {
+                    if (lastResult.itineraryCount == lastResult.totalTravelDurationDays) {
+                        $('.submit-record').show();
+                    } else {
+                        $('.submit-record').hide();
+                    }
+                }
+            });
+            // ─────────────────────────────────────────────────────────────
+            // END QUICK FILL
+            // ─────────────────────────────────────────────────────────────
 
             // Initial load
             initializeItineraryData();
@@ -1480,6 +1728,34 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    {{-- QUICK FILL TOOLBAR --}}
+                    <div class="d-flex align-items-end gap-2 mb-3 p-3 bg-light rounded border">
+                        <div class="flex-grow-1">
+                            <label class="form-label fw-semibold mb-1 small">Quick Fill - Activity</label>
+                            <select id="bulkActivitySelect" class="form-select select2">
+                                <option value="">Select activity to apply to all rows</option>
+                                @foreach ($activities as $activity)
+                                    <option value="{{ $activity->id }}" data-title="{{ $activity->title }}">
+                                        {{ $activity->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex-grow-1">
+                            <label class="form-label fw-semibold mb-1 small">Planned Activities</label>
+                            <input type="text" id="bulkPlannedActivities" class="form-control"
+                                placeholder="e.g. Field visit, stakeholder meeting...">
+                        </div>
+                        <div>
+                            <button type="button" id="applyToAllBtn" class="btn btn-primary btn-sm">
+                                Apply to All
+                            </button>
+                            <button type="button" id="saveAllItineraryBtn" class="btn btn-success btn-sm d-none">
+                                <i class="bi bi-save"></i> Save All
+                            </button>
+                        </div>
+                    </div>
+                    {{-- END QUICK FILL TOOLBAR --}}
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered align-middle">
                             <thead class="thead-light">

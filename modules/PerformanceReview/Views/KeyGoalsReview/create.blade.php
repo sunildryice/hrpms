@@ -60,6 +60,19 @@
         $(function() {
             $('#navbarVerticalMenu').find('#performance-employee-index').addClass('active');
 
+            function autoResize(element) {
+                element.style.height = 'auto';
+                element.style.height = element.scrollHeight + 'px';
+            }
+
+            $(document).on('input', '.auto-resize', function() {
+                autoResize(this);
+            });
+
+            $('.auto-resize').each(function() {
+                autoResize(this);
+            });
+
             updateKeyGoalButtons();
             updateDevPlanButtons();
 
@@ -210,14 +223,14 @@
             <tr class="keygoal-row" data-row-index="${idx}" ${isExisting ? `data-id="${id}"` : ''}>
                 <td class="col-objective">
                     <input type="hidden" name="keygoals[${idx}][id]" value="${id ?? ''}">
-                    <textarea class="form-control" 
+                    <textarea class="form-control auto-resize" 
                               name="keygoals[${idx}][title]" 
                               rows="2"
                               placeholder="Objective" 
                               required>${title.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                 </td>
                 <td class="col-output">
-                    <textarea class="form-control" 
+                    <textarea class="form-control auto-resize" 
                               name="keygoals[${idx}][output_deliverables]" 
                               rows="2"
                               placeholder="Output / Deliverable" 
@@ -297,7 +310,7 @@
                 <td class="sn">${idx + 1}</td>
                 <td class="col-plan">
                     <input type="hidden" name="devplans[${idx}][id]" value="${id ?? ''}">
-                    <textarea class="form-control" 
+                    <textarea class="form-control auto-resize" 
                        name="devplans[${idx}][plan]" 
                        rows="2"
                        placeholder="Development plan" 
@@ -470,11 +483,11 @@
                                     <td class="col-objective">
                                         <input type="hidden" name="keygoals[{{ $index }}][id]"
                                             value="{{ $kg->id }}">
-                                        <textarea class="form-control" name="keygoals[{{ $index }}][title]" rows="2" placeholder="Objective"
+                                        <textarea class="form-control auto-resize" name="keygoals[{{ $index }}][title]" rows="2" placeholder="Objective"
                                             required>{{ old('keygoals.' . $index . '.title', $kg->title) }}</textarea>
                                     </td>
                                     <td class="col-output">
-                                        <textarea class="form-control" name="keygoals[{{ $index }}][output_deliverables]" rows="2"
+                                        <textarea class="form-control auto-resize" name="keygoals[{{ $index }}][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required>{{ old('keygoals.' . $index . '.output_deliverables', $kg->output_deliverables ?? '') }}</textarea>
                                     </td>
                                     <td class="col-project">
@@ -501,10 +514,10 @@
                             @empty
                                 <tr class="keygoal-row" data-row-index="0">
                                     <td class="col-objective">
-                                        <textarea class="form-control" name="keygoals[0][title]" rows="2" placeholder="Objective" required></textarea>
+                                        <textarea class="form-control auto-resize" name="keygoals[0][title]" rows="2" placeholder="Objective" required></textarea>
                                     </td>
                                     <td class="col-output">
-                                        <textarea class="form-control" name="keygoals[0][output_deliverables]" rows="2"
+                                        <textarea class="form-control auto-resize" name="keygoals[0][output_deliverables]" rows="2"
                                             placeholder="Output / Deliverable" required></textarea>
                                     </td>
                                     <td class="col-project">
@@ -565,7 +578,7 @@
                                     <td class="col-plan">
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id ?? '' }}">
-                                        <textarea class="form-control" name="devplans[{{ $index }}][plan]" rows="2"
+                                        <textarea class="form-control auto-resize" name="devplans[{{ $index }}][plan]" rows="2"
                                             placeholder="Development plan" required>{{ old('devplans.' . $index . '.plan', $plan->objective ?? '') }}
                                         </textarea>
                                     </td>

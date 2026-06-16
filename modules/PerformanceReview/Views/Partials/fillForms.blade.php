@@ -23,7 +23,7 @@
                         New</button>
                 </span>
             </div>
-            <div class="card-body">
+            <div class="card-body table-responsive">
                 <table class="table" id="keyGoalTable">
                     <thead>
                         <tr>
@@ -46,7 +46,7 @@
                                 <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
                                 </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -60,7 +60,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee auto-resize" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                             </tr>
                         @endforeach
@@ -93,7 +93,7 @@
                                 <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
                                 </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
                                     <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
@@ -107,7 +107,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee" rows="3">{{ $keygoal->remarks_employee }}</textarea>
+                                    <textarea name="remarks_employee_{{ $keygoal->id }}" class="form-control remarks-employee auto-resize" rows="3">{{ $keygoal->remarks_employee }}</textarea>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
@@ -173,7 +173,7 @@
                                         {{ $plan->objective }}
                                     </td>
                                     <td>
-                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity" rows="3"
+                                        <textarea name="devplans[{{ $index }}][activity]" class="form-control devplan-activity auto-resize" rows="3"
                                             data-id="{{ $plan->id }}" placeholder="Enter activities...">{{ $plan->activity ?? '' }}</textarea>
                                         <input type="hidden" name="devplans[{{ $index }}][id]"
                                             value="{{ $plan->id }}">
@@ -247,7 +247,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="competencies[{{ $index }}][example]" class="form-control competency-example" rows="1"
+                                    <textarea name="competencies[{{ $index }}][example]" class="form-control competency-example auto-resize" rows="1"
                                         placeholder="Provide examples that reflect your roles...">{{ $comp->example ?? '' }}</textarea>
                                 </td>
                                 <td class="text-center">
@@ -277,7 +277,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="competencies[0][example]" class="form-control competency-example" rows="1"
+                                    <textarea name="competencies[0][example]" class="form-control competency-example auto-resize" rows="1"
                                         placeholder="Provide examples that reflect your roles..."></textarea>
                                 </td>
                                 <td class="text-center">
@@ -330,13 +330,13 @@
                             <tr class="challenge-row" data-row-index="{{ $index }}"
                                 data-id="{{ $challenge->id }}">
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control" rows="3">{{ $challenge->challenge }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][challenge]" class="form-control auto-resize" rows="3">{{ $challenge->challenge }}</textarea>
                                     <input type="hidden" name="challenges[{{ $index }}][id]"
                                         value="{{ $challenge->id }}">
                                 </td>
 
                                 <td>
-                                    <textarea name="challenges[{{ $index }}][result]" class="form-control" rows="3">{{ $challenge->result }}</textarea>
+                                    <textarea name="challenges[{{ $index }}][result]" class="form-control auto-resize" rows="3">{{ $challenge->result }}</textarea>
                                 </td>
 
                                 <td class="text-center">
@@ -351,10 +351,10 @@
                         @empty
                             <tr class="challenge-row" data-row-index="0">
                                 <td>
-                                    <textarea name="challenges[0][challenge]" class="form-control" rows="3"></textarea>
+                                    <textarea name="challenges[0][challenge]" class="form-control auto-resize" rows="3"></textarea>
                                 </td>
                                 <td>
-                                    <textarea name="challenges[0][result]" class="form-control" rows="3"></textarea>
+                                    <textarea name="challenges[0][result]" class="form-control auto-resize" rows="3"></textarea>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-outline-primary btn-sm add-challenge-row">
@@ -397,7 +397,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group">
-                        <textarea name="employee_comments" id="employee_comments" class="form-control" rows="3">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
+                        <textarea name="employee_comments" id="employee_comments" class="form-control auto-resize" rows="3">{{ old('employee_comments', $performanceReview->employee_comments ?? '') }}</textarea>
                     </div>
                 </div>
                 <div class="card-footer text-end">
@@ -443,3 +443,22 @@
     </div>
 
 </div>
+
+@push('scripts')
+    <script>
+        $(function() {
+            function autoResize(element) {
+                element.style.height = 'auto';
+                element.style.height = element.scrollHeight + 'px';
+            }
+
+            $(document).on('input', '.auto-resize', function() {
+                autoResize(this);
+            });
+
+            $('.auto-resize').each(function() {
+                autoResize(this);
+            });
+        });
+    </script>
+@endpush

@@ -26,6 +26,19 @@
                 $('#receiver').show();
             }
 
+            function autoResize(element) {
+                element.style.height = 'auto';
+                element.style.height = element.scrollHeight + 'px';
+            }
+
+            $(document).on('input', '.auto-resize', function() {
+                autoResize(this);
+            });
+
+            $('.auto-resize').each(function() {
+                autoResize(this);
+            });
+
             let previousLength = 0;
             const handleInput = (event) => {
                 const bullet = "\u2022";
@@ -348,7 +361,7 @@
                             <span class="fw-bold">B.</span> Key Goals Review
                         </span>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body table-responsive">
                         <table class="table table-bordered" id="keyGoalTable">
                             <thead>
                                 <tr>
@@ -378,7 +391,7 @@
                                         </td>
                                         <td class="wrap-text">{{ $keygoal->remarks_employee ?? '—' }}</td>
                                         <td>
-                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor" rows="3">{{ $keygoal->description_supervisor ?? '' }}</textarea>
+                                            <textarea name="description_supervisor_{{ $keygoal->id }}" class="form-control description-supervisor auto-resize" rows="3">{{ $keygoal->description_supervisor ?? '' }}</textarea>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -552,7 +565,7 @@
                             <span class="text-muted small mb-2">(Please describe key results or
                                 responsibilities in your line managee's ToRs, s/he was able to deliver on in the last one
                                 year)</span>
-                            <textarea name="result" id="result" class="form-control" rows="4"
+                            <textarea name="result" id="result" class="form-control auto-resize" rows="4"
                                 placeholder="Summarize the overall performance result...">{{ old('result', $performanceReview->result ?? '') }}</textarea>
                         </div>
 
@@ -561,7 +574,7 @@
                             <span class="text-muted small mb-2">(Please describe key results and/or
                                 responsibilities your direct report fell short of achieving in the last one year. What could
                                 your line managee have done to achieve better results?)</span>
-                            <textarea name="comments" id="comments" class="form-control" rows="4"
+                            <textarea name="comments" id="comments" class="form-control auto-resize" rows="4"
                                 placeholder="Provide detailed comments and feedback...">{{ old('comments', $performanceReview->comments ?? '') }}</textarea>
                         </div>
                     </div>

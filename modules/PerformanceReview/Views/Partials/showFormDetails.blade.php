@@ -6,6 +6,12 @@
             min-width: 250px;
             max-width: 400px;
         }
+        .wrap-activity {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 300px;
+            max-width: 400px;
+        }
     </style>
 @endsection
 <!-- B. Key Goals Review -->
@@ -39,7 +45,7 @@
                             <td class="wrap-text">{!! nl2br(e($keygoal->output_deliverables)) !!}</td>
                             
                             <td>{{ $keygoal->project->short_name ?? $keygoal->project->title ?? '—' }}</td>
-                            <td class="wrap-text">{{ $keygoal->major_activities_employee ?? '—' }}</td>
+                            <td class="wrap-activity">{{ $keygoal->major_activities_employee ?? '—' }}</td>
                             <td>
                                 <span class="badge {{ $keygoal->status?->colorClass() ?? 'bg-secondary' }}">
                                     {{ $keygoal->status?->label() ?? 'Not Set' }}

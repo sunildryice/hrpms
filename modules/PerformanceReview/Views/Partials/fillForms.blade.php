@@ -6,6 +6,12 @@
             min-width: 250px;
             max-width: 400px;
         }
+        .wrap-activity {
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 300px;
+            max-width: 400px;
+        }
     </style>
 @endsection
 
@@ -46,10 +52,10 @@
                                 <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
                                 </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize wrap-activity" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
-                                    <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
+                                    <select name="status_{{ $keygoal->id }}" class="form-select select2 status-dropdown">
                                         <option value="">Select Status</option>
                                         @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
                                             <option value="{{ $status->value }}"
@@ -93,10 +99,10 @@
                                 <td>{{ $keygoal->project ? $keygoal->project->short_name ?? $keygoal->project->title : '—' }}
                                 </td>
                                 <td>
-                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
+                                    <textarea name="major_activities_employee_{{ $keygoal->id }}" class="form-control major-activities auto-resize wrap-activity" rows="3">{{ $keygoal->major_activities_employee }}</textarea>
                                 </td>
                                 <td>
-                                    <select name="status_{{ $keygoal->id }}" class="form-select status-dropdown">
+                                    <select name="status_{{ $keygoal->id }}" class="form-select select2 status-dropdown">
                                         <option value="">Select Status</option>
                                         @foreach (\Modules\PerformanceReview\Models\Enums\KeyGoalStatus::cases() as $status)
                                             <option value="{{ $status->value }}"

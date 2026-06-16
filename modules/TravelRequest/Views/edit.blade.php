@@ -1750,7 +1750,7 @@
                             <button type="button" id="applyToAllBtn" class="btn btn-primary btn-sm">
                                 Apply to All
                             </button>
-                            <button type="button" id="saveAllItineraryBtn" class="btn btn-success btn-sm d-none">
+                            <button type="button" id="saveAllItineraryBtn" class="btn btn-success btn-sm">
                                 <i class="bi bi-save"></i> Save All
                             </button>
                         </div>

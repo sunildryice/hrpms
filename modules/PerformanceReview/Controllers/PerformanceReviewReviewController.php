@@ -255,7 +255,7 @@ class PerformanceReviewReviewController extends Controller
             if ($request->status_id == config('constant.VERIFIED_STATUS')) {
                 $inputs['approver_id'] = $request->receiver_id;
             }
-            $inputs['status_id'] = config('constant.RECOMMENDED_STATUS');
+            // $inputs['status_id'] = config('constant.RECOMMENDED_STATUS');
             $performanceReview = $this->performanceReview->verify($request->performance_review_id, $inputs);
 
             if ($performanceReview) {

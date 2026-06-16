@@ -118,23 +118,23 @@
                 let rows = $('#keyGoalTable tbody tr, #new-keyGoalTable tbody tr');
                 let isValid = true;
 
-                rows.each(function() {
-                    const majorActivities = $(this).find('.major-activities').val().trim();
-                    const status = $(this).find('.status-dropdown').val();
+                // rows.each(function() {
+                //     const majorActivities = $(this).find('.major-activities').val().trim();
+                //     const status = $(this).find('.status-dropdown').val();
 
-                    if (!majorActivities || !status) {
-                        isValid = false;
-                        $(this).addClass('table-danger');
-                    } else {
-                        $(this).removeClass('table-danger');
-                    }
-                });
+                //     if (!majorActivities || !status) {
+                //         isValid = false;
+                //         $(this).addClass('table-danger');
+                //     } else {
+                //         $(this).removeClass('table-danger');
+                //     }
+                // });
 
-                if (!isValid) {
-                    toastr.error('Please fill Major Activities and Status for all key goals.',
-                        'Validation Error');
-                    return;
-                }
+                // if (!isValid) {
+                //     toastr.error('Please fill Major Activities and Status for all key goals.',
+                //         'Validation Error');
+                //     return;
+                // }
 
                 // Update each key goal via AJAX
                 rows.each(function() {

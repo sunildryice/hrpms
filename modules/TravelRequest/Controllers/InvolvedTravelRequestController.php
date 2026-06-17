@@ -17,10 +17,16 @@ class InvolvedTravelRequestController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->travelRequests->with(['logs', 'travelType', 'status', 'requester.employee', 'employee'])
-                ->whereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                })->orderBy('created_at', 'desc');
+            if ($authUser->can('view-all-involved-travel-request')) {
+                $data = $this->travelRequests->with(['logs', 'travelType', 'status', 'requester.employee', 'employee'])
+                    ->whereNotIn('status_id', [config('constant.CREATED_STATUS')])
+                    ->orderBy('created_at', 'desc');
+            } else {
+                $data = $this->travelRequests->with(['logs', 'travelType', 'status', 'requester.employee', 'employee'])
+                    ->whereHas('logs', function ($q) use ($authUser) {
+                        $q->where('user_id', $authUser->id);
+                    })->orderBy('created_at', 'desc');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()

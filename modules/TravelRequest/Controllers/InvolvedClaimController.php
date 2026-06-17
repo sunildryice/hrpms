@@ -17,10 +17,16 @@ class InvolvedClaimController extends Controller
     {
         $authUser = auth()->user();
         if ($request->ajax()) {
-            $data = $this->travelClaim->with(['travelRequest', 'logs', 'requester', 'status'])
-                ->whereHas('logs', function ($q) use ($authUser) {
-                    $q->where('user_id', $authUser->id);
-                })->orderBy('created_at', 'desc');
+            if ($authUser->can('view-all-involved-travel-claim')) {
+                $data = $this->travelClaim->with(['travelRequest', 'logs', 'requester', 'status'])
+                    ->whereNotIn('status_id', [config('constant.CREATED_STATUS')])
+                    ->orderBy('created_at', 'desc');
+            } else {
+                $data = $this->travelClaim->with(['travelRequest', 'logs', 'requester', 'status'])
+                    ->whereHas('logs', function ($q) use ($authUser) {
+                        $q->where('user_id', $authUser->id);
+                    })->orderBy('created_at', 'desc');
+            }
 
             return DataTables::of($data)
                 ->addIndexColumn()

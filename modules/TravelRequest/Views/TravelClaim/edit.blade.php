@@ -688,6 +688,138 @@
                         setTimeout(updateCalculations, 300);
                     });
             });
+            // TADA Quick Fill JavaScript
+            const applyQuickFillBtn = document.getElementById('applyQuickFillBtn');
+            const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
+
+            if (applyQuickFillBtn) {
+                applyQuickFillBtn.addEventListener('click', function() {
+                    const breakfast = parseFloat(document.getElementById('quickBreakfast').value) || 0;
+                    const lunch = parseFloat(document.getElementById('quickLunch').value) || 0;
+                    const dinner = parseFloat(document.getElementById('quickDinner').value) || 0;
+                    const incidental = parseFloat(document.getElementById('quickIncidental').value) || 0;
+                    const lodging = parseFloat(document.getElementById('quickLodging').value) || 0;
+                    const other = parseFloat(document.getElementById('quickOther').value) || 0;
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This will update all TADA claim rows with these rates.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0d6efd',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, Apply to all!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            applyQuickFillBtn.disabled = true;
+                            applyQuickFillBtn.innerHTML =
+                                '<span class="spinner-border spinner-border-sm me-1"></span> Applying...';
+
+                            $.ajax({
+                                url: "{{ route('travel.claims.dsa.bulk-update', $travelClaim->id) }}",
+                                method: 'POST',
+                                data: {
+                                    _token: "{{ csrf_token() }}",
+                                    breakfast: breakfast,
+                                    lunch: lunch,
+                                    dinner: dinner,
+                                    incident_cost: incidental,
+                                    lodging_expense: lodging,
+                                    other_expense: other
+                                },
+                                success: function(response) {
+                                    toastr.success(response.message ||
+                                        'Rates updated successfully');
+                                    updateClaimTotals(response);
+                                    itineraryTable.ajax.reload();
+                                },
+                                error: function(xhr) {
+                                    const msg = xhr.responseJSON?.message ||
+                                        'Failed to update rates';
+                                    toastr.error(msg);
+                                    console.error(xhr);
+                                },
+                                complete: function() {
+                                    applyQuickFillBtn.disabled = false;
+                                    applyQuickFillBtn.innerHTML =
+                                        '<i class="bi bi-check-all me-1"></i> Apply to All Rows';
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+
+            if (resetDefaultsBtn) {
+                resetDefaultsBtn.addEventListener('click', function() {
+                    // document.getElementById('quickBreakfast').value =
+                    //     {{ config('constant.DSA_BREAKFAST_RATE', 400) }};
+                    // document.getElementById('quickLunch').value =
+                    //     {{ config('constant.DSA_LUNCH_RATE', 500) }};
+                    // document.getElementById('quickDinner').value =
+                    //     {{ config('constant.DSA_DINNER_RATE', 600) }};
+                    // document.getElementById('quickIncidental').value =
+                    //     {{ config('constant.DSA_INCIDENTAL_RATE', 300) }};
+                    document.getElementById('quickBreakfast').value = 0;
+                    document.getElementById('quickLunch').value = 0;
+                    document.getElementById('quickDinner').value = 0;
+                    document.getElementById('quickIncidental').value = 0;
+                    document.getElementById('quickLodging').value = 0;
+                    document.getElementById('quickOther').value = 0;
+
+                    Swal.fire({
+                        title: 'Reset?',
+                        // text: "This will reset all rows back to standard rates (Breakfast: {{ config('constant.DSA_BREAKFAST_RATE', 400) }}, Lunch: {{ config('constant.DSA_LUNCH_RATE', 500) }}, Dinner: {{ config('constant.DSA_DINNER_RATE', 600) }}, Incidental: {{ config('constant.DSA_INCIDENTAL_RATE', 300) }}, Lodging: 0, Other: 0).",
+                        text: "This will reset all rows back to zero rates.",
+                        // icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#0d6efd',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, Reset all!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            resetDefaultsBtn.disabled = true;
+                            resetDefaultsBtn.innerHTML =
+                                '<span class="spinner-border spinner-border-sm me-1"></span> Resetting...';
+
+                            $.ajax({
+                                url: "{{ route('travel.claims.dsa.bulk-update', $travelClaim->id) }}",
+                                method: 'POST',
+                                data: {
+                                    _token: "{{ csrf_token() }}",
+                                    // breakfast: {{ config('constant.DSA_BREAKFAST_RATE', 400) }},
+                                    // lunch: {{ config('constant.DSA_LUNCH_RATE', 500) }},
+                                    // dinner: {{ config('constant.DSA_DINNER_RATE', 600) }},
+                                    // incident_cost: {{ config('constant.DSA_INCIDENTAL_RATE', 300) }},
+                                    breakfast: 0,
+                                    lunch: 0,
+                                    dinner: 0,
+                                    incident_cost: 0,
+                                    lodging_expense: 0,
+                                    other_expense: 0
+                                },
+                                success: function(response) {
+                                    toastr.success(response.message ||
+                                        'Rates reset to defaults successfully');
+                                    updateClaimTotals(response);
+                                    itineraryTable.ajax.reload();
+                                },
+                                error: function(xhr) {
+                                    const msg = xhr.responseJSON?.message ||
+                                        'Failed to reset rates';
+                                    toastr.error(msg);
+                                    console.error(xhr);
+                                },
+                                complete: function() {
+                                    resetDefaultsBtn.disabled = false;
+                                    resetDefaultsBtn.innerHTML =
+                                        '<i class="bi bi-arrow-counterclockwise me-1"></i> Reset';
+                                }
+                            });
+                        }
+                    });
+                });
+            }
         });
     </script>
 @endsection
@@ -753,6 +885,61 @@
                             <span> TADA Claim</span>
                         </div>
                         <div class="container-fluid-s">
+                            @if ($authUser->can('update', $travelClaim))
+                                <div class="card bg-light border-light mb-3">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title mb-2 text-primary fw-bold">TADA Claim Quick Fill</h6>
+                                        <p class="text-muted small mb-3">Pre-populate or reset Breakfast, Lunch, Dinner,
+                                            Incidental, Lodging, and Other expenses across all itinerary days at once.</p>
+                                        <div class="row g-2 align-items-end" id="tadaQuickFillSection">
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Breakfast</label>
+                                                <input type="number" id="quickBreakfast"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ config('constant.DSA_BREAKFAST_RATE', 400) }}"
+                                                    min="0">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Lunch</label>
+                                                <input type="number" id="quickLunch" class="form-control form-control-sm"
+                                                    value="{{ config('constant.DSA_LUNCH_RATE', 500) }}" min="0">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Dinner</label>
+                                                <input type="number" id="quickDinner" class="form-control form-control-sm"
+                                                    value="{{ config('constant.DSA_DINNER_RATE', 600) }}" min="0">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Incidental</label>
+                                                <input type="number" id="quickIncidental"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ config('constant.DSA_INCIDENTAL_RATE', 300) }}"
+                                                    min="0">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Lodging Expense</label>
+                                                <input type="number" id="quickLodging" class="form-control form-control-sm"
+                                                    value="0" min="0">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label small mb-1">Other Expense</label>
+                                                <input type="number" id="quickOther" class="form-control form-control-sm"
+                                                    value="0" min="0">
+                                            </div>
+                                            <div class="col-12 mt-3 d-flex gap-2">
+                                                <button type="button" id="applyQuickFillBtn"
+                                                    class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-check-all me-1"></i> Apply to All
+                                                </button>
+                                                <button type="button" id="resetDefaultsBtn"
+                                                    class="btn btn-outline-secondary btn-sm">
+                                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                             <div class="card">
                                 <div class="card-body">
                                     <div class="table-responsive">

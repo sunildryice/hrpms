@@ -45,7 +45,8 @@ class ClaimApprovedController extends Controller
                 'requester',
                 'status'
             ])->select(['*'])
-                ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.PAID_STATUS')])
+                // ->whereIn('status_id', [config('constant.APPROVED_STATUS'), config('constant.PAID_STATUS')])
+                ->where('status_id', config('constant.APPROVED_STATUS'))
                 ->orderBy('created_at', 'desc')
                 ->get();
 

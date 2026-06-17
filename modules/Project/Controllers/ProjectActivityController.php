@@ -50,7 +50,10 @@ class ProjectActivityController extends Controller
                     [$request->from_date, $request->to_date]
                 );
             })
-            ->when($project->isFocalPerson($authUser->id) || $project->isTeamLead($authUser->id) || $authUser->employee?->employee_code == 62, function ($query) {
+            ->when($project->isFocalPerson($authUser->id) || 
+                $project->isTeamLead($authUser->id) || 
+                // $authUser->employee?->employee_code == 62
+                $authUser->can('view-all-project-activities'), function ($query) {
                 // Focal Person or Team Lead can see all activities
                 return $query;
             }, function ($query) use ($authUser) {

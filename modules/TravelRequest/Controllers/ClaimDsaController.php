@@ -220,4 +220,80 @@ class ClaimDsaController extends Controller
             'message' => 'Travel TADA Claim Itinerary can not deleted.',
         ], 422);
     }
+
+    /**
+     * Bulk update all TADA claim records for the given travel claim.
+     */
+    public function bulkUpdate(Request $request, $travelClaimId)
+    {
+        $travelClaim = $this->travelClaims->find($travelClaimId);
+        $this->authorize('update', $travelClaim);
+
+        $rules = [
+            'breakfast' => 'required|numeric|min:0',
+            'lunch' => 'required|numeric|min:0',
+            'dinner' => 'required|numeric|min:0',
+            'incident_cost' => 'required|numeric|min:0',
+            'lodging_expense' => 'required|numeric|min:0',
+            'other_expense' => 'required|numeric|min:0',
+        ];
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        $breakfast = floor($validated['breakfast']);
+        $lunch = floor($validated['lunch']);
+        $dinner = floor($validated['dinner']);
+        $incident_cost = floor($validated['incident_cost']);
+        $lodging_expense = floor($validated['lodging_expense']);
+        $other_expense = floor($validated['other_expense']);
+
+        $total_dsa = $breakfast + $lunch + $dinner + $incident_cost;
+        $total_amount = $total_dsa + $lodging_expense + $other_expense;
+
+        \DB::beginTransaction();
+        try {
+            foreach ($travelClaim->dsaClaims as $claimDsa) {
+                $claimDsa->update([
+                    'breakfast' => $breakfast,
+                    'lunch' => $lunch,
+                    'dinner' => $dinner,
+                    'incident_cost' => $incident_cost,
+                    'total_dsa' => $total_dsa,
+                    'daily_allowance' => $total_dsa,
+                    'lodging_expense' => $lodging_expense,
+                    'other_expense' => $other_expense,
+                    'total_amount' => $total_amount,
+                    'updated_by' => auth()->id(),
+                ]);
+            }
+
+            $this->travelClaims->updateTotalAmount($travelClaim->id);
+            \DB::commit();
+
+            // Refresh the travelClaim to get updated totals
+            $travelClaim = $this->travelClaims->find($travelClaim->id);
+
+            return response()->json([
+                'status' => 'ok',
+                'travelClaim' => $travelClaim,
+                'message' => 'All TADA claim rates have been successfully updated.'
+            ], 200);
+        } catch (\Exception $e) {
+            \DB::rollback();
+            logger()->error('Bulk TADA update failed: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to bulk update TADA claim rates.'
+            ], 500);
+        }
+    }
 }

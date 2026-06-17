@@ -62,12 +62,12 @@
 
                         <div class="card mb-3">
                             <div class="card-header fw-bold">General Objective/Purpose of Travel</div>
-                            <div class="card-body">{{ nl2br(e($travelReport->objectives)) }}</div>
+                            <div class="card-body">{!! nl2br(e($travelReport->objectives)) !!}</div>
                         </div>
 
                         <div class="card mb-3">
                             <div class="card-header fw-bold">Major Achievement</div>
-                            <div class="card-body">{{ nl2br(e($travelReport->major_achievement)) }}</div>
+                            <div class="card-body">{!! nl2br(e($travelReport->major_achievement)) !!}</div>
                         </div>
 
                         <div class="card mb-3">
@@ -135,12 +135,12 @@
 
                         <div class="card mb-3">
                             <div class="card-header fw-bold">Not Completed Activities & Reasons</div>
-                            <div class="card-body">{{ nl2br(e($travelReport->not_completed_activities)) }}</div>
+                            <div class="card-body">{!! nl2br(e($travelReport->not_completed_activities)) !!}</div>
                         </div>
 
                         <div class="card mb-3">
                             <div class="card-header fw-bold">Conclusion & Recommendations</div>
-                            <div class="card-body">{{ nl2br(e($travelReport->conclusion_recommendations)) }}</div>
+                            <div class="card-body">{!! nl2br(e($travelReport->conclusion_recommendations)) !!}</div>
                         </div>
 
                         <div class="card mb-3">

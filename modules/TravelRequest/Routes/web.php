@@ -160,6 +160,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
         Route::get('travel/claims/{travelClaim}/dsa/create', [ClaimDsaController::class, 'create'])->name('travel.claims.dsa.create');
         Route::post('travel/claims/{travelClaim}/dsa', [ClaimDsaController::class, 'store'])->name('travel.claims.dsa.store');
+        Route::post('travel/claims/{travelClaim}/dsa/bulk-update', [ClaimDsaController::class, 'bulkUpdate'])->name('travel.claims.dsa.bulk-update');
         Route::get('travel/claims/{travelClaim}/dsa/{dsa}/edit', [ClaimDsaController::class, 'edit'])->name('travel.claims.dsa.edit');
         Route::post('travel/claims/{travelClaim}/dsa/{dsa}', [ClaimDsaController::class, 'update'])->name('travel.claims.dsa.update');
         Route::delete('travel/claims/{travelClaim}/dsa/{dsa}/destroy', [ClaimDsaController::class, 'destroy'])->name('travel.claims.dsa.destroy');

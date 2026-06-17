@@ -200,10 +200,14 @@
                 let isValid = true;
 
                 rows.each(function() {
-                    const majorActivities = $(this).find('.major-activities').val().trim();
+                    // const majorActivities = $(this).find('.major-activities').val().trim();
+                    // const status = $(this).find('.status-dropdown').val();
+                    const remarks = $(this).find('.remarks-employee').val().trim();
                     const status = $(this).find('.status-dropdown').val();
+                    const isRemarksRequired = status === 'partially_completed' || status === 'not_completed';
 
-                    if (!majorActivities || !status) {
+                    // if (!majorActivities || !status || (isRemarksRequired && !remarks)) {
+                    if (isRemarksRequired && !remarks) {
                         isValid = false;
                         $(this).addClass('table-danger');
                     } else {
@@ -212,7 +216,7 @@
                 });
 
                 if (!isValid) {
-                    toastr.error('Please fill Major Activities and Status for all key goals.',
+                    toastr.error('Please fill Remarks for all key goals with Partially Completed or Not Completed status.',
                         'Validation Error');
                     return;
                 }
@@ -624,13 +628,19 @@
             $('#keyGoalTable tbody tr').each(function() {
                 const majorActivities = $(this).find('.major-activities').val().trim();
                 const status = $(this).find('.status-dropdown').val();
-                if (!majorActivities || !status) {
+                const remarks = $(this).find('.remarks-employee').val().trim();
+                const isRemarksRequired = status === 'partially_completed' || status === 'not_completed';
+                if (!majorActivities || !status || (isRemarksRequired && !remarks)) {
                     isGroupBFormSaved = false;
                     $(this).addClass('table-danger');
                 } else {
                     $(this).removeClass('table-danger');
                 }
             });
+
+            if (!isGroupBFormSaved) {
+                toastr.error('Please fill Major Activities, Status and Remarks (with Remarks mandatory for Partially Completed or Not Completed) in Key Goals Review (Section B) before submitting.', 'Validation Error');
+            }
 
             // C. Professional Development Plan
             $('#devplan-table tbody tr').each(function() {

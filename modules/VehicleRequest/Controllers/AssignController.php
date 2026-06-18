@@ -2,15 +2,13 @@
 
 namespace Modules\VehicleRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Modules\Master\Repositories\VehicleRepository;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
-use DataTables;
 use Modules\VehicleRequest\Notifications\VehicleRequestAssigned;
 use Modules\VehicleRequest\Notifications\VehicleRequestRejected;
 use Modules\VehicleRequest\Notifications\VehicleRequestReturned;
@@ -153,7 +151,6 @@ class AssignController extends Controller
                 $message = 'Vehicle request is successfully rejected.';
                 $vehicleRequest->requester->notify(new VehicleRequestRejected($vehicleRequest));
             }
-
 
             return redirect()->route('assign.vehicle.requests.index')
                 ->withSuccessMessage($message);

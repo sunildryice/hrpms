@@ -4,13 +4,8 @@ namespace Modules\VehicleRequest\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-
 use Modules\VehicleRequest\Notifications\VehicleRequestClosed;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
-
-
-
 
 class CloseController extends Controller
 {
@@ -25,8 +20,6 @@ class CloseController extends Controller
     {
         $this->vehicleRequests = $vehicleRequests;
     }
-
-    
 
     public function create($vehicleRequestId)
     {

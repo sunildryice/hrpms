@@ -2,14 +2,12 @@
 
 namespace Modules\VehicleRequest\Controllers;
 
-use App\Http\Controllers\Controller;
-use DataTables;
-
 use DB;
-
+use DataTables;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 use Modules\Employee\Models\Employee;
+use Illuminate\Support\Facades\Storage;
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\Master\Repositories\AccountCodeRepository;
 use Modules\Master\Repositories\ActivityCodeRepository;
@@ -19,10 +17,8 @@ use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Master\Repositories\OfficeRepository;
 use Modules\Master\Repositories\ProjectCodeRepository;
 use Modules\Master\Repositories\VehicleRequestTypeRepository;
-
 use Modules\Master\Repositories\VehicleTypeRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\Project\Repositories\ProjectRepository;
 use Modules\VehicleRequest\Notifications\VechileRequestAcompanyed;
 use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
@@ -169,7 +165,6 @@ class VehicleRequestController extends Controller
 
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
-        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $projects = $this->projects->getAssignedProjects($authUser);
 
         return view('VehicleRequest::create')
@@ -260,7 +255,6 @@ class VehicleRequestController extends Controller
         });
         $hireApprovers = $this->users->permissionBasedUsers('approve-hire-vehicle-request');
         $officers = $this->users->permissionBasedUsers('manage-hire-vehicle-procurement');
-        // $projectCodes = $this->projectCodes->getActiveProjectCodes();
         $projects = $this->projects->getAssignedProjects($authUser);
 
         $view = $vehicleRequest->vehicle_request_type_id == 1 ? view('VehicleRequest::editoffice') : view('VehicleRequest::edithire');

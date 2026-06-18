@@ -1,10 +1,9 @@
 <?php
-
 namespace Modules\VehicleRequest\Controllers;
 
+use DataTables;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
 use Modules\Employee\Repositories\EmployeeRepository;
 use Modules\VehicleRequest\Notifications\VehicleRequestApproved;
 use Modules\VehicleRequest\Notifications\VehicleRequestApprovedProcurement;
@@ -14,9 +13,7 @@ use Modules\VehicleRequest\Notifications\VehicleRequestSubmitted;
 use Modules\VehicleRequest\Repositories\VehicleRequestRepository;
 use Modules\Master\Repositories\FiscalYearRepository;
 use Modules\Privilege\Repositories\UserRepository;
-
 use Modules\VehicleRequest\Requests\Approve\StoreRequest;
-use DataTables;
 
 
 class ApproveController extends Controller

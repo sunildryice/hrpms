@@ -78,37 +78,40 @@
 
             // Save draft
             $('#btn-save-draft').on('click', function() {
-                let isValid = true;
+                let keyGoalsValid = true;
 
-                // Validate Key Goals (B)
+                // Validate Key Goals (B) - skip empty rows
                 $('#keygoals-body .keygoal-row').each(function() {
                     const title = $(this).find('textarea[name*="\\[title\\]"]').val()?.trim();
                     const deliverables = $(this).find('textarea[name*="\\[output_deliverables\\]"]')
                         .val()?.trim();
 
+                    if (!title && !deliverables) {
+                        $(this).removeClass('table-danger');
+                        return;
+                    }
+
                     if (!title || !deliverables) {
-                        isValid = false;
+                        keyGoalsValid = false;
                         $(this).addClass('table-danger');
                     } else {
                         $(this).removeClass('table-danger');
                     }
                 });
 
-                // Validate Professional Development Plan (C)
+                // Validate Professional Development Plan (C) - skip empty rows
                 $('#devplan-body .devplan-row').each(function() {
                     const plan = $(this).find('textarea[name*="\\[plan\\]"]').val()?.trim();
-
                     if (!plan) {
-                        isValid = false;
-                        $(this).addClass('table-danger');
-                    } else {
                         $(this).removeClass('table-danger');
+                        return;
                     }
+                    $(this).removeClass('table-danger');
                 });
 
-                if (!isValid) {
+                if (!keyGoalsValid) {
                     toastr.error(
-                        'Please fill all required fields (Objective, Output/Deliverable, and Development Plan).',
+                        'Please fill all required fields (Objective and Output/Deliverable) in Key Goals.',
                         'Validation Error');
                     return;
                 }
@@ -125,6 +128,20 @@
                     },
                     success: function(res) {
                         if (res.type === 'success') {
+                            if (res.newKeyGoalIds) {
+                                $.each(res.newKeyGoalIds, function(index, id) {
+                                    const $row = $('#keygoals-body .keygoal-row[data-row-index="' + index + '"]');
+                                    $row.attr('data-id', id);
+                                    $row.find('input[name*="\\[id\\]"]').val(id);
+                                });
+                            }
+                            if (res.newDevPlanIds) {
+                                $.each(res.newDevPlanIds, function(index, id) {
+                                    const $row = $('#devplan-body .devplan-row[data-row-index="' + index + '"]');
+                                    $row.attr('data-id', id);
+                                    $row.find('input[name*="\\[id\\]"]').val(id);
+                                });
+                            }
                             toastr.success(res.message || 'Draft saved successfully');
                         } else {
                             toastr.error('Could not save. Please try again.');

@@ -1,0 +1,262 @@
+<?php
+
+namespace Modules\Tracker\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Modules\Project\Models\Project;
+use Modules\Tracker\Models\EventRoaster;
+use Modules\Tracker\Repositories\EventRepository;
+use Modules\Tracker\Requests\Event\StoreRequest;
+use Modules\Tracker\Requests\Event\UpdateRequest;
+use Yajra\DataTables\DataTables;
+
+class EventController extends Controller
+{
+    public function __construct(
+        EventRepository $events,
+    )
+    {
+        $this->events = $events;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $authUser = auth()->user();
+
+        $this->authorize('manage-event');
+
+        if ($request->ajax()) {
+            $data = $this->events->with(['project'])
+                ->orderBy('created_at', 'desc')->get();
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('project_title', function ($row) {
+                    return $row->getProjectTitle();
+                })
+                ->addColumn('from_date', function ($row) {
+                    return $row->getFromDate();
+                })
+                ->addColumn('to_date', function ($row) {
+                    return $row->getToDate();
+                })
+                ->addColumn('total_participants', function ($row) {
+                    return $row->getTotalParticipants();
+                })
+                ->addColumn('action', function ($row) use ($authUser) {
+                    $btn = '<a class="btn btn-sm btn-outline-primary" href="';
+                    $btn .= route('event.show', $row->id) . '" rel="tooltip" title="View"><i class="bi bi-eye"></i></a>';
+
+                    if ($authUser->can('manage-event')) {
+                        $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
+                        $btn .= route('event.edit', $row->id) . '" rel="tooltip" title="Edit"><i class="bi-pencil-square"></i></a>';
+                    }
+
+                    if ($authUser->can('manage-event')) {
+                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete" ';
+                        $btn .= 'data-href="' . route('event.destroy', $row->id) . '">';
+                        $btn .= '<i class="bi-trash"></i></a>';
+                    }
+
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
+        }
+
+        return view('Tracker::Event.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $this->authorize('manage-event');
+
+        $projects = Project::whereNotNull('activated_at')->get();
+
+        return view('Tracker::Event.create', compact('projects'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreRequest $request)
+    {
+        $this->authorize('manage-event');
+
+        $inputs = $request->validated();
+        $inputs['roaster_details'] = $request->has('roaster_details') ? 1 : 0;
+        $inputs['created_by'] = auth()->id();
+
+        $record = $this->events->create($inputs);
+
+        if ($record) {
+            if ($record->roaster_details) {
+                return redirect()->route('event.show', $record->id)
+                    ->withSuccessMessage('Event created successfully. You can now add roaster details.');
+            }
+            return redirect()->route('event.index')->withSuccessMessage('Event created successfully.');
+        } else {
+            return redirect()->back()->withInput()->withWarningMessage('Event could not be created.');
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        $event = $this->events->find($id);
+        $event->load(['project', 'roasters']);
+        return view('Tracker::Event.show', compact('event'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $this->authorize('manage-event');
+
+        $event    = $this->events->find($id);
+        $projects = Project::whereNotNull('activated_at')->get();
+
+        return view('Tracker::Event.edit', compact('event', 'projects'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateRequest $request, $id)
+    {
+        $this->authorize('manage-event');
+
+        $inputs = $request->validated();
+        $inputs['roaster_details'] = $request->has('roaster_details') ? 1 : 0;
+        $inputs['updated_by'] = auth()->id();
+
+        $record = $this->events->update($id, $inputs);
+
+        if ($record) {
+            if ($record->roaster_details) {
+                return redirect()->route('event.show', $record->id)
+                    ->withSuccessMessage('Event updated successfully. You can now manage roaster details.');
+            }
+            return redirect()->route('event.index')->withSuccessMessage('Event updated successfully.');
+        } else {
+            return redirect()->back()->withInput()->withWarningMessage('Event could not be updated.');
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $this->authorize('manage-event');
+
+        $record = $this->events->destroy($id);
+
+        if ($record) {
+            return response()->json([
+                'type'      => 'success',
+                'message'   => 'Event deleted successfully.'
+            ], 200);
+        } else {
+            return response()->json([
+                'type'      => 'error',
+                'message'   => 'Event could not be deleted.'
+            ], 422);
+        }
+    }
+
+    /**
+     * Store a new roaster for the event.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeRoaster(Request $request, $id)
+    {
+        $this->authorize('manage-event');
+
+        $request->validate([
+            'organisation'      => 'required|in:HERDi,Government,Other',
+            'organisation_name' => 'nullable|string|max:255',
+            'position'          => 'nullable|string|max:255',
+            'ethnicity'         => 'nullable|string|max:255',
+            'gender'            => 'nullable|in:Male,Female,Other',
+        ]);
+
+        $event = $this->events->find($id);
+
+        $roaster = $event->roasters()->create([
+            'organisation'      => $request->organisation,
+            'organisation_name' => $request->organisation_name,
+            'position'          => $request->position,
+            'ethnicity'         => $request->ethnicity,
+            'gender'            => $request->gender,
+            'created_by'        => auth()->id(),
+        ]);
+
+        if ($roaster) {
+            return response()->json([
+                'type'    => 'success',
+                'message' => 'Roaster added successfully.',
+                'roaster' => $roaster,
+            ], 200);
+        }
+
+        return response()->json([
+            'type'    => 'error',
+            'message' => 'Roaster could not be added.',
+        ], 422);
+    }
+
+    /**
+     * Remove a roaster from the event.
+     *
+     * @param  int  $id
+     * @param  int  $roasterId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroyRoaster($id, $roasterId)
+    {
+        $this->authorize('manage-event');
+
+        $roaster = EventRoaster::where('event_id', $id)->findOrFail($roasterId);
+        $roaster->delete();
+
+        return response()->json([
+            'type'    => 'success',
+            'message' => 'Roaster deleted successfully.',
+        ], 200);
+    }
+}

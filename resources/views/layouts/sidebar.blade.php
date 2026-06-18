@@ -1133,6 +1133,17 @@
                         </div>
                     @endif
                 </div>
+
+                    @if ($authUser->can('manage-event'))
+                    <span class="dropdown-header fw-bold">Tracker</span>
+                    <div class="nav-item">
+                        <a class="nav-link" href="{{ route('event.index') }}" role="button" id="event-index"
+                           data-bs-toggle="tooltip" data-bs-placement="right" title="Events">
+                            <i class="bi bi-calendar-event nav-icon"></i>
+                            <span class="nav-link-title">Events</span>
+                        </a>
+                    </div>
+                    @endif
             </div>
         </div>
     </div>

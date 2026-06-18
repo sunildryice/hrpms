@@ -1,11 +1,22 @@
 <?php
 
 use Modules\Tracker\Controllers\BusinessDevelopmentController;
+use Modules\Tracker\Controllers\EventController;
 use Modules\Tracker\Controllers\HrEventController;
 use Modules\Tracker\Controllers\ResearchCommunicationController;
 use Modules\Tracker\Controllers\RiskController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
+    Route::get('event', [EventController::class, 'index'])->name('event.index');
+    Route::get('event/create', [EventController::class, 'create'])->name('event.create');
+    Route::post('event', [EventController::class, 'store'])->name('event.store');
+    Route::get('event/{id}/show', [EventController::class, 'show'])->name('event.show');
+    Route::get('event/{id}/edit', [EventController::class, 'edit'])->name('event.edit');
+    Route::put('event/{id}/update', [EventController::class, 'update'])->name('event.update');
+    Route::delete('event/{id}/destroy', [EventController::class, 'destroy'])->name('event.destroy');
+    Route::post('event/{id}/roaster', [EventController::class, 'storeRoaster'])->name('event.roaster.store');
+    Route::delete('event/{id}/roaster/{roasterId}', [EventController::class, 'destroyRoaster'])->name('event.roaster.destroy');
+
     Route::get('risk', [RiskController::class, 'index'])->name('risk.index');
     Route::get('risk/create', [RiskController::class, 'create'])->name('risk.create');
     Route::post('risk', [RiskController::class, 'store'])->name('risk.store');

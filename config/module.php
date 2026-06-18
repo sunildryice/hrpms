@@ -30,6 +30,7 @@ return [
         'TravelAuthorization',
         'TravelRequest',
         'VehicleRequest',
+        'Tracker',
         'WorkFromHome',
         'WorkLog'
     ],

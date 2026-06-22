@@ -49,7 +49,8 @@ class VehicleRequestAssigned extends Notification
             ->greeting('Dear ' . $this->vehicleRequest->getRequesterName() . ',')
             ->line('Your vehicle request has been assigned.')
             ->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
-            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y h:i A') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y h:i A') ?? '-'))
+            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y') ?? '-'))
+            ->line('Pickup time : ' . ($this->vehicleRequest->pickup_time ? \Carbon\Carbon::parse($this->vehicleRequest->pickup_time)->format('h:i A') : '-'))
             ->line('Purpose : ' . ($this->vehicleRequest->purpose_of_travel ?? '-'))
             ->action('View Request', $url);
     }

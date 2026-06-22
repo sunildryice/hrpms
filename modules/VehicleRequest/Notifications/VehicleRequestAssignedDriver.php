@@ -58,7 +58,7 @@ class VehicleRequestAssignedDriver extends Notification
             ->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
             ->line('Requester : ' . $this->vehicleRequest->getRequesterName())
             ->line('Vehicle : ' . $this->vehicleRequest->assignedVehicle?->getVehicleNumberWithCapacity())
-            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y h:i A') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y h:i A') ?? '-'))
+            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y') ?? '-'))
             ->line('Travel Locations : ' . $travelRoute)
             ->line('Pickup time : ' . $pickupTime)
             ->line('Pickup place : ' . $this->vehicleRequest->pickup_place ?: '—')

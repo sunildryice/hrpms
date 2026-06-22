@@ -56,7 +56,8 @@ class VehicleRequestSubmitted extends Notification
             ->line('You have a new vehicle request awaiting your approval.')
             ->line('Request Number : ' . $this->vehicleRequest->getVehicleRequestNumber())
             ->line('Requester : ' . $this->vehicleRequest->getRequesterName())
-            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y h:i A') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y h:i A') ?? '-'))
+            ->line('Travel dates : ' . ($this->vehicleRequest->start_datetime?->format('d M Y') ?? '-') . ' to ' . ($this->vehicleRequest->end_datetime?->format('d M Y') ?? '-'))
+            ->line('Pickup time : ' . ($this->vehicleRequest->pickup_time ? \Carbon\Carbon::parse($this->vehicleRequest->pickup_time)->format('h:i A') : '-'))
             ->line('Purpose : ' . ($this->vehicleRequest->purpose_of_travel ?? '-'))
             ->action('View Request', $url);
     }

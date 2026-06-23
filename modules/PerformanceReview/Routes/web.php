@@ -12,6 +12,7 @@ use Modules\PerformanceReview\Controllers\PerformanceReviewExternalReviewControl
 use Modules\PerformanceReview\Controllers\PerformanceReviewKeyGoalController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewRecommendController;
 use Modules\PerformanceReview\Controllers\PerformanceReviewReviewController;
+use Modules\PerformanceReview\Controllers\PerformanceReviewSummaryController;
 
 Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
@@ -85,4 +86,7 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
 
     Route::get('performance/devplan', [PerformanceReviewDevPlanController::class, 'index'])->name('performance.devplan.index');
     Route::post('performance/devplan/standalone/update', [PerformanceReviewDevPlanController::class, 'update'])->name('performance.devplan.standalone.update');
+
+    Route::get('performance/summary', [PerformanceReviewSummaryController::class, 'index'])->name('performance.summary.index');
+    Route::get('performance/summary/{fiscalYear}/{reviewType}', [PerformanceReviewSummaryController::class, 'show'])->name('performance.summary.show');
 });

@@ -36,6 +36,10 @@
                         name: 'returned'
                     },
                     {
+                        data: 'closed',
+                        name: 'closed'
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                         orderable: false,
@@ -77,6 +81,7 @@
                                 <th>{{ __('label.submitted') }}</th>
                                 <th>{{ __('label.approved') }}</th>
                                 <th>{{ __('label.returned') }}</th>
+                                <th>{{ __('label.closed') }}</th>
                                 <th>{{ __('label.action') }}</th>
                             </tr>
                         </thead>

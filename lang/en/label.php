@@ -81,6 +81,7 @@ return [
     'capacity' => 'Capacity',
     'category' => 'Category',
     'charged-office' => 'Charged Office',
+    'closed' => 'Closed',
     'completed' => 'Completed',
     'completion-date' => 'Completion Date',
     'concern-address-summary' => 'Where concerns have been identified, please summarise how these will be addressed during the remaining period of probation.',

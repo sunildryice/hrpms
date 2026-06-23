@@ -2,8 +2,8 @@
 
 namespace Modules\VehicleRequest\Notifications;
 
-use App\Events\NotificationPushed;
 use Illuminate\Bus\Queueable;
+use App\Events\NotificationPushed;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;

@@ -264,13 +264,8 @@ class PerformanceReviewKeyGoalController extends Controller
         $performanceReview = $this->performanceReview->findOrFail($id);
 
         $request->validate([
-            'keygoals' => 'required|array|min:1',
-            'keygoals.*.title' => 'required|string',
-            'keygoals.*.output_deliverables' => 'required|string',
-            'keygoals.*.project_id' => 'nullable|integer|exists:projects,id',
-
-            'devplans' => 'required|array|min:1',
-            'devplans.*.plan' => 'required|string',
+            'keygoals' => 'nullable|array',
+            'devplans' => 'nullable|array',
         ]);
 
         DB::beginTransaction();
@@ -278,27 +273,38 @@ class PerformanceReviewKeyGoalController extends Controller
         try {
             // KEY GOALS 
             $submittedKeyGoalIds = [];
+            $newKeyGoalIds = [];
 
-            foreach ($request->keygoals as $index => $item) {
-                $keyGoalData = [
-                    'performance_review_id' => $performanceReview->id,
-                    'title' => trim($item['title']),
-                    'output_deliverables' => trim($item['output_deliverables']),
-                    'project_id' => !empty($item['project_id']) ? $item['project_id'] : null,
-                    'type' => 'current',
-                    'updated_by' => auth()->id(),
-                ];
+            if ($request->has('keygoals')) {
+                foreach ($request->keygoals as $index => $item) {
+                    $title = trim($item['title'] ?? '');
+                    $outputDeliverables = trim($item['output_deliverables'] ?? '');
 
-                if (!empty($item['id'])) {
-                    $keyGoal = $this->performanceReviewKeyGoal->find($item['id']);
-                    if ($keyGoal && $keyGoal->performance_review_id == $performanceReview->id) {
-                        $keyGoal->update($keyGoalData);
-                        $submittedKeyGoalIds[] = $keyGoal->id;
+                    if (empty($title) && empty($outputDeliverables)) {
+                        continue;
                     }
-                } else {
-                    $keyGoalData['created_by'] = auth()->id();
-                    $newGoal = $this->performanceReviewKeyGoal->create($keyGoalData);
-                    $submittedKeyGoalIds[] = $newGoal->id;
+
+                    $keyGoalData = [
+                        'performance_review_id' => $performanceReview->id,
+                        'title' => $title,
+                        'output_deliverables' => $outputDeliverables,
+                        'project_id' => !empty($item['project_id']) ? $item['project_id'] : null,
+                        'type' => 'current',
+                        'updated_by' => auth()->id(),
+                    ];
+
+                    if (!empty($item['id'])) {
+                        $keyGoal = $this->performanceReviewKeyGoal->find($item['id']);
+                        if ($keyGoal && $keyGoal->performance_review_id == $performanceReview->id) {
+                            $keyGoal->update($keyGoalData);
+                            $submittedKeyGoalIds[] = $keyGoal->id;
+                        }
+                    } else {
+                        $keyGoalData['created_by'] = auth()->id();
+                        $newGoal = $this->performanceReviewKeyGoal->create($keyGoalData);
+                        $submittedKeyGoalIds[] = $newGoal->id;
+                        $newKeyGoalIds[(string)$index] = $newGoal->id;
+                    }
                 }
             }
 
@@ -309,28 +315,43 @@ class PerformanceReviewKeyGoalController extends Controller
                     ->where('type', 'current')
                     ->whereNotIn('id', $submittedKeyGoalIds)
                     ->delete();
+            } else {
+                $this->performanceReviewKeyGoal
+                    ->where('performance_review_id', '=', $performanceReview->id)
+                    ->where('type', 'current')
+                    ->delete();
             }
 
             // DEVELOPMENT PLANS 
             $submittedDevPlanIds = [];
+            $newDevPlanIds = [];
 
-            foreach ($request->devplans as $item) {
-                $devPlanData = [
-                    'performance_review_id' => $performanceReview->id,
-                    'objective' => trim($item['plan'] ?? ''),
-                    'updated_by' => auth()->id(),
-                ];
+            if ($request->has('devplans')) {
+                foreach ($request->devplans as $index => $item) {
+                    $planText = trim($item['plan'] ?? '');
 
-                if (!empty($item['id'])) {
-                    $plan = PerformanceProfessionalDevelopmentPlan::find($item['id']);
-                    if ($plan && $plan->performance_review_id == $performanceReview->id) {
-                        $plan->update($devPlanData);
-                        $submittedDevPlanIds[] = $plan->id;
+                    if (empty($planText)) {
+                        continue;
                     }
-                } else {
-                    $devPlanData['created_by'] = auth()->id();
-                    $newPlan = PerformanceProfessionalDevelopmentPlan::create($devPlanData);
-                    $submittedDevPlanIds[] = $newPlan->id;
+
+                    $devPlanData = [
+                        'performance_review_id' => $performanceReview->id,
+                        'objective' => $planText,
+                        'updated_by' => auth()->id(),
+                    ];
+
+                    if (!empty($item['id'])) {
+                        $plan = PerformanceProfessionalDevelopmentPlan::find($item['id']);
+                        if ($plan && $plan->performance_review_id == $performanceReview->id) {
+                            $plan->update($devPlanData);
+                            $submittedDevPlanIds[] = $plan->id;
+                        }
+                    } else {
+                        $devPlanData['created_by'] = auth()->id();
+                        $newPlan = PerformanceProfessionalDevelopmentPlan::create($devPlanData);
+                        $submittedDevPlanIds[] = $newPlan->id;
+                        $newDevPlanIds[(string)$index] = $newPlan->id;
+                    }
                 }
             }
 
@@ -339,6 +360,9 @@ class PerformanceReviewKeyGoalController extends Controller
                 PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
                     ->whereNotIn('id', $submittedDevPlanIds)
                     ->delete();
+            } else {
+                PerformanceProfessionalDevelopmentPlan::where('performance_review_id', $performanceReview->id)
+                    ->delete();
             }
 
             DB::commit();
@@ -346,6 +370,8 @@ class PerformanceReviewKeyGoalController extends Controller
             return response()->json([
                 'type' => 'success',
                 'message' => 'Draft saved successfully',
+                'newKeyGoalIds' => $newKeyGoalIds,
+                'newDevPlanIds' => $newDevPlanIds,
             ]);
 
         } catch (\Exception $e) {

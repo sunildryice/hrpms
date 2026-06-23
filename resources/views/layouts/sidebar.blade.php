@@ -277,6 +277,8 @@
                                 @if ($authUser->can('manage-performance-review'))
                                     <a class="nav-link" id="performance-index"
                                        href="{{ route('performance.index') }}">Manage Performance Review</a>
+                                    <a class="nav-link" id="performance-summary-index"
+                                       href="{{ route('performance.summary.index') }}">Performance Review Summary</a>
                                 @endif
 
                                 @if ($authUser->can('review-performance-review'))

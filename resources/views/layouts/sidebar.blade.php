@@ -1134,16 +1134,57 @@
                     @endif
                 </div>
 
-                    @if ($authUser->can('manage-event'))
+                @if ($authUser->can('manage-event') || $authUser->can('manage-hr-event') || $authUser->can('manage-business-development')
+|| $authUser->can('manage-risk') || $authUser->can('manage-research-communication'))
                     <span class="dropdown-header fw-bold">Tracker</span>
-                    <div class="nav-item">
-                        <a class="nav-link" href="{{ route('event.index') }}" role="button" id="event-index"
-                           data-bs-toggle="tooltip" data-bs-placement="right" title="Events">
-                            <i class="bi bi-calendar-event nav-icon"></i>
-                            <span class="nav-link-title">Events</span>
-                        </a>
-                    </div>
+                    @if($authUser->can('manage-business-development'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('business-development.index') }}" role="button"
+                               id="business-development-index"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Business Development">
+                                <i class="bi bi-briefcase nav-icon"></i>
+                                <span class="nav-link-title">Business Development</span>
+                            </a>
+                        </div>
                     @endif
+                    @if ($authUser->can('manage-event'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('event.index') }}" role="button" id="event-index"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Events">
+                                <i class="bi bi-calendar-event nav-icon"></i>
+                                <span class="nav-link-title">Events</span>
+                            </a>
+                        </div>
+                    @endif
+                    @if ($authUser->can('manage-hr-event'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('hr-event.index') }}" role="button" id="hr-event-index"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="HR Event">
+                                <i class="bi bi-person-badge nav-icon"></i>
+                                <span class="nav-link-title">HR Events</span>
+                            </a>
+                        </div>
+                    @endif
+                    @if ($authUser->can('manage-risk'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('risk.index') }}" role="button" id="risk-index"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Risk">
+                                <i class="bi bi-exclamation-triangle nav-icon"></i>
+                                <span class="nav-link-title">Risks</span>
+                            </a>
+                        </div>
+                    @endif
+                    @if ($authUser->can('manage-research-communication'))
+                        <div class="nav-item">
+                            <a class="nav-link" href="{{ route('research-communication.index') }}" role="button"
+                               id="research-communication-index"
+                               data-bs-toggle="tooltip" data-bs-placement="right" title="Research & Communication">
+                                <i class="bi bi-journal-richtext nav-icon"></i>
+                                <span class="nav-link-title">Research & Communication</span>
+                            </a>
+                        </div>
+                    @endif
+                @endif
             </div>
         </div>
     </div>

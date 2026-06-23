@@ -6,7 +6,7 @@ use Modules\Tracker\Controllers\HrEventController;
 use Modules\Tracker\Controllers\ResearchCommunicationController;
 use Modules\Tracker\Controllers\RiskController;
 
-Route::middleware(['web', 'auth', 'logger'])->group(function () {
+Route::middleware(['web', 'auth', 'logger'])->prefix('tracker')->group(function () {
     Route::get('event', [EventController::class, 'index'])->name('event.index');
     Route::get('event/create', [EventController::class, 'create'])->name('event.create');
     Route::post('event', [EventController::class, 'store'])->name('event.store');

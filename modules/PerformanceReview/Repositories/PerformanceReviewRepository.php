@@ -152,6 +152,51 @@ class PerformanceReviewRepository extends Repository
             ->get();
     }
 
+    public function getPerformanceReviewSummary()
+    {
+        return $this->model
+            ->selectRaw('
+                performance_reviews.fiscal_year_id,
+                performance_reviews.review_type_id,
+                lkup_payroll_fiscal_years.title AS fiscal_year_title,
+                lkup_performance_review_types.title AS review_type_title,
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS not_submitted,
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS returned,
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS submitted,
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS approved
+            ', [
+                config('constant.CREATED_STATUS'),
+                config('constant.RETURNED_STATUS'),
+                config('constant.SUBMITTED_STATUS'),
+                config('constant.APPROVED_STATUS'),
+            ])
+            ->join('lkup_payroll_fiscal_years', 'performance_reviews.fiscal_year_id', '=', 'lkup_payroll_fiscal_years.id')
+            ->join('lkup_performance_review_types', 'performance_reviews.review_type_id', '=', 'lkup_performance_review_types.id')
+            ->groupBy('performance_reviews.fiscal_year_id', 'performance_reviews.review_type_id', 'lkup_payroll_fiscal_years.title', 'lkup_performance_review_types.title')
+            ->orderBy('lkup_payroll_fiscal_years.id', 'desc')
+            ->orderBy('lkup_performance_review_types.id')
+            ->get();
+    }
+
+    public function getPerformanceReviewsByFiscalYearAndType($fiscalYearId, $reviewTypeId)
+    {
+        return $this->model
+            ->with([
+                'employee',
+                'fiscalYear',
+                'reviewType',
+                'status',
+                'logs' => function ($q) {
+                    $q->latest();
+                }
+            ])
+            ->where('fiscal_year_id', $fiscalYearId)
+            ->where('review_type_id', $reviewTypeId)
+            ->orderBy('status_id')
+            ->orderBy('employee_id')
+            ->get();
+    }
+
     public function createKeyGoalsandDevelopmentPlans($performanceReviewId)
     {
         $perfomancereview = $this->model->findOrFail($performanceReviewId);

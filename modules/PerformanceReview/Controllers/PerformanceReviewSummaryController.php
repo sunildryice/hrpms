@@ -34,6 +34,7 @@ class PerformanceReviewSummaryController extends Controller
                 ->editColumn('submitted', fn($row) => $row->submitted ?? 0)
                 ->editColumn('approved', fn($row) => $row->approved ?? 0)
                 ->editColumn('returned', fn($row) => $row->returned ?? 0)
+                ->editColumn('closed', fn($row) => $row->closed ?? 0)
                 ->rawColumns(['action'])
                 ->make(true);
         }
@@ -57,6 +58,7 @@ class PerformanceReviewSummaryController extends Controller
                         config('constant.RETURNED_STATUS') => ['class' => 'bg-danger', 'text' => 'Returned'],
                         config('constant.SUBMITTED_STATUS') => ['class' => 'bg-warning', 'text' => 'Submitted'],
                         config('constant.APPROVED_STATUS') => ['class' => 'bg-success', 'text' => 'Approved'],
+                        config('constant.CLOSED_STATUS') => ['class' => 'bg-info', 'text' => 'Closed'],
                     ];
 
                     $info = $mapping[$statusId] ?? ['class' => 'bg-secondary', 'text' => 'Unknown'];

@@ -226,6 +226,7 @@ class ProjectActivityController extends Controller
             'attachments' => function ($query) {
                 $query->latest('created_at');
             },
+            'details',
         ]);
         $activityLevels = ActivityLevel::cases();
         $stages = $projectActivity->project?->stages ?? [];

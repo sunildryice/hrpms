@@ -284,7 +284,8 @@
                 </div>
             </div>
 
-            @include('Project::Partials.other-detail', ['projectActivity' => $projectActivity])
+            {{-- @include('Project::Partials.other-detail', ['projectActivity' => $projectActivity]) --}}
+            @include('Project::Partials.detail-card', ['projectActivity' => $projectActivity])
         </div>
     </div>
 @endsection

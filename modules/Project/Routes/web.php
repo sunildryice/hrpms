@@ -13,6 +13,7 @@ use Modules\Project\Controllers\MonthlyTimeSheetSummaryController;
 use Modules\Project\Controllers\PmsController;
 use Modules\Project\Controllers\ProjectActivityAttachmentController;
 use Modules\Project\Controllers\ProjectActivityController;
+use Modules\Project\Controllers\ProjectActivityDetailController;
 use Modules\Project\Controllers\ProjectActivityExportController;
 use Modules\Project\Controllers\ProjectActivityExtensionController;
 use Modules\Project\Controllers\ProjectActivityImportController;
@@ -70,6 +71,13 @@ Route::middleware(['web', 'auth', 'logger'])->group(function () {
     Route::post('/project-activity/{projectActivity}/update', [ProjectActivityController::class, 'update'])->name('project-activity.update');
     Route::get('/project-activity/{projectActivity}/show', [ProjectActivityController::class, 'show'])->name('project-activity.show');
     Route::delete('/project-activity/{projectActivity}/delete', [ProjectActivityController::class, 'destroy'])->name('project-activity.destroy');
+
+    // Project Activity Details (Key Accomplishments, Challenges, Lessons Learned)
+    Route::get('/project-activity/{projectActivity}/details/create', [ProjectActivityDetailController::class, 'create'])->name('project-activity.details.create');
+    Route::get('/project-activity/details/{id}/edit', [ProjectActivityDetailController::class, 'edit'])->name('project-activity.details.edit');
+    Route::post('/project-activity/{projectActivity}/details', [ProjectActivityDetailController::class, 'store'])->name('project-activity.details.store');
+    Route::put('/project-activity/details/{id}', [ProjectActivityDetailController::class, 'update'])->name('project-activity.details.update');
+    Route::delete('/project-activity/details/{id}', [ProjectActivityDetailController::class, 'destroy'])->name('project-activity.details.destroy');
 
     Route::post('/project-activity/{projectActivity}/status', [ProjectActivityController::class, 'updateStatus'])->name('project-activity.status.update');
 
@@ -145,3 +153,4 @@ Route::patch('/project-activity/{projectActivity}/other-details', [ProjectActivi
 Route::post('/project-activity/{projectActivity}/other-details', [ProjectActivityOtherDetailsController::class, 'store'])->name('project-activity.other-details.store');
 Route::put('/project-activity/other-details/{id}', [ProjectActivityOtherDetailsController::class, 'updateDetail'])->name('project-activity.other-details.update');
 Route::delete('/project-activity/other-details/{id}', [ProjectActivityOtherDetailsController::class, 'destroy'])->name('project-activity.other-details.destroy');
+

@@ -61,6 +61,8 @@ class DatabaseSeeder extends Seeder
             ClearanceDepartmentSeeder::class,
 
             ThematicAreaSeeder::class,
+
+            RiskLookupSeeder::class,
         ]);
     }
 }

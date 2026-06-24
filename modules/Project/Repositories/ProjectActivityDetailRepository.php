@@ -2,33 +2,50 @@
 
 namespace Modules\Project\Repositories;
 
+use App\Repositories\Repository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Modules\Project\Models\ProjectActivityDetail;
 
-class ProjectActivityDetailRepository
+class ProjectActivityDetailRepository extends Repository
 {
-    public function create(array $data)
-    {
-        return ProjectActivityDetail::create($data);
+    public function __construct(
+        protected ProjectActivityDetail $projectActivityDetail
+    ) {
+        $this->model = $projectActivityDetail;
     }
 
-    public function update(ProjectActivityDetail $detail, array $data)
+    public function create($inputs)
     {
-        $detail->update($data);
-        return $detail;
+        DB::beginTransaction();
+        try {
+            $record = $this->model->create($inputs);
+            DB::commit();
+            return $record;
+        } catch (QueryException $e) {
+            logger()->error($e->getMessage());
+            DB::rollback();
+            throw $e;
+        }
     }
 
-    public function find($id)
+    public function update($id, $inputs)
     {
-        return ProjectActivityDetail::find($id);
+        DB::beginTransaction();
+        try {
+            $record = $this->model->findOrFail($id);
+            $record->update($inputs);
+            DB::commit();
+            return $record;
+        } catch (QueryException $e) {
+            logger()->error($e->getMessage());
+            DB::rollback();
+            throw $e;
+        }
     }
 
     public function findByProjectActivity($projectActivityId, $id)
     {
-        return ProjectActivityDetail::where('project_activity_id', $projectActivityId)->where('id', $id)->first();
-    }
-
-    public function delete(ProjectActivityDetail $detail)
-    {
-        return $detail->delete();
+        return $this->model->where('project_activity_id', $projectActivityId)->where('id', $id)->first();
     }
 }

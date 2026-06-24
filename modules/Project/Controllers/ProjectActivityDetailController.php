@@ -2,52 +2,36 @@
 
 namespace Modules\Project\Controllers;
 
-use Modules\Project\Models\ProjectActivity;
-use Modules\Project\Repositories\ProjectActivityDetailRepository;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Modules\Project\Repositories\ProjectActivityDetailRepository;
+use Modules\Project\Requests\ProjectActivityDetail\StoreRequest;
+use Modules\Project\Requests\ProjectActivityDetail\UpdateRequest;
 
 class ProjectActivityDetailController extends Controller
 {
-    protected $detailRepo;
-
-    public function __construct(ProjectActivityDetailRepository $detailRepo)
-    {
-        $this->detailRepo = $detailRepo;
-    }
+    public function __construct(
+        protected ProjectActivityDetailRepository $detailRepo
+    ) {}
 
     public function create($projectActivity)
     {
-        $projectActivity = ProjectActivity::findOrFail($projectActivity);
-        $title = 'Add Details';
-        $route = route('project-activity.details.store', $projectActivity->id);
-        $method = 'POST';
-        $detail = null;
-
-        return view('Project::Partials.detail-form', compact('title', 'route', 'method', 'detail'));
+        return view('Project::ProjectActivityDetail.create', compact('projectActivity'));
     }
 
     public function edit($id)
     {
-        $detail = $this->detailRepo->find($id);
+        $detail = $this->detailRepo->findOrNull($id);
+
         if (!$detail) {
             abort(404);
         }
-        $title = 'Edit Details';
-        $route = route('project-activity.details.update', $detail->id);
-        $method = 'PUT';
 
-        return view('Project::Partials.detail-form', compact('title', 'route', 'method', 'detail'));
+        return view('Project::ProjectActivityDetail.edit', compact('detail'));
     }
 
-    public function store(Request $request, $projectActivity)
+    public function store(StoreRequest $request, $projectActivity)
     {
-        $data = $request->validate([
-            'key_accomplishment' => 'required|string',
-            'challenge' => 'required|string',
-            'lesson_learned' => 'required|string',
-        ]);
-
+        $data = $request->validated();
         $data['project_activity_id'] = $projectActivity;
         $data['created_by'] = auth()->id();
 
@@ -64,22 +48,11 @@ class ProjectActivityDetailController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update($id, UpdateRequest $request)
     {
-        $data = $request->validate([
-            'key_accomplishment' => 'required|string',
-            'challenge' => 'required|string',
-            'lesson_learned' => 'required|string',
-        ]);
-
-        $detail = $this->detailRepo->find($id);
-
-        if (!$detail) {
-            return response()->json(['message' => 'Detail not found.'], 404);
-        }
-
+        $data = $request->validated();
         $data['updated_by'] = auth()->id();
-        $this->detailRepo->update($detail, $data);
+        $detail = $this->detailRepo->update($id, $data);
 
         return response()->json([
             'message' => 'Details updated successfully.',
@@ -94,13 +67,7 @@ class ProjectActivityDetailController extends Controller
 
     public function destroy($id)
     {
-        $detail = $this->detailRepo->find($id);
-
-        if (!$detail) {
-            return response()->json(['message' => 'Detail not found.'], 404);
-        }
-
-        $this->detailRepo->delete($detail);
+        $this->detailRepo->destroy($id);
 
         return response()->json([
             'message' => 'Details deleted successfully.',

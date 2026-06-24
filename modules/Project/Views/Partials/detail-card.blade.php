@@ -1,5 +1,5 @@
 @php
-    $canEdit = auth()->user()->can('manage-project-activity-other-detail', $projectActivity->project);
+    $canEdit = auth()->user()->can('manage-project-activity-detail', $projectActivity->project);
 @endphp
 
 <div class="card mt-3">

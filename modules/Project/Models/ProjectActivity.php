@@ -10,6 +10,7 @@ use Modules\Project\Models\Enums\ActivityLevel;
 use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Project\Models\ProjectActivityStatusLog;
 use Modules\Project\Models\ProjectActivityAttachment;
+use Modules\Project\Models\ProjectActivityDetail;
 
 class ProjectActivity extends Model
 {
@@ -140,6 +141,11 @@ class ProjectActivity extends Model
     public function otherDetails()
     {
         return $this->hasMany(ActivityOtherDetail::class, 'project_activity_id');
+    }
+
+    public function details()
+    {
+        return $this->hasMany(ProjectActivityDetail::class, 'project_activity_id');
     }
 
     public function getDisplayCompletionDateAttribute()

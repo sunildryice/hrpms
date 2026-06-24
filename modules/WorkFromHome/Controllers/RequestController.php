@@ -179,20 +179,35 @@ class RequestController extends Controller
 
         $inputs = $request->validated();
 
-        $overlapping = $this->workFromHomes
-            ->where('requester_id', '=', auth()->id())
-            ->whereNotIn('status_id', [
-                config('constant.REJECTED_STATUS'),
-                // config('constant.CREATED_STATUS'),
-            ])
-            ->where('start_date', '<=', $inputs['end_date'])
-            ->where('end_date', '>=', $inputs['start_date'])
-            ->exists();
+        // $overlapping = $this->workFromHomes
+        //     ->where('requester_id', '=', auth()->id())
+        //     ->whereNotIn('status_id', [
+        //         config('constant.REJECTED_STATUS'),
+        //         // config('constant.CREATED_STATUS'),
+        //     ])
+        //     ->where('start_date', '<=', $inputs['end_date'])
+        //     ->where('end_date', '>=', $inputs['start_date'])
+        //     ->exists();
 
-        if ($overlapping) {
+        // if ($overlapping) {
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+        // }
+
+        $dayOverlap = $this->getDayOverlap(auth()->id(), $inputs['date_types']);
+
+        if ($dayOverlap) {
+            $range = $dayOverlap['existing_start'] === $dayOverlap['existing_end']
+                ? $dayOverlap['existing_start']
+                : $dayOverlap['existing_start'] . ' to ' . $dayOverlap['existing_end'];
+
+            $typeOptions = WorkFromHomeDays::options();
+            $existingTypeLabel = $typeOptions[$dayOverlap['existing_type']] ?? ucfirst(str_replace('_', ' ', $dayOverlap['existing_type']));
+
             return redirect()->back()
                 ->withInput()
-                ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+                ->with('error_message', "You already have a WFH/Field Work request ({$existingTypeLabel}) on {$dayOverlap['date']} from existing range {$range}.");
         }
 
         try {
@@ -317,21 +332,36 @@ class RequestController extends Controller
         $authUser = auth()->user();
         $inputs = $request->validated();
 
-        $overlapping = $this->workFromHomes
-            ->where('requester_id', '=', auth()->id())
-            ->where('id', '!=', $id)
-            ->whereNotIn('status_id', [
-                config('constant.REJECTED_STATUS'),
-                // config('constant.CREATED_STATUS'),
-            ])
-            ->where('start_date', '<=', $inputs['end_date'])
-            ->where('end_date', '>=', $inputs['start_date'])
-            ->exists();
+        // $overlapping = $this->workFromHomes
+        //     ->where('requester_id', '=', auth()->id())
+        //     ->where('id', '!=', $id)
+        //     ->whereNotIn('status_id', [
+        //         config('constant.REJECTED_STATUS'),
+        //         // config('constant.CREATED_STATUS'),
+        //     ])
+        //     ->where('start_date', '<=', $inputs['end_date'])
+        //     ->where('end_date', '>=', $inputs['start_date'])
+        //     ->exists();
 
-        if ($overlapping) {
+        // if ($overlapping) {
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+        // }
+
+        $dayOverlap = $this->getDayOverlap(auth()->id(), $inputs['date_types'], $id);
+
+        if ($dayOverlap) {
+            $range = $dayOverlap['existing_start'] === $dayOverlap['existing_end']
+                ? $dayOverlap['existing_start']
+                : $dayOverlap['existing_start'] . ' to ' . $dayOverlap['existing_end'];
+
+            $typeOptions = WorkFromHomeDays::options();
+            $existingTypeLabel = $typeOptions[$dayOverlap['existing_type']] ?? ucfirst(str_replace('_', ' ', $dayOverlap['existing_type']));
+
             return redirect()->back()
                 ->withInput()
-                ->with('error_message', 'You already have a WFH/Field Work request for this date range.');
+                ->with('error_message', "You already have a WFH/Field Work request ({$existingTypeLabel}) on {$dayOverlap['date']} from existing range {$range}.");
         }
 
         try {
@@ -396,5 +426,64 @@ class RequestController extends Controller
                 ->withInput()
                 ->with('error_message', 'Something went wrong! ' . $e->getMessage());
         }
+    }
+
+    private function getDayOverlap($requesterId, $dateTypes, $excludeId = null): ?array
+    {
+        $dates = collect($dateTypes)->pluck('date')->unique()->toArray();
+
+        if (empty($dates)) {
+            return null;
+        }
+
+        $existingRequests = $this->workFromHomes
+            ->with(['WorkFromHomeDays' => function ($q) use ($dates) {
+                $q->whereIn('date', $dates);
+            }])
+            ->where('requester_id', '=', $requesterId)
+            ->when($excludeId, fn($q) => $q->where('id', '!=', $excludeId))
+            ->whereNotIn('status_id', [config('constant.REJECTED_STATUS')])
+            ->where('start_date', '<=', max($dates))
+            ->where('end_date', '>=', min($dates))
+            ->get();
+
+        foreach ($dateTypes as $newDay) {
+            $newDate = $newDay['date'];
+            $newType = $newDay['type'];
+
+            foreach ($existingRequests as $existing) {
+                foreach ($existing->WorkFromHomeDays as $existingDay) {
+                    $existingDate = $existingDay->date instanceof \Carbon\Carbon
+                        ? $existingDay->date->format('Y-m-d')
+                        : $existingDay->date;
+
+                    if ($existingDate !== $newDate) {
+                        continue;
+                    }
+
+                    $existingType = $existingDay->type;
+
+                    if ($this->isHalfDayConflict($newType, $existingType)) {
+                        return [
+                            'date' => $newDate,
+                            'existing_type' => $existingType,
+                            'existing_start' => $existing->start_date->format('Y-m-d'),
+                            'existing_end' => $existing->end_date->format('Y-m-d'),
+                        ];
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function isHalfDayConflict($newType, $existingType): bool
+    {
+        if ($existingType === WorkFromHomeDays::FULL_DAY || $newType === WorkFromHomeDays::FULL_DAY) {
+            return true;
+        }
+
+        return $newType === $existingType;
     }
 }

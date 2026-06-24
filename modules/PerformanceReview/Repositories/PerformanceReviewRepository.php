@@ -163,12 +163,14 @@ class PerformanceReviewRepository extends Repository
                 COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS not_submitted,
                 COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS returned,
                 COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS submitted,
-                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS approved
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS approved,
+                COUNT(CASE WHEN performance_reviews.status_id = ? THEN 1 END) AS closed
             ', [
                 config('constant.CREATED_STATUS'),
                 config('constant.RETURNED_STATUS'),
                 config('constant.SUBMITTED_STATUS'),
                 config('constant.APPROVED_STATUS'),
+                config('constant.CLOSED_STATUS'),
             ])
             ->join('lkup_payroll_fiscal_years', 'performance_reviews.fiscal_year_id', '=', 'lkup_payroll_fiscal_years.id')
             ->join('lkup_performance_review_types', 'performance_reviews.review_type_id', '=', 'lkup_performance_review_types.id')

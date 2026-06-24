@@ -103,7 +103,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_added">Date Added <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="date_added" id="date_added" value="{{old('date_added')}}">
+                                <input class="form-control" type="text" name="date_added" id="date_added" value="{{old('date_added')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_name">Risk Name <span class="text-danger">*</span></label>
@@ -114,8 +114,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_status_id">Risk Status</label>
-                                <select class="form-select" name="risk_status_id" id="risk_status_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_status_id" id="risk_status_id">
+                                    <option value="">Select Risk Status</option>
                                     @foreach($riskStatuses as $status)
                                         <option value="{{$status->id}}" {{old('risk_status_id') == $status->id ? 'selected' : ''}}>{{$status->title}}</option>
                                     @endforeach
@@ -123,8 +123,8 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_type_id">Risk Type</label>
-                                <select class="form-select" name="risk_type_id" id="risk_type_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_type_id" id="risk_type_id">
+                                    <option value="">Select Risk Type</option>
                                     @foreach($riskTypes as $type)
                                         <option value="{{$type->id}}" {{old('risk_type_id') == $type->id ? 'selected' : ''}}>{{$type->title}}</option>
                                     @endforeach
@@ -132,8 +132,8 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_probability_id">Risk Probability</label>
-                                <select class="form-select" name="risk_probability_id" id="risk_probability_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_probability_id" id="risk_probability_id">
+                                    <option value="">Select Risk Probability</option>
                                     @foreach($riskProbabilities as $probability)
                                         <option value="{{$probability->id}}" {{old('risk_probability_id') == $probability->id ? 'selected' : ''}}>{{$probability->title}}</option>
                                     @endforeach
@@ -144,8 +144,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_impact_id">Residual Impact</label>
-                                <select class="form-select" name="risk_impact_id" id="risk_impact_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_impact_id" id="risk_impact_id">
+                                    <option value="">Select Residual Impact</option>
                                     @foreach($riskImpacts as $impact)
                                         <option value="{{$impact->id}}" {{old('risk_impact_id') == $impact->id ? 'selected' : ''}}>{{$impact->title}}</option>
                                     @endforeach
@@ -153,8 +153,8 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_rating_id">Risk Rating</label>
-                                <select class="form-select" name="risk_rating_id" id="risk_rating_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_rating_id" id="risk_rating_id">
+                                    <option value="">Select Risk Rating</option>
                                     @foreach($riskRatings as $rating)
                                         <option value="{{$rating->id}}" {{old('risk_rating_id') == $rating->id ? 'selected' : ''}}>{{$rating->title}}</option>
                                     @endforeach
@@ -162,8 +162,8 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_response_type_id">Risk Response Type</label>
-                                <select class="form-select" name="risk_response_type_id" id="risk_response_type_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="risk_response_type_id" id="risk_response_type_id">
+                                    <option value="">Select Risk Response Type</option>
                                     @foreach($riskResponseTypes as $responseType)
                                         <option value="{{$responseType->id}}" {{old('risk_response_type_id') == $responseType->id ? 'selected' : ''}}>{{$responseType->title}}</option>
                                     @endforeach

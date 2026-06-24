@@ -116,12 +116,12 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="event_date">Event Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="event_date" id="event_date" value="{{old('event_date')}}">
+                                <input class="form-control" type="text" name="event_date" id="event_date" value="{{old('event_date')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="event_type">Event Type <span class="text-danger">*</span></label>
-                                <select class="form-select" name="event_type" id="event_type">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="event_type" id="event_type">
+                                    <option value="">Select Event Type</option>
                                     <option value="Recruitment" {{old('event_type') == 'Recruitment' ? 'selected' : ''}}>Recruitment</option>
                                     <option value="Orientation" {{old('event_type') == 'Orientation' ? 'selected' : ''}}>Orientation</option>
                                 </select>

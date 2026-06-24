@@ -76,8 +76,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="type_of_publication">Type of Publication</label>
-                                <select class="form-select" name="type_of_publication" id="type_of_publication">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="type_of_publication" id="type_of_publication">
+                                    <option value="">Select Type of Publication</option>
                                     <option value="Journal" {{$researchCommunication->type_of_publication == 'Journal' ? 'selected' : ''}}>Journal</option>
                                     <option value="Other" {{$researchCommunication->type_of_publication == 'Other' ? 'selected' : ''}}>Other</option>
                                 </select>
@@ -88,7 +88,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_of_publication">Date of Publication</label>
-                                <input class="form-control" type="text" name="date_of_publication" id="date_of_publication" value="{{$researchCommunication->date_of_publication?->format('Y-m-d')}}">
+                                <input class="form-control" type="text" name="date_of_publication" id="date_of_publication" value="{{$researchCommunication->date_of_publication?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 
@@ -124,7 +124,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_posted">Date Posted</label>
-                                <input class="form-control" type="text" name="date_posted" id="date_posted" value="{{$researchCommunication->date_posted?->format('Y-m-d')}}">
+                                <input class="form-control" type="text" name="date_posted" id="date_posted" value="{{$researchCommunication->date_posted?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="post_title">Post Title</label>
@@ -139,8 +139,8 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="posted_in">Posted In</label>
-                                <select class="form-select" name="posted_in" id="posted_in">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="posted_in" id="posted_in">
+                                    <option value="">Select Posted In</option>
                                     @foreach(['Bluesky', 'Facebook', 'LinkedIn', 'Twitter', 'Website', 'X', 'Youtube'] as $platform)
                                         <option value="{{$platform}}" {{$researchCommunication->posted_in == $platform ? 'selected' : ''}}>{{$platform}}</option>
                                     @endforeach

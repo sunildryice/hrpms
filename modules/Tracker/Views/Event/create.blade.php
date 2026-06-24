@@ -117,8 +117,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="project_id">Project <span class="text-danger">*</span></label>
-                                <select class="form-select" name="project_id" id="project_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="project_id" id="project_id">
+                                    <option value="">Select Project</option>
                                     @foreach($projects as $project)
                                         <option value="{{$project->id}}" {{old('project_id') == $project->id ? 'selected' : ''}}>{{$project->title}}</option>
                                     @endforeach
@@ -126,16 +126,16 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="event_organized_by">Event Organized By <span class="text-danger">*</span></label>
-                                <select class="form-select" name="event_organized_by" id="event_organized_by">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="event_organized_by" id="event_organized_by">
+                                    <option value="">Select Event Organized By</option>
                                     <option value="internal" {{old('event_organized_by') == 'internal' ? 'selected' : ''}}>Internal</option>
                                     <option value="external" {{old('event_organized_by') == 'external' ? 'selected' : ''}}>External</option>
                                 </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="event_type">Event Type</label>
-                                <select class="form-select" name="event_type" id="event_type">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="event_type" id="event_type">
+                                    <option value="">Select Event Type</option>
                                     <option value="orientation" {{old('event_type') == 'orientation' ? 'selected' : ''}}>Orientation</option>
                                     <option value="meeting" {{old('event_type') == 'meeting' ? 'selected' : ''}}>Meeting</option>
                                     <option value="training" {{old('event_type') == 'training' ? 'selected' : ''}}>Training</option>
@@ -153,11 +153,11 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="from_date">From Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="from_date" id="from_date" value="{{old('from_date')}}">
+                                <input class="form-control" type="text" name="from_date" id="from_date" value="{{old('from_date')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="to_date">To Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="to_date" id="to_date" value="{{old('to_date')}}">
+                                <input class="form-control" type="text" name="to_date" id="to_date" value="{{old('to_date')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 

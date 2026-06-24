@@ -85,8 +85,8 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="date">Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="date" id="date" value="{{$businessDevelopment->date?->format('Y-m-d')}}">
+                                <label class="form-label required-label" for="date">Date </label>
+                                <input class="form-control" type="text" name="date" id="date" value="{{$businessDevelopment->date?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="call_name">Call Name</label>

@@ -85,8 +85,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="thematic_area_id">Thematic Area</label>
-                                <select class="form-select" name="thematic_area_id" id="thematic_area_id">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="thematic_area_id" id="thematic_area_id">
+                                    <option value="">Select Thematic Area</option>
                                     @foreach($thematicAreas as $area)
                                         <option value="{{$area->id}}" {{old('thematic_area_id') == $area->id ? 'selected' : ''}}>{{$area->title}}</option>
                                     @endforeach
@@ -109,16 +109,16 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="project_type">Project Type</label>
-                                <select class="form-select" name="project_type" id="project_type">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="project_type" id="project_type">
+                                    <option value="">Select Project Type</option>
                                     <option value="Research" {{old('project_type') == 'Research' ? 'selected' : ''}}>Research</option>
                                     <option value="Implementation" {{old('project_type') == 'Implementation' ? 'selected' : ''}}>Implementation</option>
                                 </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="status">Status</label>
-                                <select class="form-select" name="status" id="status">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="status" id="status">
+                                    <option value="">Select Status</option>
                                     <option value="Scanned" {{old('status') == 'Scanned' ? 'selected' : ''}}>Scanned</option>
                                     <option value="Submitted" {{old('status') == 'Submitted' ? 'selected' : ''}}>Submitted</option>
                                 </select>
@@ -128,8 +128,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="result">Result</label>
-                                <select class="form-select" name="result" id="result">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="result" id="result">
+                                    <option value="">Select Result</option>
                                     <option value="Rejected" {{old('result') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
                                     <option value="Awaiting Result" {{old('result') == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
                                     <option value="Awarded" {{old('result') == 'Awarded' ? 'selected' : ''}}>Awarded</option>

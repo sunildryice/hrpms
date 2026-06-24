@@ -84,6 +84,14 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
+                                <label class="form-label" for="date">Date <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="date" id="date" value="{{old('date')}}">
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label" for="call_name">Call Name</label>
+                                <input class="form-control" type="text" name="call_name" id="call_name" value="{{old('call_name')}}">
+                            </div>
+                            <div class="col-lg-4">
                                 <label class="form-label" for="thematic_area_id">Thematic Area</label>
                                 <select class="form-select select2" name="thematic_area_id" id="thematic_area_id">
                                     <option value="">Select Thematic Area</option>
@@ -91,14 +99,6 @@
                                         <option value="{{$area->id}}" {{old('thematic_area_id') == $area->id ? 'selected' : ''}}>{{$area->title}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="date">Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="date" id="date" value="{{old('date')}}">
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="call_name">Call Name</label>
-                                <input class="form-control" type="text" name="call_name" id="call_name" value="{{old('call_name')}}">
                             </div>
                         </div>
 

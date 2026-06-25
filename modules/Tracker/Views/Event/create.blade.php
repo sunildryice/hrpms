@@ -139,11 +139,11 @@
                 $('#roasterTableBody').append(row);
                 roasterIndex++;
 
-                $('#roaster_organisation').val('');
+                $('#roaster_organisation').val('').trigger('change');
                 $('#roaster_organisation_name').val('');
                 $('#roaster_position').val('');
                 $('#roaster_ethnicity').val('');
-                $('#roaster_gender').val('');
+                $('#roaster_gender').val('').trigger('change');
             });
 
             $(document).on('click', '.remove-roaster', function() {

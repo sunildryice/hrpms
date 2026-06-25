@@ -22,7 +22,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Challenges</label>
+                    <label class="form-label m-0">Challenges</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -33,7 +33,7 @@
         <div class="row mb-2">
             <div class="col-lg-3">
                 <div class="d-flex align-items-start h-100">
-                    <label class="form-label required-label m-0">Lessons Learned</label>
+                    <label class="form-label m-0">Lessons Learned</label>
                 </div>
             </div>
             <div class="col-lg-9">
@@ -59,16 +59,7 @@
                         notEmpty: { message: 'Key Accomplishments is required' },
                     },
                 },
-                challenge: {
-                    validators: {
-                        notEmpty: { message: 'Challenges is required' },
-                    },
-                },
-                lesson_learned: {
-                    validators: {
-                        notEmpty: { message: 'Lessons Learned is required' },
-                    },
-                },
+
             },
             plugins: {
                 trigger: new FormValidation.plugins.Trigger(),

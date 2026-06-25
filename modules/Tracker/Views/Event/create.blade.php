@@ -64,6 +64,17 @@
                         invalid: 'bi bi-x-lg',
                         validating: 'bi bi-arrow-repeat'
                     }),
+                    startEndDate: new FormValidation.plugins.StartEndDate({
+                        format: 'YYYY-MM-DD',
+                        startDate: {
+                            field: 'from_date',
+                            message: 'From date must be a valid date and earlier than to date.',
+                        },
+                        endDate: {
+                            field: 'to_date',
+                            message: 'To date must be a valid date and later than or equal to from date.',
+                        },
+                    }),
                 }
             });
 

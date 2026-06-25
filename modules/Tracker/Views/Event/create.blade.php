@@ -75,6 +75,70 @@
                 fv.revalidateField($(this).attr('name'));
             });
 
+            // Toggle fields based on Event Organized By
+            function toggleEventOrganizedBy() {
+                let val = $('#event_organized_by').val();
+                if (val === 'external') {
+                    $('#organizedByField, #roleField').show();
+                    $('#internalFields').hide();
+                } else if (val === 'internal') {
+                    $('#organizedByField, #roleField').hide();
+                    $('#internalFields').show();
+                } else {
+                    $('#organizedByField, #roleField').hide();
+                    $('#internalFields').hide();
+                }
+            }
+
+            $('#event_organized_by').on('change', toggleEventOrganizedBy);
+            toggleEventOrganizedBy();
+
+            // Roaster section toggle
+            let roasterIndex = 0;
+
+            $('#roaster_details').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#roasterSection').slideDown();
+                } else {
+                    $('#roasterSection').slideUp();
+                }
+            });
+
+            $('#addRoasterBtn').on('click', function() {
+                let org = $('#roaster_organisation').val();
+                let orgName = $('#roaster_organisation_name').val();
+                let pos = $('#roaster_position').val();
+                let eth = $('#roaster_ethnicity').val();
+                let gen = $('#roaster_gender').val();
+
+                if (!org) {
+                    toastr.error('Organisation is required.', 'Error');
+                    return;
+                }
+
+                let row = '<tr>';
+                row += '<td>' + org + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation]" value="' + org + '"></td>';
+                row += '<td>' + (orgName || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation_name]" value="' + orgName + '"></td>';
+                row += '<td>' + (pos || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][position]" value="' + pos + '"></td>';
+                row += '<td>' + (eth || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][ethnicity]" value="' + eth + '"></td>';
+                row += '<td>' + (gen || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][gender]" value="' + gen + '"></td>';
+                row += '<td><button type="button" class="btn btn-danger btn-sm remove-roaster"><i class="bi-trash"></i></button></td>';
+                row += '</tr>';
+
+                $('#roasterTableBody').append(row);
+                roasterIndex++;
+
+                $('#roaster_organisation').val('');
+                $('#roaster_organisation_name').val('');
+                $('#roaster_position').val('');
+                $('#roaster_ethnicity').val('');
+                $('#roaster_gender').val('');
+            });
+
+            $(document).on('click', '.remove-roaster', function() {
+                $(this).closest('tr').remove();
+            });
+
         });
     </script>
 @endsection
@@ -181,39 +245,97 @@
                                 <label class="form-label" for="city_local_level">City / Local Level</label>
                                 <input class="form-control" type="text" name="city_local_level" id="city_local_level" value="{{old('city_local_level')}}">
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4" id="organizedByField" style="display: none;">
                                 <label class="form-label" for="organized_by">Organized By</label>
                                 <input class="form-control" type="text" name="organized_by" id="organized_by" value="{{old('organized_by')}}">
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4" id="roleField" style="display: none;">
                                 <label class="form-label" for="role">Role</label>
                                 <input class="form-control" type="text" name="role" id="role" value="{{old('role')}}">
                             </div>
                         </div>
 
-                        <hr>
-                        <h6 class="fw-bold mb-2">Participant Details</h6>
-                        <div class="row mb-2">
-                            <div class="col-lg-4">
-                                <label class="form-label" for="total_participants_government">Total Participants (Government)</label>
-                                <input class="form-control" type="number" name="total_participants_government" id="total_participants_government" value="{{old('total_participants_government', 0)}}" min="0">
+                        <div id="internalFields" style="display: none;">
+                            <hr>
+                            <h6 class="fw-bold mb-2">Participant Details</h6>
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="total_participants_government">Total Participants (Government)</label>
+                                    <input class="form-control" type="number" name="total_participants_government" id="total_participants_government" value="{{old('total_participants_government', 0)}}" min="0">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="total_herdi_participants">Total HERDi Participants</label>
+                                    <input class="form-control" type="number" name="total_herdi_participants" id="total_herdi_participants" value="{{old('total_herdi_participants', 0)}}" min="0">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="total_other_participants">Total Other Participants</label>
+                                    <input class="form-control" type="number" name="total_other_participants" id="total_other_participants" value="{{old('total_other_participants', 0)}}" min="0">
+                                </div>
                             </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="total_herdi_participants">Total HERDi Participants</label>
-                                <input class="form-control" type="number" name="total_herdi_participants" id="total_herdi_participants" value="{{old('total_herdi_participants', 0)}}" min="0">
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="total_other_participants">Total Other Participants</label>
-                                <input class="form-control" type="number" name="total_other_participants" id="total_other_participants" value="{{old('total_other_participants', 0)}}" min="0">
-                            </div>
-                        </div>
 
-                        <hr>
-                        <div class="row mb-2">
-                            <div class="col-lg-4">
-                                <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" type="checkbox" name="roaster_details" id="roaster_details" value="1" {{old('roaster_details') ? 'checked' : ''}}>
-                                    <label class="form-check-label fw-bold" for="roaster_details">Add Roaster Details</label>
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <div class="form-check form-switch mt-3">
+                                        <input class="form-check-input" type="checkbox" name="roaster_details" id="roaster_details" value="1" {{old('roaster_details') ? 'checked' : ''}}>
+                                        <label class="form-check-label fw-bold" for="roaster_details">Add Roaster Details</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="roasterSection" style="display: none;">
+                                <hr>
+                                <h6 class="fw-bold mb-2">Event Roaster Details</h6>
+                                <div class="row mb-2 align-items-end">
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_organisation">Organisation <span class="text-danger">*</span></label>
+                                        <select class="form-select form-select-sm select2" id="roaster_organisation">
+                                            <option value="">Select Organisation</option>
+                                            <option value="HERDi">HERDi</option>
+                                            <option value="Government">Government</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_organisation_name">Organisation Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="roaster_organisation_name">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_position">Position</label>
+                                        <input type="text" class="form-control form-control-sm" id="roaster_position">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_ethnicity">Ethnicity</label>
+                                        <input type="text" class="form-control form-control-sm" id="roaster_ethnicity">
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_gender">Gender</label>
+                                        <select class="form-select form-select-sm select2" id="roaster_gender">
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <button type="button" class="btn btn-sm btn-primary mt-4" id="addRoasterBtn"><i class="bi-plus"></i> Add</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Organisation</th>
+                                                <th>Organisation Name</th>
+                                                <th>Position</th>
+                                                <th>Ethnicity</th>
+                                                <th>Gender</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="roasterTableBody">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

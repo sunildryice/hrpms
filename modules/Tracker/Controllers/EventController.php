@@ -38,7 +38,7 @@ class EventController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('project_title', function ($row) {
-                    return $row->getProjectTitle();
+                    return $row->project?->short_name ?? 'N/A';
                 })
                 ->addColumn('from_date', function ($row) {
                     return $row->getFromDate();
@@ -104,10 +104,19 @@ class EventController extends Controller
         $record = $this->events->create($inputs);
 
         if ($record) {
-            if ($record->roaster_details) {
-                return redirect()->route('event.show', $record->id)
-                    ->withSuccessMessage('Event created successfully. You can now add roaster details.');
+            if ($record->roaster_details && $request->has('roasters')) {
+                foreach ($request->input('roasters') as $roaster) {
+                    $record->roasters()->create([
+                        'organisation'      => $roaster['organisation'],
+                        'organisation_name' => $roaster['organisation_name'] ?? null,
+                        'position'          => $roaster['position'] ?? null,
+                        'ethnicity'         => $roaster['ethnicity'] ?? null,
+                        'gender'            => $roaster['gender'] ?? null,
+                        'created_by'        => auth()->id(),
+                    ]);
+                }
             }
+
             return redirect()->route('event.index')->withSuccessMessage('Event created successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Event could not be created.');
@@ -161,10 +170,34 @@ class EventController extends Controller
         $record = $this->events->update($id, $inputs);
 
         if ($record) {
-            if ($record->roaster_details) {
-                return redirect()->route('event.show', $record->id)
-                    ->withSuccessMessage('Event updated successfully. You can now manage roaster details.');
+            if ($request->has('deleted_roasters')) {
+                EventRoaster::whereIn('id', $request->input('deleted_roasters'))->delete();
             }
+
+            if ($record->roaster_details && $request->has('roasters')) {
+                foreach ($request->input('roasters') as $roaster) {
+                    if (isset($roaster['id'])) {
+                        $record->roasters()->where('id', $roaster['id'])->update([
+                            'organisation'      => $roaster['organisation'],
+                            'organisation_name' => $roaster['organisation_name'] ?? null,
+                            'position'          => $roaster['position'] ?? null,
+                            'ethnicity'         => $roaster['ethnicity'] ?? null,
+                            'gender'            => $roaster['gender'] ?? null,
+                            'updated_by'        => auth()->id(),
+                        ]);
+                    } else {
+                        $record->roasters()->create([
+                            'organisation'      => $roaster['organisation'],
+                            'organisation_name' => $roaster['organisation_name'] ?? null,
+                            'position'          => $roaster['position'] ?? null,
+                            'ethnicity'         => $roaster['ethnicity'] ?? null,
+                            'gender'            => $roaster['gender'] ?? null,
+                            'created_by'        => auth()->id(),
+                        ]);
+                    }
+                }
+            }
+
             return redirect()->route('event.index')->withSuccessMessage('Event updated successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Event could not be updated.');

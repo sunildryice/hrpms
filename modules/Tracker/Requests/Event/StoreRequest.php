@@ -40,6 +40,12 @@ class StoreRequest extends FormRequest
             'total_herdi_participants'      => 'nullable|integer|min:0',
             'total_other_participants'      => 'nullable|integer|min:0',
             'roaster_details'               => 'nullable|boolean',
+            'roasters'                      => 'nullable|array',
+            'roasters.*.organisation'       => 'required_with:roasters|in:HERDi,Government,Other',
+            'roasters.*.organisation_name'  => 'nullable|string|max:255',
+            'roasters.*.position'           => 'nullable|string|max:255',
+            'roasters.*.ethnicity'          => 'nullable|string|max:255',
+            'roasters.*.gender'             => 'nullable|in:Male,Female,Other',
             'action_points'                 => 'nullable|string',
             'remarks'                       => 'nullable|string',
         ];

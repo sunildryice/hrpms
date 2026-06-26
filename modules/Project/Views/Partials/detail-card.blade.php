@@ -73,8 +73,8 @@
                     <tr data-idx="${idx}" data-id="${item.id}">
                         <td style="width:50px">${idx + 1}</td>
                         <td class="text-wrap">${item.key_accomplishment}</td>
-                        <td class="text-wrap">${item.challenge}</td>
-                        <td class="text-wrap">${item.lesson_learned}</td>
+                        <td class="text-wrap">${item.challenge || ''}</td>
+                        <td class="text-wrap">${item.lesson_learned || ''}</td>
                         @if ($canEdit)
                         <td class="text-nowrap" style="width:130px">
                             <a class="btn btn-outline-primary btn-sm edit-detail-btn"

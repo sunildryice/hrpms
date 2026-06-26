@@ -119,7 +119,12 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="type_of_post">Type of Post</label>
-                                <input class="form-control" type="text" name="type_of_post" id="type_of_post" value="{{old('type_of_post')}}">
+                                <select class="form-select select2" name="type_of_post" id="type_of_post">
+                                    <option value="">Select Type of Post</option>
+                                    @foreach($postTypes as $type)
+                                        <option value="{{$type->value}}" {{old('type_of_post') == $type->value ? 'selected' : ''}}>{{$type->label()}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_posted">Date Posted</label>

@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Tracker\Models\Enums\PostType;
 use Modules\Tracker\Repositories\ResearchCommunicationRepository;
 use Modules\Tracker\Requests\ResearchCommunication\StoreRequest;
 use Modules\Tracker\Requests\ResearchCommunication\UpdateRequest;
@@ -73,7 +74,9 @@ class ResearchCommunicationController extends Controller
     {
         $this->authorize('manage-research-communication');
 
-        return view('Tracker::ResearchCommunication.create');
+        $postTypes = PostType::cases();
+
+        return view('Tracker::ResearchCommunication.create', compact('postTypes'));
     }
 
     /**
@@ -121,8 +124,9 @@ class ResearchCommunicationController extends Controller
         $this->authorize('manage-research-communication');
 
         $researchCommunication = $this->researchCommunications->find($id);
+        $postTypes = PostType::cases();
 
-        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication'));
+        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication', 'postTypes'));
     }
 
     /**

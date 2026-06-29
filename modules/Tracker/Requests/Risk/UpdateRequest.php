@@ -24,7 +24,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'project'                   => 'required|string|max:255',
+            'project_id'                => 'nullable|exists:projects,id',
             'date_added'                => 'required|date',
             'risk_name'                 => 'required|string|max:255',
             'risk_status_id'            => 'nullable|exists:lkup_risk_status,id',
@@ -44,7 +44,7 @@ class UpdateRequest extends FormRequest
     public function attributes()
     {
         return [
-            'project'                   => 'Project',
+            'project_id'                => 'Project',
             'date_added'                => 'Date Added',
             'risk_name'                 => 'Risk Name',
             'risk_status_id'            => 'Risk Status',

@@ -67,7 +67,7 @@ class Event extends Model
 
     public function getProjectTitle()
     {
-        return $this->project?->title ?? 'N/A';
+        return $this->project?->short_name ?? $this->project?->title ?? 'N/A';
     }
 
     public function getTotalParticipants()

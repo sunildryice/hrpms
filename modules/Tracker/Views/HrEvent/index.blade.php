@@ -32,8 +32,8 @@
                         name: 'vacancy_for_positions'
                     },
                     {
-                        data: 'associated_project',
-                        name: 'associated_project'
+                        data: 'project_title',
+                        name: 'project_title'
                     },
                     {
                         data: 'total_applicants',
@@ -112,7 +112,7 @@
                                     <th>Event Date</th>
                                     <th>Event Type</th>
                                     <th>Vacancy For Positions</th>
-                                    <th>Associated Project</th>
+                                    <th>Project</th>
                                     <th>Total Applicants</th>
                                     <th>Total Shortlisted</th>
                                     <th>Total Recruited</th>

@@ -10,13 +10,6 @@
             const form = document.getElementById('riskCreateForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
-                    project: {
-                        validators: {
-                            notEmpty: {
-                                message: 'The project is required.'
-                            }
-                        }
-                    },
                     date_added: {
                         validators: {
                             notEmpty: {
@@ -98,8 +91,13 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="project">Project <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="project" id="project" value="{{old('project')}}">
+                                <label class="form-label" for="project_id">Project</label>
+                                <select class="form-select select2" name="project_id" id="project_id">
+                                    <option value="">Select Project</option>
+                                    @foreach($projects as $project)
+                                        <option value="{{$project->id}}" {{old('project_id') == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_added">Date Added <span class="text-danger">*</span></label>

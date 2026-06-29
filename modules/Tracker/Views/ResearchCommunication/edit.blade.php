@@ -139,8 +139,13 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="associated_project">Associated Project</label>
-                                <input class="form-control" type="text" name="associated_project" id="associated_project" value="{{$researchCommunication->associated_project}}">
+                                <label class="form-label" for="project_id">Project</label>
+                                <select class="form-select select2" name="project_id" id="project_id">
+                                    <option value="">Select Project</option>
+                                    @foreach($projects as $project)
+                                        <option value="{{$project->id}}" {{$researchCommunication->project_id == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="posted_in">Posted In</label>

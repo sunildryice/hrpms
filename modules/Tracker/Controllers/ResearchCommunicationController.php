@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Project\Models\Project;
 use Modules\Tracker\Models\Enums\PostType;
 use Modules\Tracker\Repositories\ResearchCommunicationRepository;
 use Modules\Tracker\Requests\ResearchCommunication\StoreRequest;
@@ -31,10 +32,13 @@ class ResearchCommunicationController extends Controller
         $this->authorize('manage-research-communication');
 
         if ($request->ajax()) {
-            $data = $this->researchCommunications->orderBy('created_at', 'desc')->get();
+            $data = $this->researchCommunications->with(['project'])->orderBy('created_at', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('project_title', function ($row) {
+                    return $row->getProjectTitle();
+                })
                 ->addColumn('date_of_publication', function ($row) {
                     return $row->getDateOfPublication();
                 })
@@ -75,8 +79,9 @@ class ResearchCommunicationController extends Controller
         $this->authorize('manage-research-communication');
 
         $postTypes = PostType::cases();
+        $projects  = Project::whereNotNull('activated_at')->get();
 
-        return view('Tracker::ResearchCommunication.create', compact('postTypes'));
+        return view('Tracker::ResearchCommunication.create', compact('postTypes', 'projects'));
     }
 
     /**
@@ -125,8 +130,9 @@ class ResearchCommunicationController extends Controller
 
         $researchCommunication = $this->researchCommunications->find($id);
         $postTypes = PostType::cases();
+        $projects  = Project::whereNotNull('activated_at')->get();
 
-        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication', 'postTypes'));
+        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication', 'postTypes', 'projects'));
     }
 
     /**

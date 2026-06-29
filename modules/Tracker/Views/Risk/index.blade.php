@@ -20,8 +20,8 @@
                         searchable: false
                     },
                     {
-                        data: 'project',
-                        name: 'project'
+                        data: 'project_title',
+                        name: 'project_title'
                     },
                     {
                         data: 'date_added',

@@ -6,6 +6,7 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
 
 class Risk extends Model
 {
@@ -15,6 +16,7 @@ class Risk extends Model
 
     protected $fillable = [
         'project',
+        'project_id',
         'date_added',
         'risk_name',
         'risk_status_id',
@@ -66,6 +68,11 @@ class Risk extends Model
         return $this->belongsTo(RiskResponseType::class, 'risk_response_type_id')->withDefault();
     }
 
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by')->withDefault();
@@ -109,6 +116,11 @@ class Risk extends Model
     public function getRiskResponseTypeTitle()
     {
         return $this->riskResponseType->title ?? '';
+    }
+
+    public function getProjectTitle()
+    {
+        return $this->project?->short_name ?? $this->project?->title ?? 'N/A';
     }
 
     public function getCreatorName()

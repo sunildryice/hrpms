@@ -6,6 +6,7 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Privilege\Models\User;
+use Modules\Project\Models\Project;
 
 class ResearchCommunication extends Model
 {
@@ -14,6 +15,7 @@ class ResearchCommunication extends Model
     protected $table = 'research_communication';
 
     protected $fillable = [
+        'project_id',
         'type_of_publication',
         'publication_title',
         'date_of_publication',
@@ -43,6 +45,16 @@ class ResearchCommunication extends Model
         'shares'              => 'integer',
         'comments'            => 'integer',
     ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function getProjectTitle()
+    {
+        return $this->project?->short_name ?? $this->project?->title ?? 'N/A';
+    }
 
     public function createdBy()
     {

@@ -76,8 +76,8 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="type_of_publication">Type of Publication</label>
-                                <select class="form-select" name="type_of_publication" id="type_of_publication">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="type_of_publication" id="type_of_publication">
+                                    <option value="">Select Type of Publication</option>
                                     <option value="Journal" {{$researchCommunication->type_of_publication == 'Journal' ? 'selected' : ''}}>Journal</option>
                                     <option value="Other" {{$researchCommunication->type_of_publication == 'Other' ? 'selected' : ''}}>Other</option>
                                 </select>
@@ -88,7 +88,7 @@
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_of_publication">Date of Publication</label>
-                                <input class="form-control" type="text" name="date_of_publication" id="date_of_publication" value="{{$researchCommunication->date_of_publication?->format('Y-m-d')}}">
+                                <input class="form-control" type="text" name="date_of_publication" id="date_of_publication" value="{{$researchCommunication->date_of_publication?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 
@@ -120,11 +120,16 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="type_of_post">Type of Post</label>
-                                <input class="form-control" type="text" name="type_of_post" id="type_of_post" value="{{$researchCommunication->type_of_post}}">
+                                <select class="form-select select2" name="type_of_post" id="type_of_post">
+                                    <option value="">Select Type of Post</option>
+                                    @foreach($postTypes as $type)
+                                        <option value="{{$type->value}}" {{$researchCommunication->type_of_post == $type->value ? 'selected' : ''}}>{{$type->label()}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="date_posted">Date Posted</label>
-                                <input class="form-control" type="text" name="date_posted" id="date_posted" value="{{$researchCommunication->date_posted?->format('Y-m-d')}}">
+                                <input class="form-control" type="text" name="date_posted" id="date_posted" value="{{$researchCommunication->date_posted?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="post_title">Post Title</label>
@@ -134,13 +139,18 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="associated_project">Associated Project</label>
-                                <input class="form-control" type="text" name="associated_project" id="associated_project" value="{{$researchCommunication->associated_project}}">
+                                <label class="form-label" for="project_id">Project</label>
+                                <select class="form-select select2" name="project_id" id="project_id">
+                                    <option value="">Select Project</option>
+                                    @foreach($projects as $project)
+                                        <option value="{{$project->id}}" {{$researchCommunication->project_id == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="posted_in">Posted In</label>
-                                <select class="form-select" name="posted_in" id="posted_in">
-                                    <option value="">-- Select --</option>
+                                <select class="form-select select2" name="posted_in" id="posted_in">
+                                    <option value="">Select Posted In</option>
                                     @foreach(['Bluesky', 'Facebook', 'LinkedIn', 'Twitter', 'Website', 'X', 'Youtube'] as $platform)
                                         <option value="{{$platform}}" {{$researchCommunication->posted_in == $platform ? 'selected' : ''}}>{{$platform}}</option>
                                     @endforeach

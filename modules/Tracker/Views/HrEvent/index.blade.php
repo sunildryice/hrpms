@@ -12,6 +12,22 @@
                 processing: true,
                 serverside: true,
                 ajax: "{{route('hr-event.index')}}",
+                columnDefs: [
+                    {
+                        targets: [3, 4],
+                        render: function(data, type, row) {
+                            if (row.event_type === 'Orientation') return '-';
+                            return data ?? '-';
+                        }
+                    },
+                    {
+                        targets: [5],
+                        render: function(data, type, row) {
+                            if (row.event_type === 'Recruitment') return '-';
+                            return data ?? '-';
+                        }
+                    }
+                ],
                 columns: [
                     {
                         data: 'DT_RowIndex',
@@ -32,20 +48,12 @@
                         name: 'vacancy_for_positions'
                     },
                     {
-                        data: 'associated_project',
-                        name: 'associated_project'
+                        data: 'project_title',
+                        name: 'project_title'
                     },
                     {
-                        data: 'total_applicants',
-                        name: 'total_applicants'
-                    },
-                    {
-                        data: 'total_shortlisted',
-                        name: 'total_shortlisted'
-                    },
-                    {
-                        data: 'total_recruited',
-                        name: 'total_recruited'
+                        data: 'orientation_title',
+                        name: 'orientation_title'
                     },
                     {
                         data: 'action',
@@ -112,10 +120,8 @@
                                     <th>Event Date</th>
                                     <th>Event Type</th>
                                     <th>Vacancy For Positions</th>
-                                    <th>Associated Project</th>
-                                    <th>Total Applicants</th>
-                                    <th>Total Shortlisted</th>
-                                    <th>Total Recruited</th>
+                                    <th>Project</th>
+                                    <th>Orientation Title</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

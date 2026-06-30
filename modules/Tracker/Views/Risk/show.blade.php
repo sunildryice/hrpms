@@ -34,7 +34,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Project</label>
-                            <p>{{$risk->project}}</p>
+                            <p>{{$risk->getProjectTitle()}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Date Added</label>

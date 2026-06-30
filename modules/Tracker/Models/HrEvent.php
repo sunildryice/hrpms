@@ -5,6 +5,7 @@ namespace Modules\Tracker\Models;
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Project\Models\Project;
 
 class HrEvent extends Model
 {
@@ -13,10 +14,10 @@ class HrEvent extends Model
     protected $table = 'hr_events';
 
     protected $fillable = [
+        'project_id',
         'event_date',
         'event_type',
         'vacancy_for_positions',
-        'associated_project',
         'total_applicants',
         'male_shortlisted',
         'female_shortlisted',
@@ -37,6 +38,16 @@ class HrEvent extends Model
         'male_participants'   => 'integer',
         'female_participants' => 'integer',
     ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function getProjectTitle()
+    {
+        return $this->project?->short_name ?? $this->project?->title ?? 'N/A';
+    }
 
     public function getEventDate()
     {

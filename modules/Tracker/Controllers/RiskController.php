@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Project\Models\Project;
 use Modules\Tracker\Models\RiskStatus;
 use Modules\Tracker\Models\RiskType;
 use Modules\Tracker\Models\RiskProbability;
@@ -37,12 +38,15 @@ class RiskController extends Controller
 
         if ($request->ajax()) {
             $data = $this->risks->with([
-                'riskStatus', 'riskType', 'riskProbability',
+                'projectDetail', 'riskStatus', 'riskType', 'riskProbability',
                 'riskImpact', 'riskRating', 'riskResponseType',
             ])->orderBy('created_at', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('project_title', function ($row) {
+                    return $row->getProjectTitle();
+                })
                 ->addColumn('date_added', function ($row) {
                     return $row->getDateAdded();
                 })
@@ -88,6 +92,7 @@ class RiskController extends Controller
     {
         $this->authorize('manage-risk');
 
+        $projects           = Project::whereNotNull('activated_at')->get();
         $riskStatuses       = RiskStatus::all();
         $riskTypes          = RiskType::all();
         $riskProbabilities  = RiskProbability::all();
@@ -96,7 +101,7 @@ class RiskController extends Controller
         $riskResponseTypes  = RiskResponseType::all();
 
         return view('Tracker::Risk.create', compact(
-            'riskStatuses', 'riskTypes', 'riskProbabilities',
+            'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
             'riskImpacts', 'riskRatings', 'riskResponseTypes'
         ));
     }
@@ -146,6 +151,7 @@ class RiskController extends Controller
         $this->authorize('manage-risk');
 
         $risk               = $this->risks->find($id);
+        $projects           = Project::whereNotNull('activated_at')->get();
         $riskStatuses       = RiskStatus::all();
         $riskTypes          = RiskType::all();
         $riskProbabilities  = RiskProbability::all();
@@ -154,7 +160,7 @@ class RiskController extends Controller
         $riskResponseTypes  = RiskResponseType::all();
 
         return view('Tracker::Risk.edit', compact(
-            'risk', 'riskStatuses', 'riskTypes', 'riskProbabilities',
+            'risk', 'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
             'riskImpacts', 'riskRatings', 'riskResponseTypes'
         ));
     }

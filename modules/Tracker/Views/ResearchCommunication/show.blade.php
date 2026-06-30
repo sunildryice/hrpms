@@ -91,8 +91,8 @@
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Associated Project</label>
-                            <p>{{$researchCommunication->associated_project ?: 'N/A'}}</p>
+                            <label class="text-muted fw-bold small">Project</label>
+                            <p>{{$researchCommunication->getProjectTitle()}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Posted In</label>

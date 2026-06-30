@@ -40,22 +40,21 @@
                             <label class="text-muted fw-bold small">Event Type</label>
                             <p>{{$hrEvent->event_type}}</p>
                         </div>
-                        <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Vacancy For Positions</label>
-                            <p>{{$hrEvent->vacancy_for_positions}}</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Associated Project</label>
-                            <p>{{$hrEvent->associated_project ?: 'N/A'}}</p>
-                        </div>
                     </div>
 
                     @if($hrEvent->event_type == 'Recruitment')
                     <hr>
                     <h6 class="fw-bold mb-2">Recruitment Details</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Vacancy For Positions</label>
+                            <p>{{$hrEvent->vacancy_for_positions}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Project</label>
+                            <p>{{$hrEvent->getProjectTitle()}}</p>
+                        </div>
+                    </div>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Total Applicants</label>

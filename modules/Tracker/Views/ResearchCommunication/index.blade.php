@@ -32,6 +32,10 @@
                         name: 'date_of_publication'
                     },
                     {
+                        data: 'project_title',
+                        name: 'project_title'
+                    },
+                    {
                         data: 'post_title',
                         name: 'post_title'
                     },
@@ -108,6 +112,7 @@
                                     <th>Publication Type</th>
                                     <th>Publication Title</th>
                                     <th>Publication Date</th>
+                                    <th>Project</th>
                                     <th>Post Title</th>
                                     <th>Posted In</th>
                                     <th>Date Posted</th>

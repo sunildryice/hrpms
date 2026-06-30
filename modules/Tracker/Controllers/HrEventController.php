@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Project\Models\Project;
 use Modules\Tracker\Repositories\HrEventRepository;
 use Modules\Tracker\Requests\HrEvent\StoreRequest;
 use Modules\Tracker\Requests\HrEvent\UpdateRequest;
@@ -30,10 +31,13 @@ class HrEventController extends Controller
         $this->authorize('manage-hr-event');
 
         if ($request->ajax()) {
-            $data = $this->hrEvents->orderBy('created_at', 'desc')->get();
+            $data = $this->hrEvents->with(['project'])->orderBy('created_at', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('project_title', function ($row) {
+                    return $row->getProjectTitle();
+                })
                 ->addColumn('event_date', function ($row) {
                     return $row->getEventDate();
                 })
@@ -76,7 +80,9 @@ class HrEventController extends Controller
     {
         $this->authorize('manage-hr-event');
 
-        return view('Tracker::HrEvent.create');
+        $projects = Project::whereNotNull('activated_at')->get();
+
+        return view('Tracker::HrEvent.create', compact('projects'));
     }
 
     /**
@@ -122,9 +128,10 @@ class HrEventController extends Controller
     {
         $this->authorize('manage-hr-event');
 
-        $hrEvent = $this->hrEvents->find($id);
+        $hrEvent  = $this->hrEvents->find($id);
+        $projects = Project::whereNotNull('activated_at')->get();
 
-        return view('Tracker::HrEvent.edit', compact('hrEvent'));
+        return view('Tracker::HrEvent.edit', compact('hrEvent', 'projects'));
     }
 
     /**

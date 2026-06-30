@@ -59,6 +59,10 @@ class DatabaseSeeder extends Seeder
             PurchasePivotSeeder::class,
 
             ClearanceDepartmentSeeder::class,
+
+            ThematicAreaSeeder::class,
+
+            RiskLookupSeeder::class,
         ]);
     }
 }

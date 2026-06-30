@@ -99,7 +99,7 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="project_id">Project</label>
+                                <label class="form-label required-label" for="project_id">Project</label>
                                 <select class="form-select select2" name="project_id" id="project_id">
                                     <option value="">Select Project</option>
                                     @foreach($projects as $project)

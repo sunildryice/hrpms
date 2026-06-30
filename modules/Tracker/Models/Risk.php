@@ -14,12 +14,7 @@ class Risk extends Model
 
     protected $table = 'risks';
 
-    protected $attributes = [
-        'project' => '',
-    ];
-
     protected $fillable = [
-        'project',
         'project_id',
         'date_added',
         'risk_name',

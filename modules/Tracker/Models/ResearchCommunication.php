@@ -25,7 +25,6 @@ class ResearchCommunication extends Model
         'type_of_post',
         'date_posted',
         'post_title',
-        'associated_project',
         'posted_in',
         'views',
         'link_clicks',

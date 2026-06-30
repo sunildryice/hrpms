@@ -12,17 +12,20 @@
                 if (eventType === 'Recruitment') {
                     $('#recruitmentSection').show();
                     $('#orientationSection').hide();
+                    try { fv.enableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.disableValidator('orientation_title'); } catch(e) {}
                 } else if (eventType === 'Orientation') {
                     $('#recruitmentSection').hide();
                     $('#orientationSection').show();
+                    try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.enableValidator('orientation_title'); } catch(e) {}
                 } else {
                     $('#recruitmentSection').hide();
                     $('#orientationSection').hide();
+                    try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.disableValidator('orientation_title'); } catch(e) {}
                 }
             }
-
-            toggleSections();
-            $('#event_type').on('change', toggleSections);
 
             const form = document.getElementById('hrEventUpdateForm');
             const fv = FormValidation.formValidation(form, {
@@ -52,6 +55,13 @@
                             }
                         }
                     },
+                    orientation_title: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The orientation title is required.'
+                            }
+                        }
+                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -73,6 +83,9 @@
             }).on('change', function (e) {
                 fv.revalidateField('event_date');
             });
+
+            toggleSections();
+            $('#event_type').on('change', toggleSections);
 
         });
 
@@ -127,27 +140,26 @@
                                     <option value="Orientation" {{$hrEvent->event_type == 'Orientation' ? 'selected' : ''}}>Orientation</option>
                                 </select>
                             </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="vacancy_for_positions">Vacancy For Positions <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="vacancy_for_positions" id="vacancy_for_positions" value="{{$hrEvent->vacancy_for_positions}}">
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
-                            <div class="col-lg-4">
-                                <label class="form-label" for="project_id">Project</label>
-                                <select class="form-select select2" name="project_id" id="project_id">
-                                    <option value="">Select Project</option>
-                                    @foreach($projects as $project)
-                                        <option value="{{$project->id}}" {{$hrEvent->project_id == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
                         </div>
 
                         <div id="recruitmentSection" style="display:none;">
                             <hr>
                             <h6 class="fw-bold mb-2">Recruitment Details</h6>
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="vacancy_for_positions">Vacancy For Positions <span class="text-danger">*</span></label>
+                                    <input class="form-control" type="text" name="vacancy_for_positions" id="vacancy_for_positions" value="{{$hrEvent->vacancy_for_positions}}">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="project_id">Project</label>
+                                    <select class="form-select select2" name="project_id" id="project_id">
+                                        <option value="">Select Project</option>
+                                        @foreach($projects as $project)
+                                            <option value="{{$project->id}}" {{$hrEvent->project_id == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             <div class="row mb-2">
                                 <div class="col-lg-4">
                                     <label class="form-label" for="total_applicants">Total Applicants</label>
@@ -179,7 +191,7 @@
                             <h6 class="fw-bold mb-2">Orientation Details</h6>
                             <div class="row mb-2">
                                 <div class="col-lg-4">
-                                    <label class="form-label" for="orientation_title">Orientation Title</label>
+                                    <label class="form-label required-label" for="orientation_title">Orientation Title</label>
                                     <input class="form-control" type="text" name="orientation_title" id="orientation_title" value="{{$hrEvent->orientation_title}}">
                                 </div>
                                 <div class="col-lg-4">

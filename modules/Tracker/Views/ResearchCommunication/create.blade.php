@@ -77,8 +77,8 @@
                                 <label class="form-label" for="type_of_publication">Type of Publication</label>
                                 <select class="form-select select2" name="type_of_publication" id="type_of_publication">
                                     <option value="">Select Type of Publication</option>
-                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Journal</option>
-                                    <option value="Other" {{old('type_of_publication') == 'Other' ? 'selected' : ''}}>Other</option>
+                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Journal Article</option>
+                                    <option value="Other" {{old('type_of_publication') == 'Other' ? 'selected' : ''}}>Other Posts</option>
                                 </select>
                             </div>
                             <div class="col-lg-4">

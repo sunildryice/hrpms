@@ -10,8 +10,8 @@ class UpdateRequest extends FormRequest
     {
         return [
             'key_accomplishment' => 'required|string',
-            'challenge' => 'required|string',
-            'lesson_learned' => 'required|string',
+            'challenge' => 'nullable|string',
+            'lesson_learned' => 'nullable|string',
         ];
     }
 }

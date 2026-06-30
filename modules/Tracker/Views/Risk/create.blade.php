@@ -10,6 +10,13 @@
             const form = document.getElementById('riskCreateForm');
             const fv = FormValidation.formValidation(form, {
                 fields: {
+                    project_id: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The project is required.'
+                            }
+                        }
+                    },
                     date_added: {
                         validators: {
                             notEmpty: {

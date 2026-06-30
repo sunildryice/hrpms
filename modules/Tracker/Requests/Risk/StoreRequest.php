@@ -16,6 +16,13 @@ class StoreRequest extends FormRequest
         return auth()->user();
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->input('project_id') === null || $this->input('project_id') === '') {
+            $this->merge(['project_id' => null]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,7 +31,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id'                => 'nullable|exists:projects,id',
+            'project_id'                => 'required|exists:projects,id',
             'date_added'                => 'required|date',
             'risk_name'                 => 'required|string|max:255',
             'risk_status_id'            => 'nullable|exists:lkup_risk_status,id',

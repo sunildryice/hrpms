@@ -68,9 +68,9 @@ class Risk extends Model
         return $this->belongsTo(RiskResponseType::class, 'risk_response_type_id')->withDefault();
     }
 
-    public function project()
+    public function projectDetail()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id');
     }
 
     public function createdBy()
@@ -120,7 +120,7 @@ class Risk extends Model
 
     public function getProjectTitle()
     {
-        return $this->project?->short_name ?? $this->project?->title ?? 'N/A';
+        return $this->projectDetail?->short_name ?? $this->projectDetail?->title ?? 'N/A';
     }
 
     public function getCreatorName()

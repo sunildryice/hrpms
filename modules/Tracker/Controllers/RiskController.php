@@ -38,7 +38,7 @@ class RiskController extends Controller
 
         if ($request->ajax()) {
             $data = $this->risks->with([
-                'project', 'riskStatus', 'riskType', 'riskProbability',
+                'projectDetail', 'riskStatus', 'riskType', 'riskProbability',
                 'riskImpact', 'riskRating', 'riskResponseType',
             ])->orderBy('created_at', 'desc')->get();
 

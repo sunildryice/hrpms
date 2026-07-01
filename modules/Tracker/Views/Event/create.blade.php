@@ -262,7 +262,12 @@
                             </div>
                             <div class="col-lg-4" id="roleField" style="display: none;">
                                 <label class="form-label" for="role">Role</label>
-                                <input class="form-control" type="text" name="role" id="role" value="{{old('role')}}">
+                                <select class="form-select select2" name="role" id="role">
+                                    <option value="">Select Role</option>
+                                    @foreach($eventRoles as $eventRole)
+                                        <option value="{{$eventRole->value}}" {{old('role') == $eventRole->value ? 'selected' : ''}}>{{$eventRole->label()}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 
@@ -317,7 +322,12 @@
                                     </div>
                                     <div class="col-lg-2">
                                         <label class="form-label" for="roaster_ethnicity">Ethnicity</label>
-                                        <input type="text" class="form-control form-control-sm" id="roaster_ethnicity">
+                                        <select class="form-select form-select-sm select2" id="roaster_ethnicity">
+                                            <option value="">Select Ethnicity</option>
+                                            @foreach($ethnicities as $ethnicity)
+                                                <option value="{{$ethnicity->value}}">{{$ethnicity->label()}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="col-lg-2">
                                         <label class="form-label" for="roaster_gender">Gender</label>

@@ -4,7 +4,10 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Modules\Project\Models\Project;
+use Modules\Tracker\Models\Enums\Ethnicity;
+use Modules\Tracker\Models\Enums\EventRole;
 use Modules\Tracker\Models\EventRoaster;
 use Modules\Tracker\Repositories\EventRepository;
 use Modules\Tracker\Requests\Event\StoreRequest;
@@ -82,9 +85,11 @@ class EventController extends Controller
     {
         $this->authorize('manage-event');
 
-        $projects = Project::whereNotNull('activated_at')->get();
+        $projects  = Project::whereNotNull('activated_at')->get();
+        $ethnicities = Ethnicity::cases();
+        $eventRoles  = EventRole::cases();
 
-        return view('Tracker::Event.create', compact('projects'));
+        return view('Tracker::Event.create', compact('projects', 'ethnicities', 'eventRoles'));
     }
 
     /**
@@ -147,9 +152,11 @@ class EventController extends Controller
         $this->authorize('manage-event');
 
         $event    = $this->events->find($id);
-        $projects = Project::whereNotNull('activated_at')->get();
+        $projects  = Project::whereNotNull('activated_at')->get();
+        $ethnicities = Ethnicity::cases();
+        $eventRoles  = EventRole::cases();
 
-        return view('Tracker::Event.edit', compact('event', 'projects'));
+        return view('Tracker::Event.edit', compact('event', 'projects', 'ethnicities', 'eventRoles'));
     }
 
     /**
@@ -244,7 +251,7 @@ class EventController extends Controller
             'organisation'      => 'required|in:HERDi,Government,Other',
             'organisation_name' => 'nullable|string|max:255',
             'position'          => 'nullable|string|max:255',
-            'ethnicity'         => 'nullable|string|max:255',
+            'ethnicity'         => ['nullable', Rule::in(array_map(fn($e) => $e->value, Ethnicity::cases()))],
             'gender'            => 'nullable|in:Male,Female,Other',
         ]);
 

@@ -3,6 +3,9 @@
 namespace Modules\Tracker\Requests\Event;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Modules\Tracker\Models\Enums\Ethnicity;
+use Modules\Tracker\Models\Enums\EventRole;
 
 class UpdateRequest extends FormRequest
 {
@@ -35,7 +38,7 @@ class UpdateRequest extends FormRequest
             'district'                      => 'nullable|string|max:255',
             'city_local_level'              => 'nullable|string|max:255',
             'organized_by'                  => 'nullable|string|max:255',
-            'role'                          => 'nullable|string|max:255',
+            'role'                          => ['nullable', Rule::in(array_map(fn($r) => $r->value, EventRole::cases()))],
             'total_participants_government' => 'nullable|integer|min:0',
             'total_herdi_participants'      => 'nullable|integer|min:0',
             'total_other_participants'      => 'nullable|integer|min:0',
@@ -45,7 +48,7 @@ class UpdateRequest extends FormRequest
             'roasters.*.organisation'       => 'required_with:roasters|in:HERDi,Government,Other',
             'roasters.*.organisation_name'  => 'nullable|string|max:255',
             'roasters.*.position'           => 'nullable|string|max:255',
-            'roasters.*.ethnicity'          => 'nullable|string|max:255',
+            'roasters.*.ethnicity'          => ['nullable', Rule::in(array_map(fn($e) => $e->value, Ethnicity::cases()))],
             'roasters.*.gender'             => 'nullable|in:Male,Female,Other',
             'deleted_roasters'              => 'nullable|array',
             'deleted_roasters.*'            => 'integer|exists:event_roasters,id',

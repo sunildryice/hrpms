@@ -36,6 +36,9 @@ class ResearchCommunicationController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
+                ->addColumn('type_of_publication', function ($row) {
+                    return $row->getPublicationTypeLabel();
+                })
                 ->addColumn('project_title', function ($row) {
                     return $row->getProjectTitle();
                 })

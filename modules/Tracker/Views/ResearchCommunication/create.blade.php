@@ -170,7 +170,7 @@
                                 <label class="form-label required-label" for="type_of_publication">Type of Publication</label>
                                 <select class="form-select select2" name="type_of_publication" id="type_of_publication">
                                     <option value="">Select Type of Publication</option>
-                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Journal Article</option>
+                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Research Article</option>
                                     <option value="Other" {{old('type_of_publication') == 'Other' ? 'selected' : ''}}>Other Posts</option>
                                 </select>
                             </div>

@@ -50,6 +50,15 @@ class ResearchCommunication extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function getPublicationTypeLabel()
+    {
+        return match ($this->type_of_publication) {
+            'Journal' => 'Research Article',
+            'Other'   => 'Other Posts',
+            default   => $this->type_of_publication ?? 'N/A',
+        };
+    }
+
     public function getProjectTitle()
     {
         return $this->project?->short_name ?? $this->project?->title ?? 'N/A';

@@ -35,7 +35,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Type of Publication</label>
-                            <p>{{$researchCommunication->type_of_publication ?: 'N/A'}}</p>
+                            <p>{{$researchCommunication->getPublicationTypeLabel()}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Publication Title</label>
@@ -80,7 +80,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Type of Publication</label>
-                            <p>{{$researchCommunication->type_of_publication ?: 'N/A'}}</p>
+                            <p>{{$researchCommunication->getPublicationTypeLabel()}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Type of Post</label>

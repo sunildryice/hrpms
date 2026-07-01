@@ -109,7 +109,7 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>{{ __('label.sn') }}</th>
-                                    <th>Publication Type</th>
+                                    <th>Type of Publication</th>
                                     <th>Publication Title</th>
                                     <th>Publication Date</th>
                                     <th>Project</th>

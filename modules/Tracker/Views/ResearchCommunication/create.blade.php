@@ -7,9 +7,99 @@
         $(function() {
             $('#navbarVerticalMenu').find('#research-communication-index').addClass('active');
 
+            function toggleSections() {
+                var val = $('#type_of_publication').val();
+                if (val === 'Journal') {
+                    $('#publicationDetailsSection').show();
+                    $('#socialMediaPostSection').hide();
+                    try { fv.enableValidator('publication_title'); } catch(e) {}
+                    try { fv.enableValidator('date_of_publication'); } catch(e) {}
+                    try { fv.disableValidator('type_of_post'); } catch(e) {}
+                    try { fv.disableValidator('date_posted'); } catch(e) {}
+                    try { fv.disableValidator('post_title'); } catch(e) {}
+                    try { fv.disableValidator('posted_in'); } catch(e) {}
+                } else if (val === 'Other') {
+                    $('#publicationDetailsSection').hide();
+                    $('#socialMediaPostSection').show();
+                    try { fv.disableValidator('publication_title'); } catch(e) {}
+                    try { fv.disableValidator('date_of_publication'); } catch(e) {}
+                    try { fv.enableValidator('type_of_post'); } catch(e) {}
+                    try { fv.enableValidator('date_posted'); } catch(e) {}
+                    try { fv.enableValidator('post_title'); } catch(e) {}
+                    try { fv.enableValidator('posted_in'); } catch(e) {}
+                } else {
+                    $('#publicationDetailsSection').hide();
+                    $('#socialMediaPostSection').hide();
+                    try { fv.disableValidator('publication_title'); } catch(e) {}
+                    try { fv.disableValidator('date_of_publication'); } catch(e) {}
+                    try { fv.disableValidator('type_of_post'); } catch(e) {}
+                    try { fv.disableValidator('date_posted'); } catch(e) {}
+                    try { fv.disableValidator('post_title'); } catch(e) {}
+                    try { fv.disableValidator('posted_in'); } catch(e) {}
+                }
+            }
+
             const form = document.getElementById('researchCommunicationCreateForm');
             const fv = FormValidation.formValidation(form, {
-                fields: {},
+                fields: {
+                    type_of_publication: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The type of publication is required.'
+                            }
+                        }
+                    },
+                    publication_title: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The publication title is required.'
+                            }
+                        }
+                    },
+                    date_of_publication: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The date of publication is required.'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Date must be a valid date.'
+                            }
+                        }
+                    },
+                    type_of_post: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The type of post is required.'
+                            }
+                        }
+                    },
+                    date_posted: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The date posted is required.'
+                            },
+                            date: {
+                                format: 'YYYY-MM-DD',
+                                message: 'Date must be a valid date.'
+                            }
+                        }
+                    },
+                    post_title: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The post title is required.'
+                            }
+                        }
+                    },
+                    posted_in: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The posted in is required.'
+                            }
+                        }
+                    },
+                },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap5: new FormValidation.plugins.Bootstrap5(),
@@ -27,13 +117,21 @@
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+            }).on('change', function (e) {
+                fv.revalidateField('date_of_publication');
             });
 
             $('[name="date_posted"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
+            }).on('change', function (e) {
+                fv.revalidateField('date_posted');
             });
+
+            toggleSections();
+
+            $('#type_of_publication').on('change', toggleSections);
 
         });
     </script>
@@ -66,6 +164,21 @@
             <form action="{{route('research-communication.store')}}" method="POST" id="researchCommunicationCreateForm">
                 @csrf
                 <div class="card mb-3">
+                    <div class="card-body py-2">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <label class="form-label required-label" for="type_of_publication">Type of Publication</label>
+                                <select class="form-select select2" name="type_of_publication" id="type_of_publication">
+                                    <option value="">Select Type of Publication</option>
+                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Journal Article</option>
+                                    <option value="Other" {{old('type_of_publication') == 'Other' ? 'selected' : ''}}>Other Posts</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3" id="publicationDetailsSection">
                     <div class="card-header fw-bold">
                         <h6 class="card-title">Publication Details</h6>
                     </div>
@@ -74,19 +187,11 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="type_of_publication">Type of Publication</label>
-                                <select class="form-select select2" name="type_of_publication" id="type_of_publication">
-                                    <option value="">Select Type of Publication</option>
-                                    <option value="Journal" {{old('type_of_publication') == 'Journal' ? 'selected' : ''}}>Journal Article</option>
-                                    <option value="Other" {{old('type_of_publication') == 'Other' ? 'selected' : ''}}>Other Posts</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="publication_title">Publication Title</label>
+                                <label class="form-label required-label" for="publication_title">Publication Title</label>
                                 <input class="form-control" type="text" name="publication_title" id="publication_title" value="{{old('publication_title')}}">
                             </div>
                             <div class="col-lg-4">
-                                <label class="form-label" for="date_of_publication">Date of Publication</label>
+                                <label class="form-label required-label" for="date_of_publication">Date of Publication</label>
                                 <input class="form-control" type="text" name="date_of_publication" id="date_of_publication" value="{{old('date_of_publication')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
@@ -109,7 +214,7 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card" id="socialMediaPostSection">
                     <div class="card-header fw-bold">
                         <h6 class="card-title">Social Media Post Details</h6>
                     </div>
@@ -118,7 +223,7 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="type_of_post">Type of Post</label>
+                                <label class="form-label required-label" for="type_of_post">Type of Post</label>
                                 <select class="form-select select2" name="type_of_post" id="type_of_post">
                                     <option value="">Select Type of Post</option>
                                     @foreach($postTypes as $type)
@@ -127,11 +232,11 @@
                                 </select>
                             </div>
                             <div class="col-lg-4">
-                                <label class="form-label" for="date_posted">Date Posted</label>
+                                <label class="form-label required-label" for="date_posted">Date Posted</label>
                                 <input class="form-control" type="text" name="date_posted" id="date_posted" value="{{old('date_posted')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                             <div class="col-lg-4">
-                                <label class="form-label" for="post_title">Post Title</label>
+                                <label class="form-label required-label" for="post_title">Post Title</label>
                                 <input class="form-control" type="text" name="post_title" id="post_title" value="{{old('post_title')}}">
                             </div>
                         </div>
@@ -147,7 +252,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-4">
-                                <label class="form-label" for="posted_in">Posted In</label>
+                                <label class="form-label required-label" for="posted_in">Posted In</label>
                                 <select class="form-select select2" name="posted_in" id="posted_in">
                                     <option value="">Select Posted In</option>
                                     @foreach(['Bluesky', 'Facebook', 'LinkedIn', 'Twitter', 'Website', 'X', 'Youtube'] as $platform)
@@ -181,11 +286,11 @@
                         </div>
 
                     </div>
+                </div>
 
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-primary" id="btnSubmit">Create</button>
-                        <a href="{{route('research-communication.index')}}" role="button" class="btn btn-sm btn-secondary">Cancel</a>
-                    </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-sm btn-primary" id="btnSubmit">Create</button>
+                    <a href="{{route('research-communication.index')}}" role="button" class="btn btn-sm btn-secondary">Cancel</a>
                 </div>
             </form>
         </section>

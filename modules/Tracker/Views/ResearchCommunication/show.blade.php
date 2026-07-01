@@ -19,6 +19,7 @@
         ]" />
 
         <section>
+            @if($researchCommunication->type_of_publication === 'Journal')
             <div class="card mb-3">
                 <div class="card-header fw-bold">
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -68,13 +69,19 @@
                     </div>
                 </div>
             </div>
+            @endif
 
+            @if($researchCommunication->type_of_publication === 'Other')
             <div class="card">
                 <div class="card-header fw-bold">
                     <h6>Social Media Post Details</h6>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Type of Publication</label>
+                            <p>{{$researchCommunication->type_of_publication ?: 'N/A'}}</p>
+                        </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Type of Post</label>
                             <p>{{$researchCommunication->type_of_post ?: 'N/A'}}</p>
@@ -83,13 +90,13 @@
                             <label class="text-muted fw-bold small">Date Posted</label>
                             <p>{{$researchCommunication->getDatePosted() ?: 'N/A'}}</p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Post Title</label>
                             <p>{{$researchCommunication->post_title ?: 'N/A'}}</p>
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Project</label>
                             <p>{{$researchCommunication->getProjectTitle()}}</p>
@@ -125,6 +132,7 @@
 
                 </div>
             </div>
+            @endif
             <a href="{{URL::previous()}}" type="button" class="btn btn-sm btn-secondary mt-3">Back</a>
         </section>
     </div>

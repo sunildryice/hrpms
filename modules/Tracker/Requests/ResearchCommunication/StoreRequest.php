@@ -23,24 +23,43 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'type_of_publication'       => 'nullable|in:Journal,Other',
-            'publication_title'         => 'nullable|string|max:255',
-            'date_of_publication'       => 'nullable|date',
+        $rules = [
+            'type_of_publication'       => 'required|in:Journal,Other',
             'herdi_members_involved'    => 'nullable|string|max:255',
             'journal_paper_name'        => 'nullable|string|max:255',
             'publication_url'           => 'nullable|string|max:255',
-            'type_of_post'              => 'nullable|string|max:255',
-            'date_posted'               => 'nullable|date',
-            'post_title'                => 'nullable|string|max:255',
             'project_id'                => 'nullable|exists:projects,id',
-            'posted_in'                 => 'nullable|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube',
             'views'                     => 'nullable|integer|min:0',
             'link_clicks'               => 'nullable|integer|min:0',
             'reactions'                 => 'nullable|integer|min:0',
             'shares'                    => 'nullable|integer|min:0',
             'comments'                  => 'nullable|integer|min:0',
         ];
+
+        if ($this->input('type_of_publication') === 'Journal') {
+            $rules['publication_title']   = 'required|string|max:255';
+            $rules['date_of_publication'] = 'required|date';
+            $rules['type_of_post']        = 'nullable|string|max:255';
+            $rules['date_posted']         = 'nullable|date';
+            $rules['post_title']          = 'nullable|string|max:255';
+            $rules['posted_in']           = 'nullable|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
+        } elseif ($this->input('type_of_publication') === 'Other') {
+            $rules['publication_title']   = 'nullable|string|max:255';
+            $rules['date_of_publication'] = 'nullable|date';
+            $rules['type_of_post']        = 'required|string|max:255';
+            $rules['date_posted']         = 'required|date';
+            $rules['post_title']          = 'required|string|max:255';
+            $rules['posted_in']           = 'required|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
+        } else {
+            $rules['publication_title']   = 'nullable|string|max:255';
+            $rules['date_of_publication'] = 'nullable|date';
+            $rules['type_of_post']        = 'nullable|string|max:255';
+            $rules['date_posted']         = 'nullable|date';
+            $rules['post_title']          = 'nullable|string|max:255';
+            $rules['posted_in']           = 'nullable|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
+        }
+
+        return $rules;
     }
 
     public function attributes()

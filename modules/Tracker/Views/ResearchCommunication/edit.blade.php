@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'Edit Research Communication')
+@section('title', 'Edit Research Uptake & Communication')
 
 @section('page_js')
     <script type="text/javascript">
@@ -150,7 +150,7 @@
                                 <a href="{!! route('dashboard.index') !!}" class="text-decoration-none text-dark">Home</a>
                             </li>
                             <li class="breadcrumb-item" aria-current="page">
-                                <a href="{{route('research-communication.index')}}" class="text-decoration-none">Research Communication</a>
+                                <a href="{{route('research-communication.index')}}" class="text-decoration-none">Research Uptake & Communication</a>
                             </li>
                             <li class="breadcrumb-item" aria-current="page">@yield('title')</li>
                         </ol>

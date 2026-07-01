@@ -100,9 +100,9 @@ class ResearchCommunicationController extends Controller
         $record = $this->researchCommunications->create($inputs);
 
         if ($record) {
-            return redirect()->route('research-communication.index')->withSuccessMessage('Research Communication created successfully.');
+            return redirect()->route('research-communication.index')->withSuccessMessage('Research Uptake & Communication created successfully.');
         } else {
-            return redirect()->back()->withInput()->withWarningMessage('Research Communication could not be created.');
+            return redirect()->back()->withInput()->withWarningMessage('Research Uptake & Communication could not be created.');
         }
     }
 
@@ -152,9 +152,9 @@ class ResearchCommunicationController extends Controller
         $record = $this->researchCommunications->update($id, $inputs);
 
         if ($record) {
-            return redirect()->route('research-communication.index')->withSuccessMessage('Research Communication updated successfully.');
+            return redirect()->route('research-communication.index')->withSuccessMessage('Research Uptake & Communication updated successfully.');
         } else {
-            return redirect()->back()->withInput()->withWarningMessage('Research Communication could not be updated.');
+            return redirect()->back()->withInput()->withWarningMessage('Research Uptake & Communication could not be updated.');
         }
     }
 
@@ -173,12 +173,12 @@ class ResearchCommunicationController extends Controller
         if ($record) {
             return response()->json([
                 'type'      => 'success',
-                'message'   => 'Research Communication deleted successfully.'
+                'message'   => 'Research Uptake & Communication deleted successfully.'
             ], 200);
         } else {
             return response()->json([
                 'type'      => 'error',
-                'message'   => 'Research Communication could not be deleted.'
+                'message'   => 'Research Uptake & Communication could not be deleted.'
             ], 422);
         }
     }

@@ -561,9 +561,9 @@
                             <div class="nav-item">
                                 <a class="nav-link" href="{{ route('research-communication.index') }}" role="button"
                                    id="research-communication-index"
-                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Research & Communication">
+                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Research Uptake & Communication">
                                     <i class="bi bi-journal-richtext nav-icon"></i>
-                                    <span class="nav-link-title">Research & Communication</span>
+                                    <span class="nav-link-title">Research Uptake & Communication</span>
                                 </a>
                             </div>
                         @endif

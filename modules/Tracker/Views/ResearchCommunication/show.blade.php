@@ -1,6 +1,6 @@
 @extends('layouts.container')
 
-@section('title', 'View Research Communication')
+@section('title', 'View Research Uptake & Communication')
 
 @section('page_js')
     <script type="text/javascript">
@@ -15,7 +15,7 @@
     <div class="container-fluid">
 
         <x-breadcrumb :items="[
-            ['route' => route('research-communication.index'), 'title' => 'Research Communication'],
+            ['route' => route('research-communication.index'), 'title' => 'Research Uptake & Communication'],
         ]" />
 
         <section>

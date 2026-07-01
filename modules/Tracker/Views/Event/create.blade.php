@@ -128,12 +128,12 @@
                 }
 
                 let row = '<tr>';
-                row += '<td>' + org + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation]" value="' + org + '"></td>';
-                row += '<td>' + (orgName || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation_name]" value="' + orgName + '"></td>';
-                row += '<td>' + (pos || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][position]" value="' + pos + '"></td>';
-                row += '<td>' + (eth || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][ethnicity]" value="' + eth + '"></td>';
-                row += '<td>' + (gen || '') + '<input type="hidden" name="roasters[' + roasterIndex + '][gender]" value="' + gen + '"></td>';
-                row += '<td><button type="button" class="btn btn-danger btn-sm remove-roaster"><i class="bi-trash"></i></button></td>';
+                row += '<td>' + $('<span>').text(org).html() + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation]" value="' + $('<span>').text(org).html() + '"></td>';
+                row += '<td>' + $('<span>').text(orgName || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation_name]" value="' + $('<span>').text(orgName || '').html() + '"></td>';
+                row += '<td>' + $('<span>').text(pos || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][position]" value="' + $('<span>').text(pos || '').html() + '"></td>';
+                row += '<td>' + $('<span>').text(eth || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][ethnicity]" value="' + $('<span>').text(eth || '').html() + '"></td>';
+                row += '<td>' + $('<span>').text(gen || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][gender]" value="' + $('<span>').text(gen || '').html() + '"></td>';
+                row += '<td><button type="button" class="btn btn-outline-primary btn-sm edit-roaster me-1" title="Edit"><i class="bi-pencil-square"></i></button><button type="button" class="btn btn-danger btn-sm remove-roaster"><i class="bi-trash"></i></button></td>';
                 row += '</tr>';
 
                 $('#roasterTableBody').append(row);
@@ -142,8 +142,80 @@
                 $('#roaster_organisation').val('').trigger('change');
                 $('#roaster_organisation_name').val('');
                 $('#roaster_position').val('');
-                $('#roaster_ethnicity').val('');
+                $('#roaster_ethnicity').val('').trigger('change');
                 $('#roaster_gender').val('').trigger('change');
+            });
+
+            // Edit roaster modal
+            let editingRow = null;
+
+            $('#editRoasterModal').on('shown.bs.modal', function() {
+                $(this).find('.select2').each(function() {
+                    let $el = $(this);
+                    if ($el.hasClass('select2-hidden-accessible')) {
+                        $el.select2('destroy');
+                    }
+                    $el.select2({dropdownParent: $('#editRoasterModal')});
+                });
+            }).on('hidden.bs.modal', function() {
+                $(this).find('.select2').each(function() {
+                    let $el = $(this);
+                    if ($el.hasClass('select2-hidden-accessible')) {
+                        $el.select2('destroy');
+                    }
+                });
+            });
+
+            $(document).on('click', '.edit-roaster', function() {
+                editingRow = $(this).closest('tr');
+                let org = editingRow.find('input[name$="[organisation]"]').val();
+                let orgName = editingRow.find('input[name$="[organisation_name]"]').val();
+                let pos = editingRow.find('input[name$="[position]"]').val();
+                let eth = editingRow.find('input[name$="[ethnicity]"]').val();
+                let gen = editingRow.find('input[name$="[gender]"]').val();
+
+                $('#edit_organisation').val(org).trigger('change');
+                $('#edit_organisation_name').val(orgName);
+                $('#edit_position').val(pos);
+                $('#edit_ethnicity').val(eth).trigger('change');
+                $('#edit_gender').val(gen).trigger('change');
+                $('#editRoasterModal').modal('show');
+            });
+
+            $('#saveEditRoaster').on('click', function() {
+                if (!editingRow) return;
+
+                let org = $('#edit_organisation').val();
+                let orgName = $('#edit_organisation_name').val();
+                let pos = $('#edit_position').val();
+                let eth = $('#edit_ethnicity').val();
+                let gen = $('#edit_gender').val();
+
+                if (!org) {
+                    toastr.error('Organisation is required.', 'Error');
+                    return;
+                }
+
+                let cells = editingRow.find('td');
+                let esc = function(v) { return $('<span>').text(v || '').html(); };
+
+                cells.eq(0).contents().first().replaceWith(esc(org));
+                cells.eq(0).find('input[name$="[organisation]"]').val(org);
+
+                cells.eq(1).contents().first().replaceWith(esc(orgName));
+                cells.eq(1).find('input[name$="[organisation_name]"]').val(orgName);
+
+                cells.eq(2).contents().first().replaceWith(esc(pos));
+                cells.eq(2).find('input[name$="[position]"]').val(pos);
+
+                cells.eq(3).contents().first().replaceWith(esc(eth));
+                cells.eq(3).find('input[name$="[ethnicity]"]').val(eth);
+
+                cells.eq(4).contents().first().replaceWith(esc(gen));
+                cells.eq(4).find('input[name$="[gender]"]').val(gen);
+
+                $('#editRoasterModal').modal('hide');
+                editingRow = null;
             });
 
             $(document).on('click', '.remove-roaster', function() {
@@ -357,6 +429,63 @@
                                         <tbody id="roasterTableBody">
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Roaster Modal -->
+                        <div class="modal fade" id="editRoasterModal" tabindex="-1">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h6 class="modal-title">Edit Roaster</h6>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-2">
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Organisation <span class="text-danger">*</span></label>
+                                                <select class="form-select form-select-sm select2" id="edit_organisation">
+                                                    <option value="">Select Organisation</option>
+                                                    <option value="HERDi">HERDi</option>
+                                                    <option value="Government">Government</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Organisation Name</label>
+                                                <input type="text" class="form-control form-control-sm" id="edit_organisation_name">
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Position</label>
+                                                <input type="text" class="form-control form-control-sm" id="edit_position">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Ethnicity</label>
+                                                <select class="form-select form-select-sm select2" id="edit_ethnicity">
+                                                    <option value="">Select Ethnicity</option>
+                                                    @foreach($ethnicities as $ethnicity)
+                                                        <option value="{{$ethnicity->value}}">{{$ethnicity->label()}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Gender</label>
+                                                <select class="form-select form-select-sm select2" id="edit_gender">
+                                                    <option value="">Select Gender</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-sm btn-primary" id="saveEditRoaster">Save</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

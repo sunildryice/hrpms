@@ -180,7 +180,12 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_owner">Risk Owner</label>
-                                <input class="form-control" type="text" name="risk_owner" id="risk_owner" value="{{$risk->risk_owner}}">
+                                <select class="form-select select2" name="risk_owner[]" id="risk_owner" multiple>
+                                    <option value="">Select Risk Owner</option>
+                                    @foreach($employees as $employee)
+                                        <option value="{{$employee->id}}" {{in_array($employee->id, $risk->risk_owner ?? []) ? 'selected' : ''}}>{{$employee->full_name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
 

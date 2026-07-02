@@ -3,6 +3,7 @@
 namespace Modules\Tracker\Requests\Risk;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
@@ -20,6 +21,10 @@ class UpdateRequest extends FormRequest
     {
         if ($this->input('project_id') === null || $this->input('project_id') === '') {
             $this->merge(['project_id' => null]);
+        }
+
+        if (!$this->has('risk_owner')) {
+            $this->merge(['risk_owner' => []]);
         }
     }
 
@@ -41,7 +46,8 @@ class UpdateRequest extends FormRequest
             'risk_rating_id'            => 'nullable|exists:lkup_risk_ratings,id',
             'risk_response_type_id'     => 'nullable|exists:lkup_risk_response_types,id',
             'description_of_risk'       => 'nullable|string',
-            'risk_owner'                => 'nullable|string|max:255',
+            'risk_owner'                => 'nullable|array',
+            'risk_owner.*'              => ['nullable', Rule::exists('employees', 'id')],
             'mitigating_action'         => 'nullable|string',
             'whats_changed_this_quarter'=> 'nullable|string',
             'remarks'                   => 'nullable|string',

@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Employee\Models\Employee;
 use Modules\Project\Models\Project;
 use Modules\Tracker\Models\Enums\PostType;
 use Modules\Tracker\Repositories\ResearchCommunicationRepository;
@@ -83,8 +84,9 @@ class ResearchCommunicationController extends Controller
 
         $postTypes = PostType::cases();
         $projects  = Project::whereNotNull('activated_at')->get();
+        $employees = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
-        return view('Tracker::ResearchCommunication.create', compact('postTypes', 'projects'));
+        return view('Tracker::ResearchCommunication.create', compact('postTypes', 'projects', 'employees'));
     }
 
     /**
@@ -134,8 +136,9 @@ class ResearchCommunicationController extends Controller
         $researchCommunication = $this->researchCommunications->find($id);
         $postTypes = PostType::cases();
         $projects  = Project::whereNotNull('activated_at')->get();
+        $employees = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
-        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication', 'postTypes', 'projects'));
+        return view('Tracker::ResearchCommunication.edit', compact('researchCommunication', 'postTypes', 'projects', 'employees'));
     }
 
     /**

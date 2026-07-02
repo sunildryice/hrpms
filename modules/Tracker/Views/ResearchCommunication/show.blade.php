@@ -50,7 +50,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">HERDI Members Involved</label>
-                            <p>{{$researchCommunication->herdi_members_involved ?: 'N/A'}}</p>
+                            <p>{{$researchCommunication->getMemberNames()}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Journal/Paper Name</label>
@@ -67,6 +67,7 @@
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
             @endif

@@ -5,6 +5,7 @@ namespace Modules\Tracker\Models;
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Employee\Models\Employee;
 use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
 
@@ -36,13 +37,14 @@ class ResearchCommunication extends Model
     ];
 
     protected $casts = [
-        'date_of_publication' => 'date',
-        'date_posted'         => 'date',
-        'views'               => 'integer',
-        'link_clicks'         => 'integer',
-        'reactions'           => 'integer',
-        'shares'              => 'integer',
-        'comments'            => 'integer',
+        'date_of_publication'  => 'date',
+        'date_posted'          => 'date',
+        'views'                => 'integer',
+        'link_clicks'          => 'integer',
+        'reactions'            => 'integer',
+        'shares'               => 'integer',
+        'comments'             => 'integer',
+        'herdi_members_involved' => 'array',
     ];
 
     public function project()
@@ -92,5 +94,18 @@ class ResearchCommunication extends Model
     public function getTotalEngagement()
     {
         return $this->views + $this->link_clicks + $this->reactions + $this->shares + $this->comments;
+    }
+
+    public function getMemberNames(): string
+    {
+        $ids = $this->herdi_members_involved ?? [];
+        if (empty($ids)) {
+            return 'N/A';
+        }
+
+        $names = Employee::whereIn('id', $ids)->pluck('full_name')->toArray();
+        $textNames = array_filter($ids, fn($v) => !is_numeric($v));
+
+        return implode(', ', array_merge($names, $textNames)) ?: 'N/A';
     }
 }

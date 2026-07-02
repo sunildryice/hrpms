@@ -34,7 +34,8 @@ class Risk extends Model
     ];
 
     protected $casts = [
-        'date_added' => 'date',
+        'date_added'  => 'date',
+        'risk_owner'  => 'array',
     ];
 
     public function riskStatus()
@@ -125,5 +126,18 @@ class Risk extends Model
     public function getCreatorName()
     {
         return $this->createdBy->getFullName();
+    }
+
+    public function getRiskOwnerNames(): string
+    {
+        $ids = $this->risk_owner ?? [];
+        if (empty($ids)) {
+            return 'N/A';
+        }
+
+        $names = \Modules\Employee\Models\Employee::whereIn('id', $ids)->pluck('full_name')->toArray();
+        $textNames = array_filter($ids, fn($v) => !is_numeric($v));
+
+        return implode(', ', array_merge($names, $textNames)) ?: 'N/A';
     }
 }

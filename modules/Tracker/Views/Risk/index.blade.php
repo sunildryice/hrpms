@@ -44,7 +44,7 @@
                         name: 'risk_rating'
                     },
                     {
-                        data: 'risk_owner',
+                        data: 'risk_owner_names',
                         name: 'risk_owner'
                     },
                     {

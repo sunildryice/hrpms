@@ -3,6 +3,7 @@
 namespace Modules\Tracker\Requests\ResearchCommunication;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -16,6 +17,13 @@ class StoreRequest extends FormRequest
         return auth()->user();
     }
 
+    protected function prepareForValidation()
+    {
+        if (!$this->has('herdi_members_involved')) {
+            $this->merge(['herdi_members_involved' => []]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,7 +33,8 @@ class StoreRequest extends FormRequest
     {
         $rules = [
             'type_of_publication'       => 'required|in:Journal,Other',
-            'herdi_members_involved'    => 'nullable|string|max:255',
+            'herdi_members_involved'    => 'nullable|array',
+            'herdi_members_involved.*'  => ['nullable', Rule::exists('employees', 'id')],
             'journal_paper_name'        => 'nullable|string|max:255',
             'publication_url'           => 'nullable|string|max:255',
             'project_id'                => 'nullable|exists:projects,id',

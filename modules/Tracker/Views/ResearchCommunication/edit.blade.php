@@ -200,7 +200,12 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="herdi_members_involved">HERDI Members Involved</label>
-                                <input class="form-control" type="text" name="herdi_members_involved" id="herdi_members_involved" value="{{$researchCommunication->herdi_members_involved}}">
+                                <select class="form-select select2" name="herdi_members_involved[]" id="herdi_members_involved" multiple>
+                                    <option value="">Select Members</option>
+                                    @foreach($employees as $employee)
+                                        <option value="{{$employee->id}}" {{in_array($employee->id, $researchCommunication->herdi_members_involved ?? []) ? 'selected' : ''}}>{{$employee->full_name}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4">
                                 <label class="form-label" for="journal_paper_name">Journal/Paper Name</label>

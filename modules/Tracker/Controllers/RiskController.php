@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Employee\Models\Employee;
 use Modules\Project\Models\Project;
 use Modules\Tracker\Models\RiskStatus;
 use Modules\Tracker\Models\RiskType;
@@ -59,6 +60,9 @@ class RiskController extends Controller
                 ->addColumn('risk_rating', function ($row) {
                     return $row->getRiskRatingTitle();
                 })
+                ->addColumn('risk_owner_names', function ($row) {
+                    return $row->getRiskOwnerNames();
+                })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('risk.show', $row->id) . '" rel="tooltip" title="View Risk"><i class="bi bi-eye"></i></a>';
@@ -99,10 +103,11 @@ class RiskController extends Controller
         $riskImpacts        = RiskImpact::all();
         $riskRatings        = RiskRating::all();
         $riskResponseTypes  = RiskResponseType::all();
+        $employees          = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
         return view('Tracker::Risk.create', compact(
             'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
-            'riskImpacts', 'riskRatings', 'riskResponseTypes'
+            'riskImpacts', 'riskRatings', 'riskResponseTypes', 'employees'
         ));
     }
 
@@ -158,10 +163,11 @@ class RiskController extends Controller
         $riskImpacts        = RiskImpact::all();
         $riskRatings        = RiskRating::all();
         $riskResponseTypes  = RiskResponseType::all();
+        $employees          = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
         return view('Tracker::Risk.edit', compact(
             'risk', 'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
-            'riskImpacts', 'riskRatings', 'riskResponseTypes'
+            'riskImpacts', 'riskRatings', 'riskResponseTypes', 'employees'
         ));
     }
 

@@ -79,7 +79,7 @@
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Risk Owner</label>
-                            <p>{{$risk->risk_owner ?: 'N/A'}}</p>
+                            <p>{{$risk->getRiskOwnerNames()}}</p>
                         </div>
                     </div>
 

@@ -20,6 +20,7 @@ class BusinessDevelopment extends Model
         'project_type',
         'status',
         'result',
+        'attachment',
     ];
 
     protected $casts = [

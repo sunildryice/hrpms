@@ -32,6 +32,7 @@ class Event extends Model
         'roaster_details',
         'action_points',
         'remarks',
+        'attachment',
         'created_by',
         'updated_by',
     ];

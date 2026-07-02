@@ -71,7 +71,7 @@
         </div>
 
         <section>
-            <form action="{{route('business-development.store')}}" method="POST" id="businessDevelopmentCreateForm">
+            <form action="{{route('business-development.store')}}" method="POST" id="businessDevelopmentCreateForm" enctype="multipart/form-data">
                 @csrf
                 <div class="card">
                     <div class="card-header fw-bold">
@@ -134,6 +134,17 @@
                                     <option value="Awaiting Result" {{old('result') == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
                                     <option value="Awarded" {{old('result') == 'Awarded' ? 'selected' : ''}}>Awarded</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-lg-6">
+                                <label class="form-label" for="attachment">Attachment</label>
+                                <input class="form-control" type="file" name="attachment" id="attachment">
+                                <small class="text-muted">Supported files: pdf, jpg, jpeg, png, doc, docx, xlsx (Max 2MB)</small>
+                                @if ($errors->has('attachment'))
+                                    <span class="text-danger">{{$errors->first('attachment')}}</span>
+                                @endif
                             </div>
                         </div>
 

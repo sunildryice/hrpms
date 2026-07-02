@@ -54,6 +54,7 @@ class UpdateRequest extends FormRequest
             'deleted_roasters.*'            => 'integer|exists:event_roasters,id',
             'action_points'                 => 'nullable|string',
             'remarks'                       => 'nullable|string',
+            'attachment'                    => 'nullable|mimes:pdf,jpg,jpeg,png,doc,docx,xlsx|max:2048',
         ];
     }
 

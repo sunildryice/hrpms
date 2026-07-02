@@ -71,7 +71,7 @@
         </div>
 
         <section>
-            <form action="{{route('business-development.update', $businessDevelopment->id)}}" method="POST" id="businessDevelopmentUpdateForm">
+            <form action="{{route('business-development.update', $businessDevelopment->id)}}" method="POST" id="businessDevelopmentUpdateForm" enctype="multipart/form-data">
                 @csrf
                 @method('put')
                 <div class="card">
@@ -135,6 +135,22 @@
                                     <option value="Awaiting Result" {{$businessDevelopment->result == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
                                     <option value="Awarded" {{$businessDevelopment->result == 'Awarded' ? 'selected' : ''}}>Awarded</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-lg-6">
+                                <label class="form-label" for="attachment">Attachment</label>
+                                <input class="form-control" type="file" name="attachment" id="attachment">
+                                <small class="text-muted">Supported files: pdf, jpg, jpeg, png, doc, docx, xlsx (Max 2MB)</small>
+                                @if ($businessDevelopment->attachment)
+                                    <a href="{{asset('storage/'.$businessDevelopment->attachment)}}" target="_blank" class="ms-2 fs-5" title="View Attachment">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </a>
+                                @endif
+                                @if ($errors->has('attachment'))
+                                    <span class="text-danger">{{$errors->first('attachment')}}</span>
+                                @endif
                             </div>
                         </div>
 

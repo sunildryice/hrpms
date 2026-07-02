@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Modules\Tracker\Models\ThematicArea;
 use Modules\Tracker\Repositories\BusinessDevelopmentRepository;
 use Modules\Tracker\Requests\BusinessDevelopment\StoreRequest;
@@ -92,6 +93,11 @@ class BusinessDevelopmentController extends Controller
 
         $inputs = $request->validated();
 
+        if ($request->file('attachment')) {
+            $inputs['attachment'] = $request->file('attachment')
+                ->storeAs('tracker/business-development', time().'_'.random_int(1000, 9999).'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+        }
+
         $record = $this->businessDevelopments->create($inputs);
 
         if ($record) {
@@ -141,6 +147,16 @@ class BusinessDevelopmentController extends Controller
         $this->authorize('manage-business-development');
 
         $inputs = $request->validated();
+
+        if ($request->file('attachment')) {
+            $businessDevelopment = $this->businessDevelopments->find($id);
+            if ($businessDevelopment->attachment && Storage::exists($businessDevelopment->attachment)) {
+                Storage::delete($businessDevelopment->attachment);
+            }
+
+            $inputs['attachment'] = $request->file('attachment')
+                ->storeAs('tracker/business-development', time().'_'.random_int(1000, 9999).'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+        }
 
         $record = $this->businessDevelopments->update($id, $inputs);
 

@@ -4,6 +4,7 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Modules\Project\Models\Project;
 use Modules\Tracker\Models\Enums\Ethnicity;
@@ -106,6 +107,11 @@ class EventController extends Controller
         $inputs['roaster_details'] = $request->has('roaster_details') ? 1 : 0;
         $inputs['created_by'] = auth()->id();
 
+        if ($request->file('attachment')) {
+            $inputs['attachment'] = $request->file('attachment')
+                ->storeAs('tracker/events', time().'_'.random_int(1000, 9999).'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+        }
+
         $record = $this->events->create($inputs);
 
         if ($record) {
@@ -173,6 +179,16 @@ class EventController extends Controller
         $inputs = $request->validated();
         $inputs['roaster_details'] = $request->has('roaster_details') ? 1 : 0;
         $inputs['updated_by'] = auth()->id();
+
+        if ($request->file('attachment')) {
+            $event = $this->events->find($id);
+            if ($event->attachment && Storage::exists($event->attachment)) {
+                Storage::delete($event->attachment);
+            }
+
+            $inputs['attachment'] = $request->file('attachment')
+                ->storeAs('tracker/events', time().'_'.random_int(1000, 9999).'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
+        }
 
         $record = $this->events->update($id, $inputs);
 

@@ -31,6 +31,7 @@ class StoreRequest extends FormRequest
             'project_type'      => 'nullable|in:Research,Implementation',
             'status'            => 'nullable|in:Scanned,Submitted',
             'result'            => 'nullable|in:Rejected,Awaiting Result,Awarded',
+            'attachment'        => 'nullable|mimes:pdf,jpg,jpeg,png,doc,docx,xlsx|max:2048',
         ];
     }
 

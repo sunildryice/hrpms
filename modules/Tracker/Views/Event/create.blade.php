@@ -250,7 +250,7 @@
         </div>
 
         <section>
-            <form action="{{route('event.store')}}" method="POST" id="eventCreateForm">
+            <form action="{{route('event.store')}}" method="POST" id="eventCreateForm" enctype="multipart/form-data">
                 @csrf
                 <div class="card">
                     <div class="card-header fw-bold">
@@ -498,6 +498,17 @@
                             <div class="col-lg-6">
                                 <label class="form-label" for="remarks">Remarks</label>
                                 <textarea class="form-control" name="remarks" id="remarks" rows="3">{{old('remarks')}}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-lg-6">
+                                <label class="form-label" for="attachment">Attachment</label>
+                                <input class="form-control" type="file" name="attachment" id="attachment">
+                                <small class="text-muted">Supported files: pdf, jpg, jpeg, png, doc, docx, xlsx (Max 2MB)</small>
+                                @if ($errors->has('attachment'))
+                                    <span class="text-danger">{{$errors->first('attachment')}}</span>
+                                @endif
                             </div>
                         </div>
 

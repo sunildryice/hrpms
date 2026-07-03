@@ -48,6 +48,7 @@ class ResearchCommunicationRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
+            $record->platforms()->delete();
             $record->delete();
             DB::commit();
             return $record;

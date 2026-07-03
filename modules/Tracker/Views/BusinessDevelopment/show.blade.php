@@ -11,7 +11,7 @@
 @endsection
 
 @section('page-content')
-<div class="m-content p-3">
+<div class="m-content">
     <div class="container-fluid">
 
         <x-breadcrumb :items="[

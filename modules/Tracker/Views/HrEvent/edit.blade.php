@@ -181,7 +181,7 @@
 @endsection
 
 @section('page-content')
-<div class="m-content p-3">
+<div class="m-content">
     <div class="container-fluid">
         <div class="page-header pb-3 mb-3 border-bottom">
             <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">

@@ -520,16 +520,6 @@
                     @if ($authUser->can('manage-event') || $authUser->can('manage-hr-event') || $authUser->can('manage-business-development')
                         || $authUser->can('manage-risk') || $authUser->can('manage-research-communication'))
                         <span class="dropdown-header fw-bold">Tracker</span>
-                        @if($authUser->can('manage-business-development'))
-                            <div class="nav-item">
-                                <a class="nav-link" href="{{ route('business-development.index') }}" role="button"
-                                   id="business-development-index"
-                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Business Development">
-                                    <i class="bi bi-briefcase nav-icon"></i>
-                                    <span class="nav-link-title">Business Development</span>
-                                </a>
-                            </div>
-                        @endif
                         @if ($authUser->can('manage-event'))
                             <div class="nav-item">
                                 <a class="nav-link" href="{{ route('event.index') }}" role="button" id="event-index"
@@ -548,12 +538,13 @@
                                 </a>
                             </div>
                         @endif
-                        @if ($authUser->can('manage-risk'))
+                        @if($authUser->can('manage-business-development'))
                             <div class="nav-item">
-                                <a class="nav-link" href="{{ route('risk.index') }}" role="button" id="risk-index"
-                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Risk">
-                                    <i class="bi bi-exclamation-triangle nav-icon"></i>
-                                    <span class="nav-link-title">Risks</span>
+                                <a class="nav-link" href="{{ route('business-development.index') }}" role="button"
+                                   id="business-development-index"
+                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Business Development">
+                                    <i class="bi bi-briefcase nav-icon"></i>
+                                    <span class="nav-link-title">Business Development</span>
                                 </a>
                             </div>
                         @endif
@@ -564,6 +555,15 @@
                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Research Uptake & Communication">
                                     <i class="bi bi-journal-richtext nav-icon"></i>
                                     <span class="nav-link-title">Research Uptake</span>
+                                </a>
+                            </div>
+                        @endif
+                        @if ($authUser->can('manage-risk'))
+                            <div class="nav-item">
+                                <a class="nav-link" href="{{ route('risk.index') }}" role="button" id="risk-index"
+                                   data-bs-toggle="tooltip" data-bs-placement="right" title="Risk">
+                                    <i class="bi bi-exclamation-triangle nav-icon"></i>
+                                    <span class="nav-link-title">Risks</span>
                                 </a>
                             </div>
                         @endif

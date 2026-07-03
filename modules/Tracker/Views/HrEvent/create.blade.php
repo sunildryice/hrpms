@@ -39,35 +39,34 @@
                 }
             }
 
-            function generateRecruitmentRows(count) {
+            function addRecruitmentRow(data) {
+                data = data || {};
                 var container = $('#recruitmentTable tbody');
-                container.empty();
-
-                if (count <= 0) return;
-
-                for (var i = 0; i < count; i++) {
-                    var row = '<tr>';
-                    row += '<td class="text-center align-middle fw-bold">' + (i + 1) + '</td>';
-                    row += '<td>';
-                    row += '<input class="form-control form-control-sm recruitment-name" type="text" name="recruitments[' + i + '][member_name]" placeholder="Enter name">';
-                    row += '</td>';
-                    row += '<td>';
-                    row += '<select class="form-select form-select-sm recruitment-gender" name="recruitments[' + i + '][gender]">';
-                    row += '<option value="">Select</option>';
-                    row += '<option value="Male">Male</option>';
-                    row += '<option value="Female">Female</option>';
-                    row += '<option value="Other">Other</option>';
-                    row += '</select>';
-                    row += '</td>';
-                    row += '<td>';
-                    row += '<input class="form-control form-control-sm onboard-datepicker" type="text" name="recruitments[' + i + '][onboard_date]" placeholder="YYYY-MM-DD" onfocus="this.blur()">';
-                    row += '</td>';
-                    row += '<td>';
-                    row += '<input class="form-control form-control-sm" type="text" name="recruitments[' + i + '][position]" placeholder="Enter position">';
-                    row += '</td>';
-                    row += '</tr>';
-                    container.append(row);
-                }
+                var idx = container.find('tr').length;
+                var row = '<tr>';
+                row += '<td class="text-center align-middle fw-bold sn">' + (idx + 1) + '</td>';
+                row += '<td>';
+                row += '<input class="form-control form-control-sm recruitment-name" type="text" name="recruitments[' + idx + '][member_name]" value="' + (data.member_name || '') + '" placeholder="Enter name">';
+                row += '</td>';
+                row += '<td>';
+                row += '<select class="form-select form-select-sm recruitment-gender" name="recruitments[' + idx + '][gender]">';
+                row += '<option value="">Select</option>';
+                row += '<option value="Male"' + (data.gender === 'Male' ? ' selected' : '') + '>Male</option>';
+                row += '<option value="Female"' + (data.gender === 'Female' ? ' selected' : '') + '>Female</option>';
+                row += '<option value="Other"' + (data.gender === 'Other' ? ' selected' : '') + '>Other</option>';
+                row += '</select>';
+                row += '</td>';
+                row += '<td>';
+                row += '<input class="form-control form-control-sm onboard-datepicker" type="text" name="recruitments[' + idx + '][onboard_date]" value="' + (data.onboard_date || '') + '" placeholder="YYYY-MM-DD" onfocus="this.blur()">';
+                row += '</td>';
+                row += '<td>';
+                row += '<input class="form-control form-control-sm" type="text" name="recruitments[' + idx + '][position]" value="' + (data.position || '') + '" placeholder="Enter position">';
+                row += '</td>';
+                row += '<td class="text-center align-middle" style="width:40px">';
+                row += '<button type="button" class="btn btn-sm btn-outline-danger delete-row"><i class="bi bi-trash"></i></button>';
+                row += '</td>';
+                row += '</tr>';
+                container.append(row);
 
                 $('.onboard-datepicker').datepicker({
                     language: 'en-GB',
@@ -76,8 +75,42 @@
                 });
             }
 
+            function syncRecruitmentRows(targetCount) {
+                var currentCount = $('#recruitmentTable tbody tr').length;
+                if (targetCount > currentCount) {
+                    for (var i = currentCount; i < targetCount; i++) {
+                        addRecruitmentRow();
+                    }
+                } else if (targetCount < currentCount) {
+                    for (var i = currentCount; i > targetCount; i--) {
+                        $('#recruitmentTable tbody tr:last').remove();
+                    }
+                    reindexRows();
+                }
+            }
+
+            function deleteRecruitmentRow(btn) {
+                $(btn).closest('tr').remove();
+                reindexRows();
+                if ($('#recruitmentTable tbody tr').length === 0) {
+                    $('#recruitmentTableWrapper').hide();
+                    $('#total_recruited').val(0);
+                }
+            }
+
+            function reindexRows() {
+                $('#recruitmentTable tbody tr').each(function(i) {
+                    $(this).find('.sn').text(i + 1);
+                    $(this).find('input, select').each(function() {
+                        var name = $(this).attr('name');
+                        if (name) {
+                            $(this).attr('name', name.replace(/recruitments\[\d+\]/, 'recruitments[' + i + ']'));
+                        }
+                    });
+                });
+            }
+
             function validateRecruitments() {
-                var count = parseInt($('#total_recruited').val()) || 0;
                 var valid = true;
                 $('#recruitmentTable tbody tr').each(function() {
                     var name = $(this).find('.recruitment-name');
@@ -156,8 +189,28 @@
 
             $('#total_recruited').on('input change', function() {
                 var count = parseInt($(this).val()) || 0;
-                $('#recruitmentTableWrapper').toggle(count > 0);
-                generateRecruitmentRows(count);
+                if (count > 0) {
+                    $('#recruitmentTableWrapper').show();
+                    syncRecruitmentRows(count);
+                } else {
+                    $('#recruitmentTableWrapper').hide();
+                    $('#recruitmentTable tbody').empty();
+                }
+            });
+
+            $('#recruitmentTableWrapper').on('click', '.delete-row', function() {
+                deleteRecruitmentRow(this);
+                $('#total_recruited').val($('#recruitmentTable tbody tr').length);
+            });
+
+            $('#addRecruitmentRow').on('click', function() {
+                if (!$('#recruitmentTableWrapper').is(':visible')) {
+                    $('#recruitmentTableWrapper').show();
+                    $('#total_recruited').val(1);
+                } else {
+                    $('#total_recruited').val(parseInt($('#total_recruited').val()) + 1);
+                }
+                syncRecruitmentRows(parseInt($('#total_recruited').val()));
             });
 
             toggleSections();
@@ -266,12 +319,14 @@
                                             <th style="width:140px">Gender <span class="text-danger">*</span></th>
                                             <th style="width:160px">Onboard Date</th>
                                             <th>Position</th>
+                                            <th class="text-center" style="width:40px"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                     </tbody>
                                 </table>
                             </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addRecruitmentRow"><i class="bi bi-plus"></i> Add Row</button>
                             </div>
 
                             <hr>

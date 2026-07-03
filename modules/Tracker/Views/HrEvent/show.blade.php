@@ -24,7 +24,9 @@
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
                         <h6 class="mb-0">HR Event Details</h6>
                         @can('manage-hr-event')
-                        <a href="{{ route('hr-event.edit', $hrEvent->id) }}" class="btn btn-primary btn-sm">Edit</a>
+                        <a href="{{ route('hr-event.edit', $hrEvent->id) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
                         @endcan
                     </div>
                 </div>

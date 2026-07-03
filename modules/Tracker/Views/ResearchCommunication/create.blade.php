@@ -7,6 +7,8 @@
         $(function() {
             $('#navbarVerticalMenu').find('#research-communication-index').addClass('active');
 
+            let platformIndex = 0;
+
             function toggleSections() {
                 var val = $('#type_of_publication').val();
                 if (val === 'Journal') {
@@ -17,7 +19,6 @@
                     try { fv.disableValidator('type_of_post'); } catch(e) {}
                     try { fv.disableValidator('date_posted'); } catch(e) {}
                     try { fv.disableValidator('post_title'); } catch(e) {}
-                    try { fv.disableValidator('posted_in'); } catch(e) {}
                 } else if (val === 'Other') {
                     $('#publicationDetailsSection').hide();
                     $('#socialMediaPostSection').show();
@@ -26,7 +27,6 @@
                     try { fv.enableValidator('type_of_post'); } catch(e) {}
                     try { fv.enableValidator('date_posted'); } catch(e) {}
                     try { fv.enableValidator('post_title'); } catch(e) {}
-                    try { fv.enableValidator('posted_in'); } catch(e) {}
                 } else {
                     $('#publicationDetailsSection').hide();
                     $('#socialMediaPostSection').hide();
@@ -35,7 +35,6 @@
                     try { fv.disableValidator('type_of_post'); } catch(e) {}
                     try { fv.disableValidator('date_posted'); } catch(e) {}
                     try { fv.disableValidator('post_title'); } catch(e) {}
-                    try { fv.disableValidator('posted_in'); } catch(e) {}
                 }
             }
 
@@ -92,13 +91,6 @@
                             }
                         }
                     },
-                    posted_in: {
-                        validators: {
-                            notEmpty: {
-                                message: 'The posted in is required.'
-                            }
-                        }
-                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -111,6 +103,42 @@
                         validating: 'bi bi-arrow-repeat'
                     }),
                 }
+            });
+
+            $('#addPlatformBtn').on('click', function() {
+                let platform = $('#platform_select').val();
+                if (!platform) {
+                    toastr.error('Please select a platform.', 'Error');
+                    return;
+                }
+
+                let existing = $('#platformsTableBody').find('input[name$="[platform]"]').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (existing.includes(platform)) {
+                    toastr.error('Platform "' + platform + '" already added.', 'Error');
+                    return;
+                }
+
+                let row = '<tr>';
+                row += '<td>' + platform + '<input type="hidden" name="platforms[' + platformIndex + '][platform]" value="' + platform + '"></td>';
+                row += '<td><input type="number" class="form-control form-control-sm" name="platforms[' + platformIndex + '][views]" value="0" min="0"></td>';
+                row += '<td><input type="number" class="form-control form-control-sm" name="platforms[' + platformIndex + '][link_clicks]" value="0" min="0"></td>';
+                row += '<td><input type="number" class="form-control form-control-sm" name="platforms[' + platformIndex + '][reactions]" value="0" min="0"></td>';
+                row += '<td><input type="number" class="form-control form-control-sm" name="platforms[' + platformIndex + '][shares]" value="0" min="0"></td>';
+                row += '<td><input type="number" class="form-control form-control-sm" name="platforms[' + platformIndex + '][comments]" value="0" min="0"></td>';
+                row += '<td><button type="button" class="btn btn-danger btn-sm remove-platform"><i class="bi-trash"></i></button></td>';
+                row += '</tr>';
+
+                $('#platformsTableBody').append(row);
+                platformIndex++;
+
+                $('#platform_select').val('').trigger('change');
+            });
+
+            $(document).on('click', '.remove-platform', function() {
+                $(this).closest('tr').remove();
             });
 
             $('[name="date_of_publication"]').datepicker({
@@ -256,38 +284,55 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-lg-4">
-                                <label class="form-label required-label" for="posted_in">Posted In</label>
-                                <select class="form-select select2" name="posted_in" id="posted_in">
-                                    <option value="">Select Posted In</option>
+                        </div>
+
+                        <hr>
+                        <h6 class="fw-bold mb-2">Platform Performance</h6>
+                        <div class="row mb-2 align-items-end">
+                            <div class="col-lg-3">
+                                <label class="form-label" for="platform_select">Add Platform</label>
+                                <select class="form-select form-select-sm select2" id="platform_select">
+                                    <option value="">Select Platform</option>
                                     @foreach(['Bluesky', 'Facebook', 'LinkedIn', 'Twitter', 'Website', 'X', 'Youtube'] as $platform)
-                                        <option value="{{$platform}}" {{old('posted_in') == $platform ? 'selected' : ''}}>{{$platform}}</option>
+                                        <option value="{{$platform}}">{{$platform}}</option>
                                     @endforeach
                                 </select>
                             </div>
+                            <div class="col-lg-9">
+                                <button type="button" class="btn btn-sm btn-primary mt-4" id="addPlatformBtn"><i class="bi-plus"></i> Add Platform</button>
+                            </div>
                         </div>
-
-                        <div class="row mb-2">
-                            <div class="col-lg-2">
-                                <label class="form-label" for="views">Views</label>
-                                <input class="form-control" type="number" name="views" id="views" value="{{old('views', 0)}}" min="0">
-                            </div>
-                            <div class="col-lg-2">
-                                <label class="form-label" for="link_clicks">Link Clicks</label>
-                                <input class="form-control" type="number" name="link_clicks" id="link_clicks" value="{{old('link_clicks', 0)}}" min="0">
-                            </div>
-                            <div class="col-lg-2">
-                                <label class="form-label" for="reactions">Reactions</label>
-                                <input class="form-control" type="number" name="reactions" id="reactions" value="{{old('reactions', 0)}}" min="0">
-                            </div>
-                            <div class="col-lg-2">
-                                <label class="form-label" for="shares">Shares</label>
-                                <input class="form-control" type="number" name="shares" id="shares" value="{{old('shares', 0)}}" min="0">
-                            </div>
-                            <div class="col-lg-2">
-                                <label class="form-label" for="comments">Comments</label>
-                                <input class="form-control" type="number" name="comments" id="comments" value="{{old('comments', 0)}}" min="0">
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Platform</th>
+                                        <th>Views</th>
+                                        <th>Link Clicks</th>
+                                        <th>Reactions</th>
+                                        <th>Shares</th>
+                                        <th>Comments</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="platformsTableBody">
+                                    @if(old('platforms'))
+                                        @php $pi = 0; @endphp
+                                        @foreach(old('platforms') as $p)
+                                        <tr>
+                                            <td>{{$p['platform']}}<input type="hidden" name="platforms[{{$pi}}][platform]" value="{{$p['platform']}}"></td>
+                                            <td><input type="number" class="form-control form-control-sm" name="platforms[{{$pi}}][views]" value="{{$p['views'] ?? 0}}" min="0"></td>
+                                            <td><input type="number" class="form-control form-control-sm" name="platforms[{{$pi}}][link_clicks]" value="{{$p['link_clicks'] ?? 0}}" min="0"></td>
+                                            <td><input type="number" class="form-control form-control-sm" name="platforms[{{$pi}}][reactions]" value="{{$p['reactions'] ?? 0}}" min="0"></td>
+                                            <td><input type="number" class="form-control form-control-sm" name="platforms[{{$pi}}][shares]" value="{{$p['shares'] ?? 0}}" min="0"></td>
+                                            <td><input type="number" class="form-control form-control-sm" name="platforms[{{$pi}}][comments]" value="{{$p['comments'] ?? 0}}" min="0"></td>
+                                            <td><button type="button" class="btn btn-danger btn-sm remove-platform"><i class="bi-trash"></i></button></td>
+                                        </tr>
+                                        @php $pi++; @endphp
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
 
                     </div>

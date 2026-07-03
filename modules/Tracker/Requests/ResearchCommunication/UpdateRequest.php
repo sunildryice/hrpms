@@ -22,6 +22,18 @@ class UpdateRequest extends FormRequest
         if (!$this->has('herdi_members_involved')) {
             $this->merge(['herdi_members_involved' => []]);
         }
+
+        if ($this->has('platforms')) {
+            $platforms = $this->input('platforms');
+            foreach ($platforms as $i => $p) {
+                $platforms[$i]['views'] = $p['views'] ?? 0;
+                $platforms[$i]['link_clicks'] = $p['link_clicks'] ?? 0;
+                $platforms[$i]['reactions'] = $p['reactions'] ?? 0;
+                $platforms[$i]['shares'] = $p['shares'] ?? 0;
+                $platforms[$i]['comments'] = $p['comments'] ?? 0;
+            }
+            $this->merge(['platforms' => $platforms]);
+        }
     }
 
     /**
@@ -38,11 +50,13 @@ class UpdateRequest extends FormRequest
             'journal_paper_name'        => 'nullable|string|max:255',
             'publication_url'           => 'nullable|string|max:255',
             'project_id'                => 'nullable|exists:projects,id',
-            'views'                     => 'nullable|integer|min:0',
-            'link_clicks'               => 'nullable|integer|min:0',
-            'reactions'                 => 'nullable|integer|min:0',
-            'shares'                    => 'nullable|integer|min:0',
-            'comments'                  => 'nullable|integer|min:0',
+            'platforms'                 => 'nullable|array',
+            'platforms.*.platform'      => 'required_with:platforms|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube',
+            'platforms.*.views'         => 'nullable|integer|min:0',
+            'platforms.*.link_clicks'   => 'nullable|integer|min:0',
+            'platforms.*.reactions'     => 'nullable|integer|min:0',
+            'platforms.*.shares'        => 'nullable|integer|min:0',
+            'platforms.*.comments'      => 'nullable|integer|min:0',
         ];
 
         if ($this->input('type_of_publication') === 'Journal') {
@@ -51,21 +65,19 @@ class UpdateRequest extends FormRequest
             $rules['type_of_post']        = 'nullable|string|max:255';
             $rules['date_posted']         = 'nullable|date';
             $rules['post_title']          = 'nullable|string|max:255';
-            $rules['posted_in']           = 'nullable|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
         } elseif ($this->input('type_of_publication') === 'Other') {
             $rules['publication_title']   = 'nullable|string|max:255';
             $rules['date_of_publication'] = 'nullable|date';
             $rules['type_of_post']        = 'required|string|max:255';
             $rules['date_posted']         = 'required|date';
             $rules['post_title']          = 'required|string|max:255';
-            $rules['posted_in']           = 'required|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
+            $rules['platforms']           = 'required|array|min:1';
         } else {
             $rules['publication_title']   = 'nullable|string|max:255';
             $rules['date_of_publication'] = 'nullable|date';
             $rules['type_of_post']        = 'nullable|string|max:255';
             $rules['date_posted']         = 'nullable|date';
             $rules['post_title']          = 'nullable|string|max:255';
-            $rules['posted_in']           = 'nullable|in:Bluesky,Facebook,LinkedIn,Twitter,Website,X,Youtube';
         }
 
         return $rules;
@@ -84,12 +96,13 @@ class UpdateRequest extends FormRequest
             'date_posted'               => 'Date Posted',
             'post_title'                => 'Post Title',
             'project_id'                => 'Project',
-            'posted_in'                 => 'Posted In',
-            'views'                     => 'Views',
-            'link_clicks'               => 'Link Clicks',
-            'reactions'                 => 'Reactions',
-            'shares'                    => 'Shares',
-            'comments'                  => 'Comments',
+            'platforms'                 => 'Platforms',
+            'platforms.*.platform'      => 'Platform',
+            'platforms.*.views'         => 'Views',
+            'platforms.*.link_clicks'   => 'Link Clicks',
+            'platforms.*.reactions'     => 'Reactions',
+            'platforms.*.shares'        => 'Shares',
+            'platforms.*.comments'      => 'Comments',
         ];
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\Employee\Models\Employee;
 use Modules\Project\Models\Project;
 use Modules\Tracker\Models\Enums\PostType;
+use Modules\Tracker\Models\ResearchCommunicationPlatform;
 use Modules\Tracker\Repositories\ResearchCommunicationRepository;
 use Modules\Tracker\Requests\ResearchCommunication\StoreRequest;
 use Modules\Tracker\Requests\ResearchCommunication\UpdateRequest;
@@ -33,7 +34,7 @@ class ResearchCommunicationController extends Controller
         $this->authorize('manage-research-communication');
 
         if ($request->ajax()) {
-            $data = $this->researchCommunications->with(['project'])->orderBy('created_at', 'desc')->get();
+            $data = $this->researchCommunications->with(['project', 'platforms'])->orderBy('created_at', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -45,6 +46,12 @@ class ResearchCommunicationController extends Controller
                 })
                 ->addColumn('date_of_publication', function ($row) {
                     return $row->getDateOfPublication();
+                })
+                ->addColumn('platforms', function ($row) {
+                    if ($row->type_of_publication === 'Other' && $row->platforms->isNotEmpty()) {
+                        return $row->platforms->pluck('platform')->implode(', ');
+                    }
+                    return $row->posted_in ?? 'N/A';
                 })
                 ->addColumn('date_posted', function ($row) {
                     return $row->getDatePosted();
@@ -102,9 +109,19 @@ class ResearchCommunicationController extends Controller
         $inputs = $request->validated();
         $inputs['created_by'] = auth()->user()->id;
 
+        $platforms = $inputs['platforms'] ?? [];
+        unset($inputs['platforms']);
+
         $record = $this->researchCommunications->create($inputs);
 
         if ($record) {
+            if ($record->type_of_publication === 'Other' && !empty($platforms)) {
+                foreach ($platforms as $p) {
+                    $p['created_by'] = auth()->user()->id;
+                    $record->platforms()->create($p);
+                }
+            }
+
             return redirect()->route('research-communication.index')->withSuccessMessage('Research Uptake & Communication created successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Research Uptake & Communication could not be created.');
@@ -119,7 +136,7 @@ class ResearchCommunicationController extends Controller
      */
     public function show($id)
     {
-        $researchCommunication = $this->researchCommunications->find($id);
+        $researchCommunication = $this->researchCommunications->with(['platforms'])->find($id);
         return view('Tracker::ResearchCommunication.show', compact('researchCommunication'));
     }
 
@@ -133,7 +150,7 @@ class ResearchCommunicationController extends Controller
     {
         $this->authorize('manage-research-communication');
 
-        $researchCommunication = $this->researchCommunications->find($id);
+        $researchCommunication = $this->researchCommunications->with(['platforms'])->find($id);
         $postTypes = PostType::cases();
         $projects  = Project::whereNotNull('activated_at')->get();
         $employees = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
@@ -155,9 +172,27 @@ class ResearchCommunicationController extends Controller
         $inputs = $request->validated();
         $inputs['updated_by'] = auth()->user()->id;
 
+        $platforms = $inputs['platforms'] ?? [];
+        unset($inputs['platforms']);
+
         $record = $this->researchCommunications->update($id, $inputs);
 
         if ($record) {
+            $record = $this->researchCommunications->find($id);
+
+            if ($record->type_of_publication === 'Other') {
+                $record->platforms()->delete();
+                if (!empty($platforms)) {
+                    foreach ($platforms as $p) {
+                        $p['created_by'] = $record->created_by;
+                        $p['updated_by'] = auth()->user()->id;
+                        $record->platforms()->create($p);
+                    }
+                }
+            } else {
+                $record->platforms()->delete();
+            }
+
             return redirect()->route('research-communication.index')->withSuccessMessage('Research Uptake & Communication updated successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Research Uptake & Communication could not be updated.');

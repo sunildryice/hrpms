@@ -103,33 +103,41 @@
                             <p>{{$researchCommunication->getProjectTitle()}}</p>
                         </div>
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Posted In</label>
-                            <p>{{$researchCommunication->posted_in ?: 'N/A'}}</p>
+                            <label class="text-muted fw-bold small">Total Engagement</label>
+                            <p>{{$researchCommunication->getTotalEngagement()}}</p>
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-2">
-                            <label class="text-muted fw-bold small">Views</label>
-                            <p>{{$researchCommunication->views}}</p>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="text-muted fw-bold small">Link Clicks</label>
-                            <p>{{$researchCommunication->link_clicks}}</p>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="text-muted fw-bold small">Reactions</label>
-                            <p>{{$researchCommunication->reactions}}</p>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="text-muted fw-bold small">Shares</label>
-                            <p>{{$researchCommunication->shares}}</p>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="text-muted fw-bold small">Comments</label>
-                            <p>{{$researchCommunication->comments}}</p>
-                        </div>
+                    @if($researchCommunication->platforms->isNotEmpty())
+                    <hr>
+                    <h6 class="fw-bold mb-2">Platform Performance</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Platform</th>
+                                    <th>Views</th>
+                                    <th>Link Clicks</th>
+                                    <th>Reactions</th>
+                                    <th>Shares</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($researchCommunication->platforms as $p)
+                                <tr>
+                                    <td>{{$p->platform}}</td>
+                                    <td>{{$p->views}}</td>
+                                    <td>{{$p->link_clicks}}</td>
+                                    <td>{{$p->reactions}}</td>
+                                    <td>{{$p->shares}}</td>
+                                    <td>{{$p->comments}}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
+                    @endif
 
                 </div>
             </div>

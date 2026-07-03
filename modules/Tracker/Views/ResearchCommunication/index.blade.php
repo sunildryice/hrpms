@@ -40,8 +40,8 @@
                         name: 'post_title'
                     },
                     {
-                        data: 'posted_in',
-                        name: 'posted_in'
+                        data: 'platforms',
+                        name: 'platforms'
                     },
                     {
                         data: 'date_posted',

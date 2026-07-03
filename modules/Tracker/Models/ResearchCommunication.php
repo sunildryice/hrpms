@@ -91,9 +91,20 @@ class ResearchCommunication extends Model
         return $this->createdBy->getFullName();
     }
 
+    public function platforms()
+    {
+        return $this->hasMany(ResearchCommunicationPlatform::class, 'research_communication_id');
+    }
+
     public function getTotalEngagement()
     {
-        return $this->views + $this->link_clicks + $this->reactions + $this->shares + $this->comments;
+        if ($this->relationLoaded('platforms') && $this->platforms->isNotEmpty()) {
+            return $this->platforms->sum(fn($p) => $p->views + $p->link_clicks + $p->reactions + $p->shares + $p->comments);
+        }
+        if ($this->posted_in) {
+            return $this->views + $this->link_clicks + $this->reactions + $this->shares + $this->comments;
+        }
+        return 0;
     }
 
     public function getMemberNames(): string

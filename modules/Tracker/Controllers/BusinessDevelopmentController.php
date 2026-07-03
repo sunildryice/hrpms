@@ -40,8 +40,17 @@ class BusinessDevelopmentController extends Controller
                 ->addColumn('thematic_area', function ($row) {
                     return $row->getThematicAreaTitle();
                 })
+                ->addColumn('project_name', function ($row) {
+                    return $row->project_name ?: 'N/A';
+                })
                 ->addColumn('date', function ($row) {
                     return $row->getDate();
+                })
+                ->addColumn('funding_agency', function ($row) {
+                    return $row->funding_agency ?: 'N/A';
+                })
+                ->addColumn('partnership_type', function ($row) {
+                    return $row->partnership_type ?: 'N/A';
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';

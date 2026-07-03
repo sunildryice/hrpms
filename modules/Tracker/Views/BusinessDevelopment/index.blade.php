@@ -24,6 +24,10 @@
                         name: 'thematic_area'
                     },
                     {
+                        data: 'project_name',
+                        name: 'project_name'
+                    },
+                    {
                         data: 'date',
                         name: 'date'
                     },
@@ -32,8 +36,12 @@
                         name: 'call_name'
                     },
                     {
-                        data: 'donor_name',
-                        name: 'donor_name'
+                        data: 'funding_agency',
+                        name: 'funding_agency'
+                    },
+                    {
+                        data: 'partnership_type',
+                        name: 'partnership_type'
                     },
                     {
                         data: 'project_type',
@@ -110,9 +118,11 @@
                                 <tr>
                                     <th>{{ __('label.sn') }}</th>
                                     <th>Thematic Area</th>
+                                    <th>Project Name</th>
                                     <th>Date</th>
                                     <th>Call Name</th>
-                                    <th>Donor Name</th>
+                                    <th>Funding Agency</th>
+                                    <th>Partnership Type</th>
                                     <th>Project Type</th>
                                     <th>Status</th>
                                     <th>Result</th>

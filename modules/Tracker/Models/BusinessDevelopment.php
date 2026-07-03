@@ -14,9 +14,14 @@ class BusinessDevelopment extends Model
 
     protected $fillable = [
         'thematic_area_id',
+        'project_name',
         'date',
         'call_name',
-        'donor_name',
+        'funding_agency',
+        'contracting_agency',
+        'partnership_type',
+        'consortium_lead',
+        'consortium_partners',
         'project_type',
         'status',
         'result',

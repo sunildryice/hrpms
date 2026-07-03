@@ -24,27 +24,37 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'thematic_area_id'  => 'nullable|exists:lkup_thematic_areas,id',
-            'date'              => 'required|date',
-            'call_name'         => 'nullable|string|max:255',
-            'donor_name'        => 'nullable|string|max:255',
-            'project_type'      => 'nullable|in:Research,Implementation',
-            'status'            => 'nullable|in:Scanned,Submitted',
-            'result'            => 'nullable|in:Rejected,Awaiting Result,Awarded',
-            'attachment'        => 'nullable|mimes:pdf,jpg,jpeg,png,doc,docx,xlsx|max:2048',
+            'thematic_area_id'   => 'nullable|exists:lkup_thematic_areas,id',
+            'project_name'       => 'nullable|string|max:255',
+            'date'               => 'required|date',
+            'call_name'          => 'nullable|string|max:255',
+            'funding_agency'     => 'nullable|string|max:255',
+            'contracting_agency' => 'nullable|string|max:255',
+            'partnership_type'   => 'nullable|in:Consortium,Single Organization',
+            'consortium_lead'    => 'nullable|string|max:255',
+            'consortium_partners'=> 'nullable|string|max:255',
+            'project_type'       => 'nullable|in:Research,Implementation',
+            'status'             => 'nullable|in:Scanned,Submitted',
+            'result'             => 'nullable|in:Rejected,Awaiting Result,Awarded',
+            'attachment'         => 'nullable|mimes:pdf,jpg,jpeg,png,doc,docx,xlsx|max:2048',
         ];
     }
 
     public function attributes()
     {
         return [
-            'thematic_area_id'  => 'Thematic Area',
-            'date'              => 'Date',
-            'call_name'         => 'Call Name',
-            'donor_name'        => 'Donor Name',
-            'project_type'      => 'Project Type',
-            'status'            => 'Status',
-            'result'            => 'Result',
+            'thematic_area_id'   => 'Thematic Area',
+            'project_name'       => 'Project Name',
+            'date'               => 'Date',
+            'call_name'          => 'Call Name',
+            'funding_agency'     => 'Funding Agency',
+            'contracting_agency' => 'Contracting Agency',
+            'partnership_type'   => 'Partnership Type',
+            'consortium_lead'    => 'Consortium Lead',
+            'consortium_partners'=> 'Consortium Partners',
+            'project_type'       => 'Project Type',
+            'status'             => 'Status',
+            'result'             => 'Result',
         ];
     }
 }

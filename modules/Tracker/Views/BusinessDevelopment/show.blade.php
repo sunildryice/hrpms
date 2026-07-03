@@ -37,31 +37,58 @@
                             <p>{{$businessDevelopment->getThematicAreaTitle() ?: 'N/A'}}</p>
                         </div>
                         <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Project Name</label>
+                            <p>{{$businessDevelopment->project_name ?: 'N/A'}}</p>
+                        </div>
+                        <div class="col-md-4">
                             <label class="text-muted fw-bold small">Date</label>
                             <p>{{$businessDevelopment->getDate()}}</p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Call Name</label>
                             <p>{{$businessDevelopment->call_name ?: 'N/A'}}</p>
                         </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Funding Agency</label>
+                            <p>{{$businessDevelopment->funding_agency ?: 'N/A'}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Contracting Agency</label>
+                            <p>{{$businessDevelopment->contracting_agency ?: 'N/A'}}</p>
+                        </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Donor Name</label>
-                            <p>{{$businessDevelopment->donor_name ?: 'N/A'}}</p>
+                            <label class="text-muted fw-bold small">Partnership Type</label>
+                            <p>{{$businessDevelopment->partnership_type ?: 'N/A'}}</p>
                         </div>
+                        @if ($businessDevelopment->partnership_type === 'Consortium')
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Consortium Lead</label>
+                            <p>{{$businessDevelopment->consortium_lead ?: 'N/A'}}</p>
+                        </div>
+                        @endif
+                        @if ($businessDevelopment->partnership_type === 'Single Organization')
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Consortium Partners</label>
+                            <p>{{$businessDevelopment->consortium_partners ?: 'N/A'}}</p>
+                        </div>
+                        @endif
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Project Type</label>
                             <p>{{$businessDevelopment->project_type ?: 'N/A'}}</p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Status</label>
                             <p>{{$businessDevelopment->status ?: 'N/A'}}</p>
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Result</label>
                             <p>{{$businessDevelopment->result ?: 'N/A'}}</p>

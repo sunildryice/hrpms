@@ -563,7 +563,7 @@
                                    id="research-communication-index"
                                    data-bs-toggle="tooltip" data-bs-placement="right" title="Research Uptake & Communication">
                                     <i class="bi bi-journal-richtext nav-icon"></i>
-                                    <span class="nav-link-title">Research Uptake & Communication</span>
+                                    <span class="nav-link-title">Research Uptake</span>
                                 </a>
                             </div>
                         @endif

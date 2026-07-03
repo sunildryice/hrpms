@@ -5,6 +5,7 @@ namespace Modules\Tracker\Models;
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Privilege\Models\User;
 use Modules\Project\Models\Project;
 
 class HrEvent extends Model
@@ -21,11 +22,13 @@ class HrEvent extends Model
         'total_applicants',
         'male_shortlisted',
         'female_shortlisted',
-        'male_recruited',
-        'female_recruited',
+        'total_recruited',
         'orientation_title',
         'male_participants',
         'female_participants',
+        'remarks',
+        'created_by',
+        'updated_by',
     ];
 
     protected $casts = [
@@ -33,8 +36,7 @@ class HrEvent extends Model
         'total_applicants'    => 'integer',
         'male_shortlisted'    => 'integer',
         'female_shortlisted'  => 'integer',
-        'male_recruited'      => 'integer',
-        'female_recruited'    => 'integer',
+        'total_recruited'     => 'integer',
         'male_participants'   => 'integer',
         'female_participants' => 'integer',
     ];
@@ -42,6 +44,21 @@ class HrEvent extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function recruitments()
+    {
+        return $this->hasMany(HrEventRecruitment::class, 'hr_event_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by')->withDefault();
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by')->withDefault();
     }
 
     public function getProjectTitle()
@@ -61,11 +78,16 @@ class HrEvent extends Model
 
     public function getTotalRecruited()
     {
-        return $this->male_recruited + $this->female_recruited;
+        return $this->total_recruited ?? 0;
     }
 
     public function getTotalParticipants()
     {
         return $this->male_participants + $this->female_participants;
+    }
+
+    public function getCreatorName()
+    {
+        return $this->createdBy->getFullName();
     }
 }

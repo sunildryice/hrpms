@@ -42,10 +42,10 @@ class HrEventController extends Controller
                     return $row->getEventDate();
                 })
                 ->addColumn('total_shortlisted', function ($row) {
-                    return $row->getTotalShortlisted();
+                    return $row->event_type === 'Recruitment' ? $row->getTotalShortlisted() : '-';
                 })
                 ->addColumn('total_recruited', function ($row) {
-                    return $row->getTotalRecruited();
+                    return $row->event_type === 'Recruitment' ? $row->getTotalRecruited() : '-';
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
@@ -96,10 +96,20 @@ class HrEventController extends Controller
         $this->authorize('manage-hr-event');
 
         $inputs = $request->validated();
+        $inputs['created_by'] = auth()->user()->id;
+
+        $recruitments = $inputs['recruitments'] ?? [];
+        unset($inputs['recruitments']);
 
         $record = $this->hrEvents->create($inputs);
 
         if ($record) {
+            if (!empty($recruitments)) {
+                foreach ($recruitments as $r) {
+                    $record->recruitments()->create($r);
+                }
+            }
+
             return redirect()->route('hr-event.index')->withSuccessMessage('HR Event created successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('HR Event could not be created.');
@@ -114,7 +124,7 @@ class HrEventController extends Controller
      */
     public function show($id)
     {
-        $hrEvent = $this->hrEvents->find($id);
+        $hrEvent = $this->hrEvents->with(['recruitments'])->find($id);
         return view('Tracker::HrEvent.show', compact('hrEvent'));
     }
 
@@ -128,8 +138,13 @@ class HrEventController extends Controller
     {
         $this->authorize('manage-hr-event');
 
-        $hrEvent  = $this->hrEvents->find($id);
+        $hrEvent  = $this->hrEvents->with(['recruitments'])->find($id);
         $projects = Project::whereNotNull('activated_at')->get();
+
+        $hrEvent->recruitments->transform(function ($r) {
+            $r->onboard_date_formatted = $r->onboard_date?->format('Y-m-d');
+            return $r;
+        });
 
         return view('Tracker::HrEvent.edit', compact('hrEvent', 'projects'));
     }
@@ -146,10 +161,23 @@ class HrEventController extends Controller
         $this->authorize('manage-hr-event');
 
         $inputs = $request->validated();
+        $inputs['updated_by'] = auth()->user()->id;
+
+        $recruitments = $inputs['recruitments'] ?? [];
+        unset($inputs['recruitments']);
 
         $record = $this->hrEvents->update($id, $inputs);
 
         if ($record) {
+            $record = $this->hrEvents->find($id);
+
+            $record->recruitments()->delete();
+            if (!empty($recruitments)) {
+                foreach ($recruitments as $r) {
+                    $record->recruitments()->create($r);
+                }
+            }
+
             return redirect()->route('hr-event.index')->withSuccessMessage('HR Event updated successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('HR Event could not be updated.');

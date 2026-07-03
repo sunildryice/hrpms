@@ -7,24 +7,90 @@
         $(function() {
             $('#navbarVerticalMenu').find('#hr-event-index').addClass('active');
 
+            function updateEventDateLabel(eventType) {
+                var label = eventType === 'Recruitment' ? 'Vacancy Announcement Date' : 'Event Date';
+                $('#eventDateLabel').html(label + ' <span class="text-danger">*</span>');
+            }
+
             function toggleSections() {
                 var eventType = $('#event_type').val();
+                updateEventDateLabel(eventType);
                 if (eventType === 'Recruitment') {
-                    $('#recruitmentSection').show();
-                    $('#orientationSection').hide();
+                    $('#recruitmentSection').slideDown(200);
+                    $('#orientationSection').slideUp(200);
+                    $('#recruitment_remarks').prop('disabled', false);
+                    $('#orientation_remarks').prop('disabled', true);
                     try { fv.enableValidator('vacancy_for_positions'); } catch(e) {}
                     try { fv.disableValidator('orientation_title'); } catch(e) {}
                 } else if (eventType === 'Orientation') {
-                    $('#recruitmentSection').hide();
-                    $('#orientationSection').show();
+                    $('#recruitmentSection').slideUp(200);
+                    $('#orientationSection').slideDown(200);
+                    $('#recruitment_remarks').prop('disabled', true);
+                    $('#orientation_remarks').prop('disabled', false);
                     try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
                     try { fv.enableValidator('orientation_title'); } catch(e) {}
                 } else {
-                    $('#recruitmentSection').hide();
-                    $('#orientationSection').hide();
+                    $('#recruitmentSection').slideUp(200);
+                    $('#orientationSection').slideUp(200);
+                    $('#recruitment_remarks').prop('disabled', true);
+                    $('#orientation_remarks').prop('disabled', true);
                     try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
                     try { fv.disableValidator('orientation_title'); } catch(e) {}
                 }
+            }
+
+            function generateRecruitmentRows(count, existingData) {
+                var container = $('#recruitmentTable tbody');
+                container.empty();
+
+                if (count <= 0) return;
+
+                for (var i = 0; i < count; i++) {
+                    var data = existingData && existingData[i] ? existingData[i] : {};
+                    var row = '<tr>';
+                    row += '<td class="text-center align-middle fw-bold">' + (i + 1) + '</td>';
+                    row += '<td>';
+                    row += '<input class="form-control form-control-sm recruitment-name" type="text" name="recruitments[' + i + '][member_name]" value="' + (data.member_name || '') + '" placeholder="Enter name">';
+                    row += '</td>';
+                    row += '<td>';
+                    row += '<select class="form-select form-select-sm recruitment-gender" name="recruitments[' + i + '][gender]">';
+                    row += '<option value="">Select</option>';
+                    row += '<option value="Male"' + (data.gender === 'Male' ? ' selected' : '') + '>Male</option>';
+                    row += '<option value="Female"' + (data.gender === 'Female' ? ' selected' : '') + '>Female</option>';
+                    row += '<option value="Other"' + (data.gender === 'Other' ? ' selected' : '') + '>Other</option>';
+                    row += '</select>';
+                    row += '</td>';
+                    row += '<td>';
+                    var onboardDate = data.onboard_date_formatted ? data.onboard_date_formatted : '';
+                    row += '<input class="form-control form-control-sm onboard-datepicker" type="text" name="recruitments[' + i + '][onboard_date]" value="' + onboardDate + '" placeholder="YYYY-MM-DD" onfocus="this.blur()">';
+                    row += '</td>';
+                    row += '<td>';
+                    row += '<input class="form-control form-control-sm" type="text" name="recruitments[' + i + '][position]" value="' + (data.position || '') + '" placeholder="Enter position">';
+                    row += '</td>';
+                    row += '</tr>';
+                    container.append(row);
+                }
+
+                $('.onboard-datepicker').datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                });
+            }
+
+            function validateRecruitments() {
+                var count = parseInt($('#total_recruited').val()) || 0;
+                var valid = true;
+                $('#recruitmentTable tbody tr').each(function() {
+                    var name = $(this).find('.recruitment-name');
+                    var gender = $(this).find('.recruitment-gender');
+                    var nameValid = name.val().trim() !== '';
+                    var genderValid = gender.val() !== '';
+                    name.toggleClass('is-invalid', !nameValid);
+                    gender.toggleClass('is-invalid', !genderValid);
+                    if (!nameValid || !genderValid) valid = false;
+                });
+                return valid;
             }
 
             const form = document.getElementById('hrEventUpdateForm');
@@ -33,7 +99,7 @@
                     event_date: {
                         validators: {
                             notEmpty: {
-                                message: 'The event date is required.'
+                                message: 'The date is required.'
                             },
                             date: {
                                 format: 'YYYY-MM-DD',
@@ -66,8 +132,6 @@
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap5: new FormValidation.plugins.Bootstrap5(),
-                    submitButton: new FormValidation.plugins.SubmitButton(),
-                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                     icon: new FormValidation.plugins.Icon({
                         valid: 'bi bi-check2-square',
                         invalid: 'bi bi-x-lg',
@@ -76,13 +140,37 @@
                 }
             });
 
+            $('#btnUpdate').on('click', function(e) {
+                e.preventDefault();
+                var recruitmentsValid = validateRecruitments();
+                fv.validate().then(function(status) {
+                    if (status !== 'Invalid' && recruitmentsValid) {
+                        form.submit();
+                    }
+                });
+            });
+
             $('[name="event_date"]').datepicker({
                 language: 'en-GB',
                 autoHide: true,
                 format: 'yyyy-mm-dd',
-            }).on('change', function (e) {
-                fv.revalidateField('event_date');
             });
+
+            $('#total_recruited').on('input change', function() {
+                var count = parseInt($(this).val()) || 0;
+                $('#recruitmentTableWrapper').toggle(count > 0);
+                generateRecruitmentRows(count);
+            });
+
+            var existingRecruitments = @json($hrEvent->recruitments->toArray());
+            var initialCount = parseInt('{{ $hrEvent->total_recruited }}') || 0;
+            if (existingRecruitments.length > 0) {
+                $('#recruitmentTableWrapper').show();
+                generateRecruitmentRows(existingRecruitments.length, existingRecruitments);
+            } else if (initialCount > 0) {
+                $('#recruitmentTableWrapper').show();
+                generateRecruitmentRows(initialCount);
+            }
 
             toggleSections();
             $('#event_type').on('change', toggleSections);
@@ -118,9 +206,9 @@
             <form action="{{route('hr-event.update', $hrEvent->id)}}" method="POST" id="hrEventUpdateForm">
                 @csrf
                 @method('put')
-                <div class="card">
-                    <div class="card-header fw-bold">
-                        <h6 class="card-title">
+                <div class="card shadow-sm">
+                    <div class="card-header fw-bold bg-light">
+                        <h6 class="card-title mb-0">
                             Edit HR Event
                         </h6>
                     </div>
@@ -129,16 +217,16 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
-                                <label class="form-label" for="event_date">Event Date <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="event_date" id="event_date" value="{{$hrEvent->event_date?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
-                            </div>
-                            <div class="col-lg-4">
                                 <label class="form-label" for="event_type">Event Type <span class="text-danger">*</span></label>
                                 <select class="form-select select2" name="event_type" id="event_type">
                                     <option value="">Select Event Type</option>
                                     <option value="Recruitment" {{$hrEvent->event_type == 'Recruitment' ? 'selected' : ''}}>Recruitment</option>
                                     <option value="Orientation" {{$hrEvent->event_type == 'Orientation' ? 'selected' : ''}}>Orientation</option>
                                 </select>
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label" id="eventDateLabel" for="event_date">Event Date <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="event_date" id="event_date" value="{{$hrEvent->event_date?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
                         </div>
 
@@ -176,12 +264,34 @@
                             </div>
                             <div class="row mb-2">
                                 <div class="col-lg-4">
-                                    <label class="form-label" for="male_recruited">Male Recruited</label>
-                                    <input class="form-control" type="number" name="male_recruited" id="male_recruited" value="{{$hrEvent->male_recruited}}" min="0">
+                                    <label class="form-label" for="total_recruited">Total Recruited</label>
+                                    <input class="form-control" type="number" name="total_recruited" id="total_recruited" value="{{$hrEvent->total_recruited}}" min="0">
                                 </div>
-                                <div class="col-lg-4">
-                                    <label class="form-label" for="female_recruited">Female Recruited</label>
-                                    <input class="form-control" type="number" name="female_recruited" id="female_recruited" value="{{$hrEvent->female_recruited}}" min="0">
+                            </div>
+
+                            <div id="recruitmentTableWrapper" style="display:none;">
+                            <div class="table-responsive mt-3">
+                                <table class="table table-sm table-bordered mb-0" id="recruitmentTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" style="width:40px">SN</th>
+                                            <th>Member Name <span class="text-danger">*</span></th>
+                                            <th style="width:140px">Gender <span class="text-danger">*</span></th>
+                                            <th style="width:160px">Onboard Date</th>
+                                            <th>Position</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                            </div>
+
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-lg-12">
+                                    <label class="form-label" for="recruitment_remarks">Remarks</label>
+                                    <textarea class="form-control" name="remarks" id="recruitment_remarks" rows="2" maxlength="500" disabled>{{$hrEvent->remarks}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -203,12 +313,19 @@
                                     <input class="form-control" type="number" name="female_participants" id="female_participants" value="{{$hrEvent->female_participants}}" min="0">
                                 </div>
                             </div>
+                            <hr>
+                            <div class="row mb-2">
+                                <div class="col-lg-12">
+                                    <label class="form-label" for="orientation_remarks">Remarks</label>
+                                    <textarea class="form-control" name="remarks" id="orientation_remarks" rows="2" maxlength="500" disabled>{{$hrEvent->remarks}}</textarea>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
 
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    <div class="card-footer bg-light">
+                        <button type="submit" class="btn btn-sm btn-primary" id="btnUpdate">Update</button>
                         <a href="{{route('hr-event.index')}}" role="button" class="btn btn-sm btn-secondary">Cancel</a>
                     </div>
                 </div>

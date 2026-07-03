@@ -299,7 +299,7 @@
                                 </select>
                             </div>
                             <div class="col-lg-9">
-                                <button type="button" class="btn btn-sm btn-primary mt-4" id="addPlatformBtn"><i class="bi-plus"></i> Add Platform</button>
+                                <button type="button" class="btn btn-sm btn-primary mt-4" id="addPlatformBtn"><i class="bi-plus"></i> Add</button>
                             </div>
                         </div>
                         <div class="table-responsive">

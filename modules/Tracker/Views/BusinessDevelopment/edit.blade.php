@@ -47,9 +47,6 @@
                 var val = $('[name="partnership_type"]').val();
                 if (val === 'Consortium') {
                     $('#consortiumLeadRow').show();
-                    $('#consortiumPartnersRow').hide();
-                } else if (val === 'Single Organization') {
-                    $('#consortiumLeadRow').hide();
                     $('#consortiumPartnersRow').show();
                 } else {
                     $('#consortiumLeadRow').hide();

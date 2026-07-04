@@ -71,8 +71,6 @@
                             <label class="text-muted fw-bold small">Consortium Lead</label>
                             <p>{{$businessDevelopment->consortium_lead ?: 'N/A'}}</p>
                         </div>
-                        @endif
-                        @if ($businessDevelopment->partnership_type === 'Single Organization')
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Consortium Partners</label>
                             <p>{{$businessDevelopment->consortium_partners ?: 'N/A'}}</p>

@@ -16,6 +16,7 @@ use Modules\Report\Controllers\HumanResources\LeaveRequestController;
 use Modules\Report\Controllers\HumanResources\LeaveSummaryController;
 use Modules\Report\Controllers\HumanResources\OffDayWorkReportController;
 use Modules\Report\Controllers\HumanResources\PerformanceReviewController;
+use Modules\Report\Controllers\HumanResources\ProjectActivityDetailController;
 use Modules\Report\Controllers\HumanResources\ProjectSummaryController;
 use Modules\Report\Controllers\HumanResources\WorkFromHomeController;
 use Modules\Report\Controllers\LogisticsProcurement\AssetBookController;
@@ -109,6 +110,10 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('report')->as('report.')->g
     // Vehicle Movement
     Route::any('vehicle/movement/index', [VehicleMovementController::class, 'index'])->name('vehicle.movement.index');
     Route::any('vehicle/movement/export', [VehicleMovementController::class, 'export'])->name('vehicle.movement.export');
+
+    // Project Activity Detail report
+    Route::any('project/activity/detail/index', [ProjectActivityDetailController::class, 'index'])->name('project.activity.detail.index');
+    Route::any('project/activity/detail/export', [ProjectActivityDetailController::class, 'export'])->name('project.activity.detail.export');
 
     // Work From Home report
     Route::get('work/from/home', [WorkFromHomeController::class, 'index'])->name('work.from.home.index');

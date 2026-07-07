@@ -45,9 +45,13 @@ class RequestController extends Controller
 
         $appliedLeaveofMonth = $this->lieuLeaveBalance->countAppliedLeave($userId, $month);
         $lieuLeaveBalance = $this->lieuLeaveBalance->countLieuLeaveBalances($userId, $month);
+       
 
+        // Balances earned last month can still be valid this month (30-day expiry), so look back a month,
+        // matching the lookback used for Off Day Work eligibility elsewhere (see OffDayWorkController::index).
+        $previousMonth = $month->copy()->subMonthNoOverflow();
+        $availableOffDayWorkDates = $this->lieuLeaveBalance->getPresentOffDayWorkDates($userId, $previousMonth);
 
-        $availableOffDayWorkDates = $this->lieuLeaveBalance->getPresentOffDayWorkDates($userId, $month);
         $EmployeePresentDates = $this->attendanceDetails->getDetailByEmployeeAndMonth(auth()->user()->employee_id, $month->year, $month->month);
 
         // To count how many of the available off day work dates are eligible for lieu leave balance based on employee attendance
@@ -58,7 +62,11 @@ class RequestController extends Controller
                     return Carbon::parse($date)->format('Y-m-d');
                 }, $EmployeePresentDates)
             );
-        })->count();
+        })
+        ->map(fn ($date) => Carbon::parse($date)->format('Y-m-d'))
+        ->unique()
+        ->count();
+
 
 
 

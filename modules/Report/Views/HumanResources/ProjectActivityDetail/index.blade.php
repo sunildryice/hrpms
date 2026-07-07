@@ -136,19 +136,8 @@
                             <label class="form-label">To</label>
                             <input class="form-control" type="text" name="to_date" value="{{ request('to_date') }}" placeholder="yyyy-mm-dd" autocomplete="off">
                         </div>
-                        <div class="col-lg-2">
-                            <label class="form-label">Status</label>
-                            <select name="status" class="form-select select2">
-                                <option value="">All Status</option>
-                                @foreach ($statuses as $s)
-                                    <option value="{{ $s->value }}" {{ request('status') == $s->value ? 'selected' : '' }}>
-                                        {{ $s->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-12 mt-2 text-end">
-                            <button type="submit" class="btn btn-primary btn-sm me-2">Search</button>
+                        <div class="col-lg-2 d-flex align-items-end gap-2 pb-1">
+                            <button type="submit" class="btn btn-primary btn-sm">Search</button>
                             <a href="{{ route('report.project.activity.detail.index') }}" class="btn btn-secondary btn-sm">Reset</a>
                         </div>
                     </div>

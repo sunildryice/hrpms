@@ -79,9 +79,8 @@ class ApproveController extends Controller
         try {
             $offDayWork = $this->offDayWork->update($id, $inputs);
 
-            $this->lieuLeaveBalance->addBalance($offDayWork->requester_id, $offDayWork->id);
-
             if ($offDayWork->status_id == config('constant.APPROVED_STATUS')) {
+                $this->lieuLeaveBalance->addBalance($offDayWork->requester_id, $offDayWork->id);
                 $offDayWork->requester->notify(new OffDayWorkApproved($offDayWork));
                 $message = 'Off Day Work request approved successfully.';
             } elseif ($offDayWork->status_id == config('constant.REJECTED_STATUS')) {

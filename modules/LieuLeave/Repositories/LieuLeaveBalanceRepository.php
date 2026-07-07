@@ -31,7 +31,12 @@ class LieuLeaveBalanceRepository extends Repository
 
     public function addBalance($userId, $offDayWorkId)
     {
-        
+        // Re-approving (or otherwise re-triggering) the same off-day-work
+        // must not mint a second balance entry for it.
+        if ($this->model->where('off_day_work_id', $offDayWorkId)->exists()) {
+            return;
+        }
+
        $offDayWOrk= $this->offDayWorkRepository->find($offDayWorkId);
 
         $earnedDate = Carbon::parse($offDayWOrk->date);
@@ -68,12 +73,25 @@ class LieuLeaveBalanceRepository extends Repository
     public function countLieuLeaveBalances(int $userId, $expiryDate): int
     {
     
-
-        return $this->model
+    $data=$this->model
             ->where('user_id', $userId)
             ->where('expires_at', '>', $expiryDate->toDateString())
+            ->distinct('earned_date')
+            ->distinct('off_day_work_id')
             ->whereNull('lieu_leave_request_id')
             ->count();
+
+        return $data;
+
+     
+
+        // return $this->model
+        //     ->where('user_id', $userId)
+        //     ->where('expires_at', '>', $expiryDate->toDateString())
+        //     ->distinct('earned_date')
+        //     ->distinct('off_day_work_id')
+        //     ->whereNull('lieu_leave_request_id')
+        //     ->count();
     }
 
    public function getOffDayWorkAvailable(int $userId, $previousMonthDate)
@@ -106,7 +124,9 @@ class LieuLeaveBalanceRepository extends Repository
             ->join('off_day_works as ofw', 'llb.off_day_work_id', '=', 'ofw.id')
             ->where('llb.user_id', $userId)
             ->where('llb.earned_date', '>=', $previousMonthDate->toDateString())
+            ->where('llb.expires_at', '>', now())
             ->whereNull('llb.lieu_leave_request_id')
+            ->distinct('llb.earned_date')
             ->pluck('off_day_work_date', 'llb.id');
     }
 

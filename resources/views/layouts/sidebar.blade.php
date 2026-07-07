@@ -1157,6 +1157,8 @@
                                 @if ($authUser->can('project-summary-report'))
                                     <a class="nav-link" href="{{ route('report.project.summary.index') }}"
                                        id="project-summary-report-menu">Project Summary</a>
+                                @endif
+                                @if ($authUser->can('project-activity-detail-report'))
                                     <a class="nav-link" href="{{ route('report.project.activity.detail.index') }}"
                                        id="project-activity-detail-report-menu">Project Activity Detail</a>
                                 @endif

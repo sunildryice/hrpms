@@ -50,6 +50,12 @@ class ProjectActivityDetailExport implements FromView, ShouldAutoSize, WithStyle
             });
         }
 
+        if (!empty($this->filters['status'])) {
+            $query->whereHas('projectActivity', function ($q) {
+                $q->where('status', $this->filters['status']);
+            });
+        }
+
         $details = $query->orderBy('created_at', 'desc')->get();
 
         return view('Report::HumanResources.ProjectActivityDetail.export', compact('details'));

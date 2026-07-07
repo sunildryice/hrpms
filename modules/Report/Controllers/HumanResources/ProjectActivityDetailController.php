@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Modules\Project\Models\Project;
 use Modules\Project\Models\ProjectActivity;
 use Modules\Project\Models\ProjectActivityDetail;
+use Modules\Project\Models\Enums\ActivityStatus;
 use Modules\Report\Exports\HumanResources\ProjectActivityDetailExport;
 
 class ProjectActivityDetailController extends Controller
@@ -44,20 +45,27 @@ class ProjectActivityDetailController extends Controller
             });
         }
 
+        if ($request->filled('status')) {
+            $query->whereHas('projectActivity', function ($q) use ($request) {
+                $q->where('status', $request->status);
+            });
+        }
+
         $details = $query->orderBy('created_at', 'desc')->paginate(100);
 
         $projects = Project::whereNotNull('activated_at')->orderBy('title')->get(['id', 'title', 'short_name']);
         $activities = ProjectActivity::orderBy('title')->get(['id', 'title', 'project_id']);
+        $statuses = ActivityStatus::cases();
 
         return view('Report::HumanResources.ProjectActivityDetail.index', compact(
-            'details', 'projects', 'activities', 'request'
+            'details', 'projects', 'activities', 'statuses', 'request'
         ));
     }
 
     public function export(Request $request)
     {
         $filters = $request->only([
-            'project_id', 'activity_id', 'from_date', 'to_date'
+            'project_id', 'activity_id', 'from_date', 'to_date', 'status'
         ]);
 
         return Excel::download(

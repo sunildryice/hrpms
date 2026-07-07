@@ -136,7 +136,18 @@
                             <label class="form-label">To</label>
                             <input class="form-control" type="text" name="to_date" value="{{ request('to_date') }}" placeholder="yyyy-mm-dd" autocomplete="off">
                         </div>
-                        <div class="col-auto mt-4">
+                        <div class="col-lg-2">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select select2">
+                                <option value="">All Status</option>
+                                @foreach ($statuses as $s)
+                                    <option value="{{ $s->value }}" {{ request('status') == $s->value ? 'selected' : '' }}>
+                                        {{ $s->label() }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-lg-12 mt-2 text-end">
                             <button type="submit" class="btn btn-primary btn-sm me-2">Search</button>
                             <a href="{{ route('report.project.activity.detail.index') }}" class="btn btn-secondary btn-sm">Reset</a>
                         </div>
@@ -155,6 +166,7 @@
                                     <th style="width:50px">{{ __('label.sn') }}</th>
                                     <th style="min-width:180px">Project</th>
                                     <th style="min-width:200px">Activity Title</th>
+                                    <th>Status</th>
                                     <th class="col-detail">Key Accomplishments</th>
                                     <th class="col-detail">Challenges</th>
                                     <th class="col-detail">Lessons Learned</th>
@@ -166,13 +178,14 @@
                                         <td>{{ $details->firstItem() + $loop->index }}</td>
                                         <td>{{ $detail->projectActivity?->project?->short_name ?: $detail->projectActivity?->project?->title ?? 'N/A' }}</td>
                                         <td>{{ $detail->projectActivity?->title ?? 'N/A' }}</td>
+                                        <td><span class="badge {{ $detail->projectActivity?->statusBgColor() ?? 'bg-secondary' }}">{{ $detail->projectActivity?->statusLabel() ?? 'N/A' }}</span></td>
                                         <td class="text-wrap">{{ $detail->key_accomplishment ?: '-' }}</td>
                                         <td class="text-wrap">{{ $detail->challenge ?: '-' }}</td>
                                         <td class="text-wrap">{{ $detail->lesson_learned ?: '-' }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted py-3">No records found.</td>
+                                        <td colspan="7" class="text-center text-muted py-3">No records found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

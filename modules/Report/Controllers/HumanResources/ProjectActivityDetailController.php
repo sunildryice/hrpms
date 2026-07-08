@@ -31,7 +31,7 @@ class ProjectActivityDetailController extends Controller
         $activities = ProjectActivity::orderBy('title')->get(['id', 'title', 'project_id']);
 
         return view('Report::HumanResources.ProjectActivityDetail.index', compact(
-            'details', 'projects', 'activities', 'request'
+            'details', 'projects', 'activities'
         ));
     }
 

@@ -46,11 +46,17 @@ class BusinessDevelopmentController extends Controller
                 ->addColumn('date', function ($row) {
                     return $row->getDate();
                 })
+                ->addColumn('url', function ($row) {
+                    return $row->url ?: 'N/A';
+                })
                 ->addColumn('funding_agency', function ($row) {
                     return $row->funding_agency ?: 'N/A';
                 })
                 ->addColumn('partnership_type', function ($row) {
                     return $row->partnership_type ?: 'N/A';
+                })
+                ->addColumn('remarks', function ($row) {
+                    return $row->remarks ?: 'N/A';
                 })
                 ->addColumn('action', function ($row) use ($authUser) {
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';

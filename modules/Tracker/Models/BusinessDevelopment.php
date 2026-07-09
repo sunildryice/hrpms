@@ -17,6 +17,7 @@ class BusinessDevelopment extends Model
         'project_name',
         'date',
         'call_name',
+        'url',
         'funding_agency',
         'contracting_agency',
         'partnership_type',
@@ -25,6 +26,7 @@ class BusinessDevelopment extends Model
         'project_type',
         'status',
         'result',
+        'remarks',
         'attachment',
     ];
 

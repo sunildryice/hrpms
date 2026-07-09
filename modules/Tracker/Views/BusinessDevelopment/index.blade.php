@@ -36,6 +36,10 @@
                         name: 'call_name'
                     },
                     {
+                        data: 'url',
+                        name: 'url'
+                    },
+                    {
                         data: 'funding_agency',
                         name: 'funding_agency'
                     },
@@ -54,6 +58,10 @@
                     {
                         data: 'result',
                         name: 'result'
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'remarks'
                     },
                     {
                         data: 'action',
@@ -121,11 +129,13 @@
                                     <th>Project Name</th>
                                     <th>Date</th>
                                     <th>Call Name</th>
+                                    <th>URL</th>
                                     <th>Funding Agency</th>
                                     <th>Partnership Type</th>
                                     <th>Project Type</th>
                                     <th>Status</th>
                                     <th>Result</th>
+                                    <th>Remarks</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>

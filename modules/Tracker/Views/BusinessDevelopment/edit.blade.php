@@ -107,6 +107,10 @@
                                 <input class="form-control" type="text" name="call_name" id="call_name" value="{{$businessDevelopment->call_name}}">
                             </div>
                             <div class="col-lg-4">
+                                <label class="form-label" for="url">URL</label>
+                                <input class="form-control" type="text" name="url" id="url" value="{{$businessDevelopment->url}}" placeholder="https://">
+                            </div>
+                            <div class="col-lg-4">
                                 <label class="form-label" for="thematic_area_id">Thematic Area</label>
                                 <select class="form-select select2" name="thematic_area_id" id="thematic_area_id">
                                     <option value="">Select Thematic Area</option>
@@ -176,6 +180,13 @@
                                     <option value="Awaiting Result" {{$businessDevelopment->result == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
                                     <option value="Awarded" {{$businessDevelopment->result == 'Awarded' ? 'selected' : ''}}>Awarded</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-lg-12">
+                                <label class="form-label" for="remarks">Remarks</label>
+                                <textarea class="form-control" name="remarks" id="remarks" rows="3">{{$businessDevelopment->remarks}}</textarea>
                             </div>
                         </div>
 

@@ -52,6 +52,16 @@
                             <p>{{$businessDevelopment->call_name ?: 'N/A'}}</p>
                         </div>
                         <div class="col-md-4">
+                            <label class="text-muted fw-bold small">URL</label>
+                            <p>
+                                @if ($businessDevelopment->url)
+                                    <a href="{{$businessDevelopment->url}}" target="_blank">{{$businessDevelopment->url}}</a>
+                                @else
+                                    N/A
+                                @endif
+                            </p>
+                        </div>
+                        <div class="col-md-4">
                             <label class="text-muted fw-bold small">Funding Agency</label>
                             <p>{{$businessDevelopment->funding_agency ?: 'N/A'}}</p>
                         </div>
@@ -90,6 +100,10 @@
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Result</label>
                             <p>{{$businessDevelopment->result ?: 'N/A'}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Remarks</label>
+                            <p>{{$businessDevelopment->remarks ?: 'N/A'}}</p>
                         </div>
                     </div>
 

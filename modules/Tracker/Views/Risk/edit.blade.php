@@ -99,6 +99,14 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4">
+                                <label class="form-label" for="risk_name">Risk Name <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="risk_name" id="risk_name" value="{{$risk->risk_name}}">
+                            </div>
+                            <div class="col-lg-4">
+                                <label class="form-label" for="date_added">Date Added <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="date_added" id="date_added" value="{{$risk->date_added?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
+                            </div>
+                            <div class="col-lg-4">
                                 <label class="form-label required-label" for="project_id">Project</label>
                                 <select class="form-select select2" name="project_id" id="project_id">
                                     <option value="">Select Project</option>
@@ -106,14 +114,6 @@
                                         <option value="{{$project->id}}" {{$risk->project_id == $project->id ? 'selected' : ''}}>{{$project->short_name ?? $project->title}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="date_added">Date Added <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="date_added" id="date_added" value="{{$risk->date_added?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
-                            </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="risk_name">Risk Name <span class="text-danger">*</span></label>
-                                <input class="form-control" type="text" name="risk_name" id="risk_name" value="{{$risk->risk_name}}">
                             </div>
                         </div>
 
@@ -202,7 +202,7 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-6">
-                                <label class="form-label" for="whats_changed_this_quarter">What's Changed This Quarter</label>
+                                <label class="form-label" for="whats_changed_this_quarter">What's Changed This Period</label>
                                 <textarea class="form-control" name="whats_changed_this_quarter" id="whats_changed_this_quarter" rows="3">{{$risk->whats_changed_this_quarter}}</textarea>
                             </div>
                             <div class="col-lg-6">

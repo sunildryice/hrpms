@@ -33,16 +33,16 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Project</label>
-                            <p>{{$risk->getProjectTitle()}}</p>
+                            <label class="text-muted fw-bold small">Risk Name</label>
+                            <p>{{$risk->risk_name}}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Date Added</label>
                             <p>{{$risk->getDateAdded()}}</p>
                         </div>
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Risk Name</label>
-                            <p>{{$risk->risk_name}}</p>
+                            <label class="text-muted fw-bold small">Project</label>
+                            <p>{{$risk->getProjectTitle()}}</p>
                         </div>
                     </div>
 
@@ -96,7 +96,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="text-muted fw-bold small">What's Changed This Quarter</label>
+                            <label class="text-muted fw-bold small">What's Changed This Period</label>
                             <p>{{$risk->whats_changed_this_quarter ?: 'N/A'}}</p>
                         </div>
                         <div class="col-md-6">

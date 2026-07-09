@@ -20,16 +20,16 @@
                         searchable: false
                     },
                     {
-                        data: 'project_title',
-                        name: 'project_title'
+                        data: 'risk_name',
+                        name: 'risk_name'
                     },
                     {
                         data: 'date_added',
                         name: 'date_added'
                     },
                     {
-                        data: 'risk_name',
-                        name: 'risk_name'
+                        data: 'project_title',
+                        name: 'project_title'
                     },
                     {
                         data: 'risk_status',
@@ -109,9 +109,9 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>{{ __('label.sn') }}</th>
-                                    <th>Project</th>
-                                    <th>Date Added</th>
                                     <th>Risk Name</th>
+                                    <th>Date Added</th>
+                                    <th>Project</th>
                                     <th>Status</th>
                                     <th>Type</th>
                                     <th>Rating</th>

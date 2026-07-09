@@ -69,7 +69,7 @@ class UpdateRequest extends FormRequest
             'description_of_risk'       => 'Description of Risk',
             'risk_owner'                => 'Risk Owner',
             'mitigating_action'         => 'Mitigating Action',
-            'whats_changed_this_quarter'=> "What's Changed This Quarter",
+            'whats_changed_this_quarter'=> "What's Changed This Period",
             'remarks'                   => 'Remarks',
         ];
     }

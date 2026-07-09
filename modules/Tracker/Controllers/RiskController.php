@@ -45,11 +45,14 @@ class RiskController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('project_title', function ($row) {
-                    return $row->getProjectTitle();
+                ->addColumn('risk_name', function ($row) {
+                    return $row->risk_name;
                 })
                 ->addColumn('date_added', function ($row) {
                     return $row->getDateAdded();
+                })
+                ->addColumn('project_title', function ($row) {
+                    return $row->getProjectTitle();
                 })
                 ->addColumn('risk_status', function ($row) {
                     return $row->getRiskStatusTitle();

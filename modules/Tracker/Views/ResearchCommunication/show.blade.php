@@ -75,7 +75,14 @@
             @if($researchCommunication->type_of_publication === 'Other')
             <div class="card">
                 <div class="card-header fw-bold">
-                    <h6>Social Media Post Details</h6>
+                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                        <h6>Social Media Post Details</h6>
+                        @can('manage-research-communication')
+                        <a href="{{ route('research-communication.edit', $researchCommunication->id) }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        @endcan
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">

@@ -94,6 +94,16 @@
                         @endif
                     </div>
 
+                    @if($event->accompanyingMembers->isNotEmpty())
+                    <hr>
+                    <h6 class="fw-bold mb-2">Accompanying Members</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <p>{{ $event->accompanyingMembers->map(fn($e) => $e->getFullName())->implode(', ') }}</p>
+                        </div>
+                    </div>
+                    @endif
+
                     @if($event->event_organized_by == 'internal')
                     <hr>
                     <h6 class="fw-bold mb-2">Participant Details</h6>

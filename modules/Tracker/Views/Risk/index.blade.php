@@ -2,6 +2,18 @@
 
 @section('title', 'Risk Tracker')
 
+@section('page_css')
+<style>
+    #riskTable td, #riskTable th {
+        padding: 10px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    #riskTable td:nth-child(2) { min-width: 180px; white-space: normal; }
+    #riskTable td:nth-child(8) { min-width: 150px; white-space: normal; }
+</style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(function() {

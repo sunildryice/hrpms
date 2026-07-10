@@ -7,11 +7,6 @@ use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
         return auth()->user();
@@ -22,35 +17,34 @@ class UpdateRequest extends FormRequest
         if ($this->input('project_id') === null || $this->input('project_id') === '') {
             $this->merge(['project_id' => null]);
         }
-
-        if (!$this->has('risk_owner')) {
-            $this->merge(['risk_owner' => []]);
-        }
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules()
     {
         return [
-            'project_id'                => 'required|exists:projects,id',
-            'date_added'                => 'required|date',
-            'risk_name'                 => 'required|string|max:255',
-            'risk_status_id'            => 'nullable|exists:lkup_risk_status,id',
-            'risk_type_id'              => 'nullable|exists:lkup_risk_types,id',
-            'risk_probability_id'       => 'nullable|exists:lkup_risk_probabilitis,id',
-            'risk_impact_id'            => 'nullable|exists:lkup_risk_impacts,id',
-            'risk_rating_id'            => 'nullable|exists:lkup_risk_ratings,id',
-            'risk_response_type_id'     => 'nullable|exists:lkup_risk_response_types,id',
-            'description_of_risk'       => 'nullable|string',
-            'risk_owner'                => 'nullable|array',
-            'risk_owner.*'              => ['nullable', Rule::exists('employees', 'id')],
-            'mitigating_action'         => 'nullable|string',
-            'whats_changed_this_quarter'=> 'nullable|string',
-            'remarks'                   => 'nullable|string',
+            'project_id'                    => 'required|exists:projects,id',
+            'date_added'                    => 'required|date',
+            'risk_name'                     => 'required|string|max:255',
+            'risk_status_id'                => 'nullable|exists:lkup_risk_status,id',
+            'risk_type_id'                  => 'nullable|exists:lkup_risk_types,id',
+            'risk_probability_id'           => 'nullable|exists:lkup_risk_probabilitis,id',
+            'risk_impact_id'                => 'nullable|exists:lkup_risk_impacts,id',
+            'risk_rating_id'                => 'nullable|exists:lkup_risk_ratings,id',
+            'risk_response_type_id'         => 'nullable|exists:lkup_risk_response_types,id',
+            'description_of_risk'           => 'nullable|string',
+            'risk_owner'                    => 'nullable|string|max:500',
+            'mitigating_action'             => 'nullable|string',
+            'remarks'                       => 'nullable|string',
+            'risk_histories'                => 'nullable|array',
+            'risk_histories.*.id'                         => 'nullable|integer|exists:risk_histories,id',
+            'risk_histories.*.updated_date'               => 'nullable|date',
+            'risk_histories.*.risk_status_id'             => 'nullable|exists:lkup_risk_status,id',
+            'risk_histories.*.description_of_risk'        => 'nullable|string',
+            'risk_histories.*.mitigating_action'          => 'nullable|string',
+            'risk_histories.*.whats_changed_this_period'  => 'nullable|string',
+            'risk_histories.*.remarks'                    => 'nullable|string',
+            'deleted_risk_histories'        => 'nullable|array',
+            'deleted_risk_histories.*'      => 'integer|exists:risk_histories,id',
         ];
     }
 
@@ -69,7 +63,6 @@ class UpdateRequest extends FormRequest
             'description_of_risk'       => 'Description of Risk',
             'risk_owner'                => 'Risk Owner',
             'mitigating_action'         => 'Mitigating Action',
-            'whats_changed_this_quarter'=> "What's Changed This Period",
             'remarks'                   => 'Remarks',
         ];
     }

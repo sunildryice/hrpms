@@ -27,7 +27,6 @@ class Risk extends Model
         'description_of_risk',
         'risk_owner',
         'mitigating_action',
-        'whats_changed_this_quarter',
         'remarks',
         'created_by',
         'updated_by',
@@ -35,7 +34,6 @@ class Risk extends Model
 
     protected $casts = [
         'date_added'  => 'date',
-        'risk_owner'  => 'array',
     ];
 
     public function riskStatus()
@@ -71,6 +69,11 @@ class Risk extends Model
     public function projectDetail()
     {
         return $this->belongsTo(Project::class, 'project_id');
+    }
+
+    public function riskHistories()
+    {
+        return $this->hasMany(RiskHistory::class);
     }
 
     public function createdBy()
@@ -130,14 +133,6 @@ class Risk extends Model
 
     public function getRiskOwnerNames(): string
     {
-        $ids = $this->risk_owner ?? [];
-        if (empty($ids)) {
-            return 'N/A';
-        }
-
-        $names = \Modules\Employee\Models\Employee::whereIn('id', $ids)->pluck('full_name')->toArray();
-        $textNames = array_filter($ids, fn($v) => !is_numeric($v));
-
-        return implode(', ', array_merge($names, $textNames)) ?: 'N/A';
+        return $this->risk_owner ?: 'N/A';
     }
 }

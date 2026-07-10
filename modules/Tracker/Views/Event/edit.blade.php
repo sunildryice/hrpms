@@ -90,13 +90,13 @@
             function toggleEventOrganizedBy() {
                 let val = $('#event_organized_by').val();
                 if (val === 'external') {
-                    $('#organizedByField, #roleField').show();
+                    $('#organizedByField, #roleField, #accompanyingMembersField').show();
                     $('#internalFields').hide();
                 } else if (val === 'internal') {
-                    $('#organizedByField, #roleField').hide();
+                    $('#organizedByField, #roleField, #accompanyingMembersField').hide();
                     $('#internalFields').show();
                 } else {
-                    $('#organizedByField, #roleField').hide();
+                    $('#organizedByField, #roleField, #accompanyingMembersField').hide();
                     $('#internalFields').hide();
                 }
             }
@@ -347,6 +347,17 @@
                                     <option value="">Select Role</option>
                                     @foreach($eventRoles as $eventRole)
                                         <option value="{{$eventRole->value}}" {{$event->role == $eventRole->value ? 'selected' : ''}}>{{$eventRole->label()}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-lg-4" id="accompanyingMembersField" style="display: none;">
+                                <label class="form-label" for="accompanying_members">Accompanying Members</label>
+                                <select class="form-select select2" name="accompanying_members[]" id="accompanying_members" multiple>
+                                    @foreach($employees as $employee)
+                                        <option value="{{$employee->id}}" {{ $event->accompanyingMembers->contains($employee->id) ? 'selected' : '' }}>{{$employee->getFullName()}}</option>
                                     @endforeach
                                 </select>
                             </div>

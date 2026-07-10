@@ -46,11 +46,11 @@
             function togglePartnershipFields() {
                 var val = $('[name="partnership_type"]').val();
                 if (val === 'Consortium') {
-                    $('#consortiumLeadRow').show();
-                    $('#consortiumPartnersRow').show();
+                    $('#projectTypeSingleField, #singleOrgGroup').hide().find('input, select, textarea').prop('disabled', true);
+                    $('#consortiumLeadRow, #consortiumGroup').show().find('input, select, textarea').prop('disabled', false);
                 } else {
-                    $('#consortiumLeadRow').hide();
-                    $('#consortiumPartnersRow').hide();
+                    $('#projectTypeSingleField, #singleOrgGroup').show().find('input, select, textarea').prop('disabled', false);
+                    $('#consortiumLeadRow, #consortiumGroup').hide().find('input, select, textarea').prop('disabled', true);
                 }
             }
 
@@ -109,6 +109,9 @@
                                 <label class="form-label" for="url">URL</label>
                                 <input class="form-control" type="text" name="url" id="url" value="{{old('url')}}" placeholder="https://">
                             </div>
+                        </div>
+
+                        <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="thematic_area_id">Thematic Area</label>
                                 <select class="form-select select2" name="thematic_area_id" id="thematic_area_id">
@@ -118,9 +121,6 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="project_name">Project Name</label>
                                 <input class="form-control" type="text" name="project_name" id="project_name" value="{{old('project_name')}}">
@@ -129,13 +129,13 @@
                                 <label class="form-label" for="funding_agency">Funding Agency</label>
                                 <input class="form-control" type="text" name="funding_agency" id="funding_agency" value="{{old('funding_agency')}}">
                             </div>
+                        </div>
+
+                        <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="contracting_agency">Contracting Agency</label>
                                 <input class="form-control" type="text" name="contracting_agency" id="contracting_agency" value="{{old('contracting_agency')}}">
                             </div>
-                        </div>
-
-                        <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="partnership_type">Partnership Type</label>
                                 <select class="form-select select2" name="partnership_type" id="partnership_type">
@@ -144,15 +144,7 @@
                                     <option value="Single Organization" {{old('partnership_type') == 'Single Organization' ? 'selected' : ''}}>Single Organization</option>
                                 </select>
                             </div>
-                            <div class="col-lg-4" id="consortiumLeadRow" style="display: none;">
-                                <label class="form-label" for="consortium_lead">Consortium Lead</label>
-                                <input class="form-control" type="text" name="consortium_lead" id="consortium_lead" value="{{old('consortium_lead')}}">
-                            </div>
-                            <div class="col-lg-4" id="consortiumPartnersRow" style="display: none;">
-                                <label class="form-label" for="consortium_partners">Consortium Partners</label>
-                                <input class="form-control" type="text" name="consortium_partners" id="consortium_partners" value="{{old('consortium_partners')}}">
-                            </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4" id="projectTypeSingleField">
                                 <label class="form-label" for="project_type">Project Type</label>
                                 <select class="form-select select2" name="project_type" id="project_type">
                                     <option value="">Select Project Type</option>
@@ -160,25 +152,67 @@
                                     <option value="Implementation" {{old('project_type') == 'Implementation' ? 'selected' : ''}}>Implementation</option>
                                 </select>
                             </div>
+                            <div class="col-lg-4" id="consortiumLeadRow" style="display: none;">
+                                <label class="form-label" for="consortium_lead">Consortium Lead</label>
+                                <input class="form-control" type="text" name="consortium_lead" id="consortium_lead" value="{{old('consortium_lead')}}">
+                            </div>
                         </div>
 
-                        <div class="row mb-2">
-                            <div class="col-lg-4">
-                                <label class="form-label" for="status">Status</label>
-                                <select class="form-select select2" name="status" id="status">
-                                    <option value="">Select Status</option>
-                                    <option value="Scanned" {{old('status') == 'Scanned' ? 'selected' : ''}}>Scanned</option>
-                                    <option value="Submitted" {{old('status') == 'Submitted' ? 'selected' : ''}}>Submitted</option>
-                                </select>
+                        <div id="singleOrgGroup">
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="status">Status</label>
+                                    <select class="form-select select2" name="status" id="status">
+                                        <option value="">Select Status</option>
+                                        <option value="Scanned" {{old('status') == 'Scanned' ? 'selected' : ''}}>Scanned</option>
+                                        <option value="Submitted" {{old('status') == 'Submitted' ? 'selected' : ''}}>Submitted</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="result">Result</label>
+                                    <select class="form-select select2" name="result" id="result">
+                                        <option value="">Select Result</option>
+                                        <option value="Rejected" {{old('result') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
+                                        <option value="Awaiting Result" {{old('result') == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
+                                        <option value="Awarded" {{old('result') == 'Awarded' ? 'selected' : ''}}>Awarded</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-lg-4">
-                                <label class="form-label" for="result">Result</label>
-                                <select class="form-select select2" name="result" id="result">
-                                    <option value="">Select Result</option>
-                                    <option value="Rejected" {{old('result') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
-                                    <option value="Awaiting Result" {{old('result') == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
-                                    <option value="Awarded" {{old('result') == 'Awarded' ? 'selected' : ''}}>Awarded</option>
-                                </select>
+                        </div>
+
+                        <div id="consortiumGroup" style="display: none;">
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="consortium_partners">Consortium Partners</label>
+                                    <input class="form-control" type="text" name="consortium_partners" id="consortium_partners" value="{{old('consortium_partners')}}">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="project_type_consortium">Project Type</label>
+                                    <select class="form-select select2" name="project_type" id="project_type_consortium">
+                                        <option value="">Select Project Type</option>
+                                        <option value="Research" {{old('project_type') == 'Research' ? 'selected' : ''}}>Research</option>
+                                        <option value="Implementation" {{old('project_type') == 'Implementation' ? 'selected' : ''}}>Implementation</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="status_consortium">Status</label>
+                                    <select class="form-select select2" name="status" id="status_consortium">
+                                        <option value="">Select Status</option>
+                                        <option value="Scanned" {{old('status') == 'Scanned' ? 'selected' : ''}}>Scanned</option>
+                                        <option value="Submitted" {{old('status') == 'Submitted' ? 'selected' : ''}}>Submitted</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="result_consortium">Result</label>
+                                    <select class="form-select select2" name="result" id="result_consortium">
+                                        <option value="">Select Result</option>
+                                        <option value="Rejected" {{old('result') == 'Rejected' ? 'selected' : ''}}>Rejected</option>
+                                        <option value="Awaiting Result" {{old('result') == 'Awaiting Result' ? 'selected' : ''}}>Awaiting Result</option>
+                                        <option value="Awarded" {{old('result') == 'Awarded' ? 'selected' : ''}}>Awarded</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 

@@ -5,6 +5,7 @@ namespace Modules\Tracker\Models;
 use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Modules\Employee\Models\Employee;
 use Modules\Project\Models\Project;
 
 class Event extends Model
@@ -54,6 +55,11 @@ class Event extends Model
     public function roasters()
     {
         return $this->hasMany(EventRoaster::class);
+    }
+
+    public function accompanyingMembers()
+    {
+        return $this->belongsToMany(Employee::class, 'event_accompanying_members', 'event_id', 'employee_id');
     }
 
     public function getFromDate()

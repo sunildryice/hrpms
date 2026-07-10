@@ -48,6 +48,7 @@ class EventRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
+            $record->accompanyingMembers()->sync([]);
             $record->roasters()->delete();
             $record->delete();
             DB::commit();

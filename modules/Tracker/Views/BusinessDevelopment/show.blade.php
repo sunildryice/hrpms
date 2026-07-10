@@ -33,20 +33,9 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Thematic Area</label>
-                            <p>{{$businessDevelopment->getThematicAreaTitle() ?: 'N/A'}}</p>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="text-muted fw-bold small">Project Name</label>
-                            <p>{{$businessDevelopment->project_name ?: 'N/A'}}</p>
-                        </div>
-                        <div class="col-md-4">
                             <label class="text-muted fw-bold small">Date</label>
                             <p>{{$businessDevelopment->getDate()}}</p>
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Call Name</label>
                             <p>{{$businessDevelopment->call_name ?: 'N/A'}}</p>
@@ -61,17 +50,28 @@
                                 @endif
                             </p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Thematic Area</label>
+                            <p>{{$businessDevelopment->getThematicAreaTitle() ?: 'N/A'}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Project Name</label>
+                            <p>{{$businessDevelopment->project_name ?: 'N/A'}}</p>
+                        </div>
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Funding Agency</label>
                             <p>{{$businessDevelopment->funding_agency ?: 'N/A'}}</p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Contracting Agency</label>
                             <p>{{$businessDevelopment->contracting_agency ?: 'N/A'}}</p>
                         </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Partnership Type</label>
                             <p>{{$businessDevelopment->partnership_type ?: 'N/A'}}</p>
@@ -81,11 +81,30 @@
                             <label class="text-muted fw-bold small">Consortium Lead</label>
                             <p>{{$businessDevelopment->consortium_lead ?: 'N/A'}}</p>
                         </div>
+                    </div>
+
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Consortium Partners</label>
                             <p>{{$businessDevelopment->consortium_partners ?: 'N/A'}}</p>
                         </div>
-                        @endif
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Project Type</label>
+                            <p>{{$businessDevelopment->project_type ?: 'N/A'}}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Status</label>
+                            <p>{{$businessDevelopment->status ?: 'N/A'}}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="text-muted fw-bold small">Result</label>
+                            <p>{{$businessDevelopment->result ?: 'N/A'}}</p>
+                        </div>
+                    </div>
+                    @else
                         <div class="col-md-4">
                             <label class="text-muted fw-bold small">Project Type</label>
                             <p>{{$businessDevelopment->project_type ?: 'N/A'}}</p>
@@ -101,7 +120,11 @@
                             <label class="text-muted fw-bold small">Result</label>
                             <p>{{$businessDevelopment->result ?: 'N/A'}}</p>
                         </div>
-                        <div class="col-md-4">
+                    </div>
+                    @endif
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
                             <label class="text-muted fw-bold small">Remarks</label>
                             <p>{{$businessDevelopment->remarks ?: 'N/A'}}</p>
                         </div>

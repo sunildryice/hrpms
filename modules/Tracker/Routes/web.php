@@ -16,6 +16,7 @@ Route::middleware(['web', 'auth', 'logger'])->prefix('tracker')->group(function 
     Route::delete('event/{id}/destroy', [EventController::class, 'destroy'])->name('event.destroy');
     Route::post('event/{id}/roaster', [EventController::class, 'storeRoaster'])->name('event.roaster.store');
     Route::delete('event/{id}/roaster/{roasterId}', [EventController::class, 'destroyRoaster'])->name('event.roaster.destroy');
+    Route::get('event/export', [EventController::class, 'export'])->name('event.export');
 
     Route::get('risk', [RiskController::class, 'index'])->name('risk.index');
     Route::get('risk/create', [RiskController::class, 'create'])->name('risk.create');

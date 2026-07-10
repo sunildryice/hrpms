@@ -2,6 +2,29 @@
 
 @section('title', 'View Risk')
 
+@section('page_css')
+<style>
+    .risk-history-table td, .risk-history-table th {
+        padding: 10px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .risk-history-table td:nth-child(3),
+    .risk-history-table td:nth-child(4),
+    .risk-history-table td:nth-child(5),
+    .risk-history-table td:nth-child(6),
+    .risk-history-table th:nth-child(3),
+    .risk-history-table th:nth-child(4),
+    .risk-history-table th:nth-child(5),
+    .risk-history-table th:nth-child(6) {
+        min-width: 200px;
+        white-space: normal;
+    }
+    .risk-history-table td:first-child { min-width: 140px; }
+    .risk-history-table td:nth-child(2) { min-width: 160px; }
+</style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(function() {
@@ -83,31 +106,46 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="text-muted fw-bold small">Description of Risk</label>
-                            <p>{{$risk->description_of_risk ?: 'N/A'}}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-muted fw-bold small">Mitigating Action</label>
-                            <p>{{$risk->mitigating_action ?: 'N/A'}}</p>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="text-muted fw-bold small">What's Changed This Period</label>
-                            <p>{{$risk->whats_changed_this_quarter ?: 'N/A'}}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="text-muted fw-bold small">Remarks</label>
-                            <p>{{$risk->remarks ?: 'N/A'}}</p>
-                        </div>
-                    </div>
-
                 </div>
             </div>
-            <a href="{{URL::previous()}}" type="button" class="btn btn-sm btn-secondary">Back</a>
+
+            @if($risk->riskHistories->isNotEmpty())
+            <div class="card mt-3">
+                <div class="card-header fw-bold">
+                    <h6>Risk Change History</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered risk-history-table">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Updated Date</th>
+                                    <th>Risk Status</th>
+                                    <th>Description of Risk</th>
+                                    <th>Mitigating Action</th>
+                                    <th>What's Changed This Period</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($risk->riskHistories as $history)
+                                <tr>
+                                    <td>{{$history->getUpdatedDate() ?: 'N/A'}}</td>
+                                    <td>{{$history->getRiskStatusTitle() ?: 'N/A'}}</td>
+                                    <td>{{$history->description_of_risk ?: 'N/A'}}</td>
+                                    <td>{{$history->mitigating_action ?: 'N/A'}}</td>
+                                    <td>{{$history->whats_changed_this_period ?: 'N/A'}}</td>
+                                    <td>{{$history->remarks ?: 'N/A'}}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <a href="{{URL::previous()}}" type="button" class="btn btn-sm btn-secondary mt-3">Back</a>
         </section>
     </div>
 </div>

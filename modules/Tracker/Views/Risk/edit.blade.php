@@ -2,6 +2,33 @@
 
 @section('title', 'Edit Risk')
 
+@section('page_css')
+<style>
+    .risk-history-table td, .risk-history-table th {
+        padding: 10px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+    .risk-history-table td:nth-child(3),
+    .risk-history-table td:nth-child(4),
+    .risk-history-table td:nth-child(5),
+    .risk-history-table td:nth-child(6),
+    .risk-history-table th:nth-child(3),
+    .risk-history-table th:nth-child(4),
+    .risk-history-table th:nth-child(5),
+    .risk-history-table th:nth-child(6) {
+        min-width: 200px;
+        white-space: normal;
+    }
+    .risk-history-table td:first-child { min-width: 140px; }
+    .risk-history-table td:nth-child(2) { min-width: 160px; }
+    .risk-history-table td:last-child { min-width: 60px; text-align: center; }
+    .risk-history-table textarea {
+        min-height: 38px;
+    }
+</style>
+@endsection
+
 @section('page_js')
     <script type="text/javascript">
         $(function() {
@@ -55,6 +82,56 @@
                 format: 'yyyy-mm-dd',
             }).on('change', function (e) {
                 fv.revalidateField('date_added');
+            });
+
+            // Risk History management
+            let historyIndex = {{ $risk->riskHistories->count() }};
+
+            $(document).on('click', '.remove-risk-history', function() {
+                let historyId = $(this).data('history-id');
+                if (historyId) {
+                    $('#deletedRiskHistories').append('<input type="hidden" name="deleted_risk_histories[]" value="' + historyId + '">');
+                }
+                $(this).closest('tr').remove();
+            });
+
+            $('#addRiskHistoryBtn').on('click', function() {
+                let row = '<tr>';
+                row += '<td><input class="form-control risk-history-date" type="text" name="risk_histories[' + historyIndex + '][updated_date]" onfocus="this.blur()" placeholder="YYYY-MM-DD" autocomplete="off"></td>';
+                row += '<td><select class="form-select" name="risk_histories[' + historyIndex + '][risk_status_id]">';
+                row += '<option value="">Select Status</option>';
+                @foreach($riskStatuses as $status)
+                row += '<option value="{{$status->id}}">{{$status->title}}</option>';
+                @endforeach
+                row += '</select></td>';
+                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][description_of_risk]" rows="1"></textarea></td>';
+                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][mitigating_action]" rows="1"></textarea></td>';
+                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][whats_changed_this_period]" rows="1"></textarea></td>';
+                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][remarks]" rows="1"></textarea></td>';
+                row += '<td><button type="button" class="btn btn-danger btn-sm remove-risk-history"><i class="bi-trash"></i></button></td>';
+                row += '</tr>';
+
+                var $row = $(row);
+                $('#riskHistoryTableBody').append($row);
+                historyIndex++;
+
+                // Initialize datepicker only on new row's date field
+                $row.find('.risk-history-date').datepicker({
+                    language: 'en-GB',
+                    autoHide: true,
+                    format: 'yyyy-mm-dd',
+                });
+            });
+
+            // Auto-resize textareas
+            $(document).on('input', '.risk-history-table textarea', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+            // Initialize auto-resize on existing rows
+            $('.risk-history-table textarea').each(function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
             });
 
         });
@@ -180,36 +257,56 @@
                         <div class="row mb-2">
                             <div class="col-lg-4">
                                 <label class="form-label" for="risk_owner">Risk Owner</label>
-                                <select class="form-select select2" name="risk_owner[]" id="risk_owner" multiple>
-                                    <option value="">Select Risk Owner</option>
-                                    @foreach($employees as $employee)
-                                        <option value="{{$employee->id}}" {{in_array($employee->id, $risk->risk_owner ?? []) ? 'selected' : ''}}>{{$employee->full_name}}</option>
+                                <input class="form-control" type="text" name="risk_owner" id="risk_owner" value="{{$risk->risk_owner}}" placeholder="Enter risk owner name">
+                            </div>
+                            <div class="col-lg-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-sm btn-primary mt-4" id="addRiskHistoryBtn"><i class="bi-plus"></i> Add</button>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h6 class="fw-bold mb-2">Risk Change History</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered risk-history-table">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Updated Date</th>
+                                        <th>Risk Status</th>
+                                        <th>Description of Risk</th>
+                                        <th>Mitigating Action</th>
+                                        <th>What's Changed This Period</th>
+                                        <th>Remarks</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="riskHistoryTableBody">
+                                    @foreach($risk->riskHistories as $i => $history)
+                                    <tr>
+                                        <td>
+                                            <input class="form-control risk-history-date" type="text" name="risk_histories[{{$i}}][id]" value="{{$history->id}}" hidden>
+                                            <input class="form-control risk-history-date" type="text" name="risk_histories[{{$i}}][updated_date]" value="{{$history->updated_date?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
+                                        </td>
+                                        <td>
+                                            <select class="form-select select2" name="risk_histories[{{$i}}][risk_status_id]">
+                                                <option value="">Select Status</option>
+                                                @foreach($riskStatuses as $status)
+                                                    <option value="{{$status->id}}" {{$history->risk_status_id == $status->id ? 'selected' : ''}}>{{$status->title}}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][description_of_risk]" rows="1">{{$history->description_of_risk}}</textarea></td>
+                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][mitigating_action]" rows="1">{{$history->mitigating_action}}</textarea></td>
+                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][whats_changed_this_period]" rows="1">{{$history->whats_changed_this_period}}</textarea></td>
+                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][remarks]" rows="1">{{$history->remarks}}</textarea></td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm remove-risk-history" data-history-id="{{$history->id}}"><i class="bi-trash"></i></button>
+                                        </td>
+                                    </tr>
                                     @endforeach
-                                </select>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
-
-                        <div class="row mb-2">
-                            <div class="col-lg-6">
-                                <label class="form-label" for="description_of_risk">Description of Risk</label>
-                                <textarea class="form-control" name="description_of_risk" id="description_of_risk" rows="3">{{$risk->description_of_risk}}</textarea>
-                            </div>
-                            <div class="col-lg-6">
-                                <label class="form-label" for="mitigating_action">Mitigating Action</label>
-                                <textarea class="form-control" name="mitigating_action" id="mitigating_action" rows="3">{{$risk->mitigating_action}}</textarea>
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
-                            <div class="col-lg-6">
-                                <label class="form-label" for="whats_changed_this_quarter">What's Changed This Period</label>
-                                <textarea class="form-control" name="whats_changed_this_quarter" id="whats_changed_this_quarter" rows="3">{{$risk->whats_changed_this_quarter}}</textarea>
-                            </div>
-                            <div class="col-lg-6">
-                                <label class="form-label" for="remarks">Remarks</label>
-                                <textarea class="form-control" name="remarks" id="remarks" rows="3">{{$risk->remarks}}</textarea>
-                            </div>
-                        </div>
+                        <div id="deletedRiskHistories"></div>
 
                     </div>
 

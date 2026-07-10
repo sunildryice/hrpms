@@ -7,11 +7,33 @@
         $(function() {
             $('#navbarVerticalMenu').find('#event-index').addClass('active');
 
+            $('[name="filter_from_date"], [name="filter_to_date"]').datepicker({
+                language: 'en-GB',
+                autoHide: true,
+                format: 'yyyy-mm-dd',
+            });
+
+            $('#filterBtn').on('click', function() {
+                oTable.ajax.reload();
+            });
+
+            $('#resetFilterBtn').on('click', function() {
+                $('#filterFromDate').val('');
+                $('#filterToDate').val('');
+                oTable.ajax.reload();
+            });
+
             var oTable = $('#eventTable').DataTable({
                 scrollX: true,
                 processing: true,
                 serverside: true,
-                ajax: "{{route('event.index')}}",
+                ajax: {
+                    url: "{{route('event.index')}}",
+                    data: function(d) {
+                        d.filter_from_date = $('#filterFromDate').val();
+                        d.filter_to_date = $('#filterToDate').val();
+                    }
+                },
                 columns: [
                     {
                         data: 'DT_RowIndex',
@@ -96,12 +118,34 @@
                     <a href="{{ route('event.create') }}" class="btn btn-primary btn-sm">
                         <i class="bi-plus"></i> New Event
                     </a>
+                    <a href="{{ route('event.export') }}" class="btn btn-success btn-sm" id="exportBtn">
+                        <i class="bi bi-download"></i> Export
+                    </a>
                     @endcan
                 </div>
             </div>
         </div>
 
         <section>
+            <div class="card shadow-sm border rounded mb-3">
+                <div class="card-body py-2">
+                    <div class="row align-items-end">
+                        <div class="col-lg-3">
+                            <label class="form-label small mb-1" for="filterFromDate">From Date</label>
+                            <input class="form-control form-control-sm" type="text" name="filter_from_date" id="filterFromDate" placeholder="YYYY-MM-DD" onfocus="this.blur()" autocomplete="off">
+                        </div>
+                        <div class="col-lg-3">
+                            <label class="form-label small mb-1" for="filterToDate">To Date</label>
+                            <input class="form-control form-control-sm" type="text" name="filter_to_date" id="filterToDate" placeholder="YYYY-MM-DD" onfocus="this.blur()" autocomplete="off">
+                        </div>
+                        <div class="col-lg-3 d-flex gap-2">
+                            <button class="btn btn-sm btn-primary mt-3" id="filterBtn">Filter</button>
+                            <button class="btn btn-sm btn-secondary mt-3" id="resetFilterBtn">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="card shadow-sm border rounded c-tabs-content active" id="event-table">
                 <div class="card-body">
                     <div class="table-responsive">

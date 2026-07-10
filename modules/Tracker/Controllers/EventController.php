@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Modules\Project\Models\Project;
+use Modules\Employee\Models\Employee;
 use Modules\Tracker\Models\Enums\Ethnicity;
 use Modules\Tracker\Models\Enums\EventRole;
 use Modules\Tracker\Models\EventRoaster;
 use Modules\Tracker\Repositories\EventRepository;
 use Modules\Tracker\Requests\Event\StoreRequest;
 use Modules\Tracker\Requests\Event\UpdateRequest;
+use Modules\Tracker\Exports\EventExport;
 use Yajra\DataTables\DataTables;
 
 class EventController extends Controller
@@ -37,7 +39,16 @@ class EventController extends Controller
 
         if ($request->ajax()) {
             $data = $this->events->with(['project'])
-                ->orderBy('created_at', 'desc')->get();
+                ->orderBy('created_at', 'desc');
+
+            if ($request->filled('filter_from_date')) {
+                $data->where('from_date', '>=', $request->filter_from_date);
+            }
+            if ($request->filled('filter_to_date')) {
+                $data->where('to_date', '<=', $request->filter_to_date);
+            }
+
+            $data = $data->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -77,6 +88,13 @@ class EventController extends Controller
         return view('Tracker::Event.index');
     }
 
+    public function export()
+    {
+        $this->authorize('manage-event');
+
+        return (new EventExport())->download();
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -86,11 +104,12 @@ class EventController extends Controller
     {
         $this->authorize('manage-event');
 
-        $projects  = Project::whereNotNull('activated_at')->get();
+        $projects   = Project::whereNotNull('activated_at')->get();
         $ethnicities = Ethnicity::cases();
         $eventRoles  = EventRole::cases();
+        $employees   = Employee::whereNotNull('activated_at')->orderBy('full_name')->get();
 
-        return view('Tracker::Event.create', compact('projects', 'ethnicities', 'eventRoles'));
+        return view('Tracker::Event.create', compact('projects', 'ethnicities', 'eventRoles', 'employees'));
     }
 
     /**
@@ -115,6 +134,10 @@ class EventController extends Controller
         $record = $this->events->create($inputs);
 
         if ($record) {
+            if ($request->has('accompanying_members')) {
+                $record->accompanyingMembers()->sync($request->input('accompanying_members'));
+            }
+
             if ($record->roaster_details && $request->has('roasters')) {
                 foreach ($request->input('roasters') as $roaster) {
                     $record->roasters()->create([
@@ -143,7 +166,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = $this->events->find($id);
-        $event->load(['project', 'roasters']);
+        $event->load(['project', 'roasters', 'accompanyingMembers']);
         return view('Tracker::Event.show', compact('event'));
     }
 
@@ -157,12 +180,14 @@ class EventController extends Controller
     {
         $this->authorize('manage-event');
 
-        $event    = $this->events->find($id);
-        $projects  = Project::whereNotNull('activated_at')->get();
+        $event      = $this->events->find($id);
+        $event->load('accompanyingMembers');
+        $projects   = Project::whereNotNull('activated_at')->get();
         $ethnicities = Ethnicity::cases();
         $eventRoles  = EventRole::cases();
+        $employees   = Employee::whereNotNull('activated_at')->orderBy('full_name')->get();
 
-        return view('Tracker::Event.edit', compact('event', 'projects', 'ethnicities', 'eventRoles'));
+        return view('Tracker::Event.edit', compact('event', 'projects', 'ethnicities', 'eventRoles', 'employees'));
     }
 
     /**
@@ -193,6 +218,12 @@ class EventController extends Controller
         $record = $this->events->update($id, $inputs);
 
         if ($record) {
+            if ($request->has('accompanying_members')) {
+                $record->accompanyingMembers()->sync($request->input('accompanying_members'));
+            } else {
+                $record->accompanyingMembers()->sync([]);
+            }
+
             if ($request->has('deleted_roasters')) {
                 EventRoaster::whereIn('id', $request->input('deleted_roasters'))->delete();
             }

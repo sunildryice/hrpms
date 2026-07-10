@@ -4,7 +4,6 @@ namespace Modules\Tracker\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Employee\Models\Employee;
 use Modules\Project\Models\Project;
 use Modules\Tracker\Models\RiskStatus;
 use Modules\Tracker\Models\RiskType;
@@ -106,11 +105,10 @@ class RiskController extends Controller
         $riskImpacts        = RiskImpact::all();
         $riskRatings        = RiskRating::all();
         $riskResponseTypes  = RiskResponseType::all();
-        $employees          = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
         return view('Tracker::Risk.create', compact(
             'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
-            'riskImpacts', 'riskRatings', 'riskResponseTypes', 'employees'
+            'riskImpacts', 'riskRatings', 'riskResponseTypes'
         ));
     }
 
@@ -130,6 +128,22 @@ class RiskController extends Controller
         $risk = $this->risks->create($inputs);
 
         if ($risk) {
+            if ($request->has('risk_histories')) {
+                foreach ($request->input('risk_histories') as $history) {
+                    if (!empty($history['description_of_risk']) || !empty($history['mitigating_action']) || !empty($history['whats_changed_this_period']) || !empty($history['remarks'])) {
+                        $risk->riskHistories()->create([
+                            'updated_date'           => $history['updated_date'] ?? null,
+                            'risk_status_id'         => $history['risk_status_id'] ?? null,
+                            'description_of_risk'    => $history['description_of_risk'] ?? null,
+                            'mitigating_action'      => $history['mitigating_action'] ?? null,
+                            'whats_changed_this_period' => $history['whats_changed_this_period'] ?? null,
+                            'remarks'                => $history['remarks'] ?? null,
+                            'created_by'             => auth()->user()->id,
+                        ]);
+                    }
+                }
+            }
+
             return redirect()->route('risk.index')->withSuccessMessage('Risk created successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Risk could not be created.');
@@ -145,6 +159,7 @@ class RiskController extends Controller
     public function show($id)
     {
         $risk = $this->risks->find($id);
+        $risk->load('riskHistories.riskStatus');
         return view('Tracker::Risk.show', compact('risk'));
     }
 
@@ -159,6 +174,7 @@ class RiskController extends Controller
         $this->authorize('manage-risk');
 
         $risk               = $this->risks->find($id);
+        $risk->load('riskHistories');
         $projects           = Project::whereNotNull('activated_at')->get();
         $riskStatuses       = RiskStatus::all();
         $riskTypes          = RiskType::all();
@@ -166,11 +182,10 @@ class RiskController extends Controller
         $riskImpacts        = RiskImpact::all();
         $riskRatings        = RiskRating::all();
         $riskResponseTypes  = RiskResponseType::all();
-        $employees          = Employee::whereNotNull('activated_at')->orderBy('full_name')->get(['id', 'full_name']);
 
         return view('Tracker::Risk.edit', compact(
             'risk', 'projects', 'riskStatuses', 'riskTypes', 'riskProbabilities',
-            'riskImpacts', 'riskRatings', 'riskResponseTypes', 'employees'
+            'riskImpacts', 'riskRatings', 'riskResponseTypes'
         ));
     }
 
@@ -191,6 +206,41 @@ class RiskController extends Controller
         $risk = $this->risks->update($id, $inputs);
 
         if ($risk) {
+            if ($request->has('deleted_risk_histories')) {
+                \Modules\Tracker\Models\RiskHistory::whereIn('id', $request->input('deleted_risk_histories'))->delete();
+            }
+
+            if ($request->has('risk_histories')) {
+                foreach ($request->input('risk_histories') as $history) {
+                    if (isset($history['id'])) {
+                        $existing = \Modules\Tracker\Models\RiskHistory::find($history['id']);
+                        if ($existing) {
+                            $existing->update([
+                                'updated_date'           => $history['updated_date'] ?? null,
+                                'risk_status_id'         => $history['risk_status_id'] ?? null,
+                                'description_of_risk'    => $history['description_of_risk'] ?? null,
+                                'mitigating_action'      => $history['mitigating_action'] ?? null,
+                                'whats_changed_this_period' => $history['whats_changed_this_period'] ?? null,
+                                'remarks'                => $history['remarks'] ?? null,
+                                'updated_by'             => auth()->user()->id,
+                            ]);
+                        }
+                    } else {
+                        if (!empty($history['description_of_risk']) || !empty($history['mitigating_action']) || !empty($history['whats_changed_this_period']) || !empty($history['remarks'])) {
+                            $risk->riskHistories()->create([
+                                'updated_date'           => $history['updated_date'] ?? null,
+                                'risk_status_id'         => $history['risk_status_id'] ?? null,
+                                'description_of_risk'    => $history['description_of_risk'] ?? null,
+                                'mitigating_action'      => $history['mitigating_action'] ?? null,
+                                'whats_changed_this_period' => $history['whats_changed_this_period'] ?? null,
+                                'remarks'                => $history['remarks'] ?? null,
+                                'created_by'             => auth()->user()->id,
+                            ]);
+                        }
+                    }
+                }
+            }
+
             return redirect()->route('risk.index')->withSuccessMessage('Risk updated successfully.');
         } else {
             return redirect()->back()->withInput()->withWarningMessage('Risk could not be updated.');

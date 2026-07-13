@@ -89,15 +89,19 @@
             // Toggle fields based on Event Organized By
             function toggleEventOrganizedBy() {
                 let val = $('#event_organized_by').val();
+                let $accompanying = $('#accompanyingMembersField');
                 if (val === 'external') {
-                    $('#organizedByField, #roleField, #accompanyingMembersField').show();
+                    $('#organizedByField, #roleField').show();
                     $('#internalFields').hide();
+                    $accompanying.detach().insertAfter('#roleField');
                 } else if (val === 'internal') {
-                    $('#organizedByField, #roleField, #accompanyingMembersField').hide();
+                    $('#organizedByField, #roleField').hide();
                     $('#internalFields').show();
+                    $accompanying.detach().insertAfter('#cityLocalLevelField');
                 } else {
-                    $('#organizedByField, #roleField, #accompanyingMembersField').hide();
+                    $('#organizedByField, #roleField').hide();
                     $('#internalFields').hide();
+                    $accompanying.detach().insertAfter('#cityLocalLevelField');
                 }
             }
 
@@ -324,9 +328,17 @@
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-lg-4">
+                            <div class="col-lg-4" id="cityLocalLevelField">
                                 <label class="form-label" for="city_local_level">City / Local Level</label>
                                 <input class="form-control" type="text" name="city_local_level" id="city_local_level" value="{{old('city_local_level')}}">
+                            </div>
+                            <div class="col-lg-4" id="accompanyingMembersField">
+                                <label class="form-label" for="accompanying_members">Accompanying Members</label>
+                                <select class="form-select select2" name="accompanying_members[]" id="accompanying_members" multiple>
+                                    @foreach($employees as $employee)
+                                        <option value="{{$employee->id}}" {{ collect(old('accompanying_members'))->contains($employee->id) ? 'selected' : '' }}>{{$employee->getFullName()}}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-lg-4" id="organizedByField" style="display: none;">
                                 <label class="form-label" for="organized_by">Organized By</label>
@@ -338,17 +350,6 @@
                                     <option value="">Select Role</option>
                                     @foreach($eventRoles as $eventRole)
                                         <option value="{{$eventRole->value}}" {{old('role') == $eventRole->value ? 'selected' : ''}}>{{$eventRole->label()}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="row mb-2">
-                            <div class="col-lg-4" id="accompanyingMembersField" style="display: none;">
-                                <label class="form-label" for="accompanying_members">Accompanying Members</label>
-                                <select class="form-select select2" name="accompanying_members[]" id="accompanying_members" multiple>
-                                    @foreach($employees as $employee)
-                                        <option value="{{$employee->id}}" {{ collect(old('accompanying_members'))->contains($employee->id) ? 'selected' : '' }}>{{$employee->getFullName()}}</option>
                                     @endforeach
                                 </select>
                             </div>

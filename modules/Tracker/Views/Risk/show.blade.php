@@ -9,11 +9,11 @@
         vertical-align: middle;
         white-space: nowrap;
     }
-    .risk-history-table td:nth-child(3),
+    .risk-history-table td:nth-child(2),
     .risk-history-table td:nth-child(4),
     .risk-history-table td:nth-child(5),
     .risk-history-table td:nth-child(6),
-    .risk-history-table th:nth-child(3),
+    .risk-history-table th:nth-child(2),
     .risk-history-table th:nth-child(4),
     .risk-history-table th:nth-child(5),
     .risk-history-table th:nth-child(6) {
@@ -21,7 +21,7 @@
         white-space: normal;
     }
     .risk-history-table td:first-child { min-width: 140px; }
-    .risk-history-table td:nth-child(2) { min-width: 160px; }
+    .risk-history-table td:nth-child(3) { min-width: 160px; }
 </style>
 @endsection
 
@@ -120,8 +120,8 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th>Updated Date</th>
-                                    <th>Risk Status</th>
                                     <th>Description of Risk</th>
+                                    <th>Risk Status</th>
                                     <th>Mitigating Action</th>
                                     <th>What's Changed This Period</th>
                                     <th>Remarks</th>
@@ -131,8 +131,8 @@
                                 @foreach($risk->riskHistories as $history)
                                 <tr>
                                     <td>{{$history->getUpdatedDate() ?: 'N/A'}}</td>
-                                    <td>{{$history->getRiskStatusTitle() ?: 'N/A'}}</td>
                                     <td>{{$history->description_of_risk ?: 'N/A'}}</td>
+                                    <td>{{$history->getRiskStatusTitle() ?: 'N/A'}}</td>
                                     <td>{{$history->mitigating_action ?: 'N/A'}}</td>
                                     <td>{{$history->whats_changed_this_period ?: 'N/A'}}</td>
                                     <td>{{$history->remarks ?: 'N/A'}}</td>

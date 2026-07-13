@@ -9,11 +9,11 @@
         vertical-align: middle;
         white-space: nowrap;
     }
-    .risk-history-table td:nth-child(3),
+    .risk-history-table td:nth-child(2),
     .risk-history-table td:nth-child(4),
     .risk-history-table td:nth-child(5),
     .risk-history-table td:nth-child(6),
-    .risk-history-table th:nth-child(3),
+    .risk-history-table th:nth-child(2),
     .risk-history-table th:nth-child(4),
     .risk-history-table th:nth-child(5),
     .risk-history-table th:nth-child(6) {
@@ -21,7 +21,7 @@
         white-space: normal;
     }
     .risk-history-table td:first-child { min-width: 140px; }
-    .risk-history-table td:nth-child(2) { min-width: 160px; }
+    .risk-history-table td:nth-child(3) { min-width: 160px; }
     .risk-history-table td:last-child { min-width: 60px; text-align: center; }
     .risk-history-table textarea {
         min-height: 38px;
@@ -98,13 +98,13 @@
             $('#addRiskHistoryBtn').on('click', function() {
                 let row = '<tr>';
                 row += '<td><input class="form-control risk-history-date" type="text" name="risk_histories[' + historyIndex + '][updated_date]" onfocus="this.blur()" placeholder="YYYY-MM-DD" autocomplete="off"></td>';
+                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][description_of_risk]" rows="1"></textarea></td>';
                 row += '<td><select class="form-select" name="risk_histories[' + historyIndex + '][risk_status_id]">';
                 row += '<option value="">Select Status</option>';
                 @foreach($riskStatuses as $status)
                 row += '<option value="{{$status->id}}">{{$status->title}}</option>';
                 @endforeach
                 row += '</select></td>';
-                row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][description_of_risk]" rows="1"></textarea></td>';
                 row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][mitigating_action]" rows="1"></textarea></td>';
                 row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][whats_changed_this_period]" rows="1"></textarea></td>';
                 row += '<td><textarea class="form-control" name="risk_histories[' + historyIndex + '][remarks]" rows="1"></textarea></td>';
@@ -271,8 +271,8 @@
                                 <thead class="bg-light">
                                     <tr>
                                         <th>Updated Date</th>
-                                        <th>Risk Status</th>
                                         <th>Description of Risk</th>
+                                        <th>Risk Status</th>
                                         <th>Mitigating Action</th>
                                         <th>What's Changed This Period</th>
                                         <th>Remarks</th>
@@ -286,6 +286,7 @@
                                             <input class="form-control risk-history-date" type="text" name="risk_histories[{{$i}}][id]" value="{{$history->id}}" hidden>
                                             <input class="form-control risk-history-date" type="text" name="risk_histories[{{$i}}][updated_date]" value="{{$history->updated_date?->format('Y-m-d')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                                         </td>
+                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][description_of_risk]" rows="1">{{$history->description_of_risk}}</textarea></td>
                                         <td>
                                             <select class="form-select select2" name="risk_histories[{{$i}}][risk_status_id]">
                                                 <option value="">Select Status</option>
@@ -294,7 +295,6 @@
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td><textarea class="form-control" name="risk_histories[{{$i}}][description_of_risk]" rows="1">{{$history->description_of_risk}}</textarea></td>
                                         <td><textarea class="form-control" name="risk_histories[{{$i}}][mitigating_action]" rows="1">{{$history->mitigating_action}}</textarea></td>
                                         <td><textarea class="form-control" name="risk_histories[{{$i}}][whats_changed_this_period]" rows="1">{{$history->whats_changed_this_period}}</textarea></td>
                                         <td><textarea class="form-control" name="risk_histories[{{$i}}][remarks]" rows="1">{{$history->remarks}}</textarea></td>

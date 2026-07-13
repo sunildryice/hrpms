@@ -115,11 +115,11 @@
                 </div>
                 <div class="add-info justify-content-end">
                     @can('manage-event')
-                    <a href="{{ route('event.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi-plus"></i> New Event
-                    </a>
                     <a href="{{ route('event.export') }}" class="btn btn-success btn-sm" id="exportBtn">
                         <i class="bi bi-download"></i> Export
+                    </a>
+                    <a href="{{ route('event.create') }}" class="btn btn-primary btn-sm">
+                        <i class="bi-plus"></i> New Event
                     </a>
                     @endcan
                 </div>

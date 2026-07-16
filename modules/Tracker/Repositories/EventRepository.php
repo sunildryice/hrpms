@@ -5,6 +5,7 @@ namespace Modules\Tracker\Repositories;
 use App\Repositories\Repository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Tracker\Models\Event;
 
 class EventRepository extends Repository
@@ -48,6 +49,11 @@ class EventRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
+
+            if ($record->attachment && Storage::exists($record->attachment)) {
+                Storage::delete($record->attachment);
+            }
+
             $record->accompanyingMembers()->sync([]);
             $record->roasters()->delete();
             $record->delete();

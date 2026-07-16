@@ -33,7 +33,7 @@ class BusinessDevelopmentController extends Controller
 
         if ($request->ajax()) {
             $data = $this->businessDevelopments->with(['thematicArea'])
-                ->orderBy('created_at', 'desc')->get();
+                ->orderBy('created_at', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()

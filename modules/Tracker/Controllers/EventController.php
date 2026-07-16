@@ -48,8 +48,6 @@ class EventController extends Controller
                 $data->where('to_date', '<=', $request->filter_to_date);
             }
 
-            $data = $data->get();
-
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('project_title', function ($row) {

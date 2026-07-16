@@ -31,7 +31,7 @@ class HrEventController extends Controller
         $this->authorize('manage-hr-event');
 
         if ($request->ajax()) {
-            $data = $this->hrEvents->with(['project'])->orderBy('created_at', 'desc')->get();
+            $data = $this->hrEvents->with(['project'])->orderBy('created_at', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()

@@ -34,7 +34,7 @@ class ResearchCommunicationController extends Controller
         $this->authorize('manage-research-communication');
 
         if ($request->ajax()) {
-            $data = $this->researchCommunications->with(['project', 'platforms'])->orderBy('created_at', 'desc')->get();
+            $data = $this->researchCommunications->with(['project', 'platforms'])->orderBy('created_at', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()

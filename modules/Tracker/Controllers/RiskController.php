@@ -40,7 +40,7 @@ class RiskController extends Controller
             $data = $this->risks->with([
                 'projectDetail', 'riskStatus', 'riskType', 'riskProbability',
                 'riskImpact', 'riskRating', 'riskResponseType',
-            ])->orderBy('created_at', 'desc')->get();
+            ])->orderBy('created_at', 'desc');
 
             return DataTables::of($data)
                 ->addIndexColumn()

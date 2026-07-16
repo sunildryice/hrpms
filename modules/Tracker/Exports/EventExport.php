@@ -20,10 +20,7 @@ class EventExport implements FromCollection, Responsable, ShouldAutoSize, WithEv
 {
     use Exportable;
 
-    public function __construct(
-        protected $fromDate = null,
-        protected $toDate = null,
-    ) {}
+    public function __construct() {}
 
     private string $fileName = 'event_export.xlsx';
 
@@ -107,15 +104,8 @@ class EventExport implements FromCollection, Responsable, ShouldAutoSize, WithEv
 
     public function collection()
     {
-        $query = Event::with(['project', 'accompanyingMembers']);
-
-        if ($this->fromDate) {
-            $query->where('from_date', '>=', $this->fromDate);
-        }
-        if ($this->toDate) {
-            $query->where('to_date', '<=', $this->toDate);
-        }
-
-        return $query->orderBy('created_at', 'desc')->get();
+        return Event::with(['project', 'accompanyingMembers'])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }

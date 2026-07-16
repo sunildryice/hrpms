@@ -73,7 +73,7 @@ class HrEvent extends Model
 
     public function getTotalShortlisted()
     {
-        return $this->male_shortlisted + $this->female_shortlisted;
+        return ($this->male_shortlisted ?? 0) + ($this->female_shortlisted ?? 0);
     }
 
     public function getTotalRecruited()
@@ -83,7 +83,7 @@ class HrEvent extends Model
 
     public function getTotalParticipants()
     {
-        return $this->male_participants + $this->female_participants;
+        return ($this->male_participants ?? 0) + ($this->female_participants ?? 0);
     }
 
     public function getCreatorName()

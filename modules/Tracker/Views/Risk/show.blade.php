@@ -46,7 +46,7 @@
                 <div class="card-header fw-bold">
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
                         <h6>Risk Details</h6>
-                        @can('manage-risk')
+                        @if($risk->created_by == auth()->id())
                         <a href="{{ route('risk.edit', $risk->id) }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>

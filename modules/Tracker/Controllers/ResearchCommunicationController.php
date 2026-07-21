@@ -60,16 +60,16 @@ class ResearchCommunicationController extends Controller
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('research-communication.show', $row->id) . '" rel="tooltip" title="View"><i class="bi bi-eye"></i></a>';
 
-                    if ($authUser->can('manage-research-communication')) {
+                    if ($authUser->can('manage-research-communication') && $authUser->id == $row->created_by) {
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
                         $btn .= route('research-communication.edit', $row->id) . '" rel="tooltip" title="Edit"><i class="bi-pencil-square"></i></a>';
                     }
 
-                    if ($authUser->can('manage-research-communication')) {
-                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete" ';
-                        $btn .= 'data-href="' . route('research-communication.destroy', $row->id) . '">';
-                        $btn .= '<i class="bi-trash"></i></a>';
-                    }
+//                    if ($authUser->can('manage-research-communication')) {
+//                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete" ';
+//                        $btn .= 'data-href="' . route('research-communication.destroy', $row->id) . '">';
+//                        $btn .= '<i class="bi-trash"></i></a>';
+//                    }
 
                     return $btn;
                 })

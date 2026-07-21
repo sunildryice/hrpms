@@ -69,16 +69,16 @@ class RiskController extends Controller
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('risk.show', $row->id) . '" rel="tooltip" title="View Risk"><i class="bi bi-eye"></i></a>';
 
-                    if ($authUser->can('manage-risk')) {
+                    if ($authUser->can('manage-risk') && $authUser->id == $row->created_by) {
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
                         $btn .= route('risk.edit', $row->id) . '" rel="tooltip" title="Edit Risk"><i class="bi-pencil-square"></i></a>';
                     }
 
-                    if ($authUser->can('manage-risk')) {
-                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete Risk" ';
-                        $btn .= 'data-href="' . route('risk.destroy', $row->id) . '">';
-                        $btn .= '<i class="bi-trash"></i></a>';
-                    }
+//                    if ($authUser->can('manage-risk')) {
+//                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete Risk" ';
+//                        $btn .= 'data-href="' . route('risk.destroy', $row->id) . '">';
+//                        $btn .= '<i class="bi-trash"></i></a>';
+//                    }
 
                     return $btn;
                 })

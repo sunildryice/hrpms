@@ -199,37 +199,6 @@
             </div>
         </div>
         <div class="col-lg-9">
-            {{-- <div class="card">
-                <div class="card-header">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="fw-bold">Project Activity TimeSheets</span>
-                        <div class="justify-content-end d-flex gap-2">
-                            <button data-toggle="modal" class="btn btn-primary btn-sm open-timesheet-modal-form"
-                                href="{{ route('project-activity.timesheet.create', ['projectActivity' => $projectActivity->id]) }}"><i
-                                    class="bi-plus"></i> Add TimeSheet
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered" id="activityTimeSheetTable">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>{{ __('label.sn') }}</th>
-                                    <th>{{ __('label.date') }}</th>
-                                    <th>{{ __('label.activity') }}</th>
-                                    <th>Hours Spent</th>
-                                    <th>{{ __('label.attachment') }}</th>
-                                    <th>{{ __('label.action') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tablebody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div> --}}
-
             <div class="card mt-3">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">

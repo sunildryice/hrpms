@@ -121,15 +121,13 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('manage-project-activity-project-admin', function (User $user, ?Project $project = null) {
-
             $checkCurrentActivePeriod = app(ActivityUpdatePeriodRepository::class)->checkCurrentActivePeriod();
-
-            return ($user->employee?->employee_code == 62) && $checkCurrentActivePeriod;
+            return ($user->hasRole('MERL')) && $checkCurrentActivePeriod;
         });
 
         Gate::define('manage-project-activity-other-detail', function (User $user, ?Project $project = null) {
 
-            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id) || $project->isActivityMember($user->id) || $user->employee?->employee_code == 62);
+            return ($project->isFocalPerson($user->id) || $project->isTeamLead($user->id) || $project->isActivityMember($user->id) || $user->hasRole('MERL'));
         });
 
         Gate::define('manage-project-activity-detail', function (User $user, ?Project $project = null) {

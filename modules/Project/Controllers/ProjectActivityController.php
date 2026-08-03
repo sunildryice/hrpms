@@ -50,8 +50,8 @@ class ProjectActivityController extends Controller
                     [$request->from_date, $request->to_date]
                 );
             })
-            ->when($project->isFocalPerson($authUser->id) || 
-                $project->isTeamLead($authUser->id) || 
+            ->when($project->isFocalPerson($authUser->id) ||
+                $project->isTeamLead($authUser->id) ||
                 // $authUser->employee?->employee_code == 62
                 $authUser->can('view-all-project-activities'), function ($query) {
                 // Focal Person or Team Lead can see all activities
@@ -68,10 +68,10 @@ class ProjectActivityController extends Controller
             $current = $item;
             $visited = [];
             while ($current) {
-                if (isset($visited[$current->id])) { 
+                if (isset($visited[$current->id])) {
                     break;
                 }
-                $visited[$current->id] = true; 
+                $visited[$current->id] = true;
                 $path[] = str_pad($current->sort_order ?? $current->id, 4, '0', STR_PAD_LEFT);
                 $current = $current->parent;
             }

@@ -62,16 +62,16 @@ class BusinessDevelopmentController extends Controller
                     $btn = '<a class="btn btn-sm btn-outline-primary" href="';
                     $btn .= route('business-development.show', $row->id) . '" rel="tooltip" title="View"><i class="bi bi-eye"></i></a>';
 
-                    if ($authUser->can('manage-business-development')) {
+                    if ($authUser->can('manage-business-development') && $authUser->id == $row->created_by) {
                         $btn .= '&emsp;<a class="btn btn-sm btn-outline-primary" href="';
                         $btn .= route('business-development.edit', $row->id) . '" rel="tooltip" title="Edit"><i class="bi-pencil-square"></i></a>';
                     }
 
-                    if ($authUser->can('manage-business-development')) {
-                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete" ';
-                        $btn .= 'data-href="' . route('business-development.destroy', $row->id) . '">';
-                        $btn .= '<i class="bi-trash"></i></a>';
-                    }
+//                    if ($authUser->can('manage-business-development')) {
+//                        $btn .= '&emsp;<a href="javascript:;" class="btn btn-danger btn-sm delete-record" rel="tooltip" title="Delete" ';
+//                        $btn .= 'data-href="' . route('business-development.destroy', $row->id) . '">';
+//                        $btn .= '<i class="bi-trash"></i></a>';
+//                    }
 
                     return $btn;
                 })
@@ -90,7 +90,6 @@ class BusinessDevelopmentController extends Controller
     public function create()
     {
         $this->authorize('manage-business-development');
-
         $thematicAreas = ThematicArea::all();
 
         return view('Tracker::BusinessDevelopment.create', compact('thematicAreas'));
@@ -105,14 +104,13 @@ class BusinessDevelopmentController extends Controller
     public function store(StoreRequest $request)
     {
         $this->authorize('manage-business-development');
-
         $inputs = $request->validated();
+        $inputs['created_by'] = auth()->user()->id;
 
         if ($request->file('attachment')) {
             $inputs['attachment'] = $request->file('attachment')
                 ->storeAs('tracker/business-development', time().'_'.random_int(1000, 9999).'_attachment.'.$request->file('attachment')->getClientOriginalExtension());
         }
-
         $record = $this->businessDevelopments->create($inputs);
 
         if ($record) {

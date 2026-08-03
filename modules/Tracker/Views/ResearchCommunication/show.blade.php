@@ -24,7 +24,7 @@
                 <div class="card-header fw-bold">
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
                         <h6>Publication Details</h6>
-                        @can('manage-research-communication')
+                        @if($researchCommunication->created_by == auth()->id())
                         <a href="{{ route('research-communication.edit', $researchCommunication->id) }}" class="btn btn-primary btn-sm">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>

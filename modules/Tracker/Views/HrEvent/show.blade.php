@@ -36,6 +36,12 @@
                                 <label class="text-muted fw-bold small">Event Type</label>
                                 <p class="mb-0">{{$hrEvent->event_type}}</p>
                             </div>
+                            @if($hrEvent->event_type === 'Recruitment')
+                                <div class="col-md-4">
+                                    <label class="text-muted fw-bold small">Recruitment Method</label>
+                                    <p class="mb-0">{{$hrEvent->recruitment_method ?? 'N/A'}}</p>
+                                </div>
+                            @endif
                             <div class="col-md-4">
                                 <label
                                     class="text-muted fw-bold small">{{ $hrEvent->event_type === 'Recruitment' ? 'Vacancy Announcement Date' : 'Event Date' }}</label>
@@ -50,6 +56,10 @@
                                 <div class="col-md-4">
                                     <label class="text-muted fw-bold small">Vacancy For Positions</label>
                                     <p class="mb-0">{{$hrEvent->vacancy_for_positions}}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="text-muted fw-bold small">Recruitment Type</label>
+                                    <p class="mb-0">{{$hrEvent->recruitment_type ?? 'N/A'}}</p>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="text-muted fw-bold small">Project</label>

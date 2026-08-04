@@ -27,6 +27,12 @@ class StoreRequest extends FormRequest
         if ($this->input('project_id') === null || $this->input('project_id') === '') {
             $this->merge(['project_id' => null]);
         }
+        if ($this->input('event_type') !== 'Recruitment') {
+            $this->merge([
+                'recruitment_type'   => null,
+                'recruitment_method' => null,
+            ]);
+        }
     }
 
     /**
@@ -39,6 +45,8 @@ class StoreRequest extends FormRequest
         return [
             'event_date'                     => 'required|date',
             'event_type'                     => 'required|in:Recruitment,Orientation',
+            'recruitment_type'               => 'nullable|required_if:event_type,Recruitment|in:Direct Hire,Open Vacancy',
+            'recruitment_method'             => 'nullable|required_if:event_type,Recruitment|in:Open Call,Headhunt,Direct Appointment',
             'vacancy_for_positions'          => 'required_if:event_type,Recruitment|string|max:255',
             'project_id'                     => 'nullable|exists:projects,id',
             'total_applicants'               => 'nullable|integer|min:0',
@@ -62,6 +70,8 @@ class StoreRequest extends FormRequest
         return [
             'event_date'                     => 'Event Date',
             'event_type'                     => 'Event Type',
+            'recruitment_type'               => 'Recruitment Type',
+            'recruitment_method'             => 'Recruitment Method',
             'vacancy_for_positions'          => 'Vacancy For Positions',
             'project_id'                     => 'Project',
             'total_applicants'               => 'Total Applicants',

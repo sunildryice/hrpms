@@ -20,21 +20,36 @@
                     $('#orientationSection').slideUp(200);
                     $('#recruitment_remarks').prop('disabled', false);
                     $('#orientation_remarks').prop('disabled', true);
+                    $('#recruitment_method').prop('disabled', false).trigger('change');
+                    $('#recruitment_type').prop('disabled', false).trigger('change');
+                    $('#recruitmentMethodLabel').html('Recruitment Method <span class="text-danger">*</span>');
                     try { fv.enableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.enableValidator('recruitment_type'); } catch(e) {}
+                    try { fv.enableValidator('recruitment_method'); } catch(e) {}
                     try { fv.disableValidator('orientation_title'); } catch(e) {}
                 } else if (eventType === 'Orientation') {
                     $('#recruitmentSection').slideUp(200);
                     $('#orientationSection').slideDown(200);
                     $('#recruitment_remarks').prop('disabled', true);
                     $('#orientation_remarks').prop('disabled', false);
+                    $('#recruitment_method').prop('disabled', true).trigger('change');
+                    $('#recruitment_type').prop('disabled', true).trigger('change');
+                    $('#recruitmentMethodLabel').html('Recruitment Method');
                     try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.disableValidator('recruitment_type'); } catch(e) {}
+                    try { fv.disableValidator('recruitment_method'); } catch(e) {}
                     try { fv.enableValidator('orientation_title'); } catch(e) {}
                 } else {
                     $('#recruitmentSection').slideUp(200);
                     $('#orientationSection').slideUp(200);
                     $('#recruitment_remarks').prop('disabled', true);
                     $('#orientation_remarks').prop('disabled', true);
+                    $('#recruitment_method').prop('disabled', true).trigger('change');
+                    $('#recruitment_type').prop('disabled', true).trigger('change');
+                    $('#recruitmentMethodLabel').html('Recruitment Method');
                     try { fv.disableValidator('vacancy_for_positions'); } catch(e) {}
+                    try { fv.disableValidator('recruitment_type'); } catch(e) {}
+                    try { fv.disableValidator('recruitment_method'); } catch(e) {}
                     try { fv.disableValidator('orientation_title'); } catch(e) {}
                 }
             }
@@ -142,6 +157,20 @@
                         validators: {
                             notEmpty: {
                                 message: 'The event type is required.'
+                            }
+                        }
+                    },
+                    recruitment_type: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The recruitment type is required.'
+                            }
+                        }
+                    },
+                    recruitment_method: {
+                        validators: {
+                            notEmpty: {
+                                message: 'The recruitment method is required.'
                             }
                         }
                     },
@@ -265,6 +294,15 @@
                                 </select>
                             </div>
                             <div class="col-lg-4">
+                                <label class="form-label" id="recruitmentMethodLabel" for="recruitment_method">Recruitment Method</label>
+                                <select class="form-select select2" name="recruitment_method" id="recruitment_method">
+                                    <option value="">Select Recruitment Method</option>
+                                    <option value="Open Call" {{old('recruitment_method') == 'Open Call' ? 'selected' : ''}}>Open Call</option>
+                                    <option value="Headhunt" {{old('recruitment_method') == 'Headhunt' ? 'selected' : ''}}>Headhunt</option>
+                                    <option value="Direct Appointment" {{old('recruitment_method') == 'Direct Appointment' ? 'selected' : ''}}>Direct Appointment</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
                                 <label class="form-label" id="eventDateLabel" for="event_date">Event Date <span class="text-danger">*</span></label>
                                 <input class="form-control" type="text" name="event_date" id="event_date" value="{{old('event_date')}}" onfocus="this.blur()" placeholder="YYYY-MM-DD">
                             </div>
@@ -277,6 +315,14 @@
                                 <div class="col-lg-4">
                                     <label class="form-label" for="vacancy_for_positions">Vacancy For Positions <span class="text-danger">*</span></label>
                                     <input class="form-control" type="text" name="vacancy_for_positions" id="vacancy_for_positions" value="{{old('vacancy_for_positions')}}">
+                                </div>
+                                <div class="col-lg-4">
+                                    <label class="form-label" for="recruitment_type">Recruitment Type <span class="text-danger">*</span></label>
+                                    <select class="form-select select2" name="recruitment_type" id="recruitment_type">
+                                        <option value="">Select Recruitment Type</option>
+                                        <option value="Direct Hire" {{old('recruitment_type') == 'Direct Hire' ? 'selected' : ''}}>Direct Hire</option>
+                                        <option value="Open Vacancy" {{old('recruitment_type') == 'Open Vacancy' ? 'selected' : ''}}>Open Vacancy</option>
+                                    </select>
                                 </div>
                                 <div class="col-lg-4">
                                     <label class="form-label" for="project_id">Project</label>

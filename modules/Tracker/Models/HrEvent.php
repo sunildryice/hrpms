@@ -18,6 +18,8 @@ class HrEvent extends Model
         'project_id',
         'event_date',
         'event_type',
+        'recruitment_type',
+        'recruitment_method',
         'vacancy_for_positions',
         'total_applicants',
         'male_shortlisted',

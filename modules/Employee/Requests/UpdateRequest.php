@@ -69,6 +69,23 @@ class UpdateRequest extends FormRequest
             'vehicle_license_number' => 'nullable|string|max:50',
             'vehicle_license_category' => 'nullable|array',
             'vehicle_license_category.*' => 'string|in:A,B,C,D,E,F,G,H,K',
+            'keep_in_hr_roster' => 'nullable|boolean',
+            'nature_of_role' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf(function () {
+                    return $this->boolean('keep_in_hr_roster') && !$this->boolean('active');
+                }),
+            ],
+            'not_in_roster_remarks' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf(function () {
+                    return !$this->boolean('keep_in_hr_roster') && !$this->boolean('active');
+                }),
+            ],
         ];
     }
 
@@ -85,6 +102,7 @@ class UpdateRequest extends FormRequest
             'profile_picture.mimes' => 'Only png,jpg or pdf files are allowed.',
             'profile_picture.max' => 'Maximum allowed file size is 2MB.',
             'vehicle_license_category.*.in'     => 'Invalid license category selected.',
+            'not_in_roster_remarks.required' => 'The remarks field is required.',
         ];
     }
 }

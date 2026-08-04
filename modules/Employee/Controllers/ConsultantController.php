@@ -209,6 +209,14 @@ class ConsultantController extends Controller
         if ($request->active && $employee->activated_at) {
             unset($inputs['activated_at']);
         }
+        if (!$request->active) {
+            $keepInHrRoster = $request->boolean('keep_in_hr_roster');
+            $inputs['keep_in_hr_roster'] = $keepInHrRoster;
+            $inputs['nature_of_role'] = $keepInHrRoster ? $request->input('nature_of_role') : null;
+            $inputs['not_in_roster_remarks'] = $keepInHrRoster ? null : $request->input('not_in_roster_remarks');
+        } else {
+            unset($inputs['keep_in_hr_roster'], $inputs['nature_of_role'], $inputs['not_in_roster_remarks']);
+        }
 
         if ($request->file('citizenship_attachment')) {
             $filename = $request->file('citizenship_attachment')

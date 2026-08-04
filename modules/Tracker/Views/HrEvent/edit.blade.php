@@ -18,6 +18,7 @@
                 if (eventType === 'Recruitment') {
                     $('#recruitmentSection').slideDown(200);
                     $('#orientationSection').slideUp(200);
+                    $('#recruitmentMethodCol').slideDown(200);
                     $('#recruitment_remarks').prop('disabled', false);
                     $('#orientation_remarks').prop('disabled', true);
                     $('#recruitment_method').prop('disabled', false).trigger('change');
@@ -30,6 +31,7 @@
                 } else if (eventType === 'Orientation') {
                     $('#recruitmentSection').slideUp(200);
                     $('#orientationSection').slideDown(200);
+                    $('#recruitmentMethodCol').slideUp(200);
                     $('#recruitment_remarks').prop('disabled', true);
                     $('#orientation_remarks').prop('disabled', false);
                     $('#recruitment_method').prop('disabled', true).trigger('change');
@@ -42,6 +44,7 @@
                 } else {
                     $('#recruitmentSection').slideUp(200);
                     $('#orientationSection').slideUp(200);
+                    $('#recruitmentMethodCol').slideUp(200);
                     $('#recruitment_remarks').prop('disabled', true);
                     $('#orientation_remarks').prop('disabled', true);
                     $('#recruitment_method').prop('disabled', true).trigger('change');
@@ -304,7 +307,8 @@
                                     <option value="Orientation" {{$hrEvent->event_type == 'Orientation' ? 'selected' : ''}}>Orientation</option>
                                 </select>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4" id="recruitmentMethodCol"
+                                style="{{ $hrEvent->event_type === 'Recruitment' ? '' : 'display: none;' }}">
                                 <label class="form-label" id="recruitmentMethodLabel" for="recruitment_method">Recruitment Method</label>
                                 <select class="form-select select2" name="recruitment_method" id="recruitment_method">
                                     <option value="">Select Recruitment Method</option>

@@ -64,7 +64,7 @@ class EventExport implements FromCollection, Responsable, ShouldAutoSize, WithEv
             'Country',
             'Province',
             'District',
-            'City/Local Level',
+            'Local Level',
             'Total Government Participants',
             'Total HERDi Participants',
             'Total Other Participants',
@@ -97,14 +97,14 @@ class EventExport implements FromCollection, Responsable, ShouldAutoSize, WithEv
             $row->total_other_participants ?? 0,
             $row->getTotalParticipants(),
             $row->accompanyingMembers->map(fn($e) => $e->getFullName())->implode(', '),
-            $row->action_points,
-            $row->remarks,
+            $row->actionPoints->pluck('action_point')->implode("\n"),
+            $row->remarks->pluck('remark')->implode("\n"),
         ];
     }
 
     public function collection()
     {
-        return Event::with(['project', 'accompanyingMembers'])
+        return Event::with(['project', 'accompanyingMembers', 'actionPoints', 'remarks'])
             ->orderBy('created_at', 'desc')
             ->get();
     }

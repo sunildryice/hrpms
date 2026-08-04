@@ -6,20 +6,15 @@ use App\Traits\ModelEventLogger;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EventRoaster extends Model
+class EventRemark extends Model
 {
     use HasFactory, ModelEventLogger;
 
-    protected $table = 'event_roasters';
+    protected $table = 'event_remarks';
 
     protected $fillable = [
         'event_id',
-        'name',
-        'organisation',
-        'organisation_name',
-        'position',
-        'ethnicity',
-        'gender',
+        'remark',
         'created_by',
         'updated_by',
     ];

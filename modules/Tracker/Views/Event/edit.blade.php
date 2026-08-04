@@ -124,6 +124,7 @@
             @endif
 
             $('#addRoasterBtn').on('click', function() {
+                let name = $('#roaster_name').val();
                 let org = $('#roaster_organisation').val();
                 let orgName = $('#roaster_organisation_name').val();
                 let pos = $('#roaster_position').val();
@@ -136,6 +137,7 @@
                 }
 
                 let row = '<tr>';
+                row += '<td>' + $('<span>').text(name || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][name]" value="' + $('<span>').text(name || '').html() + '"></td>';
                 row += '<td>' + $('<span>').text(org).html() + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation]" value="' + $('<span>').text(org).html() + '"></td>';
                 row += '<td>' + $('<span>').text(orgName || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][organisation_name]" value="' + $('<span>').text(orgName || '').html() + '"></td>';
                 row += '<td>' + $('<span>').text(pos || '').html() + '<input type="hidden" name="roasters[' + roasterIndex + '][position]" value="' + $('<span>').text(pos || '').html() + '"></td>';
@@ -147,6 +149,7 @@
                 $('#roasterTableBody').append(row);
                 roasterIndex++;
 
+                $('#roaster_name').val('');
                 $('#roaster_organisation').val('').trigger('change');
                 $('#roaster_organisation_name').val('');
                 $('#roaster_position').val('');
@@ -176,12 +179,14 @@
 
             $(document).on('click', '.edit-roaster', function() {
                 editingRow = $(this).closest('tr');
+                let name = editingRow.find('input[name$="[name]"]').val();
                 let org = editingRow.find('input[name$="[organisation]"]').val();
                 let orgName = editingRow.find('input[name$="[organisation_name]"]').val();
                 let pos = editingRow.find('input[name$="[position]"]').val();
                 let eth = editingRow.find('input[name$="[ethnicity]"]').val();
                 let gen = editingRow.find('input[name$="[gender]"]').val();
 
+                $('#edit_name').val(name);
                 $('#edit_organisation').val(org).trigger('change');
                 $('#edit_organisation_name').val(orgName);
                 $('#edit_position').val(pos);
@@ -193,6 +198,7 @@
             $('#saveEditRoaster').on('click', function() {
                 if (!editingRow) return;
 
+                let name = $('#edit_name').val();
                 let org = $('#edit_organisation').val();
                 let orgName = $('#edit_organisation_name').val();
                 let pos = $('#edit_position').val();
@@ -207,20 +213,23 @@
                 let cells = editingRow.find('td');
                 let esc = function(v) { return $('<span>').text(v || '').html(); };
 
-                cells.eq(0).contents().first().replaceWith(esc(org));
-                cells.eq(0).find('input[name$="[organisation]"]').val(org);
+                cells.eq(0).contents().first().replaceWith(esc(name));
+                cells.eq(0).find('input[name$="[name]"]').val(name);
 
-                cells.eq(1).contents().first().replaceWith(esc(orgName));
-                cells.eq(1).find('input[name$="[organisation_name]"]').val(orgName);
+                cells.eq(1).contents().first().replaceWith(esc(org));
+                cells.eq(1).find('input[name$="[organisation]"]').val(org);
 
-                cells.eq(2).contents().first().replaceWith(esc(pos));
-                cells.eq(2).find('input[name$="[position]"]').val(pos);
+                cells.eq(2).contents().first().replaceWith(esc(orgName));
+                cells.eq(2).find('input[name$="[organisation_name]"]').val(orgName);
 
-                cells.eq(3).contents().first().replaceWith(esc(eth));
-                cells.eq(3).find('input[name$="[ethnicity]"]').val(eth);
+                cells.eq(3).contents().first().replaceWith(esc(pos));
+                cells.eq(3).find('input[name$="[position]"]').val(pos);
 
-                cells.eq(4).contents().first().replaceWith(esc(gen));
-                cells.eq(4).find('input[name$="[gender]"]').val(gen);
+                cells.eq(4).contents().first().replaceWith(esc(eth));
+                cells.eq(4).find('input[name$="[ethnicity]"]').val(eth);
+
+                cells.eq(5).contents().first().replaceWith(esc(gen));
+                cells.eq(5).find('input[name$="[gender]"]').val(gen);
 
                 $('#editRoasterModal').modal('hide');
                 editingRow = null;
@@ -231,6 +240,18 @@
                 if (roasterId) {
                     $('#deletedRoasters').append('<input type="hidden" name="deleted_roasters[]" value="' + roasterId + '">');
                 }
+                $(this).closest('tr').remove();
+            });
+
+            $('#addActionRemarkBtn').on('click', function() {
+                $('#actionRemarkTableBody').append('<tr>' +
+                    '<td><input type="text" class="form-control form-control-sm" name="action_points[]" placeholder="Enter action point"></td>' +
+                    '<td><input type="text" class="form-control form-control-sm" name="remarks[]" placeholder="Enter remark"></td>' +
+                    '<td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-action-remark" title="Remove"><i class="bi-trash"></i></button></td>' +
+                '</tr>');
+            });
+
+            $(document).on('click', '.remove-action-remark', function() {
                 $(this).closest('tr').remove();
             });
 
@@ -338,7 +359,7 @@
 
                         <div class="row mb-2">
                             <div class="col-lg-4" id="cityLocalLevelField">
-                                <label class="form-label" for="city_local_level">City / Local Level</label>
+                                <label class="form-label" for="city_local_level">Local Level</label>
                                 <input class="form-control" type="text" name="city_local_level" id="city_local_level" value="{{$event->city_local_level}}">
                             </div>
                             <div class="col-lg-4" id="accompanyingMembersField">
@@ -387,15 +408,19 @@
                                 <div class="col-lg-4">
                                     <div class="form-check form-switch mt-3">
                                         <input class="form-check-input" type="checkbox" name="roaster_details" id="roaster_details" value="1" {{$event->roaster_details ? 'checked' : ''}}>
-                                        <label class="form-check-label fw-bold" for="roaster_details">Add Roaster Details</label>
+                                        <label class="form-check-label fw-bold" for="roaster_details">Add Roster Details</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div id="roasterSection" style="display: none;">
                                 <hr>
-                                <h6 class="fw-bold mb-2">Event Roaster Details</h6>
+                                <h6 class="fw-bold mb-2">Event Roster Details</h6>
                                 <div class="row mb-2 align-items-end">
+                                    <div class="col-lg-2">
+                                        <label class="form-label" for="roaster_name">Name</label>
+                                        <input type="text" class="form-control form-control-sm" id="roaster_name">
+                                    </div>
                                     <div class="col-lg-2">
                                         <label class="form-label" for="roaster_organisation">Organisation <span class="text-danger">*</span></label>
                                         <select class="form-select form-select-sm select2" id="roaster_organisation">
@@ -439,6 +464,7 @@
                                     <table class="table table-sm table-bordered">
                                         <thead class="bg-light">
                                             <tr>
+                                                <th>Name</th>
                                                 <th>Organisation</th>
                                                 <th>Organisation Name</th>
                                                 <th>Position</th>
@@ -450,6 +476,10 @@
                                         <tbody id="roasterTableBody">
                                             @foreach($event->roasters as $i => $roaster)
                                             <tr>
+                                                <td>
+                                                    {{$roaster->name}}
+                                                    <input type="hidden" name="roasters[{{$i}}][name]" value="{{$roaster->name}}">
+                                                </td>
                                                 <td>
                                                     {{$roaster->organisation}}
                                                     <input type="hidden" name="roasters[{{$i}}][id]" value="{{$roaster->id}}">
@@ -493,11 +523,15 @@
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content">
                                     <div class="modal-header bg-primary text-white">
-                                        <h6 class="modal-title">Edit Roaster</h6>
+                                        <h6 class="modal-title">Edit Roster</h6>
                                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="row mb-2">
+                                            <div class="col-lg-4">
+                                                <label class="form-label">Name</label>
+                                                <input type="text" class="form-control form-control-sm" id="edit_name">
+                                            </div>
                                             <div class="col-lg-4">
                                                 <label class="form-label">Organisation <span class="text-danger">*</span></label>
                                                 <select class="form-select form-select-sm select2" id="edit_organisation">
@@ -511,12 +545,12 @@
                                                 <label class="form-label">Organisation Name</label>
                                                 <input type="text" class="form-control form-control-sm" id="edit_organisation_name">
                                             </div>
+                                        </div>
+                                        <div class="row mb-2">
                                             <div class="col-lg-4">
                                                 <label class="form-label">Position</label>
                                                 <input type="text" class="form-control form-control-sm" id="edit_position">
                                             </div>
-                                        </div>
-                                        <div class="row mb-2">
                                             <div class="col-lg-4">
                                                 <label class="form-label">Ethnicity</label>
                                                 <select class="form-select form-select-sm select2" id="edit_ethnicity">
@@ -546,13 +580,40 @@
                         </div>
 
                         <div class="row mb-2">
-                            <div class="col-lg-6">
-                                <label class="form-label" for="action_points">Action Points</label>
-                                <textarea class="form-control" name="action_points" id="action_points" rows="3">{{$event->action_points}}</textarea>
-                            </div>
-                            <div class="col-lg-6">
-                                <label class="form-label" for="remarks">Remarks</label>
-                                <textarea class="form-control" name="remarks" id="remarks" rows="3">{{$event->remarks}}</textarea>
+                            <div class="col-lg-12">
+                                <label class="form-label fw-bold">Action Points &amp; Remarks</label>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th>Action Point</th>
+                                                <th>Remark</th>
+                                                <th class="text-center" style="width: 60px;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="actionRemarkTableBody">
+                                            @php
+                                                $ap = $event->actionPoints->pluck('action_point');
+                                                $rm = $event->remarks->pluck('remark');
+                                                $count = max($ap->count(), $rm->count(), 1);
+                                            @endphp
+                                            @for($i = 0; $i < $count; $i++)
+                                            <tr>
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm" name="action_points[]" value="{{ $ap[$i] ?? '' }}" placeholder="Enter action point">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm" name="remarks[]" value="{{ $rm[$i] ?? '' }}" placeholder="Enter remark">
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-danger btn-sm remove-action-remark" title="Remove"><i class="bi-trash"></i></button>
+                                                </td>
+                                            </tr>
+                                            @endfor
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-primary" id="addActionRemarkBtn"><i class="bi-plus"></i> Add</button>
                             </div>
                         </div>
 

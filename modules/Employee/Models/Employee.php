@@ -77,6 +77,9 @@ class Employee extends Model
         'created_by',
         'updated_by',
         'activated_at',
+        'keep_in_hr_roster',
+        'nature_of_role',
+        'not_in_roster_remarks',
     ];
 
     /**
@@ -93,6 +96,7 @@ class Employee extends Model
         'probation_completion_date' => 'date',
         'last_working_date' => 'date',
         'activated_at' => 'datetime',
+        'keep_in_hr_roster' => 'boolean',
     ];
 
     /**

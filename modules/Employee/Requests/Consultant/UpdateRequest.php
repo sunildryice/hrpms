@@ -74,6 +74,23 @@ class UpdateRequest extends FormRequest
 
             'earn_leave' => 'nullable',
             'leave_percentage' => 'nullable|integer|in:100,75,50|required_if:earn_leave,true',
+            'keep_in_hr_roster' => 'nullable|boolean',
+            'nature_of_role' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf(function () {
+                    return $this->boolean('keep_in_hr_roster') && !$this->boolean('active');
+                }),
+            ],
+            'not_in_roster_remarks' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::requiredIf(function () {
+                    return !$this->boolean('keep_in_hr_roster') && !$this->boolean('active');
+                }),
+            ],
         ];
     }
 
@@ -90,6 +107,7 @@ class UpdateRequest extends FormRequest
             'signature.max' => 'Maximum allowed file size is 2MB.',
             'profile_picture.mimes' => 'Only png,jpg or pdf files are allowed.',
             'profile_picture.max' => 'Maximum allowed file size is 2MB.',
+            'not_in_roster_remarks.required' => 'The remarks field is required.',
         ];
     }
 }

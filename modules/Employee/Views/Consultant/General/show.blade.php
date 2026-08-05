@@ -220,4 +220,44 @@
             </div>
         </div>
     </div>
+    <div class="row mb-2">
+        <div class="col-lg-3">
+            <div class="d-flex align-items-start h-100">
+                <label for="keepInHrRoster" class="m-0">Keep in HR Roster?</label>
+            </div>
+        </div>
+        <div class="col-lg-9">
+            <div class="form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="keepInHrRoster"
+                    name="keep_in_hr_roster" disabled @if ($employee->keep_in_hr_roster) checked @endif>
+                <label class="form-check-label" for="keepInHrRoster"></label>
+            </div>
+        </div>
+    </div>
+    @if ($employee->keep_in_hr_roster)
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Nature of Role</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="nature_of_role" disabled
+                    value="{{ $employee->nature_of_role }}" />
+            </div>
+        </div>
+    @endif
+    @if (!$employee->keep_in_hr_roster && $employee->not_in_roster_remarks)
+        <div class="row mb-2">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="" class="m-0">Remarks (if No)</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" class="form-control" name="not_in_roster_remarks" disabled
+                    value="{{ $employee->not_in_roster_remarks }}" />
+            </div>
+        </div>
+    @endif
 </div>

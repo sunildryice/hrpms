@@ -7,6 +7,52 @@
         $(document).ready(function() {
             $('#navbarVerticalMenu').find('#employees-menu').addClass('active');
         });
+        $(document).ready(function() {
+            const $activeSwitch = $('#employeeEditForm [name="active"]');
+            const $keepInHrRosterValue = $('#keepInHrRosterValue');
+            const $keepInHrRosterYes = $('#keepInHrRosterYes');
+            const $keepInHrRosterNo = $('#keepInHrRosterNo');
+            const $keepInHrRosterRow = $('#keepInHrRosterRow');
+            const $natureOfRoleRow = $('#natureOfRoleRow');
+            const $notInRosterRemarksRow = $('#notInRosterRemarksRow');
+
+            function syncRosterCheckboxes() {
+                const keepInRoster = $keepInHrRosterValue.val() === '1';
+                $keepInHrRosterYes.prop('checked', keepInRoster);
+                $keepInHrRosterNo.prop('checked', !keepInRoster);
+            }
+
+            function updateHrRosterState() {
+                const isActive = $activeSwitch.is(':checked');
+                syncRosterCheckboxes();
+                $keepInHrRosterRow.toggle(!isActive);
+                $natureOfRoleRow.toggle(!isActive && $keepInHrRosterValue.val() === '1');
+                $notInRosterRemarksRow.toggle(!isActive && $keepInHrRosterValue.val() === '0');
+            }
+
+            $activeSwitch.on('change', updateHrRosterState);
+            $keepInHrRosterYes.on('change', function() {
+                if ($(this).is(':checked')) {
+                    $keepInHrRosterValue.val('1');
+                    $keepInHrRosterNo.prop('checked', false);
+                    updateHrRosterState();
+                } else if (!$keepInHrRosterNo.is(':checked')) {
+                    $keepInHrRosterValue.val('0');
+                    updateHrRosterState();
+                }
+            });
+            $keepInHrRosterNo.on('change', function() {
+                if ($(this).is(':checked')) {
+                    $keepInHrRosterValue.val('0');
+                    $keepInHrRosterYes.prop('checked', false);
+                    updateHrRosterState();
+                } else if (!$keepInHrRosterYes.is(':checked')) {
+                    $keepInHrRosterValue.val('0');
+                    updateHrRosterState();
+                }
+            });
+            updateHrRosterState();
+        });
         var queryTab = @json(request()->query('tab'));
         var $selectedTab = queryTab ?? localStorage.getItem('edit-tab') ?? 'generalInformation';
         if ($("[data-tag='" + $selectedTab + "']").length == 0 || $('#' + $selectedTab).length == 0) {

@@ -5,6 +5,7 @@ namespace Modules\Tracker\Repositories;
 use App\Repositories\Repository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Modules\Tracker\Models\BusinessDevelopment;
 
 class BusinessDevelopmentRepository extends Repository
@@ -48,6 +49,11 @@ class BusinessDevelopmentRepository extends Repository
         DB::beginTransaction();
         try {
             $record = $this->model->findOrFail($id);
+
+            if ($record->attachment && Storage::exists($record->attachment)) {
+                Storage::delete($record->attachment);
+            }
+
             $record->delete();
             DB::commit();
             return $record;

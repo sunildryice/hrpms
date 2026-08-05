@@ -79,7 +79,7 @@
 
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label class="text-muted fw-bold small">City / Local Level</label>
+                                <label class="text-muted fw-bold small">Local Level</label>
                                 <p>{{$event->city_local_level ?: 'N/A'}}</p>
                             </div>
                             @if($event->event_organized_by == 'external')
@@ -129,21 +129,33 @@
                             </div>
                         @endif
 
-                        @if($event->action_points || $event->remarks)
+                        @if($event->actionPoints->isNotEmpty() || $event->remarks->isNotEmpty())
                             <hr>
                             <div class="row mb-3">
-                                @if($event->action_points)
-                                    <div class="col-md-6">
-                                        <label class="text-muted fw-bold small">Action Points</label>
-                                        <p>{{$event->action_points}}</p>
-                                    </div>
-                                @endif
-                                @if($event->remarks)
-                                    <div class="col-md-6">
-                                        <label class="text-muted fw-bold small">Remarks</label>
-                                        <p>{{$event->remarks}}</p>
-                                    </div>
-                                @endif
+                                <div class="col-md-12">
+                                    <label class="text-muted fw-bold small">Action Points &amp; Remarks</label>
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="bg-light">
+                                        <tr>
+                                            <th>Action Point</th>
+                                            <th>Remark</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @php
+                                            $ap = $event->actionPoints->pluck('action_point');
+                                            $rm = $event->remarks->pluck('remark');
+                                            $count = max($ap->count(), $rm->count());
+                                        @endphp
+                                        @for($i = 0; $i < $count; $i++)
+                                            <tr>
+                                                <td>{{ $ap[$i] ?? '' }}</td>
+                                                <td>{{ $rm[$i] ?? '' }}</td>
+                                            </tr>
+                                        @endfor
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         @endif
 
@@ -169,13 +181,14 @@
                 @if($event->roaster_details && $event->roasters->isNotEmpty())
                     <div class="card mt-3">
                         <div class="card-header fw-bold">
-                            <h6>Event Roaster Details</h6>
+                            <h6>Event Roster Details</h6>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-sm table-bordered">
                                     <thead class="bg-light">
                                     <tr>
+                                        <th>Name</th>
                                         <th>Organisation</th>
                                         <th>Organisation Name</th>
                                         <th>Position</th>
@@ -186,6 +199,7 @@
                                     <tbody>
                                     @foreach($event->roasters as $roaster)
                                         <tr>
+                                            <td>{{$roaster->name}}</td>
                                             <td>{{$roaster->organisation}}</td>
                                             <td>{{$roaster->organisation_name}}</td>
                                             <td>{{$roaster->position}}</td>

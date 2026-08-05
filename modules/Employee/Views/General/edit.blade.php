@@ -317,6 +317,62 @@
                 </div>
             </div>
         </div>
+        <div class="row mb-2" id="keepInHrRosterRow"
+            style="{{ !$employee->activated_at ? '' : 'display: none;' }}">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="keepInHrRosterYes" class="m-0">Keep in HR Roster?</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="hidden" id="keepInHrRosterValue" name="keep_in_hr_roster"
+                    value="{{ old('keep_in_hr_roster', $employee->keep_in_hr_roster) ? 1 : 0 }}">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="keepInHrRosterYes"
+                        @if (old('keep_in_hr_roster', $employee->keep_in_hr_roster)) checked @endif>
+                    <label class="form-check-label" for="keepInHrRosterYes">Yes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="keepInHrRosterNo"
+                        @if (!old('keep_in_hr_roster', $employee->keep_in_hr_roster)) checked @endif>
+                    <label class="form-check-label" for="keepInHrRosterNo">No</label>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2" id="natureOfRoleRow"
+            style="{{ !$employee->activated_at && $employee->keep_in_hr_roster ? '' : 'display: none;' }}">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="nature_of_role" class="m-0 required-label">Nature of Role</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" id="nature_of_role" name="nature_of_role" class="form-control"
+                    value="{{ old('nature_of_role') ?: $employee->nature_of_role }}" />
+                @if ($errors->has('nature_of_role'))
+                    <div class="fv-plugins-message-container text-danger mt-1">
+                        <div data-field="nature_of_role">{!! $errors->first('nature_of_role') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
+        <div class="row mb-2" id="notInRosterRemarksRow"
+            style="{{ !$employee->activated_at && !$employee->keep_in_hr_roster ? '' : 'display: none;' }}">
+            <div class="col-lg-3">
+                <div class="d-flex align-items-start h-100">
+                    <label for="not_in_roster_remarks" class="m-0 required-label">Remarks (if No)</label>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <input type="text" id="not_in_roster_remarks" name="not_in_roster_remarks" class="form-control"
+                    value="{{ old('not_in_roster_remarks') ?: $employee->not_in_roster_remarks }}" />
+                @if ($errors->has('not_in_roster_remarks'))
+                    <div class="fv-plugins-message-container text-danger mt-1">
+                        <div data-field="not_in_roster_remarks">{!! $errors->first('not_in_roster_remarks') !!}</div>
+                    </div>
+                @endif
+            </div>
+        </div>
         {!! csrf_field() !!}
         {!! method_field('PUT') !!}
     </div>

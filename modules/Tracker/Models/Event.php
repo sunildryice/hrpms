@@ -31,8 +31,6 @@ class Event extends Model
         'total_herdi_participants',
         'total_other_participants',
         'roaster_details',
-        'action_points',
-        'remarks',
         'attachment',
         'created_by',
         'updated_by',
@@ -55,6 +53,16 @@ class Event extends Model
     public function roasters()
     {
         return $this->hasMany(EventRoaster::class);
+    }
+
+    public function actionPoints()
+    {
+        return $this->hasMany(EventActionPoint::class);
+    }
+
+    public function remarks()
+    {
+        return $this->hasMany(EventRemark::class);
     }
 
     public function accompanyingMembers()

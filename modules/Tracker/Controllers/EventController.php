@@ -139,12 +139,31 @@ class EventController extends Controller
             if ($record->roaster_details && $request->has('roasters')) {
                 foreach ($request->input('roasters') as $roaster) {
                     $record->roasters()->create([
+                        'name'              => $roaster['name'] ?? null,
                         'organisation'      => $roaster['organisation'],
                         'organisation_name' => $roaster['organisation_name'] ?? null,
                         'position'          => $roaster['position'] ?? null,
                         'ethnicity'         => $roaster['ethnicity'] ?? null,
                         'gender'            => $roaster['gender'] ?? null,
                         'created_by'        => auth()->id(),
+                    ]);
+                }
+            }
+
+            foreach (array_filter($request->input('action_points', []) ?? []) as $point) {
+                if (trim($point) !== '') {
+                    $record->actionPoints()->create([
+                        'action_point' => trim($point),
+                        'created_by'   => auth()->id(),
+                    ]);
+                }
+            }
+
+            foreach (array_filter($request->input('remarks', []) ?? []) as $remark) {
+                if (trim($remark) !== '') {
+                    $record->remarks()->create([
+                        'remark'     => trim($remark),
+                        'created_by' => auth()->id(),
                     ]);
                 }
             }
@@ -164,7 +183,7 @@ class EventController extends Controller
     public function show($id)
     {
         $event = $this->events->find($id);
-        $event->load(['project', 'roasters', 'accompanyingMembers']);
+        $event->load(['project', 'roasters', 'accompanyingMembers', 'actionPoints', 'remarks']);
         return view('Tracker::Event.show', compact('event'));
     }
 
@@ -230,6 +249,7 @@ class EventController extends Controller
                 foreach ($request->input('roasters') as $roaster) {
                     if (isset($roaster['id'])) {
                         $record->roasters()->where('id', $roaster['id'])->update([
+                            'name'              => $roaster['name'] ?? null,
                             'organisation'      => $roaster['organisation'],
                             'organisation_name' => $roaster['organisation_name'] ?? null,
                             'position'          => $roaster['position'] ?? null,
@@ -239,6 +259,7 @@ class EventController extends Controller
                         ]);
                     } else {
                         $record->roasters()->create([
+                            'name'              => $roaster['name'] ?? null,
                             'organisation'      => $roaster['organisation'],
                             'organisation_name' => $roaster['organisation_name'] ?? null,
                             'position'          => $roaster['position'] ?? null,
@@ -247,6 +268,26 @@ class EventController extends Controller
                             'created_by'        => auth()->id(),
                         ]);
                     }
+                }
+            }
+
+            $record->actionPoints()->delete();
+            foreach (array_filter($request->input('action_points', []) ?? []) as $point) {
+                if (trim($point) !== '') {
+                    $record->actionPoints()->create([
+                        'action_point' => trim($point),
+                        'updated_by'   => auth()->id(),
+                    ]);
+                }
+            }
+
+            $record->remarks()->delete();
+            foreach (array_filter($request->input('remarks', []) ?? []) as $remark) {
+                if (trim($remark) !== '') {
+                    $record->remarks()->create([
+                        'remark'     => trim($remark),
+                        'updated_by' => auth()->id(),
+                    ]);
                 }
             }
 
@@ -293,6 +334,7 @@ class EventController extends Controller
         $this->authorize('manage-event');
 
         $request->validate([
+            'name'              => 'nullable|string|max:255',
             'organisation'      => 'required|in:HERDi,Government,Other',
             'organisation_name' => 'nullable|string|max:255',
             'position'          => 'nullable|string|max:255',
@@ -303,6 +345,7 @@ class EventController extends Controller
         $event = $this->events->find($id);
 
         $roaster = $event->roasters()->create([
+            'name'              => $request->name,
             'organisation'      => $request->organisation,
             'organisation_name' => $request->organisation_name,
             'position'          => $request->position,
